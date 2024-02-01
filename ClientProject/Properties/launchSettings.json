@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "WindowsClient": {
+      "commandName": "Project"
+    },
+    "Profile 1": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Barotrauma\\Barotrauma.exe"
+    }
+  }
+}

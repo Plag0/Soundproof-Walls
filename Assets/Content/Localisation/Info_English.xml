@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<infotexts language="English" nowhitespace="false" translatedname="English">
+
+	<spw_settings>Soundproof Settings</spw_settings>
+
+	<spw_generalsettings>General Settings</spw_generalsettings>
+	<spw_enabled>Enabled</spw_enabled>
+	<spw_disabled>Disabled</spw_disabled>
+	<spw_enabledtooltip>Enable all functionality of the mod (does not affect low pass frequency mid-round)</spw_enabledtooltip>
+	<spw_syncsettings>Sync Settings</spw_syncsettings>
+	<spw_syncsettingstooltip>Enable the syncing of host and client configs.</spw_syncsettingstooltip>
+	<spw_syncsettingsalert>Note: This server has syncing enabled - all players will automatically use the host's settings (values in parentheses)</spw_syncsettingsalert>
+	<spw_focustargetaudio>Focus Target Audio</spw_focustargetaudio>
+	<spw_focustargetaudiotooltip>Simulates audio from the POV of the current target (i.e., you hear what the turret/camera hears)</spw_focustargetaudiotooltip>
+	<spw_lowpassfrequency>Lowpass Frequency</spw_lowpassfrequency>
+	<spw_lowpassfrequencytooltip>The corner frequency used to muffle sounds (applies next round)</spw_lowpassfrequencytooltip>
+	<spw_voicelowpassfrequency>Voice Lowpass Frequency</spw_voicelowpassfrequency>
+	<spw_voicelowpassfrequencytooltip>The corner frequency used to muffle voice chat (applies instantly)</spw_voicelowpassfrequencytooltip>
+	<spw_soundrange>Sound Range</spw_soundrange>
+	<spw_soundrangetooltip>Increases the range of non-component sounds.</spw_soundrangetooltip>
+
+	<spw_volumesettings>Volume Settings</spw_volumesettings>
+	<spw_muffledvoicevolume>Muffled Voice Volume</spw_muffledvoicevolume>
+	<spw_muffledvoicevolumetooltip>Volume of lowpassed player voices</spw_muffledvoicevolumetooltip>
+	<spw_muffledsoundvolume>Muffled Sound Volume</spw_muffledsoundvolume>
+	<spw_muffledcomponentvolume>Muffled Component Volume</spw_muffledcomponentvolume>
+	<spw_unmuffledcomponentvolume>Unmuffled Component Volume</spw_unmuffledcomponentvolume>
+
+	<spw_eavesdroppingsettings>Eavesdrop Settings</spw_eavesdroppingsettings>
+	<spw_eavesdroppingbind>Listen Bind</spw_eavesdroppingbind>
+	<spw_eavesdroppingsoundvolume>Eavesdropping Sound Volume</spw_eavesdroppingsoundvolume>
+	<spw_eavesdroppingvoicevolume>Eavesdropping Voice Volume</spw_eavesdroppingvoicevolume>
+	<spw_eavesdroppingpitch>Eavesdropping Sound Pitch</spw_eavesdroppingpitch>
+	<spw_eavesdroppingmaxdistance>Eavesdropping Max Distance</spw_eavesdroppingmaxdistance>
+
+	<spw_hydrophonesettings>Hydrophone Settings</spw_hydrophonesettings>
+	<spw_hydrophonerange>Hydrophone Range</spw_hydrophonerange>
+	<spw_hydrophonevolume>Hydrophone Volume</spw_hydrophonevolume>
+	<spw_hydrophonepitch>Hydrophone Pitch</spw_hydrophonepitch>
+
+	<spw_ambiencesettings>Ambience Settings</spw_ambiencesettings>
+	<spw_unsubmergedwaterambiencevolume>Unsubmerged Water Ambience Volume</spw_unsubmergedwaterambiencevolume>
+	<spw_submergedwaterambiencevolume>Submerged Water Ambience Volume</spw_submergedwaterambiencevolume>
+	<spw_hydrophonewaterambiencevolume>Hydrophone Water Ambience Volume</spw_hydrophonewaterambiencevolume>
+
+	<spw_advancedsoundsettings>Advanced Sound Settings</spw_advancedsoundsettings>
+	<spw_soundvolumemultipliers>Sound Volume Multipliers</spw_soundvolumemultipliers>
+	<spw_ignoredsounds>Ignored Sounds</spw_ignoredsounds>
+	<spw_lowpassignoredsounds>Lowpass Ignored Sounds</spw_lowpassignoredsounds>
+	<spw_pitchignoredsounds>Pitch Ignored Sounds</spw_pitchignoredsounds>
+	<spw_waterignoredsounds>Water Ignored Sounds</spw_waterignoredsounds>
+
+	<spw_nichesettings>Niche Settings</spw_nichesettings>
+	<spw_mufflewaterignoredsounds>Muffle "Water Ignored Sounds" When Submerged</spw_mufflewaterignoredsounds>
+	<spw_mufflewaterignoredsoundstooltip>Muffles sounds in the "Water Ignored Sounds" list when the player's head is submerged</spw_mufflewaterignoredsoundstooltip>
+	<spw_muffledivingsuits>Muffle Diving Suits</spw_muffledivingsuits>
+	<spw_muffledivingsuitstooltip>Enable the custom diving suit muffling (requires pitch shifting)</spw_muffledivingsuitstooltip>
+	<spw_muffleflowsounds>Muffle Flow Sounds</spw_muffleflowsounds>
+	<spw_muffleflowsoundstooltip>Enable the muffling of water flow sounds from leaks</spw_muffleflowsoundstooltip>
+	<spw_mufflefiresounds>Muffle Fire Sounds</spw_mufflefiresounds>
+	<spw_mufflefiresoundstooltip>Enable the muffling of fire sounds</spw_mufflefiresoundstooltip>
+	<spw_muffledvoicepitch>Muffled Voice Pitch</spw_muffledvoicepitch>
+	<spw_unmuffledvoicepitch>Unmuffled Voice Pitch</spw_unmuffledvoicepitch>
+	<spw_muffledcomponentpitch>Muffled Component Pitch</spw_muffledcomponentpitch>
+	<spw_unmuffledcomponentpitch>Unmuffled Component Pitch</spw_unmuffledcomponentpitch>
+	<spw_divingsuitpitch>Diving Suit Pitch</spw_divingsuitpitch>
+	<spw_hidesettings>Hide Settings Menu</spw_hidesettings>
+	<spw_hidesettingstooltip>Warning: Enabling this setting will remove the "Soundproof Settings" button from your UI. You must manually edit or delete your config.json file to restore this setting.</spw_hidesettingstooltip>
+
+	<!-- Other Text -->
+	<spw_updateserverconfig>SPW: Host changed settings - your config has been updated</spw_updateserverconfig>
+	<spw_disableserverconfig>SPW: Host disabled setting synchronization - your config now takes priority</spw_disableserverconfig>
+	<spw_hydrophonemonitoring>Monitor Hydrophones</spw_hydrophonemonitoring>
+	<spw_listening>Listening...</spw_listening>
+	<spw_invalidinput>Invalid Input</spw_invalidinput>
+	<spw_default>(Default)</spw_default>
+	<spw_vanilla>(Vanilla)</spw_vanilla>
+	<spw_reset>Reset</spw_reset>
+	<spw_resetall>Reset All</spw_resetall>
+</infotexts>
