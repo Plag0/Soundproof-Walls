@@ -52,7 +52,7 @@ namespace SoundproofWalls
         static float LastDrawEavesdroppingTextTime = 0f;
         static float textFade = 0;
 
-        static Dictionary<SoundChannel, MuffleInfo> SoundChannelMuffleInfo = new Dictionary<SoundChannel, MuffleInfo>();
+        public static Dictionary<SoundChannel, MuffleInfo> SoundChannelMuffleInfo = new Dictionary<SoundChannel, MuffleInfo>();
         static Dictionary<SoundChannel, Character> HydrophoneSoundChannels = new Dictionary<SoundChannel, Character>();
         static Dictionary<Sonar, HydrophoneSwitch> HydrophoneSwitches = new Dictionary<Sonar, HydrophoneSwitch>();
 
@@ -201,6 +201,8 @@ namespace SoundproofWalls
                 serverConfig = newServerConfig;
 
                 if (shouldReloadRoundSounds) { ReloadRoundSounds(); }
+                SoundChannelMuffleInfo.Clear(); // Re-collect muffle info in case advanced settings were changed. TODO maybe make a shouldResetMuffleInfo method if performance needs it.
+
                 LuaCsLogger.Log(TextManager.Get("spw_updateserverconfig").Value, Color.LimeGreen);
             });
 
@@ -211,6 +213,8 @@ namespace SoundproofWalls
                 serverConfig = null;
 
                 if (shouldReloadRoundSounds) { ReloadRoundSounds(); }
+                SoundChannelMuffleInfo.Clear();
+
                 LuaCsLogger.Log(TextManager.Get("spw_disableserverconfig").Value, Color.LimeGreen);
             });
             Menu.LoadMenu();
@@ -248,14 +252,19 @@ namespace SoundproofWalls
             public bool IgnoreAll = false;
             public bool Muffled = false;
             public Hull? SoundHull;
+            public ItemComponent? ItemComp = null;
+            public Client? VoiceOwner = null;
             private SoundChannel Channel;
 
-            public MuffleInfo(SoundChannel channel, Hull? soundHull = null, bool dontProcess = false, bool dontPitch = false)
+            public MuffleInfo(SoundChannel channel, Hull? soundHull = null, ItemComponent? itemComp = null, Client? voiceOwner = null, bool skipProcess = false, bool dontPitch = false)
             {
                 Channel = channel;
+                ItemComp = itemComp;
+                VoiceOwner = voiceOwner;
                 string filename = Channel.Sound.Filename;
 
-                if (dontProcess || Channel.Category == "ui" || SoundIgnoresAll(filename))
+                if (skipProcess) { IgnorePitch = true; }
+                else if (Channel.Category == "ui" || SoundIgnoresAll(filename))
                 {
                     IgnoreAll = true;
                 }
@@ -267,15 +276,22 @@ namespace SoundproofWalls
                     IgnoreLowpass = SoundIgnoresLowpass(filename);
                 }
 
-                Update(soundHull);
+                Update(soundHull, skipProcess);
             }
-            public void Update(Hull? soundHull = null, bool dontProcess = false)
+            public void Update(Hull? soundHull = null, bool skipProcess = false)
             {
-                if (dontProcess) { IgnoreAll = true; }
+                Reason = MuffleReason.None;
+
+                if (skipProcess)
+                {
+                    IgnorePitch = true;
+                    Muffled = false;
+                    return;
+                }
 
                 Character character = Character.Controlled;
                 bool spectating = character == null || LightManager.ViewTarget == null;
-                Vector2 soundPos = GetSoundChannelPos(Channel);
+                Vector2 soundPos = VoiceOwner?.Character?.AnimController?.GetLimb(LimbType.Head)?.WorldPosition ?? GetSoundChannelPos(Channel);
 
                 if (spectating || IgnoreAll)
                 {
@@ -285,7 +301,7 @@ namespace SoundproofWalls
                 }
 
                 Hull? listenHull = EavesdroppedHull ?? ViewTargetHull;
-                SoundHull = soundHull ?? Hull.FindHull(soundPos, character.CurrentHull, true);
+                SoundHull = soundHull ?? Hull.FindHull(soundPos, VoiceOwner?.Character?.CurrentHull ?? character.CurrentHull, true);
                 Vector2 listenPos = IsViewTargetPlayer ? character.AnimController.GetLimb(LimbType.Head).Position : LightManager.ViewTarget.Position;
 
                 // Localise sound position
@@ -323,7 +339,7 @@ namespace SoundproofWalls
                 Muffled = true;
 
                 bool canHearUnderwater = IsViewTargetPlayer ? !Config.MuffleSubmergedPlayer : !Config.MuffleSubmergedViewTarget;
-                bool canHearPastWater = !Config.MuffleSoundsInWater;
+                bool canHearPastWater = !Config.MuffleSubmergedSounds;
                 if ((soundInWater && !EarsInWater && (IgnoreWater || canHearPastWater)) ||
                     (soundInWater && EarsInWater && (IgnoreSubmersion || canHearUnderwater)))
                 {
@@ -341,7 +357,7 @@ namespace SoundproofWalls
         // Called when the host updates a setting in their menu.
         public static void UpdateServerConfig()
         {
-            if (GameMain.IsMultiplayer && GameMain.Client.IsServerOwner)
+            if (GameMain.IsMultiplayer && (GameMain.Client.IsServerOwner || GameMain.Client.HasPermission(ClientPermissions.Ban)))
             {
                 if (localConfig.SyncSettings)
                 {
@@ -643,7 +659,7 @@ namespace SoundproofWalls
         public static bool SPW_ShouldMuffleSounds(ref bool __result)
         {
             if (!Config.Enabled) { return true; }
-            __result = false;
+            __result = true;
             return false;
         }
 
@@ -678,13 +694,13 @@ namespace SoundproofWalls
                 {
                     float speechImpedimentMultiplier = 1.0f - client.Character.SpeechImpediment / 100.0f;
                     bool spectating = Character.Controlled == null;
-                    float rangeMultiplier = spectating ? 2.0f : 1.0f;
+                    float rangeMultiplier = 1f; // vanilla had 2x range when spectating.
                     WifiComponent senderRadio = null;
                     var messageType =
                         !client.VoipQueue.ForceLocal &&
                         ChatMessage.CanUseRadio(client.Character, out senderRadio) &&
-                        ChatMessage.CanUseRadio(Character.Controlled, out var recipientRadio) &&
-                        senderRadio.CanReceive(recipientRadio) ?
+                        spectating || (ChatMessage.CanUseRadio(Character.Controlled, out var recipientRadio) &&
+                        senderRadio.CanReceive(recipientRadio)) ?
                             ChatMessageType.Radio : ChatMessageType.Default;
 
                     client.Character.ShowSpeechBubble(1.25f, ChatMessage.MessageColor[(int)messageType]);
@@ -706,16 +722,16 @@ namespace SoundproofWalls
                     }
 
                     // Changes:
-
                     SoundChannel channel = client.VoipSound.soundChannel;
                     if (channel == null) { return true; }
 
                     if (!SoundChannelMuffleInfo.TryGetValue(channel, out MuffleInfo muffleInfo))
                     {
-                        muffleInfo = new MuffleInfo(channel, client.Character.CurrentHull, dontProcess: messageType == ChatMessageType.Radio);
+                        muffleInfo = new MuffleInfo(channel, client.Character.CurrentHull, voiceOwner: client, skipProcess: messageType == ChatMessageType.Radio);
                         SoundChannelMuffleInfo[channel] = muffleInfo;
                     }
-                    muffleInfo.Update(client.Character.CurrentHull, dontProcess: messageType == ChatMessageType.Radio);
+                    muffleInfo.VoiceOwner = client;
+                    muffleInfo.Update(client.Character.CurrentHull, skipProcess: messageType == ChatMessageType.Radio);
 
                     client.VoipSound.UseMuffleFilter = muffleInfo.Muffled;
                
@@ -968,7 +984,7 @@ namespace SoundproofWalls
             SoundChannel channel = __instance;
             if (!Config.Enabled || !RoundStarted || channel == null) { return; }
 
-            MuffleInfo muffleInfo = new MuffleInfo(channel);
+            MuffleInfo muffleInfo = new MuffleInfo(channel, skipProcess: !channel.Muffled);
 
             try
             {
@@ -977,6 +993,7 @@ namespace SoundproofWalls
             catch (IndexOutOfRangeException ex)
             {
                 LuaCsLogger.Log($"Failed to process sound: {ex}");
+                SoundChannelMuffleInfo.Clear();
                 return;
             }
 
@@ -1006,9 +1023,11 @@ namespace SoundproofWalls
 
             if (!SoundChannelMuffleInfo.TryGetValue(channel, out MuffleInfo muffleInfo))
             {
-                muffleInfo = new MuffleInfo(channel, item.CurrentHull);
+                muffleInfo = new MuffleInfo(channel, item.CurrentHull, instance);
                 SoundChannelMuffleInfo[channel] = muffleInfo;
             }
+
+            muffleInfo.ItemComp = instance;
 
             if (Timing.TotalTime > instance.lastMuffleCheckTime + 0.2f)
             {
@@ -1050,13 +1069,13 @@ namespace SoundproofWalls
                     SoundChannel channel = statusEffect.soundChannel;
                     if (!SoundChannelMuffleInfo.TryGetValue(channel, out MuffleInfo muffleInfo))
                     {
-                        muffleInfo = new MuffleInfo(channel, dontProcess: statusEffect.ignoreMuffling, dontPitch: true);
+                        muffleInfo = new MuffleInfo(channel, skipProcess: statusEffect.ignoreMuffling, dontPitch: true);
                         SoundChannelMuffleInfo[channel] = muffleInfo;
                     }
 
                     if (doMuffleCheck && !statusEffect.ignoreMuffling)
                     {
-                        muffleInfo.Update();
+                        muffleInfo.Update(skipProcess: statusEffect.ignoreMuffling);
                         channel.Muffled = muffleInfo.Muffled;
                     }
 
@@ -1126,6 +1145,7 @@ namespace SoundproofWalls
         public static void ProcessLoopingSound(SoundChannel channel, MuffleInfo muffleInfo)
         {
             if (muffleInfo.IgnoreAll) { return; }
+
             bool eavesdropped = IsEavesdroppedChannel(channel);
             bool hydrophoned = IsUsingHydrophones && muffleInfo.SoundHull?.Submarine != LightManager.ViewTarget?.Submarine;
 
@@ -1145,6 +1165,7 @@ namespace SoundproofWalls
                 PitchedSounds.Add(channel);
             }
 
+            float currentGain = muffleInfo.ItemComp?.GetSoundVolume(muffleInfo.ItemComp?.loopingSound) ?? 1;
             float gainMult = 1;
 
             gainMult -= (1 - GetCustomGainMultiplier(channel.Sound.Filename));
@@ -1155,7 +1176,12 @@ namespace SoundproofWalls
             else { gainMult -= (1 - Config.UnmuffledComponentVolumeMultiplier); }
 
             float distFalloffMult = channel.Muffled ? 0.7f : 1 - MathUtils.InverseLerp(channel.Near, channel.Far, muffleInfo.Distance);
-            float targetGain = 1 * gainMult * distFalloffMult;
+            float targetGain = currentGain * gainMult * distFalloffMult;
+
+            // This is prefferable in vanilla but here it can create an audible pop in when a new sound channel comes into range.
+            //float gainDiff = targetGain - channel.Gain;
+            //channel.Gain += Math.Abs(gainDiff) < 0.1f ? gainDiff : Math.Sign(gainDiff) * 0.1f;
+
             channel.Gain = targetGain;
         }
 
@@ -1631,7 +1657,6 @@ namespace SoundproofWalls
 
         public HashSet<string> PitchIgnoredSounds { get; set; } = new HashSet<string>
         {
-            "voip", //TODO remove this after doing VoipProcessing
             "deconstructor",
             "alarm",
             "sonar",
@@ -1648,14 +1673,9 @@ namespace SoundproofWalls
         public HashSet<string> WaterIgnoredSounds { get; set; } = new HashSet<string>
         {
             "splash",
-            "/fire",
             "footstep",
-            "metalimpact",
             "door",
             "pump",
-            "engine",
-            "oxygengenerator.ogg",
-            "reactor",
             "emp",
             "electricaldischarge",
             "sonardecoy",
@@ -1675,7 +1695,7 @@ namespace SoundproofWalls
         // Extra settings
         public bool MuffleSubmergedPlayer { get; set; } = true; // the equivalent of adding all sounds into SubmersionIgnoredSounds
         public bool MuffleSubmergedViewTarget { get; set; } = true; // ^
-        public bool MuffleSoundsInWater { get; set; } = true; // the equivalent of adding all sounds into WaterIgnoredSounds
+        public bool MuffleSubmergedSounds { get; set; } = true; // the equivalent of adding all sounds into WaterIgnoredSounds
         public bool MuffleFlowSounds { get; set; } = true;
         public bool MuffleFireSounds { get; set; } = true;
         public float DivingSuitPitchMultiplier { get; set; } = 0.90f;
@@ -1851,7 +1871,7 @@ namespace SoundproofWalls
                 slider.ToolTip = TextManager.Get("spw_muffledsoundvolumetooltip");
 
                 // Muffled Component Volume:
-                GUITextBlock textBlockMCV1 = EasySettings.TextBlock(list, string.Empty);
+                GUITextBlock textBlockMCV = EasySettings.TextBlock(list, string.Empty);
                 slider = EasySettings.Slider(list.Content, 0, 3, config.MuffledComponentVolumeMultiplier, value =>
                 {
                     float realvalue = RoundToNearestMultiple(value, 0.01f);
@@ -1864,13 +1884,32 @@ namespace SoundproofWalls
                     {
                         slider_text = default_preset;
                     }
-                    textBlockMCV1.Text = $"{TextManager.Get("spw_muffledcomponentvolume").Value}: {displayValue}% {slider_text}";
+                    textBlockMCV.Text = $"{TextManager.Get("spw_muffledcomponentvolume").Value}: {displayValue}% {slider_text}";
                 });
-                textBlockMCV1.Text = $"{TextManager.Get("spw_muffledcomponentvolume").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.MuffledComponentVolumeMultiplier))}";
+                textBlockMCV.Text = $"{TextManager.Get("spw_muffledcomponentvolume").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.MuffledComponentVolumeMultiplier))}";
                 slider.ToolTip = TextManager.Get("spw_muffledcomponentvolumetooltip");
 
+                // Unmuffled Component Volume
+                GUITextBlock textBlockUCV = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.Slider(list.Content, 0, 1, config.UnmuffledComponentVolumeMultiplier, value =>
+                {
+                    float realvalue = RoundToNearestMultiple(value, 0.01f);
+                    float displayValue = RoundToNearestMultiple(value * 100, 1);
+                    config.UnmuffledComponentVolumeMultiplier = realvalue;
+                    ConfigManager.SaveConfig(config);
+
+                    slider_text = string.Empty;
+                    if (config.UnmuffledComponentVolumeMultiplier == defaultConfig.UnmuffledComponentVolumeMultiplier)
+                    {
+                        slider_text = default_preset;
+                    }
+                    textBlockUCV.Text = $"{TextManager.Get("spw_unmuffledcomponentvolume").Value}: {displayValue}% {slider_text}";
+                });
+                textBlockUCV.Text = $"{TextManager.Get("spw_unmuffledcomponentvolume").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.UnmuffledComponentVolumeMultiplier))}";
+                slider.ToolTip = TextManager.Get("spw_unmuffledcomponentvolumetooltip");
+
                 // Submerged Volume Multiplier:
-                GUITextBlock textBlockMCV2 = EasySettings.TextBlock(list, string.Empty);
+                GUITextBlock textBlockSV = EasySettings.TextBlock(list, string.Empty);
                 slider = EasySettings.Slider(list.Content, 0, 3, config.SubmergedVolumeMultiplier, value =>
                 {
                     float realvalue = RoundToNearestMultiple(value, 0.01f);
@@ -1883,9 +1922,9 @@ namespace SoundproofWalls
                     {
                         slider_text = default_preset;
                     }
-                    textBlockMCV2.Text = $"{TextManager.Get("spw_submergedvolume").Value}: {displayValue}% {slider_text}";
+                    textBlockSV.Text = $"{TextManager.Get("spw_submergedvolume").Value}: {displayValue}% {slider_text}";
                 });
-                textBlockMCV2.Text = $"{TextManager.Get("spw_submergedvolume").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.SubmergedVolumeMultiplier))}";
+                textBlockSV.Text = $"{TextManager.Get("spw_submergedvolume").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.SubmergedVolumeMultiplier))}";
                 slider.ToolTip = TextManager.Get("spw_submergedvolumetooltip");
 
 
@@ -2095,8 +2134,8 @@ namespace SoundproofWalls
 
                 // Sound Volume Multipliers:
                 GUITextBlock textBlockSVM = EasySettings.TextBlock(list, $"{TextManager.Get("spw_soundvolumemultipliers").Value}{GetServerDictString(nameof(config.SoundVolumeMultipliers))}");
-                GUITextBox soundList = EasySettings.MultiLineTextBox(list.Content.RectTransform, FormatDictJsonTextBox(JsonSerializer.Serialize(config.SoundVolumeMultipliers)), 0.09f);
-                soundList.OnTextChangedDelegate = (textBox, text) =>
+                GUITextBox soundListSVM = EasySettings.MultiLineTextBox(list.Content.RectTransform, FormatDictJsonTextBox(JsonSerializer.Serialize(config.SoundVolumeMultipliers)), 0.09f);
+                soundListSVM.OnTextChangedDelegate = (textBox, text) =>
                 {
                     try
                     {
@@ -2116,15 +2155,15 @@ namespace SoundproofWalls
                 {
                     config.SoundVolumeMultipliers = defaultConfig.SoundVolumeMultipliers;
                     ConfigManager.SaveConfig(config);
-                    soundList.Text = FormatDictJsonTextBox(JsonSerializer.Serialize(config.SoundVolumeMultipliers));
+                    soundListSVM.Text = FormatDictJsonTextBox(JsonSerializer.Serialize(config.SoundVolumeMultipliers));
                     return true;
                 };
 
 
                 // Ignored Sounds:
                 GUITextBlock textBlockIS = EasySettings.TextBlock(list, $"{TextManager.Get("spw_ignoredsounds").Value}{GetServerHashSetString(nameof(config.IgnoredSounds))}");
-                soundList = EasySettings.MultiLineTextBox(list.Content.RectTransform, FormatDictJsonTextBox(JsonSerializer.Serialize(config.IgnoredSounds)), 0.09f);
-                soundList.OnTextChangedDelegate = (textBox, text) =>
+                GUITextBox soundListIS = EasySettings.MultiLineTextBox(list.Content.RectTransform, FormatDictJsonTextBox(JsonSerializer.Serialize(config.IgnoredSounds)), 0.09f);
+                soundListIS.OnTextChangedDelegate = (textBox, text) =>
                 {
                     try
                     {
@@ -2144,7 +2183,115 @@ namespace SoundproofWalls
                 {
                     config.IgnoredSounds = defaultConfig.IgnoredSounds;
                     ConfigManager.SaveConfig(config);
-                    soundList.Text = FormatDictJsonTextBox(JsonSerializer.Serialize(config.IgnoredSounds));
+                    soundListIS.Text = FormatDictJsonTextBox(JsonSerializer.Serialize(config.IgnoredSounds));
+                    return true;
+                };
+
+                // Pitch Ignored Sounds:
+                GUITextBlock textBlockPIS = EasySettings.TextBlock(list, $"{TextManager.Get("spw_pitchignoredsounds").Value}{GetServerHashSetString(nameof(config.PitchIgnoredSounds))}");
+                GUITextBox soundListPIS = EasySettings.MultiLineTextBox(list.Content.RectTransform, FormatDictJsonTextBox(JsonSerializer.Serialize(config.PitchIgnoredSounds)), 0.09f);
+                soundListPIS.OnTextChangedDelegate = (textBox, text) =>
+                {
+                    try
+                    {
+                        config.PitchIgnoredSounds = JsonSerializer.Deserialize<HashSet<string>>(textBox.Text);
+                        ConfigManager.SaveConfig(config);
+                        textBlockPIS.Text = TextManager.Get("spw_pitchignoredsounds").Value;
+                    }
+                    catch (JsonException)
+                    {
+                        textBlockPIS.Text = $"{TextManager.Get("spw_pitchignoredsounds").Value} ({TextManager.Get("spw_invalidinput").Value})";
+                    }
+                    return true;
+                };
+                // Reset button:
+                button = new GUIButton(new RectTransform(new Vector2(1, 0.2f), list.Content.RectTransform), TextManager.Get("spw_reset").Value, Alignment.Center, "GUIButtonSmall");
+                button.OnClicked = (sender, args) =>
+                {
+                    config.PitchIgnoredSounds = defaultConfig.PitchIgnoredSounds;
+                    ConfigManager.SaveConfig(config);
+                    soundListPIS.Text = FormatDictJsonTextBox(JsonSerializer.Serialize(config.PitchIgnoredSounds));
+                    return true;
+                };
+
+                // Lowpass Ignored Sounds:
+                GUITextBlock textBlockLIS = EasySettings.TextBlock(list, $"{TextManager.Get("spw_lowpassignoredsounds").Value}{GetServerHashSetString(nameof(config.LowpassIgnoredSounds))}");
+                GUITextBox soundListLIS = EasySettings.MultiLineTextBox(list.Content.RectTransform, FormatDictJsonTextBox(JsonSerializer.Serialize(config.LowpassIgnoredSounds)), 0.09f);
+                soundListLIS.OnTextChangedDelegate = (textBox, text) =>
+                {
+                    try
+                    {
+                        config.LowpassIgnoredSounds = JsonSerializer.Deserialize<HashSet<string>>(textBox.Text);
+                        ConfigManager.SaveConfig(config);
+                        textBlockLIS.Text = TextManager.Get("spw_lowpassignoredsounds").Value;
+                    }
+                    catch (JsonException)
+                    {
+                        textBlockLIS.Text = $"{TextManager.Get("spw_lowpassignoredsounds").Value} ({TextManager.Get("spw_invalidinput").Value})";
+                    }
+                    return true;
+                };
+                // Reset button:
+                button = new GUIButton(new RectTransform(new Vector2(1, 0.2f), list.Content.RectTransform), TextManager.Get("spw_reset").Value, Alignment.Center, "GUIButtonSmall");
+                button.OnClicked = (sender, args) =>
+                {
+                    config.LowpassIgnoredSounds = defaultConfig.LowpassIgnoredSounds;
+                    ConfigManager.SaveConfig(config);
+                    soundListLIS.Text = FormatDictJsonTextBox(JsonSerializer.Serialize(config.LowpassIgnoredSounds));
+                    return true;
+                };
+
+                // Water Ignored Sounds:
+                GUITextBlock textBlockWIS = EasySettings.TextBlock(list, $"{TextManager.Get("spw_waterignoredsounds").Value}{GetServerHashSetString(nameof(config.WaterIgnoredSounds))}");
+                GUITextBox soundListWIS = EasySettings.MultiLineTextBox(list.Content.RectTransform, FormatDictJsonTextBox(JsonSerializer.Serialize(config.WaterIgnoredSounds)), 0.09f);
+                soundListWIS.OnTextChangedDelegate = (textBox, text) =>
+                {
+                    try
+                    {
+                        config.WaterIgnoredSounds = JsonSerializer.Deserialize<HashSet<string>>(textBox.Text);
+                        ConfigManager.SaveConfig(config);
+                        textBlockWIS.Text = TextManager.Get("spw_waterignoredsounds").Value;
+                    }
+                    catch (JsonException)
+                    {
+                        textBlockWIS.Text = $"{TextManager.Get("spw_waterignoredsounds").Value} ({TextManager.Get("spw_invalidinput").Value})";
+                    }
+                    return true;
+                };
+                // Reset button:
+                button = new GUIButton(new RectTransform(new Vector2(1, 0.2f), list.Content.RectTransform), TextManager.Get("spw_reset").Value, Alignment.Center, "GUIButtonSmall");
+                button.OnClicked = (sender, args) =>
+                {
+                    config.WaterIgnoredSounds = defaultConfig.WaterIgnoredSounds;
+                    ConfigManager.SaveConfig(config);
+                    soundListWIS.Text = FormatDictJsonTextBox(JsonSerializer.Serialize(config.WaterIgnoredSounds));
+                    return true;
+                };
+
+                // Submersion Ignored Sounds:
+                GUITextBlock textBlockSIS = EasySettings.TextBlock(list, $"{TextManager.Get("spw_submersionignoredsounds").Value}{GetServerHashSetString(nameof(config.SubmersionIgnoredSounds))}");
+                GUITextBox soundListSIS = EasySettings.MultiLineTextBox(list.Content.RectTransform, FormatDictJsonTextBox(JsonSerializer.Serialize(config.SubmersionIgnoredSounds)), 0.09f);
+                soundListSIS.OnTextChangedDelegate = (textBox, text) =>
+                {
+                    try
+                    {
+                        config.SubmersionIgnoredSounds = JsonSerializer.Deserialize<HashSet<string>>(textBox.Text);
+                        ConfigManager.SaveConfig(config);
+                        textBlockSIS.Text = TextManager.Get("spw_submersionignoredsounds").Value;
+                    }
+                    catch (JsonException)
+                    {
+                        textBlockSIS.Text = $"{TextManager.Get("spw_submersionignoredsounds").Value} ({TextManager.Get("spw_invalidinput").Value})";
+                    }
+                    return true;
+                };
+                // Reset button:
+                button = new GUIButton(new RectTransform(new Vector2(1, 0.2f), list.Content.RectTransform), TextManager.Get("spw_reset").Value, Alignment.Center, "GUIButtonSmall");
+                button.OnClicked = (sender, args) =>
+                {
+                    config.SubmersionIgnoredSounds = defaultConfig.SubmersionIgnoredSounds;
+                    ConfigManager.SaveConfig(config);
+                    soundListSIS.Text = FormatDictJsonTextBox(JsonSerializer.Serialize(config.SubmersionIgnoredSounds));
                     return true;
                 };
 
@@ -2152,24 +2299,164 @@ namespace SoundproofWalls
                 // Niche Settings:
                 EasySettings.TextBlock(list, TextManager.Get("spw_nichesettings").Value, y: 0.1f, size: 1.3f, color: Color.LightYellow);
 
-                // Unmuffled Component Volume
-                GUITextBlock textBlockUCV = EasySettings.TextBlock(list, string.Empty);
-                slider = EasySettings.Slider(list.Content, 0, 1, config.UnmuffledComponentVolumeMultiplier, value =>
+                // Muffle Submerged Player:
+                tick = EasySettings.TickBox(list.Content, string.Empty, config.MuffleSubmergedPlayer, state =>
+                {
+                    config.MuffleSubmergedPlayer = state;
+                    ConfigManager.SaveConfig(config);
+                });
+                tick.Text = $"{TextManager.Get("spw_mufflesubmergedplayer").Value}{Menu.GetServerValueString(nameof(config.MuffleSubmergedPlayer))}";
+                tick.ToolTip = TextManager.Get("spw_mufflesubmergedplayertooltip").Value;
+
+                // Muffle Submerged View Target:
+                tick = EasySettings.TickBox(list.Content, string.Empty, config.MuffleSubmergedViewTarget, state =>
+                {
+                    config.MuffleSubmergedViewTarget = state;
+                    ConfigManager.SaveConfig(config);
+                });
+                tick.Text = $"{TextManager.Get("spw_mufflesubmergedviewtarget").Value}{Menu.GetServerValueString(nameof(config.MuffleSubmergedViewTarget))}";
+                tick.ToolTip = TextManager.Get("spw_mufflesubmergedviewtargettooltip").Value;
+
+                // Muffle Submerged Sounds:
+                tick = EasySettings.TickBox(list.Content, string.Empty, config.MuffleSubmergedSounds, state =>
+                {
+                    config.MuffleSubmergedSounds = state;
+                    ConfigManager.SaveConfig(config);
+                });
+                tick.Text = $"{TextManager.Get("spw_mufflesubmergedsounds").Value}{Menu.GetServerValueString(nameof(config.MuffleSubmergedSounds))}";
+                tick.ToolTip = TextManager.Get("spw_mufflesubmergedsoundstooltip").Value;
+
+                // Muffle Flow Sounds:
+                tick = EasySettings.TickBox(list.Content, string.Empty, config.MuffleFlowSounds, state =>
+                {
+                    config.MuffleFlowSounds = state;
+                    ConfigManager.SaveConfig(config);
+                });
+                tick.Text = $"{TextManager.Get("spw_muffleflowsounds").Value}{Menu.GetServerValueString(nameof(config.MuffleFlowSounds))}";
+                tick.ToolTip = TextManager.Get("spw_muffleflowsoundstooltip").Value;
+
+                // Muffle Fire Sounds:
+                tick = EasySettings.TickBox(list.Content, string.Empty, config.MuffleFireSounds, state =>
+                {
+                    config.MuffleFireSounds = state;
+                    ConfigManager.SaveConfig(config);
+                });
+                tick.Text = $"{TextManager.Get("spw_mufflefiresounds").Value}{Menu.GetServerValueString(nameof(config.MuffleFireSounds))}";
+                tick.ToolTip = TextManager.Get("spw_mufflefiresoundstooltip").Value;
+
+                // Diving Suit Pitch Multiplier
+                GUITextBlock textBlockDPM = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.Slider(list.Content, 0.25f, 4, config.DivingSuitPitchMultiplier, value =>
                 {
                     float realvalue = RoundToNearestMultiple(value, 0.01f);
                     float displayValue = RoundToNearestMultiple(value * 100, 1);
-                    config.UnmuffledComponentVolumeMultiplier = realvalue;
+                    config.DivingSuitPitchMultiplier = realvalue;
                     ConfigManager.SaveConfig(config);
 
                     slider_text = string.Empty;
-                    if (config.UnmuffledComponentVolumeMultiplier == defaultConfig.UnmuffledComponentVolumeMultiplier)
+                    if (config.DivingSuitPitchMultiplier == defaultConfig.DivingSuitPitchMultiplier)
                     {
                         slider_text = default_preset;
                     }
-                    textBlockUCV.Text = $"{TextManager.Get("spw_unmuffledcomponentvolume").Value}: {displayValue}% {slider_text}";
+                    textBlockDPM.Text = $"{TextManager.Get("spw_divingsuitpitch").Value}: {displayValue}% {slider_text}";
                 });
-                textBlockUCV.Text = $"{TextManager.Get("spw_unmuffledcomponentvolume").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.UnmuffledComponentVolumeMultiplier))}";
-                slider.ToolTip = TextManager.Get("spw_unmuffledcomponentvolumetooltip");
+                textBlockDPM.Text = $"{TextManager.Get("spw_divingsuitpitch").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.DivingSuitPitchMultiplier))}";
+                slider.ToolTip = TextManager.Get("spw_divingsuitpitchtooltip");
+
+                // Submerged Pitch Multiplier
+                GUITextBlock textBlockSPM = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.Slider(list.Content, 0.25f, 4, config.SubmergedPitchMultiplier, value =>
+                {
+                    float realvalue = RoundToNearestMultiple(value, 0.01f);
+                    float displayValue = RoundToNearestMultiple(value * 100, 1);
+                    config.SubmergedPitchMultiplier = realvalue;
+                    ConfigManager.SaveConfig(config);
+
+                    slider_text = string.Empty;
+                    if (config.SubmergedPitchMultiplier == defaultConfig.SubmergedPitchMultiplier)
+                    {
+                        slider_text = default_preset;
+                    }
+                    textBlockSPM.Text = $"{TextManager.Get("spw_submergedpitch").Value}: {displayValue}% {slider_text}";
+                });
+                textBlockSPM.Text = $"{TextManager.Get("spw_submergedpitch").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.SubmergedPitchMultiplier))}";
+                slider.ToolTip = TextManager.Get("spw_submergedpitchtooltip");
+
+                // Muffled Component Pitch Multiplier
+                GUITextBlock textBlockMCPM = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.Slider(list.Content, 0.25f, 4, config.MuffledComponentPitchMultiplier, value =>
+                {
+                    float realvalue = RoundToNearestMultiple(value, 0.01f);
+                    float displayValue = RoundToNearestMultiple(value * 100, 1);
+                    config.MuffledComponentPitchMultiplier = realvalue;
+                    ConfigManager.SaveConfig(config);
+
+                    slider_text = string.Empty;
+                    if (config.MuffledComponentPitchMultiplier == defaultConfig.MuffledComponentPitchMultiplier)
+                    {
+                        slider_text = default_preset;
+                    }
+                    textBlockMCPM.Text = $"{TextManager.Get("spw_muffledcomponentpitch").Value}: {displayValue}% {slider_text}";
+                });
+                textBlockMCPM.Text = $"{TextManager.Get("spw_muffledcomponentpitch").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.MuffledComponentPitchMultiplier))}";
+                slider.ToolTip = TextManager.Get("spw_muffledcomponentpitchtooltip");
+
+                // Unmuffled Component Pitch Multiplier
+                GUITextBlock textBlockUCPM = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.Slider(list.Content, 0.25f, 4, config.UnmuffledComponentPitchMultiplier, value =>
+                {
+                    float realvalue = RoundToNearestMultiple(value, 0.01f);
+                    float displayValue = RoundToNearestMultiple(value * 100, 1);
+                    config.UnmuffledComponentPitchMultiplier = realvalue;
+                    ConfigManager.SaveConfig(config);
+
+                    slider_text = string.Empty;
+                    if (config.UnmuffledComponentPitchMultiplier == defaultConfig.UnmuffledComponentPitchMultiplier)
+                    {
+                        slider_text = default_preset;
+                    }
+                    textBlockUCPM.Text = $"{TextManager.Get("spw_unmuffledcomponentpitch").Value}: {displayValue}% {slider_text}";
+                });
+                textBlockUCPM.Text = $"{TextManager.Get("spw_unmuffledcomponentpitch").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.UnmuffledComponentPitchMultiplier))}";
+                slider.ToolTip = TextManager.Get("spw_unmuffledcomponentpitchtooltip");
+
+                // Muffled Voice Pitch Multiplier
+                GUITextBlock textBlockMVP = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.Slider(list.Content, 0.25f, 4, config.MuffledVoicePitchMultiplier, value =>
+                {
+                    float realvalue = RoundToNearestMultiple(value, 0.01f);
+                    float displayValue = RoundToNearestMultiple(value * 100, 1);
+                    config.MuffledVoicePitchMultiplier = realvalue;
+                    ConfigManager.SaveConfig(config);
+
+                    slider_text = string.Empty;
+                    if (config.MuffledVoicePitchMultiplier == defaultConfig.MuffledVoicePitchMultiplier)
+                    {
+                        slider_text = default_preset;
+                    }
+                    textBlockMVP.Text = $"{TextManager.Get("spw_muffledvoicepitch").Value}: {displayValue}% {slider_text}";
+                });
+                textBlockMVP.Text = $"{TextManager.Get("spw_muffledvoicepitch").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.MuffledVoicePitchMultiplier))}";
+                slider.ToolTip = TextManager.Get("spw_muffledvoicepitchtooltip");
+
+                // Unmuffled Voice Pitch Multiplier
+                GUITextBlock textBlockUVP = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.Slider(list.Content, 0.25f, 4, config.UnmuffledVoicePitchMultiplier, value =>
+                {
+                    float realvalue = RoundToNearestMultiple(value, 0.01f);
+                    float displayValue = RoundToNearestMultiple(value * 100, 1);
+                    config.UnmuffledVoicePitchMultiplier = realvalue;
+                    ConfigManager.SaveConfig(config);
+
+                    slider_text = string.Empty;
+                    if (config.UnmuffledVoicePitchMultiplier == defaultConfig.UnmuffledVoicePitchMultiplier)
+                    {
+                        slider_text = default_preset;
+                    }
+                    textBlockUVP.Text = $"{TextManager.Get("spw_unmuffledvoicepitch").Value}: {displayValue}% {slider_text}";
+                });
+                textBlockUVP.Text = $"{TextManager.Get("spw_unmuffledvoicepitch").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.UnmuffledVoicePitchMultiplier))}";
+                slider.ToolTip = TextManager.Get("spw_unmuffledvoicepitchtooltip");
             });
         }
         public static string GetServerValueString(string propertyName, string suffix = "", float divideBy = 1)
@@ -2220,26 +2507,21 @@ namespace SoundproofWalls
             object? value = propertyInfo.GetValue(config);
             if (value == null) { return string.Empty; }
 
-            var stringBuilder = new StringBuilder();
-
             if (value is System.Collections.IDictionary dict)
             {
                 var defaultDictValue = defaultConfig.GetType().GetProperty(propertyName)?.GetValue(defaultConfig) as System.Collections.IDictionary;
 
                 if (defaultDictValue != null && AreDictionariesEqual(dict, defaultDictValue))
                 {
-                    stringBuilder.Append(TextManager.Get("spw_default").Value);
+                    return $" {TextManager.Get("spw_default").Value}";
                 }
                 else
                 {
-                    foreach (System.Collections.DictionaryEntry kvp in dict)
-                    {
-                        stringBuilder.Append($"{kvp.Key}: {kvp.Value}, ");
-                    }
+                    return $" {TextManager.Get("spw_custom").Value}";
                 }
             }
 
-            return $"\n{stringBuilder.ToString()}";
+            return string.Empty;
         }
 
         public static bool AreDictionariesEqual(System.Collections.IDictionary dict1, System.Collections.IDictionary dict2)
@@ -2270,32 +2552,21 @@ namespace SoundproofWalls
             object? value = propertyInfo.GetValue(config);
             if (value == null) { return string.Empty; }
 
-            var stringBuilder = new StringBuilder();
-
             if (value is HashSet<string> hashSet)
             {
                 var defaultHashSetValue = defaultConfig.GetType().GetProperty(propertyName)?.GetValue(defaultConfig) as HashSet<string>;
 
                 if (defaultHashSetValue != null && hashSet.SetEquals(defaultHashSetValue))
                 {
-                    stringBuilder.Append(TextManager.Get("spw_default").Value);
+                    return $" {TextManager.Get("spw_default").Value}";
                 }
                 else
                 {
-                    foreach (string item in hashSet)
-                    {
-                        stringBuilder.Append($"{item}, ");
-                    }
+                    return $" {TextManager.Get("spw_custom").Value}";
                 }
             }
 
-            // Remove the trailing comma and space if the stringBuilder is not empty
-            if (stringBuilder.Length > 2)
-            {
-                stringBuilder.Remove(stringBuilder.Length - 2, 2);
-            }
-
-            return $"\n{stringBuilder.ToString()}";
+            return string.Empty;
         }
 
         public static string FormatDictJsonTextBox(string str)
@@ -2310,25 +2581,6 @@ namespace SoundproofWalls
             if (str.Length > 1)
             {
                 str = str.Substring(0, 1) + "\n" + str.Substring(1, str.Length - 2) + "\n" + str.Substring(str.Length - 1);
-            }
-
-            return str;
-        }
-
-        public static string FormatListJsonTextBox(string str)
-        {
-            string pattern = "\",\"";
-            string replacement = ", ";
-
-            str = Regex.Replace(str, pattern, replacement);
-
-            if (str.Length > 4)
-            {
-                str = str.Substring(2, str.Length - 4);
-            }
-            else
-            {
-                str = "";
             }
 
             return str;
@@ -2388,19 +2640,20 @@ namespace SoundproofWalls
                 {
                     SoundproofWalls.UpdateServerConfig();
                     ShouldUpdateServerConfig = false;
+
+                    // Dump muffle info if advanced settings are changed in singleplayer/nosync
+                    if (!GameMain.IsMultiplayer || SoundproofWalls.ServerConfig == null)
+                    {
+                        SoundproofWalls.SoundChannelMuffleInfo.Clear();
+                    }
+
+                    // Reload round sounds for singleplayer/nosync
+                    if (SoundproofWalls.ShouldReloadRoundSounds(OldLocalConfig) && (!GameMain.IsMultiplayer || SoundproofWalls.ServerConfig == null))
+                    {
+                        SoundproofWalls.ReloadRoundSounds();
+                    }
                 }
 
-                if (SoundproofWalls.ShouldReloadRoundSounds(OldLocalConfig))
-                {
-                    if (!GameMain.IsMultiplayer) // TODO include this logic in the ShouldReloadRoundSounds method?
-                    {
-                        SoundproofWalls.ReloadRoundSounds();
-                    }
-                    else if (SoundproofWalls.ServerConfig == null)
-                    {
-                        SoundproofWalls.ReloadRoundSounds();
-                    }
-                }
 
                 OldLocalConfig = SoundproofWalls.LocalConfig;
             }
@@ -2466,12 +2719,13 @@ namespace SoundproofWalls
 
             textBox.OnSelected += (sender, key) => { UpdateMessageScrollFromCaret(textBox, listBox); };
 
+            string startValue = text;
             textBox.OnTextChangedDelegate = (sender, e) =>
             {
                 Vector2 textSize = textBox.Font.MeasureString(textBox.WrappedText);
                 textBox.RectTransform.NonScaledSize = new Point(textBox.RectTransform.NonScaledSize.X, Math.Max(listBox.Content.Rect.Height, (int)textSize.Y + 10));
                 listBox.UpdateScrollBarSize();
-                ShouldUpdateServerConfig = true;
+                ShouldUpdateServerConfig = startValue != textBox.Text;
                 return true;
             };
 
@@ -2524,6 +2778,7 @@ namespace SoundproofWalls
                 Config newConfig = new Config();
                 SoundproofWalls.LocalConfig = newConfig;
                 ConfigManager.SaveConfig(newConfig);
+                ShouldUpdateServerConfig = true;
                 GUI.TogglePauseMenu();
                 return true;
             };

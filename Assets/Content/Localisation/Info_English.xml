@@ -26,6 +26,7 @@
 	<spw_muffledsoundvolumetooltip>Volume of lowpassed non-looping sounds behind a wall/water surface</spw_muffledsoundvolumetooltip>
 	<spw_muffledcomponentvolume>Muffled Component Volume</spw_muffledcomponentvolume>
 	<spw_muffledcomponentvolumetooltip>Volume of lowpassed looping component/status effect sounds behind a wall/water surface</spw_muffledcomponentvolumetooltip>
+	<spw_unmuffledcomponentvolume>Unmuffled Component Volume</spw_unmuffledcomponentvolume>
 	<spw_submergedvolume>Submerged Volume</spw_submergedvolume>
 	<spw_submergedvolumetooltip>The volume of submerged sounds when the listener is also submerged in the same body of water</spw_submergedvolumetooltip>
 
@@ -39,7 +40,7 @@
 
 	<spw_hydrophonesettings>Hydrophone Settings</spw_hydrophonesettings>
 	<spw_hydrophonerange>Hydrophone Range</spw_hydrophonerange>
-	<spw_hydrophonerangetooltip>The range of being able to hear underwater movement and the additional range added to all sounds outside the submarine</spw_hydrophonerangetooltip>
+	<spw_hydrophonerangetooltip>The range of underwater movement sounds and the additional range added to all sounds outside the submarine</spw_hydrophonerangetooltip>
 	<spw_hydrophonevolume>Hydrophone Volume</spw_hydrophonevolume>
 	<spw_hydrophonepitch>Hydrophone Pitch</spw_hydrophonepitch>
 
@@ -58,24 +59,25 @@
 
 	<spw_nichesettings>Niche Settings</spw_nichesettings>
 	<spw_mufflesubmergedplayer>Muffle Submerged Player</spw_mufflesubmergedplayer>
-	<spw_mufflesubmergedplayer>Muffle audio when the player's head is underwater (recommended)</spw_mufflesubmergedplayer>
+	<spw_mufflesubmergedplayertooltip>Muffle audio when the player's head is underwater (recommended)</spw_mufflesubmergedplayertooltip>
 	<spw_mufflesubmergedviewtarget>Muffle Submerged View Target</spw_mufflesubmergedviewtarget>
 	<spw_mufflesubmergedviewtargettooltip>Muffle audio when the viewed target is underwater (i.e., turrets, cameras, etc)</spw_mufflesubmergedviewtargettooltip>
-	<spw_mufflesoundsinwater>Muffle Sounds In Water</spw_mufflesoundsinwater>
-	<spw_mufflesoundsinwatertooltip>Enable the muffling of sounds that are positioned under the surface of the water (recommended)</spw_mufflesoundsinwatertooltip>
+	<spw_mufflesubmergedsounds>Muffle Submerged Sounds</spw_mufflesubmergedsounds>
+	<spw_mufflesubmergedsoundstooltip>Enable the muffling of sounds that are positioned under the surface of the water (recommended)</spw_mufflesubmergedsoundstooltip>
 	<spw_muffleflowsounds>Muffle Flow Sounds</spw_muffleflowsounds>
 	<spw_muffleflowsoundstooltip>Enable the muffling of water flow sounds from leaks</spw_muffleflowsoundstooltip>
 	<spw_mufflefiresounds>Muffle Fire Sounds</spw_mufflefiresounds>
 	<spw_mufflefiresoundstooltip>Enable the muffling of fire sounds</spw_mufflefiresoundstooltip>
 	<spw_divingsuitpitch>Diving Suit Pitch</spw_divingsuitpitch>
-	<spw_spw_divingsuitpitchtooltip>The change in pitch to most sounds when wearing a diving suit (stacks additively)</spw_spw_divingsuitpitchtooltip>
+	<spw_divingsuitpitchtooltip>The change in pitch to most sounds when wearing a diving suit (stacks additively)</spw_divingsuitpitchtooltip>
 	<spw_submergedpitch>Submerged Pitch</spw_submergedpitch>
 	<spw_submergedpitchtooltip>The change in pitch to most sounds when the listener is submerged (stacks additively)</spw_submergedpitchtooltip>
 	<spw_muffledvoicepitch>Muffled Voice Pitch</spw_muffledvoicepitch>
+	<spw_muffledvoicepitchtooltip>Just for fun :)</spw_muffledvoicepitchtooltip>
 	<spw_unmuffledvoicepitch>Unmuffled Voice Pitch</spw_unmuffledvoicepitch>
+	<spw_unmuffledvoicepitchtooltip>Just for fun :)</spw_unmuffledvoicepitchtooltip>
 	<spw_muffledcomponentpitch>Muffled Component Pitch</spw_muffledcomponentpitch>
 	<spw_unmuffledcomponentpitch>Unmuffled Component Pitch</spw_unmuffledcomponentpitch>
-	<spw_unmuffledcomponentvolume>Unmuffled Component Volume</spw_unmuffledcomponentvolume>
 	<spw_hidesettings>Hide Menu Button</spw_hidesettings>
 	<spw_hidesettingstooltip>Warning: Enabling this setting will remove the "Soundproof Settings" button from your UI. You must manually edit or delete your config.json file to restore this setting.</spw_hidesettingstooltip>
 
@@ -86,6 +88,7 @@
 	<spw_invalidinput>Invalid Input</spw_invalidinput>
 	<spw_default>(Default)</spw_default>
 	<spw_vanilla>(Vanilla)</spw_vanilla>
+	<spw_custom>(Custom)</spw_custom>
 	<spw_reset>Reset</spw_reset>
 	<spw_resetall>Reset All</spw_resetall>
 </infotexts>
