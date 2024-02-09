@@ -6,18 +6,22 @@
 	<spw_generalsettings>General Settings</spw_generalsettings>
 	<spw_enabled>Enabled</spw_enabled>
 	<spw_disabled>Disabled</spw_disabled>
-	<spw_enabledtooltip>Enable all functionality of the mod</spw_enabledtooltip>
+	<spw_enabledtooltip>Toggles all functionality of the mod</spw_enabledtooltip>
 	<spw_syncsettings>Sync Settings</spw_syncsettings>
-	<spw_syncsettingstooltip>Enable the syncing of host and client configs.</spw_syncsettingstooltip>
+	<spw_syncsettingstooltip>Toggles the syncing of host and client configs</spw_syncsettingstooltip>
 	<spw_syncsettingsalert>Note: This server has syncing enabled - all players will automatically use the host's settings (values in parentheses)</spw_syncsettingsalert>
 	<spw_focustargetaudio>Focus Target Audio</spw_focustargetaudio>
-	<spw_focustargetaudiotooltip>Simulates audio from the POV of the current target (i.e., you hear what the turret/camera hears)</spw_focustargetaudiotooltip>
+	<spw_focustargetaudiotooltip>Simulate audio from the POV of the current target (i.e., you hear what the turret/camera hears)</spw_focustargetaudiotooltip>
+	<spw_talkingragdolls>Talking Ragdolls</spw_talkingragdolls>
+	<spw_talkingragdollstooltip>Hear players speak when they are ragdolled (does not apply to stuns)</spw_talkingragdollstooltip>
 	<spw_lowpassfrequency>Lowpass Frequency</spw_lowpassfrequency>
 	<spw_lowpassfrequencytooltip>The corner frequency used to muffle sounds (adjusting this setting mid-round will briefly freeze the game)</spw_lowpassfrequencytooltip>
 	<spw_voicelowpassfrequency>Voice Lowpass Frequency</spw_voicelowpassfrequency>
 	<spw_voicelowpassfrequencytooltip>The corner frequency used to muffle voice chat</spw_voicelowpassfrequencytooltip>
 	<spw_soundrange>Sound Range</spw_soundrange>
 	<spw_soundrangetooltip>Range of non-component sounds</spw_soundrangetooltip>
+	<spw_voicerange>Voice Range</spw_voicerange>
+	<spw_radiorange>Radio Range</spw_radiorange>
 
 	<spw_volumesettings>Volume Settings</spw_volumesettings>
 	<spw_muffledvoicevolume>Muffled Voice Volume</spw_muffledvoicevolume>
@@ -59,30 +63,30 @@
 
 	<spw_nichesettings>Niche Settings</spw_nichesettings>
 	<spw_mufflesubmergedplayer>Muffle Submerged Player</spw_mufflesubmergedplayer>
-	<spw_mufflesubmergedplayertooltip>Muffle audio when the player's head is underwater (recommended)</spw_mufflesubmergedplayertooltip>
+	<spw_mufflesubmergedplayertooltip>Muffle audio when your head is underwater (recommended)</spw_mufflesubmergedplayertooltip>
 	<spw_mufflesubmergedviewtarget>Muffle Submerged View Target</spw_mufflesubmergedviewtarget>
-	<spw_mufflesubmergedviewtargettooltip>Muffle audio when the viewed target is underwater (i.e., turrets, cameras, etc)</spw_mufflesubmergedviewtargettooltip>
+	<spw_mufflesubmergedviewtargettooltip>Muffle audio when your viewed target is underwater (e.g., turrets, cameras, etc)</spw_mufflesubmergedviewtargettooltip>
 	<spw_mufflesubmergedsounds>Muffle Submerged Sounds</spw_mufflesubmergedsounds>
-	<spw_mufflesubmergedsoundstooltip>Enable the muffling of sounds that are positioned under the surface of the water (recommended)</spw_mufflesubmergedsoundstooltip>
+	<spw_mufflesubmergedsoundstooltip>Muffle sounds that are positioned under the surface of the water (recommended)</spw_mufflesubmergedsoundstooltip>
 	<spw_muffleflowsounds>Muffle Flow Sounds</spw_muffleflowsounds>
-	<spw_muffleflowsoundstooltip>Enable the muffling of water flow sounds from leaks</spw_muffleflowsoundstooltip>
+	<spw_muffleflowsoundstooltip>Toggle the muffling of water flow sounds from leaks</spw_muffleflowsoundstooltip>
 	<spw_mufflefiresounds>Muffle Fire Sounds</spw_mufflefiresounds>
-	<spw_mufflefiresoundstooltip>Enable the muffling of fire sounds</spw_mufflefiresoundstooltip>
+	<spw_mufflefiresoundstooltip>Toggle the muffling of fire sounds</spw_mufflefiresoundstooltip>
 	<spw_divingsuitpitch>Diving Suit Pitch</spw_divingsuitpitch>
-	<spw_divingsuitpitchtooltip>The change in pitch to most sounds when wearing a diving suit (stacks additively)</spw_divingsuitpitchtooltip>
+	<spw_divingsuitpitchtooltip>The pitch of sounds when wearing a diving suit (stacks additively)</spw_divingsuitpitchtooltip>
 	<spw_submergedpitch>Submerged Pitch</spw_submergedpitch>
-	<spw_submergedpitchtooltip>The change in pitch to most sounds when the listener is submerged (stacks additively)</spw_submergedpitchtooltip>
+	<spw_submergedpitchtooltip>The pitch of sounds when the listener is submerged (stacks additively)</spw_submergedpitchtooltip>
 	<spw_muffledvoicepitch>Muffled Voice Pitch</spw_muffledvoicepitch>
-	<spw_muffledvoicepitchtooltip>Just for fun :)</spw_muffledvoicepitchtooltip>
+	<spw_muffledvoicepitchtooltip>Not recommended. Just for fun</spw_muffledvoicepitchtooltip>
 	<spw_unmuffledvoicepitch>Unmuffled Voice Pitch</spw_unmuffledvoicepitch>
-	<spw_unmuffledvoicepitchtooltip>Just for fun :)</spw_unmuffledvoicepitchtooltip>
+	<spw_unmuffledvoicepitchtooltip>Not recommended. Just for fun</spw_unmuffledvoicepitchtooltip>
 	<spw_muffledcomponentpitch>Muffled Component Pitch</spw_muffledcomponentpitch>
 	<spw_unmuffledcomponentpitch>Unmuffled Component Pitch</spw_unmuffledcomponentpitch>
 	<spw_hidesettings>Hide Menu Button</spw_hidesettings>
-	<spw_hidesettingstooltip>Warning: Enabling this setting will remove the "Soundproof Settings" button from your UI. You must manually edit or delete your config.json file to restore this setting.</spw_hidesettingstooltip>
+	<spw_hidesettingstooltip>Warning: Enabling this setting will remove the "Soundproof Settings" button from your UI. You must manually edit or delete your config file to restore this setting.</spw_hidesettingstooltip>
 
-	<spw_updateserverconfig>SPW: Host modified settings - the server config has been updated</spw_updateserverconfig>
-	<spw_disableserverconfig>SPW: Host disabled setting synchronization - local configs now take priority</spw_disableserverconfig>
+	<spw_updateserverconfig>Soundproof Walls: Host modified settings - the server config has been updated</spw_updateserverconfig>
+	<spw_disableserverconfig>Soundproof Walls: Host disabled setting synchronization - local configs now take priority</spw_disableserverconfig>
 	<spw_hydrophonemonitoring>Monitor Hydrophones</spw_hydrophonemonitoring>
 	<spw_listening>Listening...</spw_listening>
 	<spw_invalidinput>Invalid Input</spw_invalidinput>
