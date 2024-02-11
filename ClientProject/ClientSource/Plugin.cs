@@ -203,8 +203,6 @@ namespace SoundproofWalls
                 null,
                 new HarmonyMethod(typeof(EasySettings).GetMethod(nameof(EasySettings.SPW_TogglePauseMenu))));
 
-
-
             // Clients receiving the host's config.
             GameMain.LuaCs.Networking.Receive("SPW_UpdateConfigClient", (object[] args) =>
             {
