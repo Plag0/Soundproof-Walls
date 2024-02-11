@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<infotexts language="Russian" nowhitespace="false" translatedname="Русский">
+
+	<spw_settings>Настройки Soundproof Walls</spw_settings>
+
+	<spw_generalsettings>Основные настройки</spw_generalsettings>
+	<spw_enabled>Включено</spw_enabled>
+	<spw_disabled>Выключено</spw_disabled>
+	<spw_enabledtooltip>Включить весь функционал мода</spw_enabledtooltip>
+	<spw_syncsettings>Синхронизация настроек</spw_syncsettings>
+	<spw_syncsettingstooltip>В МП-играх, синхронизирует настройки со стороны сервера игрокам.</spw_syncsettingstooltip>
+	<spw_syncsettingsalert>Внимание: На этом сервере включена синхронизация - все игроки будут использовать настройки хоста (со значениями в скобках)</spw_syncsettingsalert>
+	<spw_focustargetaudio>Аудио дистанционных объектов</spw_focustargetaudio>
+	<spw_focustargetaudiotooltip>Проигрывать звуки от выбранной цели (например, от турели или камеры)</spw_focustargetaudiotooltip>
+	<spw_talkingragdolls>Включить ГЧ в режиме тряп. куклы</spw_talkingragdolls>
+	<spw_talkingragdollstooltip>Позволяет игрокам разговаривать, когда они в режиме тряпичной куклы (кроме оглушения)</spw_talkingragdollstooltip>
+	<spw_lowpassfrequency>Грань фильтра нижних частот (lowpass)</spw_lowpassfrequency>
+	<spw_lowpassfrequencytooltip>Частота, используемая для приглушения звуков (при изменении во время раунда могут появиться фризы)</spw_lowpassfrequencytooltip>
+	<spw_voicelowpassfrequency>Грань фильтра нижних частот (lowpass) для голоса игроков</spw_voicelowpassfrequency>
+	<spw_voicelowpassfrequencytooltip>Частота, используемая для приглушения голосового чата.</spw_voicelowpassfrequencytooltip>
+	<spw_soundrange>Дальность звуков</spw_soundrange>
+	<spw_soundrangetooltip>Контролирует дальность звуков, не созданных компонентами корабля.</spw_soundrangetooltip>
+	<spw_voicerange>Дальность голоса</spw_voicerange>
+	<spw_radiorange>Дальность радио</spw_radiorange>
+	
+	<spw_volumesettings>Настройки громкости</spw_volumesettings>
+	<spw_muffledvoicevolume>Громкость приглушенного ГЧ</spw_muffledvoicevolume>
+	<spw_muffledvoicevolumetooltip>Громкость приглушенных стеной/водой игроков</spw_muffledvoicevolumetooltip>
+	<spw_muffledsoundvolume>Громкость приглушенных звуков</spw_muffledsoundvolume>
+	<spw_muffledsoundvolumetooltip>Громкость приглушенных стеной/водой разовых звуков</spw_muffledsoundvolumetooltip>
+	<spw_muffledcomponentvolume>Громкость приглушенных компонентов</spw_muffledcomponentvolume>
+	<spw_muffledcomponentvolumetooltip>Громкость приглушенных стеной/водой компонентов, издающих постоянные звуки (например, реакторы)</spw_muffledcomponentvolumetooltip>
+	<spw_unmuffledcomponentvolume>Громкость компонентов</spw_unmuffledcomponentvolume>
+	<spw_submergedvolume>Громкость звуков под водой</spw_submergedvolume>
+	<spw_submergedvolumetooltip>Громкость звуков, происходящих в том же водном пространстве относительно слушателя</spw_submergedvolumetooltip>
+
+	<spw_eavesdroppingsettings>Настройки подслушивания</spw_eavesdroppingsettings>
+	<spw_eavesdroppingbind>Подслушивать</spw_eavesdroppingbind>
+	<spw_eavesdroppingsoundvolume>Громкость звуков</spw_eavesdroppingsoundvolume>
+	<spw_eavesdroppingvoicevolume>Громкость голоса</spw_eavesdroppingvoicevolume>
+	<spw_eavesdroppingpitch>Тон звука</spw_eavesdroppingpitch>
+	<spw_eavesdroppingmaxdistance>Дальность подслушивания</spw_eavesdroppingmaxdistance>
+	<spw_eavesdroppingmaxdistancetooltip>Максимальное расстояние головы игрока от двери для работы механики подслушивания</spw_eavesdroppingmaxdistancetooltip>
+
+	<spw_hydrophonesettings>Настройки гидрофона</spw_hydrophonesettings>
+	<spw_hydrophonerange>Дальность гидрофона</spw_hydrophonerange>
+	<spw_hydrophonerangetooltip>Дальность звуков движения под водой; а также звуков с учётом дополнительной дальности вне подлодки</spw_hydrophonerangetooltip>
+	<spw_hydrophonevolume>Громкость гидрофона</spw_hydrophonevolume>
+	<spw_hydrophonepitch>Тон гидрофона</spw_hydrophonepitch>
+
+	<spw_ambiencesettings>Настройки амбиента</spw_ambiencesettings>
+	<spw_unsubmergedwaterambiencevolume>Громкость амбиента воды (без погружения)</spw_unsubmergedwaterambiencevolume>
+	<spw_submergedwaterambiencevolume>Громкость амбиента воды (при погружении)</spw_submergedwaterambiencevolume>
+	<spw_hydrophonewaterambiencevolume>Громкость амбиента воды (гидрофон)</spw_hydrophonewaterambiencevolume>
+
+	<spw_advancedsoundsettings>Продвинутые настройки звука</spw_advancedsoundsettings>
+	<spw_soundvolumemultipliers>Множитель громкости звуков</spw_soundvolumemultipliers>
+	<spw_ignoredsounds>Исключённые от обработок звуки</spw_ignoredsounds>
+	<spw_lowpassignoredsounds>Исключённые звуки (для фильтра нижних частот)</spw_lowpassignoredsounds>
+	<spw_pitchignoredsounds>Исключённые звуки (для изменения тона)</spw_pitchignoredsounds>
+	<spw_waterignoredsounds>Исключённые звуки (для водяных эффектов)</spw_waterignoredsounds>
+	<spw_submersionignoredsounds>Исключённые звуки (подводные эффекты)</spw_submersionignoredsounds>
+
+	<spw_nichesettings>Нишевые настройки</spw_nichesettings>
+	<spw_mufflesubmergedplayer>Приглушивать погруженных игроков</spw_mufflesubmergedplayer>
+	<spw_mufflesubmergedplayertooltip>Приглушивать звуки, если голова игрока под водой (рекомендуется)</spw_mufflesubmergedplayertooltip>
+	<spw_mufflesubmergedviewtarget>Приглушивать подводные дистанционные объекты</spw_mufflesubmergedviewtarget>
+	<spw_mufflesubmergedviewtargettooltip>Приглушивать звуки дистанционно управляемых объектов (турелей, камер, т.д.), если они под водой</spw_mufflesubmergedviewtargettooltip>
+	<spw_mufflesubmergedsounds>Приглушивать подводные звуки</spw_mufflesubmergedsounds>
+	<spw_mufflesubmergedsoundstooltip>Приглушивать звуки, созданные под водой (рекомендуется)</spw_mufflesubmergedsoundstooltip>
+	<spw_muffleflowsounds>Приглушивать бреши</spw_muffleflowsounds>
+	<spw_muffleflowsoundstooltip>Приглушивать звуки течения воды, созданных брешами</spw_muffleflowsoundstooltip>
+	<spw_mufflefiresounds>Приглушивать огонь</spw_mufflefiresounds>
+	<spw_mufflefiresoundstooltip>Включить приглушивание звуков огня</spw_mufflefiresoundstooltip>
+	<spw_divingsuitpitch>Тон в скафандрах</spw_divingsuitpitch>
+	<spw_divingsuitpitchtooltip>Изменение тона большинства звуков, когда надет скафандр</spw_divingsuitpitchtooltip>
+	<spw_submergedpitch>Тон подводных звуков</spw_submergedpitch>
+	<spw_submergedpitchtooltip>Изменение тона звуков, когда игрок под водой</spw_submergedpitchtooltip>
+	<spw_muffledvoicepitch>Тон приглушеннного голосового чата</spw_muffledvoicepitch>
+	<spw_muffledvoicepitchtooltip>‖color:gui.red‖Х‖end‖О‖color:gui.red‖Н‖end‖К‖color:gui.red‖!‖end‖</spw_muffledvoicepitchtooltip>
+	<spw_unmuffledvoicepitch>Тон неприглушенного голосового чата</spw_unmuffledvoicepitch>
+	<spw_unmuffledvoicepitchtooltip>‖color:gui.red‖Х‖end‖О‖color:gui.red‖Н‖end‖К‖color:gui.red‖!‖end‖</spw_unmuffledvoicepitchtooltip>
+	<spw_muffledcomponentpitch>Тон приглушенных компонентов</spw_muffledcomponentpitch>
+	<spw_unmuffledcomponentpitch>Тон неприглушенных компонентов</spw_unmuffledcomponentpitch>
+	<spw_hidesettings>Скрыть меню (навсегда)</spw_hidesettings>
+	<spw_hidesettingstooltip>‖color:gui.red‖ВНИМАНИЕ‖end‖: При включении, удалит кнопку настроек мода из графического интерфейса. Вам придётся вручную удалить или отредактировать config.json мода, чтобы вернуть кнопку настроек.</spw_hidesettingstooltip>
+
+	<spw_updateserverconfig>SPW: Хост изменил настройки - конфиг сервера обновлён</spw_updateserverconfig>
+	<spw_disableserverconfig>SPW: Хост выключил синхронизацию - локальные конфиги теперь берут приоритет</spw_disableserverconfig>
+	<spw_hydrophonemonitoring>Слушать гидрофон</spw_hydrophonemonitoring>
+	<spw_listening>Проигрывание...</spw_listening>
+	<spw_invalidinput>Ошибка ввода</spw_invalidinput>
+	<spw_default>(По умолчанию)</spw_default>
+	<spw_vanilla>(Ванильные)</spw_vanilla>
+	<spw_custom>(Пользовательские)</spw_custom>
+	<spw_reset>Сбросить</spw_reset>
+	<spw_resetall>Сбросить всё</spw_resetall>
+</infotexts>

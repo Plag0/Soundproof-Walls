@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<infotexts language="French" nowhitespace="false" translatedname="Français">
+
+	<spw_settings>Paramètre de l'insonorisation</spw_settings>
+
+	<spw_generalsettings>Paramètres généraux</spw_generalsettings>
+	<spw_enabled>Activé</spw_enabled>
+	<spw_disabled>Désactivé</spw_disabled>
+	<spw_enabledtooltip>Activer toutes les fonctionnalitées du mod</spw_enabledtooltip>
+	<spw_syncsettings>Synchroniser les paramètres</spw_syncsettings>
+	<spw_syncsettingstooltip>Activer la synchronisation de la configuration de l'hôte et du client</spw_syncsettingstooltip>
+	<spw_syncsettingsalert>Note: Ce serveur utilise la synchronisation automatique - tous les joueurs utiliserons automatiquement la configuration de l'hôte (valeurs entre parenthèses)</spw_syncsettingsalert>
+	<spw_focustargetaudio>Emuler le son de la cible</spw_focustargetaudio>
+	<spw_focustargetaudiotooltip>Simuler l'audio du point de vue de la cible actuelle (vous entendez ce que la caméra/tourelle entend)</spw_focustargetaudiotooltip>
+	<spw_talkingragdolls>Ragdolls parlant</spw_talkingragdolls>
+	<spw_talkingragdollstooltip>Vous entendre les joueurs parler quand ils sont en ragdolls (ne s'applique pas quand assommé)</spw_talkingragdollstooltip>
+	<spw_lowpassfrequency>Filtre passe-bas</spw_lowpassfrequency>
+	<spw_lowpassfrequencytooltip>Les fréquences de coupures sont utilisées pour étouffer le son (ajuster ce paramètre en jeu provoquera un petit freeze)</spw_lowpassfrequencytooltip>
+	<spw_voicelowpassfrequency>Fréquences passe-bas de la voix</spw_voicelowpassfrequency>
+	<spw_voicelowpassfrequencytooltip>Les fréquences de coupure sont utilisées pour étouffer les communications vocales</spw_voicelowpassfrequencytooltip>
+	<spw_soundrange>Portée du son</spw_soundrange>
+	<spw_soundrangetooltip>Porté des sons hors machines</spw_soundrangetooltip>
+	<spw_voicerange>Portée de la voix</spw_voicerange>
+	<spw_radiorange>Portée de la radio</spw_radiorange>
+
+	<spw_volumesettings>Paramètres du volume</spw_volumesettings>
+	<spw_muffledvoicevolume>Volume étouffé de la voix</spw_muffledvoicevolume>
+	<spw_muffledvoicevolumetooltip>Volume de la voix en passe-bas d'un joueur derrière un mur/un corps d'eau</spw_muffledvoicevolumetooltip>
+	<spw_muffledsoundvolume>Volume étouffé des sons</spw_muffledsoundvolume>
+	<spw_muffledsoundvolumetooltip>Volume de son non répété en passe-bas derrière un mur/un corps d'eau</spw_muffledsoundvolumetooltip>
+	<spw_muffledcomponentvolume>Volume étouffé des machines</spw_muffledcomponentvolume>
+	<spw_muffledcomponentvolumetooltip>Volume des sons répétés de machines/effet d'états en passe-bas derrière un mur/un corps d'eau</spw_muffledcomponentvolumetooltip>
+	<spw_unmuffledcomponentvolume>Volume normal des machines</spw_unmuffledcomponentvolume>
+	<spw_submergedvolume>Volume submergé</spw_submergedvolume>
+	<spw_submergedvolumetooltip>Volume du son quand le receveur et l'émetteur sont dans le même corps d'eau</spw_submergedvolumetooltip>
+
+	<spw_eavesdroppingsettings>Volume d'espionnage</spw_eavesdroppingsettings>
+	<spw_eavesdroppingbind>Touche pour espionner</spw_eavesdroppingbind>
+	<spw_eavesdroppingsoundvolume>Volume du son espionné</spw_eavesdroppingsoundvolume>
+	<spw_eavesdroppingvoicevolume>Volume des voix espionnées</spw_eavesdroppingvoicevolume>
+	<spw_eavesdroppingpitch>Hauteur sonore de l'espionnage</spw_eavesdroppingpitch>
+	<spw_eavesdroppingmaxdistance>Distance maximum de l'espionnage</spw_eavesdroppingmaxdistance>
+	<spw_eavesdroppingmaxdistancetooltip>Distance maximum de la tête du joueur par rapport à la porte espionnée</spw_eavesdroppingmaxdistancetooltip>
+
+	<spw_hydrophonesettings>Paramètres de l'hydrophone</spw_hydrophonesettings>
+	<spw_hydrophonerange>Portée de l'hydrophone</spw_hydrophonerange>
+	<spw_hydrophonerangetooltip>La portée des sons des mouvements dans l'eau avec la portée additionnée à tous les sons hors du sous-marin</spw_hydrophonerangetooltip>
+	<spw_hydrophonevolume>Volume de l'hydrophone</spw_hydrophonevolume>
+	<spw_hydrophonepitch>Hauteur sonore de l'hydrophone</spw_hydrophonepitch>
+
+	<spw_ambiencesettings>Paramètres de l'ambiance</spw_ambiencesettings>
+	<spw_unsubmergedwaterambiencevolume>Volume de l'ambiance aquatique quand hors de l'eau</spw_unsubmergedwaterambiencevolume>
+	<spw_submergedwaterambiencevolume>Volume de l'ambiance aquatique quand submergé</spw_submergedwaterambiencevolume>
+	<spw_hydrophonewaterambiencevolume>Volume de l'ambiance aquatique dans l'hydrophone</spw_hydrophonewaterambiencevolume>
+
+	<spw_advancedsoundsettings>Paramètres sonores avancés</spw_advancedsoundsettings>
+	<spw_soundvolumemultipliers>Multiplicateur du volume sonore</spw_soundvolumemultipliers>
+	<spw_ignoredsounds>Sons ignorés</spw_ignoredsounds>
+	<spw_lowpassignoredsounds>Sons passe-bas ignorés</spw_lowpassignoredsounds>
+	<spw_pitchignoredsounds>Hauteur sonore ignorées</spw_pitchignoredsounds>
+	<spw_waterignoredsounds>Sons aquatiques ignorés</spw_waterignoredsounds>
+	<spw_submersionignoredsounds>Sons submergés ignorés</spw_submersionignoredsounds>
+
+	<spw_nichesettings>Paramètres spécifiques</spw_nichesettings>
+	<spw_mufflesubmergedplayer>Etouffer le son quand submergé</spw_mufflesubmergedplayer>
+	<spw_mufflesubmergedplayertooltip>Etouffe l'audio quand votre tête est submergée (recommandé)</spw_mufflesubmergedplayertooltip>
+	<spw_mufflesubmergedviewtarget>Etouffer le son quand point de vue submergé</spw_mufflesubmergedviewtarget>
+	<spw_mufflesubmergedviewtargettooltip>Etouffe l'audio quand votre point de vue déporté est submergé (tourelles, caméras, etc.)</spw_mufflesubmergedviewtargettooltip>
+	<spw_mufflesubmergedsounds>Etouffer les sons submergés</spw_mufflesubmergedsounds>
+	<spw_mufflesubmergedsoundstooltip>Etouffe les sons positionnées sous la surface de l'eau (recommandé)</spw_mufflesubmergedsoundstooltip>
+	<spw_muffleflowsounds>Etouffer les flux d'eau</spw_muffleflowsounds>
+	<spw_muffleflowsoundstooltip>Etouffe le sons des fuites d'eau</spw_muffleflowsoundstooltip>
+	<spw_mufflefiresounds>Etouffer les sons d'incendie</spw_mufflefiresounds>
+	<spw_mufflefiresoundstooltip>Etouffe les sons liés au feu</spw_mufflefiresoundstooltip>
+	<spw_divingsuitpitch>Hauteur sonore des combinaisons</spw_divingsuitpitch>
+	<spw_divingsuitpitchtooltip>Hauteur des sons quand vous portez une combinaison de plongé (s'ajoute aux autres paramètres)</spw_divingsuitpitchtooltip>
+	<spw_submergedpitch>Hauteur sonore quand submergé</spw_submergedpitch>
+	<spw_submergedpitchtooltip>Hauteur du son quand vous écoutez sous l'eau (s'ajoute aux autres paramètres)</spw_submergedpitchtooltip>
+	<spw_muffledvoicepitch>Hauteur du son étouffé</spw_muffledvoicepitch>
+	<spw_muffledvoicepitchtooltip>Pas recommandé. Juste pour le fun</spw_muffledvoicepitchtooltip>
+	<spw_unmuffledvoicepitch>Hauteur du son non étouffé</spw_unmuffledvoicepitch>
+	<spw_unmuffledvoicepitchtooltip>Pas recommandé. Juste pour le fun</spw_unmuffledvoicepitchtooltip>
+	<spw_muffledcomponentpitch>Hauteur du son étouffé des machines</spw_muffledcomponentpitch>
+	<spw_unmuffledcomponentpitch>Hauteur du son normal des machines</spw_unmuffledcomponentpitch>
+	<spw_hidesettings>Cacher les boutons du menu</spw_hidesettings>
+	<spw_hidesettingstooltip>Attention: Activer ce paramètre retirera le "Paramètre de l'insonorisation" de votre menu. Vous devrez modifier ou supprimer manuellement votre fichier de configuration pour restaurer ce paramètre.</spw_hidesettingstooltip>
+
+	<spw_updateserverconfig>Murs insonorisés: Hôte a modifié les paramètres - la configuration serveur a été mise à jour</spw_updateserverconfig>
+	<spw_disableserverconfig>Murs insonorisés: Hôte a désactivé la synchronisation des paramètres - la configuration locale devient maintenant prioritaire</spw_disableserverconfig>
+	<spw_hydrophonemonitoring>Ecoute des Hydrophones</spw_hydrophonemonitoring>
+	<spw_listening>Ecoute...</spw_listening>
+	<spw_invalidinput>Entrée Invalide</spw_invalidinput>
+	<spw_default>(Défaut)</spw_default>
+	<spw_vanilla>(Vanilla)</spw_vanilla>
+	<spw_custom>(Custom)</spw_custom>
+	<spw_reset>Réinitialiser</spw_reset>
+	<spw_resetall>Tout Réinitialiser</spw_resetall>
+</infotexts>

@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<contentpackage name="Soundproof Walls" steamworkshopid="3153737715" corepackage="false" modversion="0.9" gameversion="1.2.8.0" installtime="1">
+<contentpackage name="Soundproof Walls" steamworkshopid="3153737715" corepackage="false" modversion="1.0.1" gameversion="1.2.8.0" installtime="1">
 	<Text file="%ModDir%/Content/Localisation/Info_English.xml" />
+	<Text file="%ModDir%/Content/Localisation/Info_Russian.xml" />
 	<Text file="%ModDir%/Content/Localisation/Info_Spanish.xml" />
+	<Text file="%ModDir%/Content/Localisation/Info_German.xml" />
+	<Text file="%ModDir%/Content/Localisation/Info_French.xml" />
 	<Item file="%ModDir%/Content/dummyitem.xml" />
 </contentpackage>

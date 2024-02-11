@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<infotexts language="German" nowhitespace="false" translatedname="Deutsch">
+
+	<spw_settings>"Schallicht-Einstellungen"</spw_settings>
+
+	<spw_generalsettings>Generelle Einstellungen</spw_generalsettings>
+	<spw_enabled>Aktiviert</spw_enabled>
+	<spw_disabled>Deaktiviert</spw_disabled>
+	<spw_enabledtooltip>Aktiviert jede Funktion der Mod</spw_enabledtooltip>
+	<spw_syncsettings>Synchronisationseinstellungen</spw_syncsettings>
+	<spw_syncsettingstooltip>Aktiviert die Synchronisation von Host und Client Konfigurationen </spw_syncsettingstooltip>
+	<spw_syncsettingsalert>Hinweis: Dieser Server hat Synchronisierung aktiviert - alle Spieler werden automatisch die Einstellungen des Hosts benutzen (values in parentheses)</spw_syncsettingsalert>
+	<spw_focustargetaudio>Fokusiere Audio am Sichtfeld</spw_focustargetaudio>
+	<spw_focustargetaudiotooltip>Simuliert Audio, vom POV des aktuellen Ziels (d.h., Man hört, was die Kamera / das Geschütz hört)</spw_focustargetaudiotooltip>
+	<spw_talkingragdolls>Sprechende Ragdolls</spw_talkingragdolls>
+	<spw_talkingragdollstooltip>Spieler hören, die Ragdolls sind (Ändert nichts bei Betäubung)</spw_talkingragdollstooltip>
+	<spw_lowpassfrequency>Lowpass-Frequenz</spw_lowpassfrequency>
+	<spw_lowpassfrequencytooltip>Die Grenzfrequenz, die benutz wird, um Audio zu dämpfen (Mitten in der Runde freezt diese Option das Spiel kurz)</spw_lowpassfrequencytooltip>
+	<spw_voicelowpassfrequency>Grenzfrequenz (Stimme)</spw_voicelowpassfrequency>
+	<spw_voicelowpassfrequencytooltip>Die Grenzfrequenz, die benutz wird, um Chat zu dämpfen</spw_voicelowpassfrequencytooltip>
+	<spw_soundrange>Geräuschdistanz</spw_soundrange>
+	<spw_soundrangetooltip>Reichweite von Geräuschen außerhalb von Komponent</spw_soundrangetooltip>
+	<spw_voicerange>Stimmenreichweite</spw_voicerange>
+	<spw_radiorange>Radioreichweite</spw_radiorange>
+
+	<spw_volumesettings>Lautstärke</spw_volumesettings>
+	<spw_muffledvoicevolume>Gedämpfte Stimmlautstärke</spw_muffledvoicevolume>
+	<spw_muffledvoicevolumetooltip>Lautstärke von Spielern, die gedämpft werden</spw_muffledvoicevolumetooltip>
+	<spw_muffledsoundvolume>Gedämpfte Lautstärke</spw_muffledsoundvolume>
+	<spw_muffledsoundvolumetooltip>Lautstärke von nicht-loopenden, gedämpften Geräuschen im Hintergrund</spw_muffledsoundvolumetooltip>
+	<spw_muffledcomponentvolume>Gedämpfte Komponenten-Lautstärke</spw_muffledcomponentvolume>
+	<spw_muffledcomponentvolumetooltip>Lautstärke von gedämpften Komponenten im Hintergrund</spw_muffledcomponentvolumetooltip>
+	<spw_unmuffledcomponentvolume>Ungedämpfte Komponenten-Lautstärke</spw_unmuffledcomponentvolume>
+	<spw_submergedvolume>Unterwasser-Lautstärke</spw_submergedvolume>
+	<spw_submergedvolumetooltip>Die Lautstärke von Geräuschen unterwasser, während der Spieler sich unterwasser befindet</spw_submergedvolumetooltip>
+
+	<spw_eavesdroppingsettings>Lauschoptionen</spw_eavesdroppingsettings>
+	<spw_eavesdroppingbind>Lausch-Taste</spw_eavesdroppingbind>
+	<spw_eavesdroppingsoundvolume>Lausch-Lautstärke</spw_eavesdroppingsoundvolume>
+	<spw_eavesdroppingvoicevolume>Lausch-Lautstärke (Stimmen)</spw_eavesdroppingvoicevolume>
+	<spw_eavesdroppingpitch>Lausch-Tonhöhe</spw_eavesdroppingpitch>
+	<spw_eavesdroppingmaxdistance>Lausch-Distanz</spw_eavesdroppingmaxdistance>
+	<spw_eavesdroppingmaxdistancetooltip>Die maximale Distanz, die der Kopf das spielers von einer Tür entfernt sein kann, um zu lauschen</spw_eavesdroppingmaxdistancetooltip>
+
+	<spw_hydrophonesettings>Hydrophon-Einstellungen</spw_hydrophonesettings>
+	<spw_hydrophonerange>Hydrophon-Reichweite</spw_hydrophonerange>
+	<spw_hydrophonerangetooltip>Reichweite von Unterwasser geräuschen, sowie die Zusätzliche Reichweite, die zu allen Tönen außerhalb des U-Boots hinzugegeben wird </spw_hydrophonerangetooltip>
+	<spw_hydrophonevolume>Hydrophon Lautstärke</spw_hydrophonevolume>
+	<spw_hydrophonepitch>Hydrophon-Tonhöhe</spw_hydrophonepitch>
+
+	<spw_ambiencesettings>Ambience Settings</spw_ambiencesettings>
+	<spw_unsubmergedwaterambiencevolume>Unsubmerged Water Ambience Volume</spw_unsubmergedwaterambiencevolume>
+	<spw_submergedwaterambiencevolume>Submerged Water Ambience Volume</spw_submergedwaterambiencevolume>
+	<spw_hydrophonewaterambiencevolume>Hydrophone Water Ambience Volume</spw_hydrophonewaterambiencevolume>
+
+	<spw_advancedsoundsettings>Fortgeschrittene Einstellungen</spw_advancedsoundsettings>
+	<spw_soundvolumemultipliers>Lautstärke-Multiplikation</spw_soundvolumemultipliers>
+	<spw_ignoredsounds>Ignorierte Geräusche</spw_ignoredsounds>
+	<spw_lowpassignoredsounds>Dämpfung Ignorierte geräusche</spw_lowpassignoredsounds>
+	<spw_pitchignoredsounds>Tonhöhe ignorierter Geräusche</spw_pitchignoredsounds>
+	<spw_waterignoredsounds>Wasser ignorierte Geräusche</spw_waterignoredsounds>
+	<spw_submersionignoredsounds>Unterwasser ignorierte Geräusche</spw_submersionignoredsounds>
+
+	<spw_nichesettings>Diverse Einstellungen</spw_nichesettings>
+	<spw_mufflesubmergedplayer>Spieler unterwasser dämpfen</spw_mufflesubmergedplayer>
+	<spw_mufflesubmergedplayertooltip>Dämpft geräusche, wenn man sich Unterwasser befindet (empfohlen)</spw_mufflesubmergedplayertooltip>
+	<spw_mufflesubmergedviewtarget>Dämpfe Sichtpunkt </spw_mufflesubmergedviewtarget>
+	<spw_mufflesubmergedviewtargettooltip>Dämpfe Geräusche, wenn Sichtziel sich unterwasser befindet (z.b Kameras, Geschüutze etc.)</spw_mufflesubmergedviewtargettooltip>
+	<spw_mufflesubmergedsounds>Dämpfe Unterwasser-Geräusche</spw_mufflesubmergedsounds>
+	<spw_mufflesubmergedsoundstooltip>Dämpft geräusche, die sich unterwasser befinden (empfohlen)</spw_mufflesubmergedsoundstooltip>
+	<spw_muffleflowsounds>Dämpfe Strömgeräusche</spw_muffleflowsounds>
+	<spw_muffleflowsoundstooltip>Aktiviere die Dämpfung von Wasserlecks</spw_muffleflowsoundstooltip>
+	<spw_mufflefiresounds>Dämpfe Feuergeräusche</spw_mufflefiresounds>
+	<spw_mufflefiresoundstooltip>Aktiviere die Dämpfung von Feuer</spw_mufflefiresoundstooltip>
+	<spw_divingsuitpitch>Tonhöhe (Taucheranzug)</spw_divingsuitpitch>
+	<spw_divingsuitpitchtooltip>Tonhöhe von Geräuschen, während der Spieler im Taucheranzug ist (Additiv)</spw_divingsuitpitchtooltip>
+	<spw_submergedpitch>Tonhöhe (Unterwasser)</spw_submergedpitch>
+	<spw_submergedpitchtooltip>Tonhöhe von Geräuschen, während der Spieler Unterwasser ist (Additiv)</spw_submergedpitchtooltip>
+	<spw_muffledvoicepitch>Tonhöhe (Gedämpfte Stimmen)</spw_muffledvoicepitch>
+	<spw_muffledvoicepitchtooltip>Wirklich nicht empfohlen, aber lustig.</spw_muffledvoicepitchtooltip>
+	<spw_unmuffledvoicepitch>Tonhöhe (Ungedämpfte Stimmen)</spw_unmuffledvoicepitch>
+	<spw_unmuffledvoicepitchtooltip>Wirklich nicht empfohlen, aber lustig.</spw_unmuffledvoicepitchtooltip>
+	<spw_muffledcomponentpitch>Tonhöhe (Gedämpfte Komponenten)</spw_muffledcomponentpitch>
+	<spw_unmuffledcomponentpitch>Tonhöhe (Ungedämpfte Komponenten)</spw_unmuffledcomponentpitch>
+	<spw_hidesettings>Menü-Button verstecken</spw_hidesettings>
+	<spw_hidesettingstooltip>ACHTUNG: Wird diese Einstellung aktiviert, verschwindet die "Schallicht-Einstellungen" Taste von der UI. Die Konfig-Datei muss manuell geändert werden, um diese wiederherzustellen</spw_hidesettingstooltip>
+
+	<spw_updateserverconfig>Schalldichte Wände: Host-Einstellungen geändert - Serverkonfig modifiziert</spw_updateserverconfig>
+	<spw_disableserverconfig>Schalldichte Wände: Synchronization deaktiviert - Lokalkonfigs nehmen Priorität</spw_disableserverconfig>
+	<spw_hydrophonemonitoring>Überwache Hydrophone</spw_hydrophonemonitoring>
+	<spw_listening>Lauschen...</spw_listening>
+	<spw_invalidinput>Invalider Input</spw_invalidinput>
+	<spw_default>(Default)</spw_default>
+	<spw_vanilla>(Vanilla)</spw_vanilla>
+	<spw_custom>(Custom)</spw_custom>
+	<spw_reset>Resetten</spw_reset>
+	<spw_resetall>ALLE Resetten</spw_resetall>
+</infotexts>

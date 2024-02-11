@@ -28,7 +28,7 @@ namespace SoundproofWalls
         private static Config localConfig = ConfigManager.LoadConfig();
         private static Config? serverConfig = null;
         public static Config Config { get { return serverConfig ?? localConfig; } }
-        public static Config LocalConfig { get { return localConfig; } set { localConfig = value; } } //TODO useless
+        public static Config LocalConfig { get { return localConfig; } set { localConfig = value; } } //TODO these properties are useless
         public static Config? ServerConfig { get { return serverConfig; } }
 
         static Hull? EavesdroppedHull = null;
@@ -214,7 +214,7 @@ namespace SoundproofWalls
                 serverConfig = newServerConfig;
 
                 if (shouldReloadRoundSounds) { ReloadRoundSounds(); }
-                SoundChannelMuffleInfo.Clear(); // Re-collect muffle info in case advanced settings were changed. TODO maybe make a shouldResetMuffleInfo method if performance needs it.
+                SoundChannelMuffleInfo.Clear(); // Clear muffle info objects in case advanced settings were changed.
 
                 LuaCsLogger.Log(TextManager.Get("spw_updateserverconfig").Value, Color.LimeGreen);
             });
@@ -283,7 +283,10 @@ namespace SoundproofWalls
                 VoiceOwner = voiceOwner;
                 string filename = Channel.Sound.Filename;
 
-                if (skipProcess) { IgnorePitch = true; }
+                if (skipProcess) 
+                { 
+                    IgnorePitch = true; 
+                }
                 else if (Channel.Category == "ui" || SoundIgnoresAll(filename))
                 {
                     IgnoreAll = true;
@@ -330,28 +333,35 @@ namespace SoundproofWalls
                 {
                     if (soundInWater && player.OxygenAvailable < 95)
                     {
-                        Reason = soundInWater ? MuffleReason.SoundInWater : MuffleReason.None;
+                        Reason = MuffleReason.SoundInWater;
                         Muffled = true;
                     }
 
                     return; 
                 }
 
-                if (spectating || IgnoreAll)
+                if (spectating)
                 {
-                    Distance = Vector3.Distance(GameMain.SoundManager.ListenerPosition, new Vector3(soundPos, 0.0f));
-                    Muffled = IgnoreAll ? false : soundInWater && !IgnoreLowpass && !canHearIntoWater;
+                    Distance = Vector3.Distance(GameMain.SoundManager.ListenerPosition, new Vector3(soundWorldPos, 0.0f));
+                    Muffled = soundInWater && !IgnoreLowpass && !canHearIntoWater;
                     Reason = Muffled ? MuffleReason.SoundInWater : MuffleReason.None; ;
                     return;
                 }
 
                 Hull? listenHull = EavesdroppedHull ?? ViewTargetHull;
                 Vector2 listenPos = IsViewTargetPlayer ? character.AnimController.GetLimb(LimbType.Head).Position : LightManager.ViewTarget.Position;
+                Vector2 listenWorldPos = IsViewTargetPlayer ? character.AnimController.GetLimb(LimbType.Head).WorldPosition : LightManager.ViewTarget.WorldPosition;
+
+                if (IgnoreAll)
+                {
+                    Distance = Vector2.Distance(listenPos, soundPos);
+                    return;
+                }
 
                 // Hydrophone check. Hear outside while sounds inside are muffled.
                 if (IsUsingHydrophones && (SoundHull == null || SoundHull.Submarine == LightManager.ViewTarget.Submarine))
                 {
-                    Distance = SoundHull == null ? Vector2.Distance(listenPos, soundPos) : float.MaxValue;
+                    Distance = SoundHull == null ? Vector2.Distance(listenWorldPos, soundWorldPos) : float.MaxValue;
                     Muffled = Distance == float.MaxValue && !IgnoreLowpass;
                     Reason = Muffled ? MuffleReason.NoPath : MuffleReason.None;
                     return;
@@ -567,7 +577,7 @@ namespace SoundproofWalls
                 if (item.Tags.Contains("command"))
                 {
                     Sonar? sonar = item.GetComponent<Sonar>();
-                    if (sonar == null) { return ; }
+                    if (sonar == null) { continue ; }
 
                     if (sonar.HasMineralScanner) 
                     {
@@ -590,7 +600,7 @@ namespace SoundproofWalls
                 if (item.Tags.Contains("command"))
                 {
                     Sonar? sonar = item.GetComponent<Sonar>();
-                    if (sonar == null) { return; }
+                    if (sonar == null) { continue; }
 
                     AddHydrophoneSwitchToGUI(sonar);
                 }
@@ -728,24 +738,11 @@ namespace SoundproofWalls
             PitchedSounds.Clear();
             DisposeAllBubbleChannels();
 
-            // Looping channels that have a frequency multiplier greater than 1 are not disposed automatically.
             foreach (var kvp in HydrophoneSoundChannels)
             {
                 kvp.Key.FadeOutAndDispose();
             }
             HydrophoneSoundChannels.Clear();
-            /*
-            foreach (SoundChannel[] side in GameMain.SoundManager.playingChannels)
-            {
-                foreach (SoundChannel channel in side)
-                {
-                    if (channel != null)
-                    {
-                        channel.FadeOutAndDispose();
-                    }
-                }
-            }
-            */
         }
 
         public static void PlayHydrophoneSounds()
@@ -1102,17 +1099,17 @@ namespace SoundproofWalls
 
             if (Character.Controlled == null || LightManager.ViewTarget == null || GameMain.Instance.Paused) { return; }
 
-            if (Timing.TotalTime > LastViewTargetHullUpdateTime + 0.05)
-            {
-                ViewTargetHull = Config.FocusTargetAudio ? Hull.FindHull(LightManager.ViewTarget.WorldPosition, Character.Controlled.CurrentHull, true) : Character.Controlled.CurrentHull;
-                LastViewTargetHullUpdateTime = (float)Timing.TotalTime;
-            }
-
             EavesdroppedHull = GetEavesdroppedHull();
             IsUsingHydrophones = EavesdroppedHull == null && (Character.Controlled?.SelectedItem?.GetComponent<Sonar>() is Sonar sonar && HydrophoneSwitches.ContainsKey(sonar) && HydrophoneSwitches[sonar].State);
-            IsViewTargetPlayer = !Config.FocusTargetAudio || LightManager.ViewTarget?.WorldPosition == Character.Controlled?.WorldPosition;
+            IsViewTargetPlayer = !Config.FocusTargetAudio || LightManager.ViewTarget as Character == Character.Controlled;
             EarsInWater = IsViewTargetPlayer ? Character.Controlled.AnimController.HeadInWater : SoundInWater(LightManager.ViewTarget.Position, ViewTargetHull);
             IsWearingDivingSuit = Character.Controlled?.LowPassMultiplier < 0.5f;
+
+            if (Timing.TotalTime > LastViewTargetHullUpdateTime + 0.05)
+            {
+                ViewTargetHull = GetViewTargetHull();
+                LastViewTargetHullUpdateTime = (float)Timing.TotalTime;
+            }
 
             if (Timing.TotalTime > LastHydrophonePlayTime + 0.1)
             {
@@ -1122,6 +1119,27 @@ namespace SoundproofWalls
             UpdateHydrophoneSounds();
             UpdateHydrophoneSwitches();
         }
+
+        public static Hull? GetViewTargetHull()
+        {
+            if (IsViewTargetPlayer)
+            {
+                return Character.Controlled.AnimController.GetLimb(LimbType.Head)?.Hull ?? Character.Controlled.CurrentHull;
+            }
+            else
+            {
+                Character? viewedCharacter = LightManager.ViewTarget as Character;
+                if (viewedCharacter != null)
+                {
+                    return viewedCharacter.AnimController.GetLimb(LimbType.Head)?.Hull ?? Character.Controlled.CurrentHull;
+                }
+                else
+                {
+                    return Hull.FindHull(LightManager.ViewTarget.WorldPosition, Character.Controlled.CurrentHull);
+                }
+            }
+        }
+
         public static bool SPW_BiQuad(BiQuad __instance, ref double frequency, ref double sampleRate)
         {
             if (!Config.Enabled || __instance.GetType() != typeof(LowpassFilter)) { return true; };
@@ -1305,7 +1323,8 @@ namespace SoundproofWalls
             {
                 float freqMult = 1;
 
-                if (muffleInfo.Reason != MuffleReason.None) { freqMult -= (1 - GetMuffledFrequencyMultiplier(channel)); }
+                if (muffleInfo.Reason != MuffleReason.None && muffleInfo.Reason != MuffleReason.BothInWater) { freqMult -= (1 - GetMuffledFrequencyMultiplier(channel, 0.5f)); }
+                else if (muffleInfo.Reason == MuffleReason.BothInWater) { freqMult -= (1 - GetMuffledFrequencyMultiplier(channel)); }
                 else if (eavesdropped) { freqMult -= (1 - Config.EavesdroppingPitchMultiplier); }
                 else if (hydrophoned) { freqMult -= (1 - Config.HydrophonePitchMultiplier); }
 
@@ -1327,7 +1346,17 @@ namespace SoundproofWalls
         }
         public static void ProcessLoopingSound(SoundChannel channel, MuffleInfo muffleInfo)
         {
-            if (muffleInfo.IgnoreAll) { return; }
+            float currentGain = muffleInfo.ItemComp?.GetSoundVolume(muffleInfo.ItemComp?.loopingSound) ?? 1;
+            
+            if (muffleInfo.IgnorePitch)
+            {
+                channel.FrequencyMultiplier = 1;
+            }
+            if (muffleInfo.IgnoreAll) 
+            {
+                channel.Gain = currentGain;
+                return; 
+            }
 
             bool eavesdropped = IsEavesdroppedChannel(channel);
             bool hydrophoned = IsUsingHydrophones && muffleInfo.SoundHull?.Submarine != LightManager.ViewTarget?.Submarine;
@@ -1348,7 +1377,6 @@ namespace SoundproofWalls
                 PitchedSounds.Add(channel);
             }
 
-            float currentGain = muffleInfo.ItemComp?.GetSoundVolume(muffleInfo.ItemComp?.loopingSound) ?? 1;
             float gainMult = 1;
 
             gainMult -= (1 - GetCustomGainMultiplier(channel.Sound.Filename));
@@ -1370,9 +1398,14 @@ namespace SoundproofWalls
 
         public static void ProcessVoipSound(VoipSound voipSound, MuffleInfo muffleInfo)
         {
-            if (muffleInfo.IgnoreAll) { return; }
-
             SoundChannel channel = voipSound.soundChannel;
+
+            if (muffleInfo.IgnorePitch)
+            {
+                channel.FrequencyMultiplier = 1;
+            }
+
+            if (muffleInfo.IgnoreAll) { return; }
 
             bool eavesdropped = IsEavesdroppedChannel(channel);
             bool hydrophoned = IsUsingHydrophones && muffleInfo.SoundHull?.Submarine != LightManager.ViewTarget?.Submarine;
@@ -1395,8 +1428,7 @@ namespace SoundproofWalls
             else if (eavesdropped) { gainMult -= (1 - Config.EavesdroppingVoiceVolumeMultiplier); }
             else if (hydrophoned) { gainMult -= (1 - Config.HydrophoneVolumeMultiplier); }
 
-            //float distFalloffMult = channel.Muffled ? 0.7f : 1 - MathUtils.InverseLerp(channel.Near, channel.Far, muffleInfo.Distance);
-            float targetGain = 1 * gainMult; //* distFalloffMult;
+            float targetGain = 1 * gainMult;
             voipSound.Gain = targetGain;
         }
 
@@ -1534,7 +1566,8 @@ namespace SoundproofWalls
                 {
                     if (g.linkedTo[i] is Hull newStartHull && !connectedHulls.Contains(newStartHull))
                     {
-                        float dist = GetApproximateHullDistance(g.Position, endPos, newStartHull, endHull, connectedHulls, distance + Vector2.Distance(startPos, g.Position) * distanceMultiplier, maxDistance);
+                        Vector2 optimalGapPos = GetGapIntersectionPos(startPos, endPos, g);
+                        float dist = GetApproximateHullDistance(optimalGapPos, endPos, newStartHull, endHull, connectedHulls, distance + Vector2.Distance(startPos, optimalGapPos) * distanceMultiplier, maxDistance);
                         if (dist < float.MaxValue)
                         {
                             return dist;
@@ -1544,6 +1577,35 @@ namespace SoundproofWalls
             }
 
             return float.MaxValue;
+        }
+
+
+        public static Vector2 GetGapIntersectionPos(Vector2 startPos, Vector2 endPos, Gap gap)
+        {
+            Vector2 gapPos = gap.Position;
+
+            if (!gap.IsHorizontal)
+            {
+                float gapSize = gap.Rect.Width;
+                float slope = (endPos.Y - startPos.Y) / (endPos.X - startPos.X);
+                float intersectX = (gapPos.Y - startPos.Y + slope * startPos.X) / slope;
+
+                // Clamp the x-coordinate to within the gap's width
+                intersectX = Math.Clamp(intersectX, gapPos.X - gapSize / 2, gapPos.X + gapSize / 2);
+
+                return new Vector2(intersectX, gapPos.Y);
+            }
+            else
+            {
+                float gapSize = gap.Rect.Height;
+                float slope = (endPos.X - startPos.X) / (endPos.Y - startPos.Y);
+                float intersectY = (gapPos.X - startPos.X + slope * startPos.Y) / slope;
+
+                // Clamp the y-coordinate to within the gap's height
+                intersectY = Math.Clamp(intersectY, gapPos.Y - gapSize / 2, gapPos.Y + gapSize / 2);
+
+                return new Vector2(gapPos.X, intersectY);
+            }
         }
 
         public static Hull? GetEavesdroppedHull()
@@ -1666,11 +1728,12 @@ namespace SoundproofWalls
             return 1.0f;
         }
 
-        public static float GetMuffledFrequencyMultiplier(SoundChannel channel) //TODO add config option for controlling this multiplier.
+        //TODO add config option for controlling the strength of this with a multiplier.
+        public static float GetMuffledFrequencyMultiplier(SoundChannel channel, float startingFreq = 0.75f)
         {
             float distance = Vector3.Distance(GameMain.SoundManager.ListenerPosition, new Vector3(GetSoundChannelPos(channel), 0.0f));
             float distanceFromSoundRatio = Math.Clamp(1 - distance / channel.Far, 0, 1);
-            return 0.5f * distanceFromSoundRatio + 0.25f;
+            return startingFreq * distanceFromSoundRatio + 0.25f;
         }
 
         public static bool IsEavesdroppedChannel(SoundChannel channel)
