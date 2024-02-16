@@ -58,8 +58,10 @@
 	<spw_ignoredsounds>Исключённые от обработок звуки</spw_ignoredsounds>
 	<spw_lowpassignoredsounds>Исключённые звуки (для фильтра нижних частот)</spw_lowpassignoredsounds>
 	<spw_pitchignoredsounds>Исключённые звуки (для изменения тона)</spw_pitchignoredsounds>
+	<spw_pathignoredsounds>Исключённые звуки (для игнорирования стены)</spw_pathignoredsounds>
 	<spw_waterignoredsounds>Исключённые звуки (для водяных эффектов)</spw_waterignoredsounds>
 	<spw_submersionignoredsounds>Исключённые звуки (подводные эффекты)</spw_submersionignoredsounds>
+	<spw_bubbleignorednames>Игнорируемые имена пузырьков</spw_bubbleignorednames>
 
 	<spw_nichesettings>Нишевые настройки</spw_nichesettings>
 	<spw_mufflesubmergedplayer>Приглушивать погруженных игроков</spw_mufflesubmergedplayer>

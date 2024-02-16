@@ -58,8 +58,10 @@
 	<spw_ignoredsounds>Ignorierte Geräusche</spw_ignoredsounds>
 	<spw_lowpassignoredsounds>Dämpfung Ignorierte geräusche</spw_lowpassignoredsounds>
 	<spw_pitchignoredsounds>Tonhöhe ignorierter Geräusche</spw_pitchignoredsounds>
+	<spw_pathignoredsounds>Die Wand ignorierte Geräusche</spw_pathignoredsounds>
 	<spw_waterignoredsounds>Wasser ignorierte Geräusche</spw_waterignoredsounds>
 	<spw_submersionignoredsounds>Unterwasser ignorierte Geräusche</spw_submersionignoredsounds>
+	<spw_bubbleignorednames>Ignorierte Bubble-Namen</spw_bubbleignorednames>
 
 	<spw_nichesettings>Diverse Einstellungen</spw_nichesettings>
 	<spw_mufflesubmergedplayer>Spieler unterwasser dämpfen</spw_mufflesubmergedplayer>

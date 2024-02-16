@@ -58,8 +58,10 @@
 	<spw_ignoredsounds>Ignored Sounds</spw_ignoredsounds>
 	<spw_lowpassignoredsounds>Lowpass Ignored Sounds</spw_lowpassignoredsounds>
 	<spw_pitchignoredsounds>Pitch Ignored Sounds</spw_pitchignoredsounds>
+	<spw_pathignoredsounds>Wall Ignored Sounds</spw_pathignoredsounds>
 	<spw_waterignoredsounds>Water Ignored Sounds</spw_waterignoredsounds>
 	<spw_submersionignoredsounds>Submersion Ignored Sounds</spw_submersionignoredsounds>
+	<spw_bubbleignorednames>Bubble Ignored Names</spw_bubbleignorednames>
 
 	<spw_nichesettings>Niche Settings</spw_nichesettings>
 	<spw_mufflesubmergedplayer>Muffle Submerged Player</spw_mufflesubmergedplayer>

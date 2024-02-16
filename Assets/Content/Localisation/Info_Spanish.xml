@@ -58,8 +58,10 @@
 	<spw_ignoredsounds>Sonidos Ignorados</spw_ignoredsounds>
 	<spw_lowpassignoredsounds>Sonidos Amortiguados Ignorados</spw_lowpassignoredsounds>
 	<spw_pitchignoredsounds>Sonidos de Tono Ignorados</spw_pitchignoredsounds>
+	<spw_pathignoredsounds>Sonidos Ignorados de la Pared</spw_pathignoredsounds>
 	<spw_waterignoredsounds>Sonidos de Agua Ignorados</spw_waterignoredsounds>
 	<spw_submersionignoredsounds>Sonidos Sumergidos Ignorados</spw_submersionignoredsounds>
+	<spw_bubbleignorednames>Nombres de Burbujas Ignorados</spw_bubbleignorednames>
 
 	<spw_nichesettings>Opciones de Nicho</spw_nichesettings>
 	<spw_mufflesubmergedplayer>Amortiguar Jugadores Sumergidos</spw_mufflesubmergedplayer>

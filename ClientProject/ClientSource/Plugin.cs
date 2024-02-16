@@ -264,6 +264,7 @@ namespace SoundproofWalls
             public MuffleReason Reason = MuffleReason.None;
             public float Distance;
 
+            public bool IgnorePath = false;
             public bool IgnoreWater = false;
             public bool IgnoreSubmersion = false;
             public bool IgnorePitch = false;
@@ -283,7 +284,7 @@ namespace SoundproofWalls
                 VoiceOwner = voiceOwner;
                 string filename = Channel.Sound.Filename;
 
-                if (skipProcess) 
+                if (skipProcess && Channel.Category != "voip") 
                 { 
                     IgnorePitch = true; 
                 }
@@ -293,6 +294,7 @@ namespace SoundproofWalls
                 }
                 else
                 {
+                    IgnorePath = SoundIgnoresPath(filename);
                     IgnoreWater = SoundIgnoresWater(filename);
                     IgnoreSubmersion = SoundIgnoresSubmersion(filename);
                     IgnorePitch = dontPitch || SoundIgnoresPitch(filename);
@@ -316,7 +318,7 @@ namespace SoundproofWalls
 
                 Character character = Character.Controlled;
                 Character? player = VoiceOwner?.Character;
-                Limb? playerHead = player?.AnimController?.GetLimb(LimbType.Head);
+                Limb? playerHead = player?.AnimController?.GetLimb(LimbType.Head); // No need to default to mainLimb.
 
                 Vector2 soundWorldPos = playerHead?.WorldPosition ?? GetSoundChannelPos(Channel);
                 SoundHull = soundHull ?? Hull.FindHull(soundWorldPos, player?.CurrentHull ?? character?.CurrentHull);
@@ -331,7 +333,7 @@ namespace SoundproofWalls
 
                 if (messageType == ChatMessageType.Radio)
                 {
-                    if (soundInWater && player.OxygenAvailable < 95)
+                    if (soundInWater && player.OxygenAvailable < 95 && !PlayerIgnoresBubbles(player.Name))
                     {
                         Reason = MuffleReason.SoundInWater;
                         Muffled = true;
@@ -349,8 +351,8 @@ namespace SoundproofWalls
                 }
 
                 Hull? listenHull = EavesdroppedHull ?? ViewTargetHull;
-                Vector2 listenPos = IsViewTargetPlayer ? character.AnimController.GetLimb(LimbType.Head).Position : LightManager.ViewTarget.Position;
-                Vector2 listenWorldPos = IsViewTargetPlayer ? character.AnimController.GetLimb(LimbType.Head).WorldPosition : LightManager.ViewTarget.WorldPosition;
+                Vector2 listenPos = IsViewTargetPlayer ? character.AnimController.GetLimb(LimbType.Head)?.Position ?? character.AnimController.MainLimb.Position : LightManager.ViewTarget.Position;
+                Vector2 listenWorldPos = IsViewTargetPlayer ? character.AnimController.GetLimb(LimbType.Head)?.WorldPosition ?? character.AnimController.MainLimb.WorldPosition : LightManager.ViewTarget.WorldPosition;
 
                 if (IgnoreAll)
                 {
@@ -368,7 +370,8 @@ namespace SoundproofWalls
                 }
 
                 // Gets path to sound. Returns MaxValue if no path or out of range.
-                Distance = GetApproximateDistance(listenPos, soundPos, listenHull, SoundHull, Channel.Far);
+                Distance = !IgnorePath ? GetApproximateDistance(listenPos, soundPos, listenHull, SoundHull, Channel.Far) : Vector2.Distance(listenPos, soundPos);
+                
                 if (Distance == float.MaxValue)
                 {
                     Muffled = !IgnoreLowpass;
@@ -426,7 +429,7 @@ namespace SoundproofWalls
             bool shouldPlay = soundInWater && player.OxygenAvailable < 95;
             Hull limbHull = playerHead.Hull;
 
-            if (shouldPlay)
+            if (shouldPlay && !PlayerIgnoresBubbles(player.Name))
             {
                 if (!isPlaying)
                 {
@@ -469,6 +472,7 @@ namespace SoundproofWalls
             }
             else if (isPlaying)
             {
+                bubbleChannel.Looping = false;
                 bubbleChannel.FadeOutAndDispose();
                 BubbleSoundChannels.Remove(voipChannel);
             }
@@ -854,8 +858,6 @@ namespace SoundproofWalls
 
         public static bool SPW_VoipClient_SendToServer(VoipClient __instance)
         {
-            //return true; // Currently disabled.
-
             if (!Config.Enabled) { return true; };
             if (GameSettings.CurrentConfig.Audio.VoiceSetting == VoiceMode.Disabled)
             {
@@ -885,10 +887,11 @@ namespace SoundproofWalls
             if (DateTime.Now >= __instance.lastSendTime + VoipConfig.SEND_INTERVAL)
             {
                 Character character = __instance.gameClient.Character;
-                if (character != null) {
+                if (character != null)
+                {
                     Limb playerHead = character.AnimController.GetLimb(LimbType.Head) ?? character.AnimController.MainLimb;
                     Hull limbHull = playerHead.Hull;
-                    if (character.OxygenAvailable < 90 && SoundInWater(playerHead.Position, limbHull) && character.SpeechImpediment < 100)
+                    if (character.OxygenAvailable < 90 && SoundInWater(playerHead.Position, limbHull) && character.SpeechImpediment < 100 && !PlayerIgnoresBubbles(character.Name))
                     {
                         GameMain.ParticleManager.CreateParticle(
                             "bubbles",
@@ -1010,7 +1013,8 @@ namespace SoundproofWalls
                     SoundChannelMuffleInfo[channel] = muffleInfo;
                 }
 
-                muffleInfo.VoiceOwner = client;
+                muffleInfo.VoiceOwner = client; //TODO might be unnecessary now.
+
                 muffleInfo.Update(client.Character.CurrentHull, messageType: messageType);
 
                 client.VoipSound.UseMuffleFilter = muffleInfo.Muffled;
@@ -1038,13 +1042,13 @@ namespace SoundproofWalls
 
         public static void SPW_UpdateVoipSound(Client __instance)
         {
-            if (!Config.Enabled || __instance?.VoipSound?.soundChannel == null) { return; }
+            if (!Config.Enabled || __instance?.VoipSound?.soundChannel == null || __instance.VoipSound.soundChannel.FadingOutAndDisposing == true || !__instance.VoipSound.soundChannel.IsPlaying) { return; }
 
             VoipSound voipSound = __instance.VoipSound;
 
             if (!SoundChannelMuffleInfo.TryGetValue(voipSound.soundChannel, out MuffleInfo muffleInfo))
             {
-                muffleInfo = new MuffleInfo(voipSound.soundChannel);
+                muffleInfo = new MuffleInfo(voipSound.soundChannel, soundHull: __instance.Character?.CurrentHull, voiceOwner: __instance);
                 SoundChannelMuffleInfo[voipSound.soundChannel] = muffleInfo;
             }
             ProcessVoipSound(voipSound, muffleInfo);
@@ -1059,6 +1063,7 @@ namespace SoundproofWalls
             HydrophoneSoundChannels.Remove(__instance);
             if (BubbleSoundChannels.TryGetValue(__instance, out SoundChannel bubbleChannel))
             {
+                bubbleChannel.Looping = false;
                 bubbleChannel.FadeOutAndDispose();
                 BubbleSoundChannels.Remove(__instance);
             }
@@ -1183,7 +1188,7 @@ namespace SoundproofWalls
         public static void SPW_SoundChannel(SoundChannel __instance)
         {
             SoundChannel channel = __instance;
-            if (!Config.Enabled || !RoundStarted || channel == null) { return; }
+            if (!Config.Enabled || !RoundStarted || channel == null || channel.Category == "voip") { return; }
 
             MuffleInfo muffleInfo = new MuffleInfo(channel, skipProcess: !channel.Muffled);
 
@@ -1648,6 +1653,20 @@ namespace SoundproofWalls
             return null;
         }
 
+        //TODO Create one function for all of these SoundIgnoresX functions.
+        public static bool SoundIgnoresPath(string filename)
+        {
+            string f = filename.ToLower();
+            foreach (string sound in Config.PathIgnoredSounds)
+            {
+                if (f.Contains(sound.ToLower()))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public static bool SoundIgnoresWater(string filename)
         {
             string f = filename.ToLower();
@@ -1726,6 +1745,19 @@ namespace SoundproofWalls
             }
 
             return 1.0f;
+        }
+
+        public static bool PlayerIgnoresBubbles(string playername)
+        {
+            string n = playername.ToLower();
+            foreach (string name in Config.BubbleIgnoredNames)
+            {
+                if (n.Contains(name.ToLower()))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         //TODO add config option for controlling the strength of this with a multiplier.
@@ -1914,6 +1946,10 @@ namespace SoundproofWalls
         {
         };
 
+        public HashSet<string> PathIgnoredSounds { get; set; } = new HashSet<string>
+        {
+        };
+
         // Ignore sounds in water without player - Underwater sounds that are NOT occluded when propagating from water to air.
         public HashSet<string> WaterIgnoredSounds { get; set; } = new HashSet<string>
         {
@@ -1935,6 +1971,10 @@ namespace SoundproofWalls
             "sonardecoy",
             "alienturret",
             "alien_artifactholderloop"
+        };
+
+        public HashSet<string> BubbleIgnoredNames { get; set; } = new HashSet<string>
+        {
         };
 
         // Extra settings
@@ -2541,6 +2581,33 @@ namespace SoundproofWalls
                     return true;
                 };
 
+                // Path Ignored Sounds:
+                GUITextBlock textBlockPathIS = EasySettings.TextBlock(list, $"{TextManager.Get("spw_pathignoredsounds").Value}{GetServerHashSetString(nameof(config.PathIgnoredSounds))}");
+                GUITextBox soundListPathIS = EasySettings.MultiLineTextBox(list.Content.RectTransform, FormatDictJsonTextBox(JsonSerializer.Serialize(config.PathIgnoredSounds)), 0.09f);
+                soundListPathIS.OnTextChangedDelegate = (textBox, text) =>
+                {
+                    try
+                    {
+                        config.PathIgnoredSounds = JsonSerializer.Deserialize<HashSet<string>>(textBox.Text);
+                        ConfigManager.SaveConfig(config);
+                        textBlockPathIS.Text = TextManager.Get("spw_pathignoredsounds").Value;
+                    }
+                    catch (JsonException)
+                    {
+                        textBlockPathIS.Text = $"{TextManager.Get("spw_pathignoredsounds").Value} ({TextManager.Get("spw_invalidinput").Value})";
+                    }
+                    return true;
+                };
+                // Reset button:
+                button = new GUIButton(new RectTransform(new Vector2(1, 0.2f), list.Content.RectTransform), TextManager.Get("spw_reset").Value, Alignment.Center, "GUIButtonSmall");
+                button.OnClicked = (sender, args) =>
+                {
+                    config.PathIgnoredSounds = defaultConfig.PathIgnoredSounds;
+                    ConfigManager.SaveConfig(config);
+                    soundListPathIS.Text = FormatDictJsonTextBox(JsonSerializer.Serialize(config.PathIgnoredSounds));
+                    return true;
+                };
+
                 // Water Ignored Sounds:
                 GUITextBlock textBlockWIS = EasySettings.TextBlock(list, $"{TextManager.Get("spw_waterignoredsounds").Value}{GetServerHashSetString(nameof(config.WaterIgnoredSounds))}");
                 GUITextBox soundListWIS = EasySettings.MultiLineTextBox(list.Content.RectTransform, FormatDictJsonTextBox(JsonSerializer.Serialize(config.WaterIgnoredSounds)), 0.09f);
@@ -2592,6 +2659,33 @@ namespace SoundproofWalls
                     config.SubmersionIgnoredSounds = defaultConfig.SubmersionIgnoredSounds;
                     ConfigManager.SaveConfig(config);
                     soundListSIS.Text = FormatDictJsonTextBox(JsonSerializer.Serialize(config.SubmersionIgnoredSounds));
+                    return true;
+                };
+
+                // Bubble Ignored Players:
+                GUITextBlock textBlockBIP = EasySettings.TextBlock(list, $"{TextManager.Get("spw_bubbleignorednames").Value}{GetServerHashSetString(nameof(config.BubbleIgnoredNames))}");
+                GUITextBox soundListBIP = EasySettings.MultiLineTextBox(list.Content.RectTransform, FormatDictJsonTextBox(JsonSerializer.Serialize(config.BubbleIgnoredNames)), 0.09f);
+                soundListBIP.OnTextChangedDelegate = (textBox, text) =>
+                {
+                    try
+                    {
+                        config.BubbleIgnoredNames = JsonSerializer.Deserialize<HashSet<string>>(textBox.Text);
+                        ConfigManager.SaveConfig(config);
+                        textBlockBIP.Text = TextManager.Get("spw_bubbleignorednames").Value;
+                    }
+                    catch (JsonException)
+                    {
+                        textBlockBIP.Text = $"{TextManager.Get("spw_bubbleignorednames").Value} ({TextManager.Get("spw_invalidinput").Value})";
+                    }
+                    return true;
+                };
+                // Reset button:
+                button = new GUIButton(new RectTransform(new Vector2(1, 0.2f), list.Content.RectTransform), TextManager.Get("spw_reset").Value, Alignment.Center, "GUIButtonSmall");
+                button.OnClicked = (sender, args) =>
+                {
+                    config.BubbleIgnoredNames = defaultConfig.BubbleIgnoredNames;
+                    ConfigManager.SaveConfig(config);
+                    soundListBIP.Text = FormatDictJsonTextBox(JsonSerializer.Serialize(config.BubbleIgnoredNames));
                     return true;
                 };
 

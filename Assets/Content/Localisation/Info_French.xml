@@ -58,8 +58,10 @@
 	<spw_ignoredsounds>Sons ignorés</spw_ignoredsounds>
 	<spw_lowpassignoredsounds>Sons passe-bas ignorés</spw_lowpassignoredsounds>
 	<spw_pitchignoredsounds>Hauteur sonore ignorées</spw_pitchignoredsounds>
+	<spw_pathignoredsounds>Sons ignorés par le mur</spw_pathignoredsounds>
 	<spw_waterignoredsounds>Sons aquatiques ignorés</spw_waterignoredsounds>
 	<spw_submersionignoredsounds>Sons submergés ignorés</spw_submersionignoredsounds>
+	<spw_bubbleignorednames>Noms ignorés des bulles</spw_bubbleignorednames>
 
 	<spw_nichesettings>Paramètres spécifiques</spw_nichesettings>
 	<spw_mufflesubmergedplayer>Etouffer le son quand submergé</spw_mufflesubmergedplayer>
