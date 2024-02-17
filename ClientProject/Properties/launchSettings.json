@@ -6,6 +6,9 @@
     "Profile 1": {
       "commandName": "Executable",
       "executablePath": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Barotrauma\\Barotrauma.exe"
+    },
+    "Profile 2": {
+      "commandName": "Project"
     }
   }
 }

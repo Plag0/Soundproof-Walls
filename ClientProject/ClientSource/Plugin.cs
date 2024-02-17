@@ -64,6 +64,7 @@ namespace SoundproofWalls
         // Key is the player's voip sound. Value is the bubble sounds.
         static Dictionary<SoundChannel, SoundChannel> BubbleSoundChannels = new Dictionary<SoundChannel, SoundChannel>();
 
+        static readonly object pitchedSoundsLock = new object();
         static HashSet<SoundChannel> PitchedSounds = new HashSet<SoundChannel>();
 
         public void InitClient()
@@ -98,7 +99,7 @@ namespace SoundproofWalls
                 KillSPW();
                 return null;
             });
-
+            
             // Think postfix patch
             harmony.Patch(
                 typeof(GameMain).GetMethod(nameof(GameMain.Update), BindingFlags.Instance | BindingFlags.NonPublic),
@@ -192,10 +193,14 @@ namespace SoundproofWalls
                 null,
                 new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_Dispose))));
 
+#if !LINUX
             // Draw prefix patch
+            // A line in this method causes MonoMod to crash on Linux due to an unmanaged PAL_SEHException
+            // https://github.com/dotnet/runtime/issues/78271
             harmony.Patch(
                 typeof(GUI).GetMethod(nameof(GUI.Draw)),
                 new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_Draw))));
+#endif
 
             // TogglePauseMenu postfix
             harmony.Patch(
@@ -734,12 +739,12 @@ namespace SoundproofWalls
 
         }
 
+        // Called at the end of a round or when Lua is reloaded.
         public static void KillSPW()
         {
             SoundsLoaded = false;
             SoundsLoadedDelayTime = 3 * 60;
             SoundChannelMuffleInfo.Clear();
-            PitchedSounds.Clear();
             DisposeAllBubbleChannels();
 
             foreach (var kvp in HydrophoneSoundChannels)
@@ -747,6 +752,11 @@ namespace SoundproofWalls
                 kvp.Key.FadeOutAndDispose();
             }
             HydrophoneSoundChannels.Clear();
+
+            lock (pitchedSoundsLock)
+            {
+                PitchedSounds.Clear();
+            }
         }
 
         public static void PlayHydrophoneSounds()
@@ -1057,8 +1067,9 @@ namespace SoundproofWalls
         public static void SPW_Dispose(SoundChannel __instance)
         {
             if (!Config.Enabled) { return; };
+
             __instance.Looping = false;
-            PitchedSounds.Remove(__instance);
+
             SoundChannelMuffleInfo.Remove(__instance);
             HydrophoneSoundChannels.Remove(__instance);
             if (BubbleSoundChannels.TryGetValue(__instance, out SoundChannel bubbleChannel))
@@ -1066,6 +1077,10 @@ namespace SoundproofWalls
                 bubbleChannel.Looping = false;
                 bubbleChannel.FadeOutAndDispose();
                 BubbleSoundChannels.Remove(__instance);
+            }
+            lock (pitchedSoundsLock)
+            {
+                PitchedSounds.Remove(__instance);
             }
         }
 
@@ -1083,11 +1098,14 @@ namespace SoundproofWalls
         {
             if (!Config.Enabled || !RoundStarted)
             {
-                foreach (SoundChannel pitchedChannel in PitchedSounds)
+                lock (pitchedSoundsLock)
                 {
-                    pitchedChannel.FrequencyMultiplier = 1.0f;
+                    foreach (SoundChannel pitchedChannel in PitchedSounds)
+                    {
+                        pitchedChannel.FrequencyMultiplier = 1.0f;
+                    }
+                    PitchedSounds.Clear();
                 }
-                PitchedSounds.Clear();
 
                 DisposeAllBubbleChannels();
                 return;
@@ -1378,8 +1396,11 @@ namespace SoundproofWalls
                 if (EarsInWater && muffleInfo.Reason != MuffleReason.None) { freqMult -= (1 - Config.SubmergedPitchMultiplier); }
                 if (IsWearingDivingSuit) { freqMult -= (1 - Config.DivingSuitPitchMultiplier); }
 
-                channel.FrequencyMultiplier = Math.Clamp(1 * freqMult, 0.25f, 4);
-                PitchedSounds.Add(channel);
+                lock (pitchedSoundsLock)
+                {
+                    channel.FrequencyMultiplier = Math.Clamp(1 * freqMult, 0.25f, 4);
+                    PitchedSounds.Add(channel);
+                }
             }
 
             float gainMult = 1;
@@ -1404,6 +1425,8 @@ namespace SoundproofWalls
         public static void ProcessVoipSound(VoipSound voipSound, MuffleInfo muffleInfo)
         {
             SoundChannel channel = voipSound.soundChannel;
+            
+            if (channel == null) { return; }
 
             if (muffleInfo.IgnorePitch)
             {
@@ -1422,8 +1445,11 @@ namespace SoundproofWalls
                 if (muffleInfo.Reason != MuffleReason.None) { freqMult -= (1 - Config.MuffledVoicePitchMultiplier); }
                 else { freqMult -= (1 - Config.UnmuffledVoicePitchMultiplier); }
 
-                channel.FrequencyMultiplier = Math.Clamp(1 * freqMult, 0.25f, 4);
-                PitchedSounds.Add(channel);
+                lock (pitchedSoundsLock)
+                {
+                    channel.FrequencyMultiplier = Math.Clamp(1 * freqMult, 0.25f, 4);
+                    PitchedSounds.Add(channel);
+                }
             }
 
             float gainMult = 1;
