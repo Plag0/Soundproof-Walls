@@ -5,5 +5,7 @@
 	<Text file="%ModDir%/Content/Localisation/Info_Spanish.xml" />
 	<Text file="%ModDir%/Content/Localisation/Info_German.xml" />
 	<Text file="%ModDir%/Content/Localisation/Info_French.xml" />
+	<Text file="%ModDir%/Content/Localisation/Info_Japanese.xml" />
+	<Text file="%ModDir%/Content/Localisation/Info_Polish.xml" />
 	<Item file="%ModDir%/Content/dummyitem.xml" />
 </contentpackage>

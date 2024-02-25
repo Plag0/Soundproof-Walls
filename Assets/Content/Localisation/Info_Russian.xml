@@ -52,6 +52,9 @@
 	<spw_unsubmergedwaterambiencevolume>Громкость амбиента воды (без погружения)</spw_unsubmergedwaterambiencevolume>
 	<spw_submergedwaterambiencevolume>Громкость амбиента воды (при погружении)</spw_submergedwaterambiencevolume>
 	<spw_hydrophonewaterambiencevolume>Громкость амбиента воды (гидрофон)</spw_hydrophonewaterambiencevolume>
+	<spw_waterambiencetransitionspeed>Скорость перехода амбиента воды</spw_waterambiencetransitionspeed>
+	<spw_waterambiencetransitionspeedtooltip>Скорость, с которой амбиент воды переходит между предустановками громкости</spw_waterambiencetransitionspeedtooltip>
+
 
 	<spw_advancedsoundsettings>Продвинутые настройки звука</spw_advancedsoundsettings>
 	<spw_soundvolumemultipliers>Множитель громкости звуков</spw_soundvolumemultipliers>

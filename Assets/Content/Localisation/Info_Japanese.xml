@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<infotexts language="Japanese" nowhitespace="false" translatedname="日本語">
+
+	<spw_settings>防音の設定</spw_settings>
+
+	<spw_generalsettings>一般的な設定</spw_generalsettings>
+	<spw_enabled>オン</spw_enabled>
+	<spw_disabled>オフ</spw_disabled>
+	<spw_enabledtooltip>全部のモッド機能切り替える</spw_enabledtooltip>
+	<spw_syncsettings>シンクロ（同期化）設定</spw_syncsettings>
+	<spw_syncsettingstooltip>ホストと他のプレイヤーのコンフィグが同期を切り替える</spw_syncsettingstooltip>
+	<spw_syncsettingsalert>※このサーバーがはシンクロ可能性があります。全部プレイヤーがホストの設定を自動的に使います（カッコにホストの設定が値）</spw_syncsettingsalert>
+	<spw_focustargetaudio>対象のオーディオに焦点を当てる</spw_focustargetaudio>
+	<spw_focustargetaudiotooltip>対象としては音を聞こえて模擬する（カメラととかターレットとして音が聞こえる）</spw_focustargetaudiotooltip>
+	<spw_talkingragdolls>話せるラグドール</spw_talkingragdolls>
+	<spw_talkingragdollstooltip>ラグドールの場合プレイヤーのが聞ける（無意識の場合が話せない）</spw_talkingragdollstooltip>
+	<spw_lowpassfrequency>低周波</spw_lowpassfrequency>
+	<spw_lowpassfrequencytooltip>音がこもり始める周波　（ゲーム中に変わるとゲームは一瞬止まっただけです）</spw_lowpassfrequencytooltip>
+	<spw_voicelowpassfrequency>声の低周波</spw_voicelowpassfrequency>
+	<spw_voicelowpassfrequencytooltip>声がこもり始める周波</spw_voicelowpassfrequencytooltip>
+	<spw_soundrange>音の範囲</spw_soundrange>
+	<spw_soundrangetooltip>非構成音の範囲</spw_soundrangetooltip>
+	<spw_voicerange>声の範囲</spw_voicerange>
+	<spw_radiorange>ラジオの範囲</spw_radiorange>
+
+	<spw_volumesettings>音量の設定</spw_volumesettings>
+	<spw_muffledvoicevolume>こもり声の音量</spw_muffledvoicevolume>
+	<spw_muffledvoicevolumetooltip>壁とか水後ろから低周波のプレイヤー声の音量</spw_muffledvoicevolumetooltip>
+	<spw_muffledsoundvolume>こもり音の音量</spw_muffledsoundvolume>
+	<spw_muffledsoundvolumetooltip>壁とか水後ろから繰り返しないこもり音の音量</spw_muffledsoundvolumetooltip>
+	<spw_muffledcomponentvolume>こもっている構成の音量</spw_muffledcomponentvolume>
+	<spw_muffledcomponentvolumetooltip>壁とか水後ろから繰り返し低周波の状態結果／構成の音量</spw_muffledcomponentvolumetooltip>
+	<spw_unmuffledcomponentvolume>こもっていない構成の音量</spw_unmuffledcomponentvolume>
+	<spw_submergedvolume>水浸かりの音量</spw_submergedvolume>
+	<spw_submergedvolumetooltip>同じ水域にいて水浸かりの音の音量</spw_submergedvolumetooltip>
+
+	<spw_eavesdroppingsettings>盗み聞き設定</spw_eavesdroppingsettings>
+	<spw_eavesdroppingbind>聞くキーバインド</spw_eavesdroppingbind>
+	<spw_eavesdroppingsoundvolume>盗み聞き音の音量</spw_eavesdroppingsoundvolume>
+	<spw_eavesdroppingvoicevolume>盗み聞き声の音量</spw_eavesdroppingvoicevolume>
+	<spw_eavesdroppingpitch>盗み聞きの音高</spw_eavesdroppingpitch>
+	<spw_eavesdroppingmaxdistance>盗み聞きの最大範囲</spw_eavesdroppingmaxdistance>
+	<spw_eavesdroppingmaxdistancetooltip>キャラクター頭から盗み聞きできるの最大範囲</spw_eavesdroppingmaxdistancetooltip>
+
+	<spw_hydrophonesettings>聴音器の設定</spw_hydrophonesettings>
+	<spw_hydrophonerange>聴音器の範囲</spw_hydrophonerange>
+	<spw_hydrophonerangetooltip>水中で動きの音の範囲と、潜水艦外にのすべての音に追加される範囲</spw_hydrophonerangetooltip>
+	<spw_hydrophonevolume>聴音器の音量</spw_hydrophonevolume>
+	<spw_hydrophonepitch>聴音器の音高</spw_hydrophonepitch>
+
+	<spw_ambiencesettings>環境の設定</spw_ambiencesettings>
+	<spw_unsubmergedwaterambiencevolume>水以外に環境の音量</spw_unsubmergedwaterambiencevolume>
+	<spw_submergedwaterambiencevolume>水中の環境の音量</spw_submergedwaterambiencevolume>
+	<spw_hydrophonewaterambiencevolume>聴音器の水環境の音量</spw_hydrophonewaterambiencevolume>
+	<spw_waterambiencetransitionspeed>水の雰囲気の遷移速度</spw_waterambiencetransitionspeed>
+	<spw_waterambiencetransitionspeedtooltip>水の雰囲気がボリュームプリセット間で遷移する速度</spw_waterambiencetransitionspeedtooltip>
+
+	<spw_advancedsoundsettings>詳細の音設定</spw_advancedsoundsettings>
+	<spw_soundvolumemultipliers>音量の倍率</spw_soundvolumemultipliers>
+	<spw_ignoredsounds>無視の音</spw_ignoredsounds>
+	<spw_lowpassignoredsounds>低周波の無視の音</spw_lowpassignoredsounds>
+	<spw_pitchignoredsounds>音高の無視の音</spw_pitchignoredsounds>
+	<spw_pathignoredsounds>壁的の無視の音</spw_pathignoredsounds>
+	<spw_waterignoredsounds>水の無視の音</spw_waterignoredsounds>
+	<spw_submersionignoredsounds>水中の無視の音</spw_submersionignoredsounds>
+	<spw_bubbleignorednames>バブルの無視の名前</spw_bubbleignorednames>
+
+	<spw_nichesettings>雑の設定</spw_nichesettings>
+	<spw_mufflesubmergedplayer>水中のプレイヤーの音を消す</spw_mufflesubmergedplayer>
+	<spw_mufflesubmergedplayertooltip>頭は水中にいると音を消す（推奨）</spw_mufflesubmergedplayertooltip>
+	<spw_mufflesubmergedviewtarget>水中の対象を消す</spw_mufflesubmergedviewtarget>
+	<spw_mufflesubmergedviewtargettooltip>対象は水中にいると音を消す（対象がカメラとかタレントとして）</spw_mufflesubmergedviewtargettooltip>
+	<spw_mufflesubmergedsounds>水中の音を消す</spw_mufflesubmergedsounds>
+	<spw_mufflesubmergedsoundstooltip>水中に物の音を消す（推奨）</spw_mufflesubmergedsoundstooltip>
+	<spw_muffleflowsounds>流れる水の音を消す</spw_muffleflowsounds>
+	<spw_muffleflowsoundstooltip>漏洩から水の音を消す切り替える</spw_muffleflowsoundstooltip>
+	<spw_mufflefiresounds>火の音を消す</spw_mufflefiresounds>
+	<spw_mufflefiresoundstooltip>火の音を消す切り替える</spw_mufflefiresoundstooltip>
+	<spw_divingsuitpitch>潜水服の音高</spw_divingsuitpitch>
+	<spw_divingsuitpitchtooltip>潜水服を着ってるの音高（加算的に積み重なる）</spw_divingsuitpitchtooltip>
+	<spw_submergedpitch>水中の音高</spw_submergedpitch>
+	<spw_submergedpitchtooltip>水中にいると音の音高（加算的に積み重なる）</spw_submergedpitchtooltip>
+	<spw_muffledvoicepitch>こもっている声の音高</spw_muffledvoicepitch>
+	<spw_muffledvoicepitchtooltip>非推奨、ゲームの音がおかしくなるかもしれません。</spw_muffledvoicepitchtooltip>
+	<spw_unmuffledvoicepitch>こもっていない声の音高</spw_unmuffledvoicepitch>
+	<spw_unmuffledvoicepitchtooltip>非推奨、ゲームの音がおかしくなるかもしれません。</spw_unmuffledvoicepitchtooltip>
+	<spw_muffledcomponentpitch>こもっている構成の音高</spw_muffledcomponentpitch>
+	<spw_unmuffledcomponentpitch>こもっていない構成の音高</spw_unmuffledcomponentpitch>
+	<spw_hidesettings>メニューのボタンを隠れる</spw_hidesettings>
+	<spw_hidesettingstooltip>注意※：この設定を使うとUIから防音の設定を無くす。このボタンを見直して欲しいならば、コンフィグを消しないとか編まないといけないです。</spw_hidesettingstooltip>
+
+	<spw_updateserverconfig>防音のモッド：ホストは設定を変わりました。サーバーのコンフィグを反映しました。</spw_updateserverconfig>
+	<spw_disableserverconfig>防音のモッド：ホストはシンクロの設定をオフにしました。プレイヤークライエントのコンフィグ設定を優先されるようになりました。</spw_disableserverconfig>
+	<spw_hydrophonemonitoring>聴音器を聞く</spw_hydrophonemonitoring>
+	<spw_listening>視聴中、、、</spw_listening>
+	<spw_invalidinput>無効の入力</spw_invalidinput>
+	<spw_default>（デフォルト）</spw_default>
+	<spw_vanilla>（レギュラー、モッドじゃない）</spw_vanilla>
+	<spw_custom>（カスタム）</spw_custom>
+	<spw_reset>リセット</spw_reset>
+	<spw_resetall>全部リセット</spw_resetall>
+</infotexts>

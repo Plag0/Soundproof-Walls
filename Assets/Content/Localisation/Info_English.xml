@@ -52,7 +52,9 @@
 	<spw_unsubmergedwaterambiencevolume>Unsubmerged Water Ambience Volume</spw_unsubmergedwaterambiencevolume>
 	<spw_submergedwaterambiencevolume>Submerged Water Ambience Volume</spw_submergedwaterambiencevolume>
 	<spw_hydrophonewaterambiencevolume>Hydrophone Water Ambience Volume</spw_hydrophonewaterambiencevolume>
-
+	<spw_waterambiencetransitionspeed>Water Ambience Transition Speed</spw_waterambiencetransitionspeed>
+	<spw_waterambiencetransitionspeedtooltip>The speed at which the water ambience transitions between volume presets</spw_waterambiencetransitionspeedtooltip>
+		
 	<spw_advancedsoundsettings>Advanced Sound Settings</spw_advancedsoundsettings>
 	<spw_soundvolumemultipliers>Sound Volume Multipliers</spw_soundvolumemultipliers>
 	<spw_ignoredsounds>Ignored Sounds</spw_ignoredsounds>

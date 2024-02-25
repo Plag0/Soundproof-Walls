@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<infotexts language="Polish" nowhitespace="false" translatedname="Polski">
+
+	<spw_settings>Ustawienia Soundproof Walls</spw_settings>
+
+	<spw_generalsettings>Ustawienia Ogólne</spw_generalsettings>
+	<spw_enabled>Włączone</spw_enabled>
+	<spw_disabled>Wyłączone</spw_disabled>
+	<spw_enabledtooltip>Przełącza funkcjonowanie całego moda</spw_enabledtooltip>
+	<spw_syncsettings>Ustawienia Synchronizacji</spw_syncsettings>
+	<spw_syncsettingstooltip>Przełącza synchronizację stron klienta i hosta</spw_syncsettingstooltip>
+	<spw_syncsettingsalert>Ten serwer ma włączoną synchronizację ustawień - wszyscy gracze automatycznie przybiorą ustawienia hosta (wartość we wtrąceniach)</spw_syncsettingsalert>
+	<spw_focustargetaudio>Koncentrowanie dźwięku docelowego</spw_focustargetaudio>
+	<spw_focustargetaudiotooltip>Symuluj dźwięk dla pierwszej osoby danego celu (np. słychać to so słyszy kamera czy działko)</spw_focustargetaudiotooltip>
+	<spw_talkingragdolls>Mówienie podczas upadku</spw_talkingragdolls>
+	<spw_talkingragdollstooltip>Włącz dźwięk dla osób w stanie upadku (nie tyczy się stanu ogłuszenia)</spw_talkingragdollstooltip>
+	<spw_lowpassfrequency>Częstotliwość dolnoprzepustowa</spw_lowpassfrequency>
+	<spw_lowpassfrequencytooltip>Częstotliwość narożna używana do tłumienia dźwięków (zmiana tego ustawienia podczas trwania rundy spowoduje zamrożenie gry na krótki okres czasu)</spw_lowpassfrequencytooltip>
+	<spw_voicelowpassfrequency>Częstotliwość dolnoprzepustowa głosu</spw_voicelowpassfrequency>
+	<spw_voicelowpassfrequencytooltip>Częstotliwość narożna używana do tłumienia czatu głowsowego</spw_voicelowpassfrequencytooltip>
+	<spw_soundrange>Zasięg dźwięku</spw_soundrange>
+	<spw_soundrangetooltip>Zasięg dźwięków nieskładowych</spw_soundrangetooltip>
+	<spw_voicerange>Zasięg czatu głosowego</spw_voicerange>
+	<spw_radiorange>Zasięg radia</spw_radiorange>
+
+	<spw_volumesettings>Ustawienia głośności</spw_volumesettings>
+	<spw_muffledvoicevolume>Głośność wytłumionego dźwięku</spw_muffledvoicevolume>
+	<spw_muffledvoicevolumetooltip>Głośność dolnoprzepustowego czatu głosowego za ścianą/powierzchnią wody</spw_muffledvoicevolumetooltip>
+	<spw_muffledsoundvolume>Głośność dźwięków stłumionych</spw_muffledsoundvolume>
+	<spw_muffledsoundvolumetooltip>Głośność dolnoprzepustowych nie powtarzających się dźwięków za ścianą/powierzchnią wody</spw_muffledsoundvolumetooltip>
+	<spw_muffledcomponentvolume>Stłumione dźwięki składowe</spw_muffledcomponentvolume>
+	<spw_muffledcomponentvolumetooltip>Głośność dolnoprzepustowych powtarzających się lub składowych dźwięków za ścianą/powierzchnią wody</spw_muffledcomponentvolumetooltip>
+	<spw_unmuffledcomponentvolume>Głośność dźwięków składowych</spw_unmuffledcomponentvolume>
+	<spw_submergedvolume>Głośność pod zanurzeniem</spw_submergedvolume>
+	<spw_submergedvolumetooltip>Głośność dźwięków wydawanych przez przedmioty zanurzone przy zanurzeniu przedmiotu słuchającego</spw_submergedvolumetooltip>
+
+	<spw_eavesdroppingsettings>Ustawienia podsłuchu</spw_eavesdroppingsettings>
+	<spw_eavesdroppingbind>Klawisz podłuchu</spw_eavesdroppingbind>
+	<spw_eavesdroppingsoundvolume>Głośność dźwięków podczas podsłuchu</spw_eavesdroppingsoundvolume>
+	<spw_eavesdroppingvoicevolume>Głośność czatu głosowego podczas podsłuchu</spw_eavesdroppingvoicevolume>
+	<spw_eavesdroppingpitch>Ton dźwięków podczas podsłuchu</spw_eavesdroppingpitch>
+	<spw_eavesdroppingmaxdistance>Maksymalna odległość podsłuchu</spw_eavesdroppingmaxdistance>
+	<spw_eavesdroppingmaxdistancetooltip>Maksymalna odległość głowy bytu od drzwi do użycia podsłuchu</spw_eavesdroppingmaxdistancetooltip>
+
+	<spw_hydrophonesettings>Ustawienia hydrofonu</spw_hydrophonesettings>
+	<spw_hydrophonerange>Zasięg hydrofonu</spw_hydrophonerange>
+	<spw_hydrophonerangetooltip>Zasięg dźwięków ruchu podwodnego i dodatkowy zasięg dodany do wszystkich dźwięków na zewnątrz łodzi podwodnej</spw_hydrophonerangetooltip>
+	<spw_hydrophonevolume>Głośność hydrofonu</spw_hydrophonevolume>
+	<spw_hydrophonepitch>Ton hydrofonu</spw_hydrophonepitch>
+
+	<spw_ambiencesettings>Ustawienia dźwięków nastroju</spw_ambiencesettings>
+	<spw_unsubmergedwaterambiencevolume>Głośność wody podczas braku zanurzenia</spw_unsubmergedwaterambiencevolume>
+	<spw_submergedwaterambiencevolume>Głośność wody podczas zanurzenia</spw_submergedwaterambiencevolume>
+	<spw_hydrophonewaterambiencevolume>Głośność hydrofonu podczas zanurzenia</spw_hydrophonewaterambiencevolume>
+	<spw_waterambiencetransitionspeed>Prędkość przechodzenia dźwięków nastrojowych wody</spw_waterambiencetransitionspeed>
+	<spw_waterambiencetransitionspeedtooltip>Prędkość z jaką dźwięki nastrojowe wody przechodzą pomiędzy zestawami ustawień dźwięku</spw_waterambiencetransitionspeedtooltip>
+
+	<spw_advancedsoundsettings>Zaawansowane ustawienia dźwięku</spw_advancedsoundsettings>
+	<spw_soundvolumemultipliers>Mnożniki głośności dźwięku</spw_soundvolumemultipliers>
+	<spw_ignoredsounds>Ignorowane dźwięki</spw_ignoredsounds>
+	<spw_lowpassignoredsounds>Ignoroawne dźwięki dolnoprzepustowe</spw_lowpassignoredsounds>
+	<spw_pitchignoredsounds>Ton ignorowanych dźwięków</spw_pitchignoredsounds>
+	<spw_pathignoredsounds>Dźwięki ignorowane przez ściany</spw_pathignoredsounds>
+	<spw_waterignoredsounds>Ignorowane dźwięki wody</spw_waterignoredsounds>
+	<spw_submersionignoredsounds>Ignorowane dźwięki zanurzenia</spw_submersionignoredsounds>
+	<spw_bubbleignorednames>Nazwy ignorowanych przez bąbelki</spw_bubbleignorednames>
+
+	<spw_nichesettings>Ustawienia funkcji ogólnych</spw_nichesettings>
+	<spw_mufflesubmergedplayer>Tłum byty zanurzone</spw_mufflesubmergedplayer>
+	<spw_mufflesubmergedplayertooltip>Tłum dźwięki gdy głowa bytu jest zanurzona (polecane)</spw_mufflesubmergedplayertooltip>
+	<spw_mufflesubmergedviewtarget>Stłumiaj cele widoku podwodnego</spw_mufflesubmergedviewtarget>
+	<spw_mufflesubmergedviewtargettooltip>Tłum dźwięki celu zanurzonego (np. działka, kamery, itp.)</spw_mufflesubmergedviewtargettooltip>
+	<spw_mufflesubmergedsounds>Tłumienie dźwięków zanurzonych</spw_mufflesubmergedsounds>
+	<spw_mufflesubmergedsoundstooltip>Tłum dźwięki znajdujące się pod powierzchnią wody (polecane)</spw_mufflesubmergedsoundstooltip>
+	<spw_muffleflowsounds>Tłum dźwięki przelewania</spw_muffleflowsounds>
+	<spw_muffleflowsoundstooltip>Stłumiaj dźwięki przelewania się wody od przecieków</spw_muffleflowsoundstooltip>
+	<spw_mufflefiresounds>Tłum dźwięki płomieni</spw_mufflefiresounds>
+	<spw_mufflefiresoundstooltip>Tłum dźwięki ognia</spw_mufflefiresoundstooltip>
+	<spw_divingsuitpitch>Ton skafandrów</spw_divingsuitpitch>
+	<spw_divingsuitpitchtooltip>Ton dźwięków podczas noszenia skafandrów (nakłada się addytywnie)</spw_divingsuitpitchtooltip>
+	<spw_submergedpitch>Ton zanurzenia</spw_submergedpitch>
+	<spw_submergedpitchtooltip>Ton dźwięków dla bytów zanurzonych (nakłada się addytywnie)</spw_submergedpitchtooltip>
+	<spw_muffledvoicepitch>Tłumienie czatu głosowego</spw_muffledvoicepitch>
+	<spw_muffledvoicepitchtooltip>Nie polecane. Tylko dla zabawy</spw_muffledvoicepitchtooltip>
+	<spw_unmuffledvoicepitch>Ton dźwięków nietłumionych</spw_unmuffledvoicepitch>
+	<spw_unmuffledvoicepitchtooltip>Nie polecane. Tylko dla zabawy</spw_unmuffledvoicepitchtooltip>
+	<spw_muffledcomponentpitch>Ton tłumionych dźwięków składowych</spw_muffledcomponentpitch>
+	<spw_unmuffledcomponentpitch>Ton nietłumionych dźwięków składowych</spw_unmuffledcomponentpitch>
+	<spw_hidesettings>Skryj menu ustawień</spw_hidesettings>
+	<spw_hidesettingstooltip>Uwaga: Włączenie tego ustawienia spowoduje zniknięcie przycisku "Ustawienia Soundproof" z twojego UI. Będzie potrzeba manualnej edycji pliku konfiguracyjnego w przypadku potrzeby zmiany tego ustawienia.</spw_hidesettingstooltip>
+
+	<spw_updateserverconfig>Ściany Soundproof: Ustawienia modyfikowane przez hosta - ustawienia hosta zostały zaktualizowane</spw_updateserverconfig>
+	<spw_disableserverconfig>Ściany Soundproof: Host disabled setting synchronization - ustawienia lokalne mają teraz priorytet</spw_disableserverconfig>
+	<spw_hydrophonemonitoring>Monitorowanie hydrofonów</spw_hydrophonemonitoring>
+	<spw_listening>Podsłuchiwanie...</spw_listening>
+	<spw_invalidinput>Niepoprawna wartość wprowadzona</spw_invalidinput>
+	<spw_default>(Domyślne)</spw_default>
+	<spw_vanilla>(Vanilla)</spw_vanilla>
+	<spw_custom>(Niestandardowe)</spw_custom>
+	<spw_reset>Przywróć</spw_reset>
+	<spw_resetall>Przywróc wszystkie</spw_resetall>
+</infotexts>

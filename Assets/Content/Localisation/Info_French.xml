@@ -52,6 +52,8 @@
 	<spw_unsubmergedwaterambiencevolume>Volume de l'ambiance aquatique quand hors de l'eau</spw_unsubmergedwaterambiencevolume>
 	<spw_submergedwaterambiencevolume>Volume de l'ambiance aquatique quand submergé</spw_submergedwaterambiencevolume>
 	<spw_hydrophonewaterambiencevolume>Volume de l'ambiance aquatique dans l'hydrophone</spw_hydrophonewaterambiencevolume>
+	<spw_waterambiencetransitionspeed>Vitesse de transition d'ambiance aquatique</spw_waterambiencetransitionspeed>
+	<spw_waterambiencetransitionspeedtooltip>La vitesse à laquelle l'ambiance aquatique passe d'un préréglage de volume à un autre</spw_waterambiencetransitionspeedtooltip>
 
 	<spw_advancedsoundsettings>Paramètres sonores avancés</spw_advancedsoundsettings>
 	<spw_soundvolumemultipliers>Multiplicateur du volume sonore</spw_soundvolumemultipliers>

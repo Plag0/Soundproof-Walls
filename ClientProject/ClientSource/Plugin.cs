@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
+﻿using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using Barotrauma;
 using Barotrauma.Items.Components;
 using Barotrauma.Lights;
@@ -15,8 +10,6 @@ using HarmonyLib;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using System.Text.RegularExpressions;
-using Lidgren.Network;
-using System.Net;
 
 namespace SoundproofWalls
 {
@@ -37,9 +30,16 @@ namespace SoundproofWalls
         static float LastViewTargetHullUpdateTime = 0f;
 
         static bool IsUsingHydrophones;
+        static float hydrophoneEfficiency = 1;
+        static float HydrophoneEfficiency { get { return hydrophoneEfficiency; } set { hydrophoneEfficiency = Math.Clamp(value, 0, 1); } }
         static bool IsViewTargetPlayer;
         public static bool EarsInWater;
         public static bool IsWearingDivingSuit;
+
+        static float LastFlowPathCheckTime = 0f;
+        static float LastFirePathCheckTime = 0f;
+
+        static float LastCorrectionCheckTime = 5f;
 
         static Sound? BubbleSound;
         static Sound? RadioBubbleSound;
@@ -53,15 +53,18 @@ namespace SoundproofWalls
 
         static bool prevWearingSuit = false;
         static bool prevEarsInWater = false;
+        static bool prevUsingHydrophones = false;
+        static bool prevNoPathToFlow = false;
+        static bool prevNoPathToFire = false;
 
         static float LastDrawEavesdroppingTextTime = 0f;
         static float textFade = 0;
 
-        public static Dictionary<SoundChannel, MuffleInfo> SoundChannelMuffleInfo = new Dictionary<SoundChannel, MuffleInfo>();
+        public static ThreadSafeDictionary<SoundChannel, MuffleInfo> SoundChannelMuffleInfo = new ThreadSafeDictionary<SoundChannel, MuffleInfo>();
         static Dictionary<SoundChannel, Character> HydrophoneSoundChannels = new Dictionary<SoundChannel, Character>();
         static Dictionary<Sonar, HydrophoneSwitch> HydrophoneSwitches = new Dictionary<Sonar, HydrophoneSwitch>();
 
-        // Key is the player's voip sound. Value is the bubble sounds.
+        // Key is the player's voip soundchannel. Value is the bubble sounds.
         static Dictionary<SoundChannel, SoundChannel> BubbleSoundChannels = new Dictionary<SoundChannel, SoundChannel>();
 
         static readonly object pitchedSoundsLock = new object();
@@ -99,12 +102,12 @@ namespace SoundproofWalls
                 KillSPW();
                 return null;
             });
-            
-            // Think postfix patch
-            harmony.Patch(
-                typeof(GameMain).GetMethod(nameof(GameMain.Update), BindingFlags.Instance | BindingFlags.NonPublic),
-                null,
-                new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_Update))));
+
+            GameMain.LuaCs.Hook.Add("think", "spw_update", (object[] args) =>
+            {
+                SPW_Update();
+                return null;
+            });
 
             //StartRound postfix patch
             harmony.Patch(
@@ -243,6 +246,11 @@ namespace SoundproofWalls
 
         class HydrophoneSwitch
         {
+            public static Color textDefaultColor = new Color(228, 217, 167);
+            public static Color textDisabledColor = new Color(114, 108, 83);
+            public static Color buttonDefaultColor = new Color(255, 255, 255);
+            public static Color buttonDisabledColor = new Color(127, 127, 127);
+
             public bool State { get; set; }
             public GUIButton? Switch { get; set; }
             public GUITextBlock? TextBlock { get; set; }
@@ -318,6 +326,10 @@ namespace SoundproofWalls
                 {
                     IgnorePitch = true;
                     Muffled = false;
+                    if (Channel.Category == "voip")
+                    {
+                        DisposeAllBubbleChannels();
+                    }
                     return;
                 }
 
@@ -478,7 +490,8 @@ namespace SoundproofWalls
             else if (isPlaying)
             {
                 bubbleChannel.Looping = false;
-                bubbleChannel.FadeOutAndDispose();
+                bubbleChannel.Dispose();
+                bubbleChannel = null;
                 BubbleSoundChannels.Remove(voipChannel);
             }
         }
@@ -488,6 +501,7 @@ namespace SoundproofWalls
             foreach (var kvp in BubbleSoundChannels) 
             {
                 SoundChannel channel = kvp.Value;
+                channel.Looping = false;
                 channel.FadeOutAndDispose();
             }
             BubbleSoundChannels.Clear();
@@ -618,6 +632,20 @@ namespace SoundproofWalls
 
         public static void UpdateHydrophoneSwitches()
         {
+            if (Config.HydrophoneLegacySwitch)
+            {
+                UpdateHydrophoneSwitchesLegacy();
+            }
+            else
+            {
+                UpdateHydrophoneSwitchesNew();
+            }
+
+            
+        }
+
+        public static void UpdateHydrophoneSwitchesLegacy()
+        {
             foreach (var kvp in HydrophoneSwitches)
             {
                 if (kvp.Value.Switch == null || kvp.Value.TextBlock == null) { return; }
@@ -647,6 +675,70 @@ namespace SoundproofWalls
                     instance.correctionTimer = Sonar.CorrectionDelay;
                 }
             }
+        }
+
+        public static void UpdateHydrophoneSwitchesNew()
+        {
+            foreach (var kvp in HydrophoneSwitches)
+            {
+                if (kvp.Value.Switch == null || kvp.Value.TextBlock == null) { return; }
+                Sonar instance = kvp.Key;
+                GUIButton button = kvp.Value.Switch;
+                GUITextBlock textBlock = kvp.Value.TextBlock;
+                bool updated = false;
+                if (instance.CurrentMode == Sonar.Mode.Active)
+                {
+                    LuaCsLogger.Log("1");
+                    IsUsingHydrophones = false;
+                    HydrophoneEfficiency = 0;
+                    if (button.Selected)
+                    {
+                        textBlock.TextColor = InterpolateColor(HydrophoneSwitch.textDisabledColor, HydrophoneSwitch.textDefaultColor, HydrophoneEfficiency);
+                        button.SelectedColor = InterpolateColor(HydrophoneSwitch.buttonDisabledColor, HydrophoneSwitch.buttonDefaultColor, HydrophoneEfficiency);
+                        button.Color = InterpolateColor(HydrophoneSwitch.buttonDisabledColor, HydrophoneSwitch.buttonDefaultColor, HydrophoneEfficiency);
+                        button.HoverColor = InterpolateColor(HydrophoneSwitch.buttonDisabledColor, HydrophoneSwitch.buttonDefaultColor, HydrophoneEfficiency);
+                    }
+                    updated = true;
+                }
+                else if (HydrophoneEfficiency < 1)
+                {
+                    if (instance.CurrentMode != Sonar.Mode.Active) { HydrophoneEfficiency += 0.005f * (HydrophoneEfficiency + 1); }
+                    else { HydrophoneEfficiency = 1; }
+
+                    if (button.Selected)
+                    {
+                        textBlock.TextColor = InterpolateColor(HydrophoneSwitch.textDisabledColor, HydrophoneSwitch.textDefaultColor, HydrophoneEfficiency);
+                        button.SelectedColor = InterpolateColor(HydrophoneSwitch.buttonDisabledColor, HydrophoneSwitch.buttonDefaultColor, HydrophoneEfficiency);
+                        button.Color = InterpolateColor(HydrophoneSwitch.buttonDisabledColor, HydrophoneSwitch.buttonDefaultColor, HydrophoneEfficiency);
+                        button.HoverColor = InterpolateColor(HydrophoneSwitch.buttonDisabledColor, HydrophoneSwitch.buttonDefaultColor, HydrophoneEfficiency);
+
+                    }
+                    else
+                    {
+                        textBlock.TextColor = HydrophoneSwitch.textDefaultColor;
+                        button.SelectedColor = HydrophoneSwitch.buttonDefaultColor;
+                        button.Color = HydrophoneSwitch.buttonDefaultColor;
+                        button.HoverColor = HydrophoneSwitch.buttonDefaultColor;
+                    }
+
+                    updated = true;
+                }
+
+                if (updated && GameMain.Client != null)
+                {
+                    instance.unsentChanges = true;
+                    instance.correctionTimer = Sonar.CorrectionDelay;
+                }
+            }
+        }
+
+        public static Color InterpolateColor(Color startColor, Color endColor, float mult)
+        {
+            int r = (int)(startColor.R + (endColor.R - startColor.R) * mult);
+            int g = (int)(startColor.G + (endColor.G - startColor.G) * mult);
+            int b = (int)(startColor.B + (endColor.B - startColor.B) * mult);
+            int a = (int)(startColor.A + (endColor.A - startColor.A) * mult);
+            return new Color(r, g, b, a);
         }
 
         public static void MakeRoomForHydrophoneSwitchDefault(Sonar instance)
@@ -757,6 +849,15 @@ namespace SoundproofWalls
             {
                 PitchedSounds.Clear();
             }
+
+            foreach (SoundChannel[] category in GameMain.SoundManager.playingChannels)
+            {
+                foreach (SoundChannel channel in category)
+                {
+                    if (channel == null) { continue; }
+                    channel.FadeOutAndDispose();
+                }
+            }
         }
 
         public static void PlayHydrophoneSounds()
@@ -772,7 +873,7 @@ namespace SoundproofWalls
                     continue;
                 }
 
-                float startingGain = 1 * MathUtils.InverseLerp(0f, 2f, character.CurrentSpeed);
+                float startingGain = 1 * MathUtils.InverseLerp(0f, 2f, character.CurrentSpeed) * HydrophoneEfficiency;
                 float speed = Math.Clamp(character.CurrentSpeed, 0f, 10f);
                 float freqMult = MathHelper.Lerp(0.25f, 4f, speed / 10f);
 
@@ -803,7 +904,7 @@ namespace SoundproofWalls
                 SoundChannel channel = kvp.Key;
                 Character character = kvp.Value;
                 float distanceSquared = Vector2.DistanceSquared(character.WorldPosition, Character.Controlled.WorldPosition);
-                channel.Gain = 1 * MathUtils.InverseLerp(0f, 2f, character.CurrentSpeed);
+                channel.Gain = 1 * MathUtils.InverseLerp(0f, 2f, character.CurrentSpeed) * HydrophoneEfficiency;
 
                 if (distanceSquared > channel.far * channel.far || channel.Gain < 0.001f || character.CurrentHull != null || character.isDead)
                 {
@@ -847,6 +948,7 @@ namespace SoundproofWalls
             }
 
             Character character = Character.Controlled;
+            if (character == null) { return; }
             Limb limb = character.AnimController.GetLimb(LimbType.Head) ?? character.AnimController.MainLimb;
 
             Vector2 position = cam.WorldToScreen(limb.body.DrawPosition + new Vector2(0, 42));
@@ -859,6 +961,7 @@ namespace SoundproofWalls
                 cam.Zoom / size, 0, 0.001f, Alignment.Center);
         }
 
+        // All sounds start as muffled by default which highlights sounds that have the dontmuffle XML attribute.
         public static bool SPW_ShouldMuffleSounds(ref bool __result)
         {
             if (!Config.Enabled) { return true; }
@@ -928,131 +1031,139 @@ namespace SoundproofWalls
 
         public static bool SPW_VoipClient_Read(VoipClient __instance, ref IReadMessage msg)
         {
-            if (!Config.Enabled || !RoundStarted) { return true; }
+            if (!Config.Enabled) { return true; }
+            
             VoipClient instance = __instance;
             byte queueId = msg.ReadByte();
             float distanceFactor = msg.ReadRangedSingle(0.0f, 1.0f, 8);
+            
             VoipQueue queue = instance.queues.Find(q => q.QueueID == queueId);
-
             if (queue == null)
             {
-#if DEBUG
-                DebugConsole.NewMessage("Couldn't find VoipQueue with id " + queueId.ToString() + "!", GUIStyle.Red);
-#endif
+                DebugConsole.Log("Failed to find voip queue - unmuffling voices");
+                foreach (Client c in instance.gameClient.ConnectedClients) // Another attempt to stop the perma muffle bug
+                { 
+                    if (c.VoipSound != null)
+                    {
+                        c.VoipSound.UseMuffleFilter = false;
+                    }
+                }
                 return false;
             }
 
             Client client = instance.gameClient.ConnectedClients.Find(c => c.VoipQueue == queue);
-            if (queue.Read(msg, discardData: client.Muted || client.MutedLocally))
+            bool clientAlive = client.Character != null && !client.Character.IsDead && !client.Character.Removed;
+            bool clientCantSpeak = client.Muted || client.MutedLocally || (clientAlive && client.Character.SpeechImpediment >= 100.0f);
+
+            if (!queue.Read(msg, discardData: clientCantSpeak) || clientCantSpeak)
             {
-                if (client.Muted || client.MutedLocally || (client.Character != null && client.Character.SpeechImpediment >= 100.0f))
+                return false;
+            }
+
+            if (client.VoipSound == null)
+            {
+                DebugConsole.Log("Recreating voipsound " + queueId);
+                client.VoipSound = new VoipSound(client.Name, GameMain.SoundManager, client.VoipQueue);
+            }
+
+            client.VoipSound.UseMuffleFilter = false;
+
+            GameMain.SoundManager.ForceStreamUpdate();
+            GameMain.NetLobbyScreen?.SetPlayerSpeaking(client);
+            GameMain.GameSession?.CrewManager?.SetClientSpeaking(client);
+            client.RadioNoise = 0.0f;
+
+            // Attenuate other sounds when players speak, this is mostly vanilla code, needs some work.
+            if ((client.VoipSound.CurrentAmplitude * client.VoipSound.Gain * GameMain.SoundManager.GetCategoryGainMultiplier("voip")) > 0.1f)
+            {
+                if (clientAlive)
                 {
-                    client.VoipSound?.soundChannel?.Dispose();
-                    client.radioNoiseChannel?.Dispose();
-                    client.radioNoiseChannel = null;
-                    client.VoipSound = null;
-                    return false;
-                }
-
-                if (client.VoipSound == null)
-                {
-                    client.VoipSound = new VoipSound(client.Name, GameMain.SoundManager, client.VoipQueue);
-                }
-
-                GameMain.SoundManager.ForceStreamUpdate();
-                GameMain.NetLobbyScreen?.SetPlayerSpeaking(client);
-                GameMain.GameSession?.CrewManager?.SetClientSpeaking(client);
-                GameMain.SoundManager.VoipAttenuatedGain = 0.5f;
-
-                bool clientIsPlaying = client.Character != null && !client.Character.IsDead && !client.Character.Removed;
-
-                // Attenuate other sounds when players speak.
-                if ((client.VoipSound.CurrentAmplitude * client.VoipSound.Gain * GameMain.SoundManager.GetCategoryGainMultiplier("voip")) > 0.1f)
-                {
-                    if (clientIsPlaying)
-                    {
-                        Vector3 clientPos = new Vector3(client.Character.WorldPosition, 0.0f);
-                        Vector3 listenerPos = GameMain.SoundManager.ListenerPosition;
-                        float attenuationDist = client.VoipSound.Near * 1.125f;
-                        if (Vector3.DistanceSquared(clientPos, listenerPos) < attenuationDist * attenuationDist)
-                        {
-                            GameMain.SoundManager.VoipAttenuatedGain = 0.5f;
-                        }
-                    }
-                    else
+                    Vector3 clientPos = new Vector3(client.Character.WorldPosition, 0.0f);
+                    Vector3 listenerPos = GameMain.SoundManager.ListenerPosition;
+                    float attenuationDist = client.VoipSound.Near * 1.125f;
+                    if (Vector3.DistanceSquared(clientPos, listenerPos) < attenuationDist * attenuationDist)
                     {
                         GameMain.SoundManager.VoipAttenuatedGain = 0.5f;
                     }
                 }
-
-                if (!clientIsPlaying) { return false; }
-
-                float speechImpedimentMultiplier = 1.0f - client.Character.SpeechImpediment / 100.0f;
-                bool spectating = Character.Controlled == null;
-                float localRangeMultiplier = 1 * Config.VoiceRangeMultiplier;
-                float radioRangeMultiplier = 1 * Config.RadioRangeMultiplier;
-                WifiComponent senderRadio = null;
-
-                var messageType = ChatMessageType.Default;
-                if (!spectating)
-                {
-                    messageType =
-                        !client.VoipQueue.ForceLocal &&
-                        ChatMessage.CanUseRadio(client.Character, out senderRadio) &&
-                        ChatMessage.CanUseRadio(Character.Controlled, out var recipientRadio) &&
-                        senderRadio.CanReceive(recipientRadio) ?
-                            ChatMessageType.Radio : ChatMessageType.Default;
-                }
                 else
                 {
-                    messageType =
-                        !client.VoipQueue.ForceLocal &&
-                        ChatMessage.CanUseRadio(client.Character, out senderRadio) ?
-                            ChatMessageType.Radio : ChatMessageType.Default;
-                }
-
-                client.Character.ShowSpeechBubble(1.25f, ChatMessage.MessageColor[(int)messageType]);
-
-                // Muffle Info stuff.
-                SoundChannel channel = client.VoipSound.soundChannel;
-                if (channel == null) { return true; }
-
-                if (!SoundChannelMuffleInfo.TryGetValue(channel, out MuffleInfo muffleInfo))
-                {
-                    muffleInfo = new MuffleInfo(channel, client.Character.CurrentHull, voiceOwner: client, messageType: messageType);
-                    SoundChannelMuffleInfo[channel] = muffleInfo;
-                }
-
-                muffleInfo.VoiceOwner = client; //TODO might be unnecessary now.
-
-                muffleInfo.Update(client.Character.CurrentHull, messageType: messageType);
-
-                client.VoipSound.UseMuffleFilter = muffleInfo.Muffled;
-                client.VoipSound.UseRadioFilter = messageType == ChatMessageType.Radio && !GameSettings.CurrentConfig.Audio.DisableVoiceChatFilters;
-
-                client.RadioNoise = 0.0f;
-
-                // Range.
-                if (messageType == ChatMessageType.Radio)
-                {
-                    client.VoipSound.SetRange(senderRadio.Range * VoipClient.RangeNear * speechImpedimentMultiplier * radioRangeMultiplier, senderRadio.Range * speechImpedimentMultiplier * radioRangeMultiplier);
-                    if (distanceFactor > VoipClient.RangeNear && !spectating)
-                    {
-                        //noise starts increasing exponentially after 40% range
-                        client.RadioNoise = MathF.Pow(MathUtils.InverseLerp(VoipClient.RangeNear, 1.0f, distanceFactor), 2);
-                    }
-                }
-                else
-                {
-                    client.VoipSound.SetRange(ChatMessage.SpeakRange * VoipClient.RangeNear * speechImpedimentMultiplier * localRangeMultiplier, ChatMessage.SpeakRange * speechImpedimentMultiplier * localRangeMultiplier);
+                    GameMain.SoundManager.VoipAttenuatedGain = 0.5f;
                 }
             }
+
+            if (!clientAlive) { return false; } // Stop here if spectator/lobby voice chat
+
+            float speechImpedimentMultiplier = 1.0f - client.Character.SpeechImpediment / 100.0f;
+            bool spectating = Character.Controlled == null;
+            float localRangeMultiplier = 1 * Config.VoiceRangeMultiplier;
+            float radioRangeMultiplier = 1 * Config.RadioRangeMultiplier;
+            WifiComponent senderRadio = null;
+
+            var messageType = ChatMessageType.Default;
+            if (!spectating)
+            {
+                messageType =
+                    !client.VoipQueue.ForceLocal &&
+                    ChatMessage.CanUseRadio(client.Character, out senderRadio) &&
+                    ChatMessage.CanUseRadio(Character.Controlled, out var recipientRadio) &&
+                    senderRadio.CanReceive(recipientRadio) ?
+                        ChatMessageType.Radio : ChatMessageType.Default;
+            }
+            else
+            {
+                messageType =
+                    !client.VoipQueue.ForceLocal &&
+                    ChatMessage.CanUseRadio(client.Character, out senderRadio) ?
+                        ChatMessageType.Radio : ChatMessageType.Default;
+            }
+
+            client.Character.ShowSpeechBubble(1.25f, ChatMessage.MessageColor[(int)messageType]);
+
+            // Range.
+            if (messageType == ChatMessageType.Radio)
+            {
+                client.VoipSound.SetRange(senderRadio.Range * VoipClient.RangeNear * speechImpedimentMultiplier * radioRangeMultiplier, senderRadio.Range * speechImpedimentMultiplier * radioRangeMultiplier);
+                if (distanceFactor > VoipClient.RangeNear && !spectating)
+                {
+                    //noise starts increasing exponentially after 40% range
+                    client.RadioNoise = MathF.Pow(MathUtils.InverseLerp(VoipClient.RangeNear, 1.0f, distanceFactor), 2);
+                }
+            }
+            else
+            {
+                client.VoipSound.SetRange(ChatMessage.SpeakRange * VoipClient.RangeNear * speechImpedimentMultiplier * localRangeMultiplier, ChatMessage.SpeakRange * speechImpedimentMultiplier * localRangeMultiplier);
+            }
+
+            // Muffle Info stuff.
+            SoundChannel channel = client.VoipSound.soundChannel;
+            if (channel == null) { return true; }
+
+            bool needsUpdate = true; //TODO implement this for other muffle info creations.
+            if (!SoundChannelMuffleInfo.TryGetValue(channel, out MuffleInfo muffleInfo))
+            {
+                muffleInfo = new MuffleInfo(channel, client.Character.CurrentHull, voiceOwner: client, messageType: messageType);
+                SoundChannelMuffleInfo[channel] = muffleInfo;
+                needsUpdate = false;
+            }
+
+            if (needsUpdate)
+            {
+                muffleInfo.Update(client.Character.CurrentHull, messageType: messageType);
+            }
+
+            client.VoipSound.UseMuffleFilter = muffleInfo.Muffled;
+            client.VoipSound.UseRadioFilter = messageType == ChatMessageType.Radio && !GameSettings.CurrentConfig.Audio.DisableVoiceChatFilters;
+
             return false;
         }
 
         public static void SPW_UpdateVoipSound(Client __instance)
         {
-            if (!Config.Enabled || __instance?.VoipSound?.soundChannel == null || __instance.VoipSound.soundChannel.FadingOutAndDisposing == true || !__instance.VoipSound.soundChannel.IsPlaying) { return; }
+            if (!Config.Enabled || __instance?.VoipSound?.soundChannel == null || __instance.VoipSound.soundChannel.FadingOutAndDisposing == true || !__instance.VoipSound.soundChannel.IsPlaying)
+            { 
+                return; 
+            }
 
             VoipSound voipSound = __instance.VoipSound;
 
@@ -1120,10 +1231,16 @@ namespace SoundproofWalls
                 }
             }
 
+            if (Timing.TotalTime > LastCorrectionCheckTime + 5)
+            {
+                CorrectSuperRareSoundBugs();
+                LastCorrectionCheckTime = (float)Timing.TotalTime;
+            }
+
             if (Character.Controlled == null || LightManager.ViewTarget == null || GameMain.Instance.Paused) { return; }
 
             EavesdroppedHull = GetEavesdroppedHull();
-            IsUsingHydrophones = EavesdroppedHull == null && (Character.Controlled?.SelectedItem?.GetComponent<Sonar>() is Sonar sonar && HydrophoneSwitches.ContainsKey(sonar) && HydrophoneSwitches[sonar].State);
+            IsUsingHydrophones = EavesdroppedHull == null && HydrophoneEfficiency > 0.01f && (Character.Controlled?.SelectedItem?.GetComponent<Sonar>() is Sonar sonar && HydrophoneSwitches.ContainsKey(sonar) && HydrophoneSwitches[sonar].State);
             IsViewTargetPlayer = !Config.FocusTargetAudio || LightManager.ViewTarget as Character == Character.Controlled;
             EarsInWater = IsViewTargetPlayer ? Character.Controlled.AnimController.HeadInWater : SoundInWater(LightManager.ViewTarget.Position, ViewTargetHull);
             IsWearingDivingSuit = Character.Controlled?.LowPassMultiplier < 0.5f;
@@ -1143,6 +1260,35 @@ namespace SoundproofWalls
             UpdateHydrophoneSwitches();
         }
 
+        // Insane that I have to do this but there are core issues at play here that I just can't explain.
+        public static void CorrectSuperRareSoundBugs()
+        {
+            if (GameMain.Client == null) { return; }
+            foreach (Client client in GameMain.Client.ConnectedClients)
+            {
+                SoundChannel? channel = client.VoipSound?.soundChannel;
+                if (channel == null) { continue; }
+
+                MuffleInfo muffleInfo = new MuffleInfo(channel, soundHull: client.Character?.CurrentHull, voiceOwner: client);
+
+                if (channel.Muffled != muffleInfo.Muffled)
+                {
+                    client.VoipSound.Dispose();
+                    client.VoipSound = null;
+                }
+
+                if (BubbleSoundChannels.TryGetValue(channel, out SoundChannel bubbleChannel))
+                {
+                    if ( (muffleInfo.Reason != MuffleReason.SoundInWater && muffleInfo.Reason != MuffleReason.BothInWater) || (client.Character != null && client.Character.OxygenAvailable >= 95) )
+                    {
+                        bubbleChannel.Looping = false;
+                        bubbleChannel.Dispose();
+                        bubbleChannel = null;
+                        BubbleSoundChannels.Remove(channel);
+                    }
+                }
+            }
+        }
         public static Hull? GetViewTargetHull()
         {
             if (IsViewTargetPlayer)
@@ -1206,31 +1352,17 @@ namespace SoundproofWalls
         public static void SPW_SoundChannel(SoundChannel __instance)
         {
             SoundChannel channel = __instance;
+            // "voip" is skipped here because some necessary details like Client are not available for creating the proper MuffleInfo in this scope.
             if (!Config.Enabled || !RoundStarted || channel == null || channel.Category == "voip") { return; }
 
             MuffleInfo muffleInfo = new MuffleInfo(channel, skipProcess: !channel.Muffled);
 
-            try
-            {
-                SoundChannelMuffleInfo[channel] = muffleInfo;
-            }
-            catch (IndexOutOfRangeException ex)
-            {
-                LuaCsLogger.Log($"Failed to process sound: {ex}");
-                SoundChannelMuffleInfo.Clear();
-                return;
-            }
+            SoundChannelMuffleInfo[channel] = muffleInfo;
 
             channel.Muffled = muffleInfo.Muffled;
 
-            if (channel.Looping)
-            {
-                ProcessLoopingSound(channel, muffleInfo);
-            }
-            else
-            {
-                ProcessSingleSound(channel, muffleInfo);
-            }
+            // Could add custom Categories for avoiding this process when it's a component sound, but it doesn't really matter if everything goes through ProcessSingleSound.
+            ProcessSingleSound(channel, muffleInfo);
         }
         public static bool SPW_ItemComponent_UpdateSounds(ItemComponent __instance)
         {
@@ -1363,7 +1495,7 @@ namespace SoundproofWalls
             if (muffleInfo.Reason == MuffleReason.NoPath) { gainMult -= (1 - Config.MuffledSoundVolumeMultiplier); }
             else if (muffleInfo.Reason == MuffleReason.BothInWater) { gainMult -= (1 - Config.SubmergedVolumeMultiplier); }
             else if (eavesdropped) { gainMult -= (1 - Config.EavesdroppingSoundVolumeMultiplier); }
-            else if (hydrophoned) { gainMult -= (1 - Config.HydrophoneVolumeMultiplier); }
+            else if (hydrophoned) { gainMult -= (1 - Config.HydrophoneVolumeMultiplier); gainMult *= HydrophoneEfficiency; }
 
             channel.Gain *= gainMult;
         }
@@ -1409,13 +1541,13 @@ namespace SoundproofWalls
             if (muffleInfo.Reason == MuffleReason.NoPath) { gainMult -= (1 - Config.MuffledComponentVolumeMultiplier); }
             else if (muffleInfo.Reason == MuffleReason.BothInWater) { gainMult -= (1 - Config.SubmergedVolumeMultiplier); }
             else if (eavesdropped) { gainMult -= (1 - Config.EavesdroppingSoundVolumeMultiplier); }
-            else if (hydrophoned) { gainMult -= (1 - Config.HydrophoneVolumeMultiplier); }
+            else if (hydrophoned) { gainMult -= (1 - Config.HydrophoneVolumeMultiplier); gainMult *= HydrophoneEfficiency; }
             else { gainMult -= (1 - Config.UnmuffledComponentVolumeMultiplier); }
 
             float distFalloffMult = channel.Muffled ? 0.7f : 1 - MathUtils.InverseLerp(channel.Near, channel.Far, muffleInfo.Distance);
             float targetGain = currentGain * gainMult * distFalloffMult;
 
-            // This is prefferable in vanilla but here it can create an audible pop in when a new sound channel comes into range.
+            // This is preferable in vanilla but here it can create an audible pop in when a new sound channel comes into range.
             //float gainDiff = targetGain - channel.Gain;
             //channel.Gain += Math.Abs(gainDiff) < 0.1f ? gainDiff : Math.Sign(gainDiff) * 0.1f;
 
@@ -1457,7 +1589,7 @@ namespace SoundproofWalls
             if (muffleInfo.Reason == MuffleReason.NoPath) { gainMult -= (1 - Config.MuffledVoiceVolumeMultiplier); }
             else if (muffleInfo.Reason == MuffleReason.BothInWater) { gainMult -= (1 - Config.SubmergedVolumeMultiplier); }
             else if (eavesdropped) { gainMult -= (1 - Config.EavesdroppingVoiceVolumeMultiplier); }
-            else if (hydrophoned) { gainMult -= (1 - Config.HydrophoneVolumeMultiplier); }
+            else if (hydrophoned) { gainMult -= (1 - Config.HydrophoneVolumeMultiplier); gainMult *= HydrophoneEfficiency; }
 
             float targetGain = 1 * gainMult;
             voipSound.Gain = targetGain;
@@ -1473,7 +1605,7 @@ namespace SoundproofWalls
             }
         }
 
-        public static bool SPW_UpdateWaterAmbience(ref float ambienceVolume)
+        public static bool SPW_UpdateWaterAmbience(ref float ambienceVolume, ref float deltaTime)
         {
             if (!Config.Enabled || !RoundStarted || Character.Controlled == null) { return true; }
 
@@ -1487,7 +1619,7 @@ namespace SoundproofWalls
             }
             else if (IsUsingHydrophones)
             {
-                ambienceVolume *= Config.HydrophoneWaterAmbienceVolumeMultiplier;
+                ambienceVolume *= Config.HydrophoneWaterAmbienceVolumeMultiplier; ambienceVolume *= HydrophoneEfficiency;
             }
             else if (Config.FocusTargetAudio && LightManager.ViewTarget != null && ViewTargetHull == null)
             {
@@ -1497,7 +1629,109 @@ namespace SoundproofWalls
             {
                 ambienceVolume *= Config.UnsubmergedWaterAmbienceVolumeMultiplier;
             }
-            return true;
+
+            float dt = deltaTime;
+            // Method Replacement:
+
+            if (GameMain.SoundManager.Disabled || GameMain.GameScreen?.Cam == null) { return false; }
+
+            //how fast the sub is moving, scaled to 0.0 -> 1.0
+            float movementSoundVolume = 0.0f;
+
+            float insideSubFactor = 0.0f;
+            foreach (Submarine sub in Submarine.Loaded)
+            {
+                if (sub == null || sub.Removed) { continue; }
+                float movementFactor = (sub.Velocity == Vector2.Zero) ? 0.0f : sub.Velocity.Length() / 10.0f;
+                movementFactor = MathHelper.Clamp(movementFactor, 0.0f, 1.0f);
+
+                if (Character.Controlled == null || Character.Controlled.Submarine != sub)
+                {
+                    float dist = Vector2.Distance(GameMain.GameScreen.Cam.WorldViewCenter, sub.WorldPosition);
+                    movementFactor /= Math.Max(dist / 1000.0f, 1.0f);
+                    insideSubFactor = Math.Max(1.0f / Math.Max(dist / 1000.0f, 1.0f), insideSubFactor);
+                }
+                else
+                {
+                    insideSubFactor = 1.0f;
+                }
+
+                if (Character.Controlled != null && Character.Controlled.PressureTimer > 0.0f && !Character.Controlled.IsDead)
+                {
+                    //make the sound lerp to the "outside" sound when under pressure
+                    insideSubFactor -= Character.Controlled.PressureTimer / 100.0f;
+                }
+
+                movementSoundVolume = Math.Max(movementSoundVolume, movementFactor);
+                if (!MathUtils.IsValid(movementSoundVolume))
+                {
+                    string errorMsg = "Failed to update water ambience volume - submarine's movement value invalid (" + movementSoundVolume + ", sub velocity: " + sub.Velocity + ")";
+                    DebugConsole.Log(errorMsg);
+                    GameAnalyticsManager.AddErrorEventOnce("SoundPlayer.UpdateWaterAmbience:InvalidVolume", GameAnalyticsManager.ErrorSeverity.Error, errorMsg);
+                    movementSoundVolume = 0.0f;
+                }
+                if (!MathUtils.IsValid(insideSubFactor))
+                {
+                    string errorMsg = "Failed to update water ambience volume - inside sub value invalid (" + insideSubFactor + ")";
+                    DebugConsole.Log(errorMsg);
+                    GameAnalyticsManager.AddErrorEventOnce("SoundPlayer.UpdateWaterAmbience:InvalidVolume", GameAnalyticsManager.ErrorSeverity.Error, errorMsg);
+                    insideSubFactor = 0.0f;
+                }
+            }
+
+            void updateWaterAmbience(Sound sound, float volume)
+            {
+                SoundChannel chn = SoundPlayer.waterAmbienceChannels.FirstOrDefault(c => c.Sound == sound);
+                if (Level.Loaded != null)
+                {
+                    volume *= Level.Loaded.GenerationParams.WaterAmbienceVolume;
+                }
+                if (chn is null || !chn.IsPlaying)
+                {
+                    if (volume < 0.01f) { return; }
+                    if (chn is not null) { SoundPlayer.waterAmbienceChannels.Remove(chn); }
+                    chn = sound.Play(volume, "waterambience");
+                    chn.Looping = true;
+                    SoundPlayer.waterAmbienceChannels.Add(chn);
+                }
+                else
+                {
+                    float diff = volume - chn.Gain;
+                    float snapThreshold = 0.1f * Config.WaterAmbienceTransitionSpeedMultiplier;
+                    if (Math.Abs(diff) < snapThreshold)
+                    {
+                        chn.Gain = volume;
+                    }
+                    else
+                    {
+                        chn.Gain += dt * Math.Sign(diff) * Config.WaterAmbienceTransitionSpeedMultiplier;
+                    }
+
+                    if (chn.Gain < 0.01f)
+                    {
+                        chn.FadeOutAndDispose();
+                    }
+                    if (Character.Controlled != null && Character.Controlled.PressureTimer > 0.0f && !Character.Controlled.IsDead)
+                    {
+                        //make the sound decrease in pitch when under pressure
+                        chn.FrequencyMultiplier = MathHelper.Clamp(Character.Controlled.PressureTimer / 200.0f, 0.75f, 1.0f);
+                    }
+                    else if (IsUsingHydrophones && HydrophoneEfficiency < 1)
+                    {
+                        chn.FrequencyMultiplier = MathHelper.Lerp(0.25f, 1f, HydrophoneEfficiency);
+                    }
+                    else
+                    {
+                        chn.FrequencyMultiplier = Math.Min(chn.frequencyMultiplier + dt, 1.0f);
+                    }
+                }
+            }
+
+            updateWaterAmbience(SoundPlayer.waterAmbienceIn, ambienceVolume * (1.0f - movementSoundVolume) * insideSubFactor);
+            updateWaterAmbience(SoundPlayer.waterAmbienceMoving, ambienceVolume * movementSoundVolume * insideSubFactor);
+            updateWaterAmbience(SoundPlayer.waterAmbienceOut, 1.0f - insideSubFactor);
+
+            return false;
         }
 
         public static void SPW_UpdateWaterFlowMuffling()
@@ -1509,9 +1743,18 @@ namespace SoundproofWalls
 
             bool wearingSuit = IsWearingDivingSuit;
             bool earsInWater = EarsInWater;
-            bool shouldMuffle = (wearingSuit || earsInWater);
+            bool usingHydrophones = IsUsingHydrophones;
+            bool noPathToFlow = Config.EstimatePathToFakeSounds && prevNoPathToFlow;
 
-            if ((prevWearingSuit != wearingSuit || prevEarsInWater != earsInWater) && Config.Enabled && Config.MuffleFlowSounds)
+            if (Config.EstimatePathToFakeSounds && Timing.TotalTime > LastFlowPathCheckTime + 0.3f)
+            {
+                noPathToFlow = !IsPathToFlow();
+                LastFlowPathCheckTime = (float)Timing.TotalTime;
+            }
+
+            bool shouldMuffle = (wearingSuit || earsInWater || usingHydrophones || noPathToFlow);
+
+            if ((prevWearingSuit != wearingSuit || prevEarsInWater != earsInWater || prevUsingHydrophones != usingHydrophones || prevNoPathToFlow != noPathToFlow) && Config.Enabled && Config.MuffleFlowSounds)
             {
                 foreach (SoundChannel channel in SoundPlayer.flowSoundChannels)
                 {
@@ -1523,12 +1766,54 @@ namespace SoundproofWalls
                     {
                         if (earsInWater) { freqMult -= (1 - Config.SubmergedPitchMultiplier); }
                         if (wearingSuit) { freqMult -= (1 - Config.DivingSuitPitchMultiplier); }
+                        if (usingHydrophones) { freqMult -= (1 - Config.HydrophonePitchMultiplier); }
+                        if (noPathToFlow) { freqMult -= (1 - Config.MuffledComponentPitchMultiplier); }
                     }
                     channel.FrequencyMultiplier = Math.Clamp(1 * freqMult, 0.25f, 4);
                 }
                 prevWearingSuit = wearingSuit;
                 prevEarsInWater = earsInWater;
+                prevUsingHydrophones = usingHydrophones;
+                prevNoPathToFlow = noPathToFlow;
             }
+        }
+
+        public static bool IsPathToFlow()
+        {
+            Character character = Character.Controlled;
+            if (character == null || character.CurrentHull == null) { return true; }
+
+            return GetPathToFlow(character.CurrentHull, new HashSet<Hull>());
+        }
+        // Not perfectly accurate, still needs some work.
+        public static bool GetPathToFlow(Hull startHull, HashSet<Hull> connectedHulls)
+        {
+            Vector2 listenerPos = Character.Controlled.WorldPosition;
+
+            foreach (Gap gap in startHull.ConnectedGaps)
+            {
+                Vector2 diff = gap.WorldPosition - listenerPos;
+
+                if (Math.Abs(diff.X) >= SoundPlayer.FlowSoundRange && Math.Abs(diff.Y) >= SoundPlayer.FlowSoundRange) { continue; }
+                if (gap.Open < 0.01f || gap.LerpedFlowForce.LengthSquared() < 100.0f) { continue; }
+                float gapFlow = Math.Abs(gap.LerpedFlowForce.X) + Math.Abs(gap.LerpedFlowForce.Y) * 2.5f;
+                if (!gap.IsRoomToRoom) { gapFlow *= 2.0f; }
+                if (gapFlow >= 10.0f) { return true; }
+
+                for (int i = 0; i < 2 && i < gap.linkedTo.Count; i++)
+                {
+                    if (gap.linkedTo[i] is Hull newStartHull && !connectedHulls.Contains(newStartHull))
+                    {
+                        bool path = GetPathToFlow(newStartHull, connectedHulls);
+                        if (path)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
         }
 
         public static void SPW_UpdateFireMuffling()
@@ -1936,11 +2221,13 @@ namespace SoundproofWalls
         public float HydrophoneSoundRange { get; set; } = 7500; // range in cm
         public float HydrophoneVolumeMultiplier { get; set; } = 1.1f;
         public float HydrophonePitchMultiplier { get; set; } = 0.65f;
+        public bool HydrophoneLegacySwitch { get; set; } = false;
 
         // Ambience
         public float UnsubmergedWaterAmbienceVolumeMultiplier { get; set; } = 0.3f;
         public float SubmergedWaterAmbienceVolumeMultiplier { get; set; } = 1.1f;
         public float HydrophoneWaterAmbienceVolumeMultiplier { get; set; } = 2f;
+        public float WaterAmbienceTransitionSpeedMultiplier { get; set; } = 3.5f;
 
         // Advanced settings
         public Dictionary<string, float> SoundVolumeMultipliers { get; set; } = new Dictionary<string, float>
@@ -2009,6 +2296,7 @@ namespace SoundproofWalls
         public bool MuffleSubmergedSounds { get; set; } = true; // the equivalent of adding all sounds into WaterIgnoredSounds
         public bool MuffleFlowSounds { get; set; } = true;
         public bool MuffleFireSounds { get; set; } = true;
+        public bool EstimatePathToFakeSounds { get; set; } = false;
         public float DivingSuitPitchMultiplier { get; set; } = 0.90f;
         public float SubmergedPitchMultiplier { get; set; } = 0.80f;
         public float MuffledVoicePitchMultiplier { get; set; } = 1f;
@@ -2493,6 +2781,30 @@ namespace SoundproofWalls
                 });
                 textBlockWAV.Text = $"{TextManager.Get("spw_hydrophonewaterambiencevolume").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.HydrophoneWaterAmbienceVolumeMultiplier))}";
                 slider.ToolTip = TextManager.Get("spw_hydrophonewaterambiencevolumetooltip");
+
+                // Water Ambience Transition Speed Multiplier:
+                GUITextBlock textBlockWATS = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.Slider(list.Content, 0.5f, 5, config.WaterAmbienceTransitionSpeedMultiplier, value =>
+                {
+                    float realvalue = RoundToNearestMultiple(value, 0.01f);
+                    float displayValue = RoundToNearestMultiple(value * 100, 1);
+                    config.WaterAmbienceTransitionSpeedMultiplier = realvalue;
+                    ConfigManager.SaveConfig(config);
+
+                    slider_text = string.Empty;
+                    if (config.WaterAmbienceTransitionSpeedMultiplier == defaultConfig.WaterAmbienceTransitionSpeedMultiplier)
+                    {
+                        slider_text = default_preset;
+                    }
+                    else if (config.WaterAmbienceTransitionSpeedMultiplier == 1)
+                    { 
+                        slider_text = vanilla_preset; 
+                    }
+
+                    textBlockWATS.Text = $"{TextManager.Get("spw_waterambiencetransitionspeed").Value}: {displayValue}% {slider_text}";
+                });
+                textBlockWATS.Text = $"{TextManager.Get("spw_waterambiencetransitionspeed").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.WaterAmbienceTransitionSpeedMultiplier))}";
+                slider.ToolTip = TextManager.Get("spw_waterambiencetransitionspeedtooltip");
 
 
                 // Advanced Sound Settings:
@@ -3220,5 +3532,62 @@ namespace SoundproofWalls
     {
         public string Name { get; set; }
         public Action<GUIFrame> OnOpen { get; set; }
+    }
+
+    // Using a custom wrapper instead of ConcurrentDictionary for performance reasons.
+    public class ThreadSafeDictionary<TKey, TValue>
+    {
+        private readonly object _syncRoot = new object();
+        private readonly Dictionary<TKey, TValue> _dictionary = new Dictionary<TKey, TValue>();
+
+        public TValue this[TKey key]
+        {
+            get
+            {
+                lock (_syncRoot)
+                {
+                    return _dictionary[key];
+                }
+            }
+            set
+            {
+                lock (_syncRoot)
+                {
+                    _dictionary[key] = value;
+                }
+            }
+        }
+
+        public void Add(TKey key, TValue value)
+        {
+            lock (_syncRoot)
+            {
+                _dictionary[key] = value;
+            }
+        }
+
+        public bool TryGetValue(TKey key, out TValue value)
+        {
+            lock (_syncRoot)
+            {
+                return _dictionary.TryGetValue(key, out value);
+            }
+        }
+
+        public bool Remove(TKey key)
+        {
+            lock (_syncRoot)
+            {
+                return _dictionary.Remove(key);
+            }
+        }
+
+        public void Clear()
+        {
+            lock (_syncRoot)
+            {
+                _dictionary.Clear();
+            }
+        }
     }
 }

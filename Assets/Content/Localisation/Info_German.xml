@@ -48,10 +48,12 @@
 	<spw_hydrophonevolume>Hydrophon Lautstärke</spw_hydrophonevolume>
 	<spw_hydrophonepitch>Hydrophon-Tonhöhe</spw_hydrophonepitch>
 
-	<spw_ambiencesettings>Ambience Settings</spw_ambiencesettings>
-	<spw_unsubmergedwaterambiencevolume>Unsubmerged Water Ambience Volume</spw_unsubmergedwaterambiencevolume>
-	<spw_submergedwaterambiencevolume>Submerged Water Ambience Volume</spw_submergedwaterambiencevolume>
-	<spw_hydrophonewaterambiencevolume>Hydrophone Water Ambience Volume</spw_hydrophonewaterambiencevolume>
+	<spw_ambiencesettings>Ambiente-Einstellungen</spw_ambiencesettings>
+	<spw_unsubmergedwaterambiencevolume>Lautstärke des nicht untergetauchten Wasserambientes</spw_unsubmergedwaterambiencevolume>
+	<spw_submergedwaterambiencevolume>Lautstärke des untergetauchten Wasserambientes</spw_submergedwaterambiencevolume>
+	<spw_hydrophonewaterambiencevolume>Lautstärke des Hydrophon-Wasserambientes</spw_hydrophonewaterambiencevolume>
+	<spw_waterambiencetransitionspeed>Wasserambiente-Übergangsgeschwindigkeit</spw_waterambiencetransitionspeed>
+	<spw_waterambiencetransitionspeedtooltip>Die Geschwindigkeit, mit der das Wasserambiente zwischen den Lautstärkevoreinstellungen wechselt</spw_waterambiencetransitionspeedtooltip>
 
 	<spw_advancedsoundsettings>Fortgeschrittene Einstellungen</spw_advancedsoundsettings>
 	<spw_soundvolumemultipliers>Lautstärke-Multiplikation</spw_soundvolumemultipliers>
