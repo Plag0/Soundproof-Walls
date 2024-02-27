@@ -47,7 +47,9 @@
 	<spw_hydrophonerangetooltip>La portée des sons des mouvements dans l'eau avec la portée additionnée à tous les sons hors du sous-marin</spw_hydrophonerangetooltip>
 	<spw_hydrophonevolume>Volume de l'hydrophone</spw_hydrophonevolume>
 	<spw_hydrophonepitch>Hauteur sonore de l'hydrophone</spw_hydrophonepitch>
-
+	<spw_hydrophonelegacyswitch>Interrupteur ancien du hydrophone</spw_hydrophonelegacyswitch>
+	<spw_hydrophonelegacyswitchtooltip>Utiliser l'ancienne logique de l'interrupteur du hydrophone (l'interrupteur est désactivé lors de l'utilisation du sonar actif)</spw_hydrophonelegacyswitchtooltip>
+	
 	<spw_ambiencesettings>Paramètres de l'ambiance</spw_ambiencesettings>
 	<spw_unsubmergedwaterambiencevolume>Volume de l'ambiance aquatique quand hors de l'eau</spw_unsubmergedwaterambiencevolume>
 	<spw_submergedwaterambiencevolume>Volume de l'ambiance aquatique quand submergé</spw_submergedwaterambiencevolume>
@@ -61,6 +63,7 @@
 	<spw_lowpassignoredsounds>Sons passe-bas ignorés</spw_lowpassignoredsounds>
 	<spw_pitchignoredsounds>Hauteur sonore ignorées</spw_pitchignoredsounds>
 	<spw_pathignoredsounds>Sons ignorés par le mur</spw_pathignoredsounds>
+	<spw_containerignoredsounds>Sons ignorés du conteneur</spw_containerignoredsounds>
 	<spw_waterignoredsounds>Sons aquatiques ignorés</spw_waterignoredsounds>
 	<spw_submersionignoredsounds>Sons submergés ignorés</spw_submersionignoredsounds>
 	<spw_bubbleignorednames>Noms ignorés des bulles</spw_bubbleignorednames>

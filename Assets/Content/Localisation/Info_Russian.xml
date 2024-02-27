@@ -47,6 +47,8 @@
 	<spw_hydrophonerangetooltip>Дальность звуков движения под водой; а также звуков с учётом дополнительной дальности вне подлодки</spw_hydrophonerangetooltip>
 	<spw_hydrophonevolume>Громкость гидрофона</spw_hydrophonevolume>
 	<spw_hydrophonepitch>Тон гидрофона</spw_hydrophonepitch>
+	<spw_hydrophonelegacyswitch>Переключатель гидрофона наследия</spw_hydrophonelegacyswitch>
+	<spw_hydrophonelegacyswitchtooltip>Используйте старую логику переключения гидрофона (переключатель выключается при использовании активного сонара)</spw_hydrophonelegacyswitchtooltip>
 
 	<spw_ambiencesettings>Настройки амбиента</spw_ambiencesettings>
 	<spw_unsubmergedwaterambiencevolume>Громкость амбиента воды (без погружения)</spw_unsubmergedwaterambiencevolume>
@@ -62,6 +64,7 @@
 	<spw_lowpassignoredsounds>Исключённые звуки (для фильтра нижних частот)</spw_lowpassignoredsounds>
 	<spw_pitchignoredsounds>Исключённые звуки (для изменения тона)</spw_pitchignoredsounds>
 	<spw_pathignoredsounds>Исключённые звуки (для игнорирования стены)</spw_pathignoredsounds>
+	<spw_containerignoredsounds>Исключённые звуки (для контейнера)</spw_containerignoredsounds>
 	<spw_waterignoredsounds>Исключённые звуки (для водяных эффектов)</spw_waterignoredsounds>
 	<spw_submersionignoredsounds>Исключённые звуки (подводные эффекты)</spw_submersionignoredsounds>
 	<spw_bubbleignorednames>Игнорируемые имена пузырьков</spw_bubbleignorednames>

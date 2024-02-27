@@ -42,11 +42,13 @@
 	<spw_eavesdroppingmaxdistance>Distancia Maxima de Escuchar a Escondidas</spw_eavesdroppingmaxdistance>
 	<spw_eavesdroppingmaxdistancetooltip>La distancia maxima de la puerta a la que puede estar la cabeza del jugador para escuchar a escondidas</spw_eavesdroppingmaxdistancetooltip>
 
-	<spw_hydrophonesettings>Opciones de Hidrofono</spw_hydrophonesettings>
-	<spw_hydrophonerange>Rango del Hidrofono</spw_hydrophonerange>
+	<spw_hydrophonesettings>Opciones de Hidrófono</spw_hydrophonesettings>
+	<spw_hydrophonerange>Rango del Hidrófono</spw_hydrophonerange>
 	<spw_hydrophonerangetooltip>El rango de sonidos de movimiento y del rango adicional añadido a todos los sonidos fuera del submarino</spw_hydrophonerangetooltip>
-	<spw_hydrophonevolume>Volumen del Hidrofono</spw_hydrophonevolume>
-	<spw_hydrophonepitch>Tono del Hidrofono</spw_hydrophonepitch>
+	<spw_hydrophonevolume>Volumen del Hidrófono</spw_hydrophonevolume>
+	<spw_hydrophonepitch>Tono del Hidrófono</spw_hydrophonepitch>
+	<spw_hydrophonelegacyswitch>Interruptor de legado del Hidrófono</spw_hydrophonelegacyswitch>
+	<spw_hydrophonelegacyswitchtooltip>Utilizar la lógica antigua del interruptor del Hidrófono (el interruptor se desactiva al usar el sonar activo)</spw_hydrophonelegacyswitchtooltip>
 
 	<spw_ambiencesettings>Opciones de Sonido Ambiental</spw_ambiencesettings>
 	<spw_unsubmergedwaterambiencevolume>Volumen de Sonidos Ambientales de Agua no Sumergido</spw_unsubmergedwaterambiencevolume>
@@ -61,6 +63,7 @@
 	<spw_lowpassignoredsounds>Sonidos Amortiguados Ignorados</spw_lowpassignoredsounds>
 	<spw_pitchignoredsounds>Sonidos de Tono Ignorados</spw_pitchignoredsounds>
 	<spw_pathignoredsounds>Sonidos Ignorados de la Pared</spw_pathignoredsounds>
+	<spw_containerignoredsounds>Sonidos Ignorados del Contenedor</spw_containerignoredsounds>
 	<spw_waterignoredsounds>Sonidos de Agua Ignorados</spw_waterignoredsounds>
 	<spw_submersionignoredsounds>Sonidos Sumergidos Ignorados</spw_submersionignoredsounds>
 	<spw_bubbleignorednames>Nombres de Burbujas Ignorados</spw_bubbleignorednames>

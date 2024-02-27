@@ -47,6 +47,8 @@
 	<spw_hydrophonerangetooltip>水中で動きの音の範囲と、潜水艦外にのすべての音に追加される範囲</spw_hydrophonerangetooltip>
 	<spw_hydrophonevolume>聴音器の音量</spw_hydrophonevolume>
 	<spw_hydrophonepitch>聴音器の音高</spw_hydrophonepitch>
+	<spw_hydrophonelegacyswitch>聴音器のレガシースイッチ</spw_hydrophonelegacyswitch>
+	<spw_hydrophonelegacyswitchtooltip>古い聴音器スイッチのロジックを使用する（アクティブソナー使用時にスイッチがオフになる）</spw_hydrophonelegacyswitchtooltip>
 
 	<spw_ambiencesettings>環境の設定</spw_ambiencesettings>
 	<spw_unsubmergedwaterambiencevolume>水以外に環境の音量</spw_unsubmergedwaterambiencevolume>
@@ -61,6 +63,7 @@
 	<spw_lowpassignoredsounds>低周波の無視の音</spw_lowpassignoredsounds>
 	<spw_pitchignoredsounds>音高の無視の音</spw_pitchignoredsounds>
 	<spw_pathignoredsounds>壁的の無視の音</spw_pathignoredsounds>
+	<spw_containerignoredsounds>コンテナの無視の音</spw_containerignoredsounds>
 	<spw_waterignoredsounds>水の無視の音</spw_waterignoredsounds>
 	<spw_submersionignoredsounds>水中の無視の音</spw_submersionignoredsounds>
 	<spw_bubbleignorednames>バブルの無視の名前</spw_bubbleignorednames>

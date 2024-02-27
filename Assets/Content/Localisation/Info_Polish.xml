@@ -47,6 +47,8 @@
 	<spw_hydrophonerangetooltip>Zasięg dźwięków ruchu podwodnego i dodatkowy zasięg dodany do wszystkich dźwięków na zewnątrz łodzi podwodnej</spw_hydrophonerangetooltip>
 	<spw_hydrophonevolume>Głośność hydrofonu</spw_hydrophonevolume>
 	<spw_hydrophonepitch>Ton hydrofonu</spw_hydrophonepitch>
+	<spw_hydrophonelegacyswitch>Przełącznik dziedziczny hydrofonu</spw_hydrophonelegacyswitch>
+	<spw_hydrophonelegacyswitchtooltip>Użyj starej logiki przełączania hydrofonu (przełącznik jest wyłączany podczas używania aktywnego sonaru)</spw_hydrophonelegacyswitchtooltip>
 
 	<spw_ambiencesettings>Ustawienia dźwięków nastroju</spw_ambiencesettings>
 	<spw_unsubmergedwaterambiencevolume>Głośność wody podczas braku zanurzenia</spw_unsubmergedwaterambiencevolume>
@@ -61,6 +63,7 @@
 	<spw_lowpassignoredsounds>Ignoroawne dźwięki dolnoprzepustowe</spw_lowpassignoredsounds>
 	<spw_pitchignoredsounds>Ton ignorowanych dźwięków</spw_pitchignoredsounds>
 	<spw_pathignoredsounds>Dźwięki ignorowane przez ściany</spw_pathignoredsounds>
+	<spw_containerignoredsounds>Dźwięki ignorowane przez kontener</spw_containerignoredsounds>
 	<spw_waterignoredsounds>Ignorowane dźwięki wody</spw_waterignoredsounds>
 	<spw_submersionignoredsounds>Ignorowane dźwięki zanurzenia</spw_submersionignoredsounds>
 	<spw_bubbleignorednames>Nazwy ignorowanych przez bąbelki</spw_bubbleignorednames>
