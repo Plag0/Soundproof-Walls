@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<infotexts language="Turkish" nowhitespace="false" translatedname="Türkçe">
+
+	<spw_settings>Soundproof Ayarları</spw_settings>
+
+	<spw_generalsettings>Genel Ayarlar</spw_generalsettings>
+	<spw_enabled>Aktif</spw_enabled>
+	<spw_disabled>Pasif</spw_disabled>
+	<spw_enabledtooltip>Modun tüm işlevlerini açar veya kapatır</spw_enabledtooltip>
+	<spw_syncsettings>Ayarları Senkronize Et</spw_syncsettings>
+	<spw_syncsettingstooltip>Host ve istemci yapılandırmalarının senkronizasyonunu açar veya kapatır</spw_syncsettingstooltip>
+	<spw_syncsettingsalert>Not: Bu sunucu senkronizasyonu etkinleştirdi - tüm oyuncular otomatik olarak host'un ayarlarını kullanacak (parantez içindeki değerler)</spw_syncsettingsalert>
+	<spw_focustargetaudio>Odak Hedef Ses</spw_focustargetaudio>
+	<spw_focustargetaudiotooltip>Mevcut hedefin POV'ünden sesi simüle eder (yani, taret/kameranın duyduğunu duyarsınız)</spw_focustargetaudiotooltip>
+	<spw_talkingragdolls>Konuşan Bez Bebekler</spw_talkingragdolls>
+	<spw_talkingragdollstooltip>Oyuncuların bez bebek durumundayken konuşmalarını duymanızı sağlar (bayılmaları kapsamaz)</spw_talkingragdollstooltip>
+	<spw_lowpassfrequency>Düşük Geçiş Frekansı</spw_lowpassfrequency>
+	<spw_lowpassfrequencytooltip>Sesleri boğmak için kullanılan köşe frekansı (bu ayarı oyun içinde ayarlamak oyunu kısa bir süreliğine dondurabilir)</spw_lowpassfrequencytooltip>
+	<spw_voicelowpassfrequency>Ses Düşük Geçiş Frekansı</spw_voicelowpassfrequency>
+	<spw_voicelowpassfrequencytooltip>Sesli sohbeti boğmak için kullanılan köşe frekansı</spw_voicelowpassfrequencytooltip>
+	<spw_soundrange>Ses Menzili</spw_soundrange>
+	<spw_soundrangetooltip>Bileşen olmayan seslerin menzili</spw_soundrangetooltip>
+	<spw_voicerange>Ses Menzili</spw_voicerange>
+	<spw_radiorange>Radyo Menzili</spw_radiorange>
+
+	<spw_volumesettings>Ses Düzeyi Ayarları</spw_volumesettings>
+	<spw_muffledvoicevolume>Boğuk Ses Düzeyi</spw_muffledvoicevolume>
+	<spw_muffledvoicevolumetooltip>Bir duvar/su yüzeyi ardındaki düşük geçişli oyuncu seslerinin hacmi</spw_muffledvoicevolumetooltip>
+	<spw_muffledsoundvolume>Boğuk Ses Düzeyi</spw_muffledsoundvolume>
+	<spw_muffledsoundvolumetooltip>Bir duvar/su yüzeyi ardındaki düşük geçişli döngüsel olmayan seslerin hacmi</spw_muffledsoundvolumetooltip>
+	<spw_muffledcomponentvolume>Boğuk Bileşen Ses Düzeyi</spw_muffledcomponentvolume>
+	<spw_muffledcomponentvolumetooltip>Bir duvar/su yüzeyi ardındaki düşük geçişli döngüsel bileşen/durum etkisi seslerinin hacmi</spw_muffledcomponentvolumetooltip>
+	<spw_unmuffledcomponentvolume>Boğulmamış Bileşen Ses Düzeyi</spw_unmuffledcomponentvolume>
+	<spw_submergedvolume>Batık Ses Düzeyi</spw_submergedvolume>
+	<spw_submergedvolumetooltip>Dinleyici de aynı su kütlesinde batık olduğunda batık seslerin hacmi</spw_submergedvolumetooltip>
+
+	<spw_eavesdroppingsettings>Dinleme Ayarları</spw_eavesdroppingsettings>
+	<spw_eavesdroppingbind>Dinleme Tuşu</spw_eavesdroppingbind>
+	<spw_eavesdroppingsoundvolume>Dinleme Ses Düzeyi</spw_eavesdroppingsoundvolume>
+	<spw_eavesdroppingvoicevolume>Dinleme Ses Düzeyi</spw_eavesdroppingvoicevolume>
+	<spw_eavesdroppingpitch>Dinleme Sesi Tonu</spw_eavesdroppingpitch>
+	<spw_eavesdroppingmaxdistance>Dinleme Maksimum Mesafesi</spw_eavesdroppingmaxdistance>
+	<spw_eavesdroppingmaxdistancetooltip>Bir oyuncunun başının bir kapıdan dinlerken olabileceği maksimum mesafe</spw_eavesdroppingmaxdistancetooltip>
+
+	<spw_hydrophonesettings>Hidrofon Ayarları</spw_hydrophonesettings>
+	<spw_hydrophonerange>Hidrofon Menzili</spw_hydrophonerange>
+	<spw_hydrophonerangetooltip>Su altı hareket seslerinin menzili ve denizaltının dışındaki tüm seslere eklenen ekstra menzil</spw_hydrophonerangetooltip>
+	<spw_hydrophonevolume>Hidrofon Ses Düzeyi</spw_hydrophonevolume>
+	<spw_hydrophonepitch>Hidrofon Tonu</spw_hydrophonepitch>
+	<spw_hydrophonelegacyswitch>Hidrofon Eski Anahtarı</spw_hydrophonelegacyswitch>
+	<spw_hydrophonelegacyswitchtooltip>Aktif sonar kullanılırken hidrofon anahtarının kapatılması eski mantığını kullanın</spw_hydrophonelegacyswitchtooltip>
+
+	<spw_ambiencesettings>Ambiyans Ayarları</spw_ambiencesettings>
+	<spw_unsubmergedwaterambiencevolume>Su Altı Olmayan Ambiyans Ses Düzeyi</spw_unsubmergedwaterambiencevolume>
+	<spw_submergedwaterambiencevolume>Su Altı Ambiyans Ses Düzeyi</spw_submergedwaterambiencevolume>
+	<spw_hydrophonewaterambiencevolume>Hidrofon Su Ambiyans Ses Düzeyi</spw_hydrophonewaterambiencevolume>
+	<spw_waterambiencetransitionspeed>Su Ambiyansı Geçiş Hızı</spw_waterambiencetransitionspeed>
+	<spw_waterambiencetransitionspeedtooltip>Su ambiansının ses düzeyi arasındaki geçiş hızı</spw_waterambiencetransitionspeedtooltip>
+
+	<spw_advancedsoundsettings>Gelişmiş Ses Ayarları</spw_advancedsoundsettings>
+	<spw_soundvolumemultipliers>Ses Düzeyi Çarpanları</spw_soundvolumemultipliers>
+	<spw_ignoredsounds>Yok Sayılan Sesler</spw_ignoredsounds>
+	<spw_lowpassignoredsounds>Düşük Geçiş Yok Sayılan Sesler</spw_lowpassignoredsounds>
+	<spw_pitchignoredsounds>Perde Yok Sayılan Sesler</spw_pitchignoredsounds>
+	<spw_pathignoredsounds>Yol Yok Sayılan Sesler</spw_pathignoredsounds>
+	<spw_containerignoredsounds>Konteyner Yok Sayılan Sesler</spw_containerignoredsounds>
+	<spw_waterignoredsounds>Su Yok Sayılan Sesler</spw_waterignoredsounds>
+	<spw_submersionignoredsounds>Batma Yok Sayılan Sesler</spw_submersionignoredsounds>
+	<spw_bubbleignorednames>Kabarcık Yok Sayılan İsimler</spw_bubbleignorednames>
+
+	<spw_nichesettings>Niş Ayarları</spw_nichesettings>
+	<spw_mufflesubmergedplayer>Su Altı Oyuncu Sesi Boğma</spw_mufflesubmergedplayer>
+	<spw_mufflesubmergedplayertooltip>Kafanız suyun altındayken sesi boğar (tavsiye edilir)</spw_mufflesubmergedplayertooltip>
+	<spw_mufflesubmergedviewtarget>Su Altı Görüntüleme Hedefi Sesi Boğma</spw_mufflesubmergedviewtarget>
+	<spw_mufflesubmergedviewtargettooltip>Görüntülediğiniz hedef suyun altındayken sesi boğar (örn. taretler, kameralar vb.)</spw_mufflesubmergedviewtargettooltip>
+	<spw_mufflesubmergedsounds>Su Altı Seslerini Boğma</spw_mufflesubmergedsounds>
+	<spw_mufflesubmergedsoundstooltip>Su yüzeyinin altında konumlandırılan sesleri boğar (tavsiye edilir)</spw_mufflesubmergedsoundstooltip>
+	<spw_muffleflowsounds>Akıntı Seslerini Boğma</spw_muffleflowsounds>
+	<spw_muffleflowsoundstooltip>Sızıntılardan gelen su akıntısı seslerinin boğulmasını açar/kapatır</spw_muffleflowsoundstooltip>
+	<spw_mufflefiresounds>Ateş Seslerini Boğma</spw_mufflefiresounds>
+	<spw_mufflefiresoundstooltip>Ateş seslerinin boğulmasını açar/kapatır</spw_mufflefiresoundstooltip>
+	<spw_divingsuitpitch>Dalış Elbisesi Tonu</spw_divingsuitpitch>
+	<spw_divingsuitpitchtooltip>Dalış elbisesi giyerken seslerin tonu (üst üste eklenir)</spw_divingsuitpitchtooltip>
+	<spw_submergedpitch>Batık Ton</spw_submergedpitch>
+	<spw_submergedpitchtooltip>Dinleyici su altındayken seslerin tonu (üst üste eklenir)</spw_submergedpitchtooltip>
+	<spw_muffledvoicepitch>Boğuk Ses Tonu</spw_muffledvoicepitch>
+	<spw_muffledvoicepitchtooltip>Tavsiye edilmez. Sadece eğlence için</spw_muffledvoicepitchtooltip>
+	<spw_unmuffledvoicepitch>Boğulmamış Ses Tonu</spw_unmuffledvoicepitch>
+	<spw_unmuffledvoicepitchtooltip>Tavsiye edilmez. Sadece eğlence için</spw_unmuffledvoicepitchtooltip>
+	<spw_muffledcomponentpitch>Boğuk Bileşen Tonu</spw_muffledcomponentpitch>
+	<spw_unmuffledcomponentpitch>Boğulmamış Bileşen Tonu</spw_unmuffledcomponentpitch>
+	<spw_hidesettings>Menü Düğmesini Gizle</spw_hidesettings>
+	<spw_hidesettingstooltip>Uyarı: Bu ayarı etkinleştirmek, UI'nızdan "Ses Yalıtım Ayarları" düğmesini kaldırır. Bu ayarı geri yüklemek için yapılandırma dosyanızı manuel olarak düzenlemeniz veya silmeniz gerekir.</spw_hidesettingstooltip>
+
+	<spw_updateserverconfig>Ses Yalıtımlı Duvarlar: Host ayarları değiştirdi - sunucu yapılandırması güncellendi</spw_updateserverconfig>
+	<spw_disableserverconfig>Ses Yalıtımlı Duvarlar: Host ayar senkronizasyonunu devre dışı bıraktı - yerel yapılandırmalar artık önceliklidir</spw_disableserverconfig>
+	<spw_hydrophonemonitoring>Hidrofonları İzleme</spw_hydrophonemonitoring>
+	<spw_listening>Dinleniyor...</spw_listening>
+	<spw_invalidinput>Geçersiz Giriş</spw_invalidinput>
+	<spw_default>(Varsayılan)</spw_default>
+	<spw_vanilla>(Vanilya)</spw_vanilla>
+	<spw_custom>(Özel)</spw_custom>
+	<spw_reset>Sıfırla</spw_reset>
+	<spw_resetall>Hepsini Sıfırla</spw_resetall>
+</infotexts>

@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<infotexts language="Traditional Chinese" nowhitespace="false" translatedname="中文(繁體)">
+
+	<spw_settings>Soundproof設定</spw_settings>
+
+	<spw_generalsettings>一般設定</spw_generalsettings>
+	<spw_enabled>已啟用</spw_enabled>
+	<spw_disabled>已禁用</spw_disabled>
+	<spw_enabledtooltip>切換mod的所有功能</spw_enabledtooltip>
+	<spw_syncsettings>同步設定</spw_syncsettings>
+	<spw_syncsettingstooltip>切換主機和客戶端配置的同步</spw_syncsettingstooltip>
+	<spw_syncsettingsalert>注意：此服務器已啟用同步 - 所有玩家將自動使用主機的設置（括號中的值）</spw_syncsettingsalert>
+	<spw_focustargetaudio>焦點目標音頻</spw_focustargetaudio>
+	<spw_focustargetaudiotooltip>模擬當前目標的音頻視角（即，您聽到炮塔/攝像頭聽到的聲音）</spw_focustargetaudiotooltip>
+	<spw_talkingragdolls>說話的布偶</spw_talkingragdolls>
+	<spw_talkingragdollstooltip>當玩家處於布偶狀態時聽到他們說話（不適用於昏厥）</spw_talkingragdollstooltip>
+	<spw_lowpassfrequency>低通頻率</spw_lowpassfrequency>
+	<spw_lowpassfrequencytooltip>用於消音的截止頻率（調整此設置會短暫凍結遊戲）</spw_lowpassfrequencytooltip>
+	<spw_voicelowpassfrequency>語音低通頻率</spw_voicelowpassfrequency>
+	<spw_voicelowpassfrequencytooltip>用於消音語音聊天的截止頻率</spw_voicelowpassfrequencytooltip>
+	<spw_soundrange>聲音範圍</spw_soundrange>
+	<spw_soundrangetooltip>非組件聲音的範圍</spw_soundrangetooltip>
+	<spw_voicerange>語音範圍</spw_voicerange>
+	<spw_radiorange>無線電範圍</spw_radiorange>
+
+	<spw_volumesettings>音量設置</spw_volumesettings>
+	<spw_muffledvoicevolume>消音語音音量</spw_muffledvoicevolume>
+	<spw_muffledvoicevolumetooltip>牆壁/水面後低通處理的玩家語音的音量</spw_muffledvoicevolumetooltip>
+	<spw_muffledsoundvolume>消音聲音音量</spw_muffledsoundvolume>
+	<spw_muffledsoundvolumetooltip>牆壁/水面後低通處理的非循環聲音的音量</spw_muffledsoundvolumetooltip>
+	<spw_muffledcomponentvolume>消音組件音量</spw_muffledcomponentvolume>
+	<spw_muffledcomponentvolumetooltip>牆壁/水面後低通處理的循環組件/狀態效果聲音的音量</spw_muffledcomponentvolumetooltip>
+	<spw_unmuffledcomponentvolume>未消音組件音量</spw_unmuffledcomponentvolume>
+	<spw_submergedvolume>淹沒音量</spw_submergedvolume>
+	<spw_submergedvolumetooltip>聽眾也在同一水體中淹沒時的淹沒聲音音量</spw_submergedvolumetooltip>
+
+	<spw_eavesdroppingsettings>竊聽設置</spw_eavesdroppingsettings>
+	<spw_eavesdroppingbind>監聽綁定</spw_eavesdroppingbind>
+	<spw_eavesdroppingsoundvolume>竊聽聲音音量</spw_eavesdroppingsoundvolume>
+	<spw_eavesdroppingvoicevolume>竊聽語音音量</spw_eavesdroppingvoicevolume>
+	<spw_eavesdroppingpitch>竊聽聲音音調</spw_eavesdroppingpitch>
+	<spw_eavesdroppingmaxdistance>竊聽最大距離</spw_eavesdroppingmaxdistance>
+	<spw_eavesdroppingmaxdistancetooltip>玩家頭部與門之間竊聽時的最大距離</spw_eavesdroppingmaxdistancetooltip>
+
+	<spw_hydrophonesettings>水聽器設置</spw_hydrophonesettings>
+	<spw_hydrophonerange>水聽器範圍</spw_hydrophonerange>
+	<spw_hydrophonerangetooltip>水下移動聲音的範圍以及加到潛艇外所有聲音上的額外範圍</spw_hydrophonerangetooltip>
+	<spw_hydrophonevolume>水聽器音量</spw_hydrophonevolume>
+	<spw_hydrophonepitch>水聽器音調</spw_hydrophonepitch>
+	<spw_hydrophonelegacyswitch>水聽器傳統開關</spw_hydrophonelegacyswitch>
+	<spw_hydrophonelegacyswitchtooltip>使用舊的水聽器開關邏輯（使用主動聲納時關閉開關）</spw_hydrophonelegacyswitchtooltip>
+
+	<spw_ambiencesettings>環境設置</spw_ambiencesettings>
+	<spw_unsubmergedwaterambiencevolume>非淹沒水環境音量</spw_unsubmergedwaterambiencevolume>
+	<spw_submergedwaterambiencevolume>淹沒水環境音量</spw_submergedwaterambiencevolume>
+	<spw_hydrophonewaterambiencevolume>水聽器水環境音量</spw_hydrophonewaterambiencevolume>
+	<spw_waterambiencetransitionspeed>水環境過渡速度</spw_waterambiencetransitionspeed>
+	<spw_waterambiencetransitionspeedtooltip>水環境之間過渡的速度</spw_waterambiencetransitionspeedtooltip>
+
+	<spw_advancedsoundsettings>進階聲音設置</spw_advancedsoundsettings>
+	<spw_soundvolumemultipliers>聲音音量倍增器</spw_soundvolumemultipliers>
+	<spw_ignoredsounds>忽略的聲音</spw_ignoredsounds>
+	<spw_lowpassignoredsounds>低通過濾忽略的聲音</spw_lowpassignoredsounds>
+	<spw_pitchignoredsounds>音調忽略的聲音</spw_pitchignoredsounds>
+	<spw_pathignoredsounds>路徑忽略的聲音</spw_pathignoredsounds>
+	<spw_containerignoredsounds>容器忽略的聲音</spw_containerignoredsounds>
+	<spw_waterignoredsounds>水聲忽略</spw_waterignoredsounds>
+	<spw_submersionignoredsounds>淹沒聲音忽略</spw_submersionignoredsounds>
+	<spw_bubbleignorednames>氣泡忽略的名稱</spw_bubbleignorednames>
+
+	<spw_nichesettings>特定設置</spw_nichesettings>
+	<spw_mufflesubmergedplayer>淹沒玩家聲音消音</spw_mufflesubmergedplayer>
+	<spw_mufflesubmergedplayertooltip>當您的頭部在水下時消音音頻（推薦）</spw_mufflesubmergedplayertooltip>
+	<spw_mufflesubmergedviewtarget>淹沒視圖目標聲音消音</spw_mufflesubmergedviewtarget>
+	<spw_mufflesubmergedviewtargettooltip>當您查看的目標在水下時消音音頻（例如，炮塔，攝像機等）</spw_mufflesubmergedviewtargettooltip>
+	<spw_mufflesubmergedsounds>淹沒聲音消音</spw_mufflesubmergedsounds>
+	<spw_mufflesubmergedsoundstooltip>消音位於水面下的聲音（推薦）</spw_mufflesubmergedsoundstooltip>
+	<spw_muffleflowsounds>流動聲音消音</spw_muffleflowsounds>
+	<spw_muffleflowsoundstooltip>切換泄漏水流聲音的消音</spw_muffleflowsoundstooltip>
+	<spw_mufflefiresounds>火焰聲音消音</spw_mufflefiresounds>
+	<spw_mufflefiresoundstooltip>切換火焰聲音的消音</spw_mufflefiresoundstooltip>
+	<spw_divingsuitpitch>潛水衣音調</spw_divingsuitpitch>
+	<spw_divingsuitpitchtooltip>穿戴潛水衣時聲音的音調（累加）</spw_divingsuitpitchtooltip>
+	<spw_submergedpitch>淹沒音調</spw_submergedpitch>
+	<spw_submergedpitchtooltip>聽眾淹沒時聲音的音調（累加）</spw_submergedpitchtooltip>
+	<spw_muffledvoicepitch>消音語音音調</spw_muffledvoicepitch>
+	<spw_muffledvoicepitchtooltip>不推薦。僅供娛樂</spw_muffledvoicepitchtooltip>
+	<spw_unmuffledvoicepitch>未消音語音音調</spw_unmuffledvoicepitch>
+	<spw_unmuffledvoicepitchtooltip>不推薦。僅供娛樂</spw_unmuffledvoicepitchtooltip>
+	<spw_muffledcomponentpitch>消音組件音調</spw_muffledcomponentpitch>
+	<spw_unmuffledcomponentpitch>未消音組件音調</spw_unmuffledcomponentpitch>
+	<spw_hidesettings>隱藏菜單按鈕</spw_hidesettings>
+	<spw_hidesettingstooltip>警告：啟用此設置將從您的UI中移除“隔音設置”按鈕。您必須手動編輯或刪除配置文件以恢復此設置。</spw_hidesettingstooltip>
+
+	<spw_updateserverconfig>隔音牆：主機修改了設置 - 伺服器配置已更新</spw_updateserverconfig>
+	<spw_disableserverconfig>隔音牆：主機禁用了設置同步 - 現在優先使用本地配置</spw_disableserverconfig>
+	<spw_hydrophonemonitoring>水聽器監控</spw_hydrophonemonitoring>
+	<spw_listening>正在監聽...</spw_listening>
+	<spw_invalidinput>無效輸入</spw_invalidinput>
+	<spw_default>（默認）</spw_default>
+	<spw_vanilla>（原版）</spw_vanilla>
+	<spw_custom>（自定義）</spw_custom>
+	<spw_reset>重置</spw_reset>
+	<spw_resetall>全部重置</spw_resetall>
+</infotexts>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <infotexts language="Japanese" nowhitespace="false" translatedname="日本語">
 
-	<spw_settings>防音の設定</spw_settings>
+	<spw_settings>Soundproofの設定</spw_settings>
 
 	<spw_generalsettings>一般的な設定</spw_generalsettings>
 	<spw_enabled>オン</spw_enabled>

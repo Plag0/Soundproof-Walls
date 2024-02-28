@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<infotexts language="Korean" nowhitespace="false" translatedname="한국어">
+
+	<spw_settings>Soundproof 설정</spw_settings>
+
+	<spw_generalsettings>일반 설정</spw_generalsettings>
+	<spw_enabled>활성화됨</spw_enabled>
+	<spw_disabled>비활성화됨</spw_disabled>
+	<spw_enabledtooltip>모드의 모든 기능을 토글합니다</spw_enabledtooltip>
+	<spw_syncsettings>설정 동기화</spw_syncsettings>
+	<spw_syncsettingstooltip>호스트와 클라이언트 구성의 동기화를 토글합니다</spw_syncsettingstooltip>
+	<spw_syncsettingsalert>주의: 이 서버는 동기화가 활성화되어 있습니다 - 모든 플레이어가 호스트의 설정을 자동으로 사용합니다 (괄호 안의 값)</spw_syncsettingsalert>
+	<spw_focustargetaudio>대상 오디오 집중</spw_focustargetaudio>
+	<spw_focustargetaudiotooltip>현재 대상의 시점에서 오디오를 시뮬레이션합니다 (즉, 터렛/카메라가 듣는 소리를 듣습니다)</spw_focustargetaudiotooltip>
+	<spw_talkingragdolls>말하는 래그돌</spw_talkingragdolls>
+	<spw_talkingragdollstooltip>래그돌 상태일 때 플레이어가 말하는 것을 들을 수 있습니다 (기절에는 적용되지 않음)</spw_talkingragdollstooltip>
+	<spw_lowpassfrequency>로우패스 주파수</spw_lowpassfrequency>
+	<spw_lowpassfrequencytooltip>소리를 머플링하기 위해 사용되는 코너 주파수입니다 (이 설정을 중간에 조정하면 게임이 잠시 멈출 수 있습니다)</spw_lowpassfrequencytooltip>
+	<spw_voicelowpassfrequency>음성 로우패스 주파수</spw_voicelowpassfrequency>
+	<spw_voicelowpassfrequencytooltip>음성 채팅을 머플링하기 위해 사용되는 코너 주파수</spw_voicelowpassfrequencytooltip>
+	<spw_soundrange>사운드 범위</spw_soundrange>
+	<spw_soundrangetooltip>컴포넌트가 아닌 소리의 범위</spw_soundrangetooltip>
+	<spw_voicerange>음성 범위</spw_voicerange>
+	<spw_radiorange>라디오 범위</spw_radiorange>
+
+	<spw_volumesettings>볼륨 설정</spw_volumesettings>
+	<spw_muffledvoicevolume>머플된 음성 볼륨</spw_muffledvoicevolume>
+	<spw_muffledvoicevolumetooltip>벽이나 물 표면 뒤에 있는 로우패스 처리된 플레이어 음성의 볼륨</spw_muffledvoicevolumetooltip>
+	<spw_muffledsoundvolume>머플된 사운드 볼륨</spw_muffledsoundvolume>
+	<spw_muffledsoundvolumetooltip>벽이나 물 표면 뒤에 있는 로우패스 처리된 비루프 사운드의 볼륨</spw_muffledsoundvolumetooltip>
+	<spw_muffledcomponentvolume>머플된 컴포넌트 볼륨</spw_muffledcomponentvolume>
+	<spw_muffledcomponentvolumetooltip>벽이나 물 표면 뒤에 있는 로우패스 처리된 루프 컴포넌트/상태 효과 사운드의 볼륨</spw_muffledcomponentvolumetooltip>
+	<spw_unmuffledcomponentvolume>머플되지 않은 컴포넌트 볼륨</spw_unmuffledcomponentvolume>
+	<spw_submergedvolume>수중 볼륨</spw_submergedvolume>
+	<spw_submergedvolumetooltip>청취자도 같은 물속에 잠겨 있을 때 수중 사운드의 볼륨</spw_submergedvolumetooltip>
+
+	<spw_eavesdroppingsettings>도청 설정</spw_eavesdroppingsettings>
+	<spw_eavesdroppingbind>도청 키 바인드</spw_eavesdroppingbind>
+	<spw_eavesdroppingsoundvolume>도청 사운드 볼륨</spw_eavesdroppingsoundvolume>
+	<spw_eavesdroppingvoicevolume>도청 음성 볼륨</spw_eavesdroppingvoicevolume>
+	<spw_eavesdroppingpitch>도청 사운드 피치</spw_eavesdroppingpitch>
+	<spw_eavesdroppingmaxdistance>도청 최대 거리</spw_eavesdroppingmaxdistance>
+	<spw_eavesdroppingmaxdistancetooltip>도청 시 플레이어의 머리가 문에서 떨어질 수 있는 최대 거리</spw_eavesdroppingmaxdistancetooltip>
+
+	<spw_hydrophonesettings>수중 청음기 설정</spw_hydrophonesettings>
+	<spw_hydrophonerange>수중 청음기 범위</spw_hydrophonerange>
+	<spw_hydrophonerangetooltip>수중 이동 소리의 범위와 잠수함 외부의 모든 소리에 추가되는 추가 범위</spw_hydrophonerangetooltip>
+	<spw_hydrophonevolume>수중 청음기 볼륨</spw_hydrophonevolume>
+	<spw_hydrophonepitch>수중 청음기 피치</spw_hydrophonepitch>
+	<spw_hydrophonelegacyswitch>수중 청음기 레거시 스위치</spw_hydrophonelegacyswitch>
+	<spw_hydrophonelegacyswitchtooltip>오래된 수중 청음기 스위치 로직 사용 (활성 소나 사용 시 스위치가 꺼짐)</spw_hydrophonelegacyswitchtooltip>
+
+	<spw_ambiencesettings>환경 설정</spw_ambiencesettings>
+	<spw_unsubmergedwaterambiencevolume>비수중 환경 볼륨</spw_unsubmergedwaterambiencevolume>
+	<spw_submergedwaterambiencevolume>수중 환경 볼륨</spw_submergedwaterambiencevolume>
+	<spw_hydrophonewaterambiencevolume>수중 청음기 환경 볼륨</spw_hydrophonewaterambiencevolume>
+	<spw_waterambiencetransitionspeed>환경 전환 속도</spw_waterambiencetransitionspeed>
+	<spw_waterambiencetransitionspeedtooltip>환경 볼륨 사이의 전환 속도</spw_waterambiencetransitionspeedtooltip>
+
+	<spw_advancedsoundsettings>고급 사운드 설정</spw_advancedsoundsettings>
+	<spw_soundvolumemultipliers>사운드 볼륨 배수</spw_soundvolumemultipliers>
+	<spw_ignoredsounds>무시된 사운드</spw_ignoredsounds>
+	<spw_lowpassignoredsounds>로우패스 무시된 사운드</spw_lowpassignoredsounds>
+	<spw_pitchignoredsounds>피치 무시된 사운드</spw_pitchignoredsounds>
+	<spw_pathignoredsounds>벽 무시된 사운드</spw_pathignoredsounds>
+	<spw_containerignoredsounds>컨테이너 무시된 사운드</spw_containerignoredsounds>
+	<spw_waterignoredsounds>물 무시된 사운드</spw_waterignoredsounds>
+	<spw_submersionignoredsounds>수중 무시된 사운드</spw_submersionignoredsounds>
+	<spw_bubbleignorednames>버블 무시된 이름</spw_bubbleignorednames>
+
+	<spw_nichesettings>특정 설정</spw_nichesettings>
+	<spw_mufflesubmergedplayer>수중 플레이어 소리 감소</spw_mufflesubmergedplayer>
+	<spw_mufflesubmergedplayertooltip>머리가 물속에 있을 때 오디오를 감소시킵니다 (권장)</spw_mufflesubmergedplayertooltip>
+	<spw_mufflesubmergedviewtarget>수중 시야 대상 소리 감소</spw_mufflesubmergedviewtarget>
+	<spw_mufflesubmergedviewtargettooltip>조회 대상이 물속에 있을 때 오디오를 감소시킵니다 (예: 터렛, 카메라 등)</spw_mufflesubmergedviewtargettooltip>
+	<spw_mufflesubmergedsounds>수중 소리 감소</spw_mufflesubmergedsounds>
+	<spw_mufflesubmergedsoundstooltip>물 표면 아래에 위치한 소리를 감소시킵니다 (권장)</spw_mufflesubmergedsoundstooltip>
+	<spw_muffleflowsounds>유동 소리 감소</spw_muffleflowsounds>
+	<spw_muffleflowsoundstooltip>누수로 인한 물 흐름 소리의 감소를 토글합니다</spw_muffleflowsoundstooltip>
+	<spw_mufflefiresounds>불 소리 감소</spw_mufflefiresounds>
+	<spw_mufflefiresoundstooltip>불 소리의 감소를 토글합니다</spw_mufflefiresoundstooltip>
+	<spw_divingsuitpitch>잠수복 피치</spw_divingsuitpitch>
+	<spw_divingsuitpitchtooltip>잠수복 착용 시 소리의 피치 (추가적으로 적용됩니다)</spw_divingsuitpitchtooltip>
+	<spw_submergedpitch>수중 피치</spw_submergedpitch>
+	<spw_submergedpitchtooltip>청취자가 수중일 때 소리의 피치 (추가적으로 적용됩니다)</spw_submergedpitchtooltip>
+	<spw_muffledvoicepitch>머플된 음성 피치</spw_muffledvoicepitch>
+	<spw_muffledvoicepitchtooltip>권장하지 않습니다. 재미를 위한 것입니다</spw_muffledvoicepitchtooltip>
+	<spw_unmuffledvoicepitch>머플되지 않은 음성 피치</spw_unmuffledvoicepitch>
+	<spw_unmuffledvoicepitchtooltip>권장하지 않습니다. 재미를 위한 것입니다</spw_unmuffledvoicepitchtooltip>
+	<spw_muffledcomponentpitch>머플된 컴포넌트 피치</spw_muffledcomponentpitch>
+	<spw_unmuffledcomponentpitch>머플되지 않은 컴포넌트 피치</spw_unmuffledcomponentpitch>
+	<spw_hidesettings>메뉴 버튼 숨기기</spw_hidesettings>
+	<spw_hidesettingstooltip>경고: 이 설정을 활성화하면 UI에서 "방음 설정" 버튼이 제거됩니다. 이 설정을 복원하려면 구성 파일을 수동으로 편집하거나 삭제해야 합니다.</spw_hidesettingstooltip>
+
+	<spw_updateserverconfig>방음 벽: 호스트가 설정을 수정했습니다 - 서버 구성이 업데이트되었습니다</spw_updateserverconfig>
+	<spw_disableserverconfig>방음 벽: 호스트가 설정 동기화를 비활성화했습니다 - 로컬 구성이 우선합니다</spw_disableserverconfig>
+	<spw_hydrophonemonitoring>수중 청음기 모니터링</spw_hydrophonemonitoring>
+	<spw_listening>청취 중...</spw_listening>
+	<spw_invalidinput>잘못된 입력</spw_invalidinput>
+	<spw_default>(기본)</spw_default>
+	<spw_vanilla>(바닐라)</spw_vanilla>
+	<spw_custom>(사용자 정의)</spw_custom>
+	<spw_reset>초기화</spw_reset>
+	<spw_resetall>전체 초기화</spw_resetall>
+
+</infotexts>

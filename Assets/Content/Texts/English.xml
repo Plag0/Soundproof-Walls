@@ -22,7 +22,7 @@
 	<spw_soundrangetooltip>Range of non-component sounds</spw_soundrangetooltip>
 	<spw_voicerange>Voice Range</spw_voicerange>
 	<spw_radiorange>Radio Range</spw_radiorange>
-
+	
 	<spw_volumesettings>Volume Settings</spw_volumesettings>
 	<spw_muffledvoicevolume>Muffled Voice Volume</spw_muffledvoicevolume>
 	<spw_muffledvoicevolumetooltip>Volume of lowpassed player voices behind a wall/water surface</spw_muffledvoicevolumetooltip>

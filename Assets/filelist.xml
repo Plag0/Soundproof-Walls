@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <contentpackage name="Soundproof Walls" steamworkshopid="3153737715" corepackage="false" modversion="1.0.1" gameversion="1.2.8.0" installtime="1">
-	<Text file="%ModDir%/Content/Localisation/Info_English.xml" />
-	<Text file="%ModDir%/Content/Localisation/Info_Russian.xml" />
-	<Text file="%ModDir%/Content/Localisation/Info_Spanish.xml" />
-	<Text file="%ModDir%/Content/Localisation/Info_German.xml" />
-	<Text file="%ModDir%/Content/Localisation/Info_French.xml" />
-	<Text file="%ModDir%/Content/Localisation/Info_Japanese.xml" />
-	<Text file="%ModDir%/Content/Localisation/Info_Polish.xml" />
+	<Text file="%ModDir%/Content/Texts/BrazilianPortuguese.xml" />
+	<Text file="%ModDir%/Content/Texts/CastilianSpanish.xml" />
+	<Text file="%ModDir%/Content/Texts/English.xml" />
+	<Text file="%ModDir%/Content/Texts/French.xml" />
+	<Text file="%ModDir%/Content/Texts/German.xml" />
+	<Text file="%ModDir%/Content/Texts/Japanese.xml" />
+	<Text file="%ModDir%/Content/Texts/Korean.xml" />
+	<Text file="%ModDir%/Content/Texts/LatinamericanSpanish.xml" />
+	<Text file="%ModDir%/Content/Texts/Polish.xml" />
+	<Text file="%ModDir%/Content/Texts/Russian.xml" />
+	<Text file="%ModDir%/Content/Texts/SimplifiedChinese.xml" />
+	<Text file="%ModDir%/Content/Texts/TraditionalChinese.xml" />
+	<Text file="%ModDir%/Content/Texts/Turkish.xml" />
+	
 	<Item file="%ModDir%/Content/dummyitem.xml" />
 </contentpackage>

@@ -704,48 +704,45 @@ namespace SoundproofWalls
                 Sonar instance = kvp.Key;
                 GUIButton button = kvp.Value.Switch;
                 GUITextBlock textBlock = kvp.Value.TextBlock;
-                bool updated = false;
+                
                 if (instance.CurrentMode == Sonar.Mode.Active)
                 {
                     IsUsingHydrophones = false;
                     HydrophoneEfficiency = 0;
-                    if (button.Selected)
+                    if (button.Selected && button.Color != HydrophoneSwitch.buttonDisabledColor)
                     {
                         textBlock.TextColor = InterpolateColor(HydrophoneSwitch.textDisabledColor, HydrophoneSwitch.textDefaultColor, HydrophoneEfficiency);
                         button.SelectedColor = InterpolateColor(HydrophoneSwitch.buttonDisabledColor, HydrophoneSwitch.buttonDefaultColor, HydrophoneEfficiency);
                         button.Color = InterpolateColor(HydrophoneSwitch.buttonDisabledColor, HydrophoneSwitch.buttonDefaultColor, HydrophoneEfficiency);
                         button.HoverColor = InterpolateColor(HydrophoneSwitch.buttonDisabledColor, HydrophoneSwitch.buttonDefaultColor, HydrophoneEfficiency);
                     }
-                    updated = true;
-                }
-                else if (HydrophoneEfficiency < 1)
-                {
-                    if (instance.CurrentMode != Sonar.Mode.Active) { HydrophoneEfficiency += 0.005f * (HydrophoneEfficiency + 1); }
-                    else { HydrophoneEfficiency = 1; }
-
-                    if (button.Selected)
-                    {
-                        textBlock.TextColor = InterpolateColor(HydrophoneSwitch.textDisabledColor, HydrophoneSwitch.textDefaultColor, HydrophoneEfficiency);
-                        button.SelectedColor = InterpolateColor(HydrophoneSwitch.buttonDisabledColor, HydrophoneSwitch.buttonDefaultColor, HydrophoneEfficiency);
-                        button.Color = InterpolateColor(HydrophoneSwitch.buttonDisabledColor, HydrophoneSwitch.buttonDefaultColor, HydrophoneEfficiency);
-                        button.HoverColor = InterpolateColor(HydrophoneSwitch.buttonDisabledColor, HydrophoneSwitch.buttonDefaultColor, HydrophoneEfficiency);
-
-                    }
-                    else
+                    else if (!button.Selected && button.Color == HydrophoneSwitch.buttonDisabledColor)
                     {
                         textBlock.TextColor = HydrophoneSwitch.textDefaultColor;
                         button.SelectedColor = HydrophoneSwitch.buttonDefaultColor;
                         button.Color = HydrophoneSwitch.buttonDefaultColor;
                         button.HoverColor = HydrophoneSwitch.buttonDefaultColor;
                     }
-
-                    updated = true;
                 }
-
-                if (updated && GameMain.Client != null)
+                else if (instance.CurrentMode != Sonar.Mode.Active && HydrophoneEfficiency < 1)
                 {
-                    instance.unsentChanges = true;
-                    instance.correctionTimer = Sonar.CorrectionDelay;
+                    HydrophoneEfficiency += 0.005f * (HydrophoneEfficiency + 1);
+
+                    if (button.Selected)
+                    {
+                        textBlock.TextColor = InterpolateColor(HydrophoneSwitch.textDisabledColor, HydrophoneSwitch.textDefaultColor, HydrophoneEfficiency);
+                        button.SelectedColor = InterpolateColor(HydrophoneSwitch.buttonDisabledColor, HydrophoneSwitch.buttonDefaultColor, HydrophoneEfficiency);
+                        button.Color = InterpolateColor(HydrophoneSwitch.buttonDisabledColor, HydrophoneSwitch.buttonDefaultColor, HydrophoneEfficiency);
+                        button.HoverColor = InterpolateColor(HydrophoneSwitch.buttonDisabledColor, HydrophoneSwitch.buttonDefaultColor, HydrophoneEfficiency);
+
+                    }
+                    else if (!button.Selected && button.Color != HydrophoneSwitch.buttonDefaultColor)
+                    {
+                        textBlock.TextColor = HydrophoneSwitch.textDefaultColor;
+                        button.SelectedColor = HydrophoneSwitch.buttonDefaultColor;
+                        button.Color = HydrophoneSwitch.buttonDefaultColor;
+                        button.HoverColor = HydrophoneSwitch.buttonDefaultColor;
+                    }
                 }
             }
         }

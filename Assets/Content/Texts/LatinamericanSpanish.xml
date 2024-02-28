@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<infotexts language="Latinamerican Spanish" nowhitespace="false" translatedname="Español Latinoamericano">
+
+	<spw_settings>Configuraciones de Soundproof</spw_settings>
+
+	<spw_generalsettings>Configuraciones Generales</spw_generalsettings>
+	<spw_enabled>Activado</spw_enabled>
+	<spw_disabled>Desactivado</spw_disabled>
+	<spw_enabledtooltip>Activa o desactiva todas las funcionalidades del mod</spw_enabledtooltip>
+	<spw_syncsettings>Sincronizar Configuraciones</spw_syncsettings>
+	<spw_syncsettingstooltip>Activa o desactiva la sincronización entre las configuraciones del host y los clientes</spw_syncsettingstooltip>
+	<spw_syncsettingsalert>Nota: Este servidor tiene la sincronización activada - todos los jugadores usarán automáticamente las configuraciones del host (valores entre paréntesis)</spw_syncsettingsalert>
+	<spw_focustargetaudio>Audio del Punto de Vista</spw_focustargetaudio>
+	<spw_focustargetaudiotooltip>Simula el audio desde el punto de vista del objetivo actual (por ejemplo, escuchas lo que la torreta/cámara oye)</spw_focustargetaudiotooltip>
+	<spw_talkingragdolls>Ragdolls Parlantes</spw_talkingragdolls>
+	<spw_talkingragdollstooltip>Permite escuchar a los jugadores cuando están en estado de ragdoll (No se aplica a estados de inconsciencia)</spw_talkingragdollstooltip>
+	<spw_lowpassfrequency>Frecuencia de Paso Bajo</spw_lowpassfrequency>
+	<spw_lowpassfrequencytooltip>La frecuencia de corte utilizada para atenuar los sonidos (ajustar esta opción durante una partida puede congelar temporalmente el juego)</spw_lowpassfrequencytooltip>
+	<spw_voicelowpassfrequency>Frecuencia de Paso Bajo para Voz</spw_voicelowpassfrequency>
+	<spw_voicelowpassfrequencytooltip>La frecuencia de corte utilizada para atenuar el chat de voz</spw_voicelowpassfrequencytooltip>
+	<spw_soundrange>Alcance del Sonido</spw_soundrange>
+	<spw_soundrangetooltip>Alcance de los sonidos que no provienen de componentes</spw_soundrangetooltip>
+	<spw_voicerange>Alcance de la Voz</spw_voicerange>
+	<spw_radiorange>Alcance del Radio</spw_radiorange>
+
+	<spw_volumesettings>Configuración de Volumen</spw_volumesettings>
+	<spw_muffledvoicevolume>Volumen de Voz Atenuada</spw_muffledvoicevolume>
+	<spw_muffledvoicevolumetooltip>Volumen de las voces de los jugadores atenuadas detrás de una pared o superficie de agua</spw_muffledvoicevolumetooltip>
+	<spw_muffledsoundvolume>Volumen de Sonidos Atenuados</spw_muffledsoundvolume>
+	<spw_muffledsoundvolumetooltip>Volumen de sonidos no repetitivos atenuados detrás de una pared o superficie de agua</spw_muffledsoundvolumetooltip>
+	<spw_muffledcomponentvolume>Volumen de Componentes Atenuados</spw_muffledcomponentvolume>
+	<spw_muffledcomponentvolumetooltip>Volumen de sonidos de componentes o efectos de estado en bucle atenuados detrás de una pared o superficie de agua</spw_muffledcomponentvolumetooltip>
+	<spw_unmuffledcomponentvolume>Volumen de Componentes No Atenuados</spw_unmuffledcomponentvolume>
+	<spw_submergedvolume>Volumen Subacuático</spw_submergedvolume>
+	<spw_submergedvolumetooltip>Volumen de los sonidos sumergidos cuando el oyente también está bajo el mismo cuerpo de agua</spw_submergedvolumetooltip>
+
+	<spw_eavesdroppingsettings>Configuraciones de Espionaje</spw_eavesdroppingsettings>
+	<spw_eavesdroppingbind>Tecla para Espiar</spw_eavesdroppingbind>
+	<spw_eavesdroppingsoundvolume>Volumen de Sonido al Espiar</spw_eavesdroppingsoundvolume>
+	<spw_eavesdroppingvoicevolume>Volumen de Voz al Espiar</spw_eavesdroppingvoicevolume>
+	<spw_eavesdroppingpitch>Tono al Espiar</spw_eavesdroppingpitch>
+	<spw_eavesdroppingmaxdistance>Distancia Máxima para Espiar</spw_eavesdroppingmaxdistance>
+	<spw_eavesdroppingmaxdistancetooltip>La distancia máxima a la que puede estar la cabeza del jugador de una puerta para escuchar a escondidas</spw_eavesdroppingmaxdistancetooltip>
+
+	<spw_hydrophonesettings>Configuraciones del Hidrófono</spw_hydrophonesettings>
+	<spw_hydrophonerange>Alcance del Hidrófono</spw_hydrophonerange>
+	<spw_hydrophonerangetooltip>El alcance de los sonidos de movimiento subacuático y el alcance adicional añadido a todos los sonidos fuera del submarino</spw_hydrophonerangetooltip>
+	<spw_hydrophonevolume>Volumen del Hidrófono</spw_hydrophonevolume>
+	<spw_hydrophonepitch>Tono del Hidrófono</spw_hydrophonepitch>
+	<spw_hydrophonelegacyswitch>Conmutador Tradicional del Hidrófono</spw_hydrophonelegacyswitch>
+	<spw_hydrophonelegacyswitchtooltip>Usar la lógica del interruptor antiguo del hidrófono (el interruptor se desactiva al usar el sonar activo)</spw_hydrophonelegacyswitchtooltip>
+
+	<spw_ambiencesettings>Configuraciones de Ambiente</spw_ambiencesettings>
+	<spw_unsubmergedwaterambiencevolume>Volumen Ambiental de Agua No Sumergida</spw_unsubmergedwaterambiencevolume>
+	<spw_submergedwaterambiencevolume>Volumen Ambiental de Agua Sumergida</spw_submergedwaterambiencevolume>
+	<spw_hydrophonewaterambiencevolume>Volumen Ambiental de Agua del Hidrófono</spw_hydrophonewaterambiencevolume>
+	<spw_waterambiencetransitionspeed>Velocidad de Transición de Ambiente Acuático</spw_waterambiencetransitionspeed>
+	<spw_waterambiencetransitionspeedtooltip>La velocidad a la que el ambiente acuático cambia entre los ajustes preestablecidos de volumen</spw_waterambiencetransitionspeedtooltip>
+
+	<spw_advancedsoundsettings>Configuraciones Avanzadas de Sonido</spw_advancedsoundsettings>
+	<spw_soundvolumemultipliers>Multiplicadores de Volumen de Sonido</spw_soundvolumemultipliers>
+	<spw_ignoredsounds>Sonidos Omitidos</spw_ignoredsounds>
+	<spw_lowpassignoredsounds>Sonidos de Paso Bajo Omitidos</spw_lowpassignoredsounds>
+	<spw_pitchignoredsounds>Sonidos de Tono Omitidos</spw_pitchignoredsounds>
+	<spw_pathignoredsounds>Sonidos de Camino Omitidos</spw_pathignoredsounds>
+	<spw_containerignoredsounds>Sonidos de Contenedor Omitidos</spw_containerignoredsounds>
+	<spw_waterignoredsounds>Sonidos de Agua Omitidos</spw_waterignoredsounds>
+	<spw_submersionignoredsounds>Sonidos Sumergidos Omitidos</spw_submersionignoredsounds>
+	<spw_bubbleignorednames>Nombres de Burbujas Omitidos</spw_bubbleignorednames>
+
+	<spw_nichesettings>Configuraciones Específicas</spw_nichesettings>
+	<spw_mufflesubmergedplayer>Atenuar Jugador Sumergido</spw_mufflesubmergedplayer>
+	<spw_mufflesubmergedplayertooltip>Atenúa el audio cuando la cabeza está bajo el agua (recomendado)</spw_mufflesubmergedplayertooltip>
+	<spw_mufflesubmergedviewtarget>Atenuar Visión Sumergida</spw_mufflesubmergedviewtarget>
+	<spw_mufflesubmergedviewtargettooltip>Atenúa el audio cuando el punto de vista está bajo el agua (por ejemplo, torretas, cámaras, etc.)</spw_mufflesubmergedviewtargettooltip>
+	<spw_mufflesubmergedsounds>Atenuar Sonidos Sumergidos</spw_mufflesubmergedsounds>
+	<spw_mufflesubmergedsoundstooltip>Atenúa los sonidos ubicados bajo la superficie del agua (recomendado)</spw_mufflesubmergedsoundstooltip>
+	<spw_muffleflowsounds>Atenuar Sonidos de Flujo</spw_muffleflowsounds>
+	<spw_muffleflowsoundstooltip>Activa o desactiva la atenuación de los sonidos de flujo de agua de fugas</spw_muffleflowsoundstooltip>
+	<spw_mufflefiresounds>Atenuar Sonidos de Fuego</spw_mufflefiresounds>
+	<spw_mufflefiresoundstooltip>Activa o desactiva la atenuación de los sonidos de fuego</spw_mufflefiresoundstooltip>
+	<spw_divingsuitpitch>Tono del Traje de Buceo</spw_divingsuitpitch>
+	<spw_divingsuitpitchtooltip>El tono de los sonidos al llevar un traje de buceo (acumulativo)</spw_divingsuitpitchtooltip>
+	<spw_submergedpitch>Tono de Inmersión</spw_submergedpitch>
+	<spw_submergedpitchtooltip>El tono de los sonidos cuando el oyente está sumergido (acumulativo)</spw_submergedpitchtooltip>
+	<spw_muffledvoicepitch>Tono de Voz Atenuada</spw_muffledvoicepitch>
+	<spw_muffledvoicepitchtooltip>No recomendado. Solo por diversión</spw_muffledvoicepitchtooltip>
+	<spw_unmuffledvoicepitch>Tono de Voz No Atenuada</spw_unmuffledvoicepitch>
+	<spw_unmuffledvoicepitchtooltip>No recomendado. Solo por diversión</spw_unmuffledvoicepitchtooltip>
+	<spw_muffledcomponentpitch>Tono de Componentes Atenuados</spw_muffledcomponentpitch>
+	<spw_unmuffledcomponentpitch>Tono de Componentes No Atenuados</spw_unmuffledcomponentpitch>
+	<spw_hidesettings>Ocultar Botón de Menú</spw_hidesettings>
+	<spw_hidesettingstooltip>Advertencia: Habilitar esta opción eliminará el botón "Opciones de Aislamiento Acústico" de tu interfaz. Deberás editar o eliminar manualmente tu archivo de configuración para restaurar esta opción.</spw_hidesettingstooltip>
+
+	<spw_updateserverconfig>Muros Aislantes de Sonido: Configuraciones modificadas por el anfitrión - la configuración del servidor ha sido actualizada</spw_updateserverconfig>
+	<spw_disableserverconfig>Muros Aislantes de Sonido: El anfitrión ha deshabilitado la sincronización de configuraciones - Las configuraciones locales ahora tienen prioridad</spw_disableserverconfig>
+	<spw_hydrophonemonitoring>Monitoreo de Hidrófonos</spw_hydrophonemonitoring>
+	<spw_listening>Escuchando...</spw_listening>
+	<spw_invalidinput>Entrada Inválida</spw_invalidinput>
+	<spw_default>(Predeterminado)</spw_default>
+	<spw_vanilla>(Vanilla)</spw_vanilla>
+	<spw_custom>(Personalizado)</spw_custom>
+	<spw_reset>Restablecer</spw_reset>
+	<spw_resetall>Restablecer Todo</spw_resetall>
+</infotexts>
