@@ -92,8 +92,8 @@
 	<spw_hidesettings>Ocultar Botón de Menú</spw_hidesettings>
 	<spw_hidesettingstooltip>Advertencia: Activar esta configuración eliminará el botón "Configuraciones de Insonorización" de tu interfaz. Deberás editar o eliminar manualmente tu archivo de configuración para restaurar esta configuración.</spw_hidesettingstooltip>
 
-	<spw_updateserverconfig>Paredes Insonorizadas: El host modificó configuraciones - la configuración del servidor ha sido actualizada</spw_updateserverconfig>
-	<spw_disableserverconfig>Paredes Insonorizadas: El host deshabilitó la sincronización de configuraciones - las configuraciones locales ahora tienen prioridad</spw_disableserverconfig>
+	<spw_updateserverconfig>modificó configuraciones - la configuración del servidor ha sido actualizada</spw_updateserverconfig>
+	<spw_disableserverconfig>deshabilitó la sincronización de configuraciones - las configuraciones locales ahora tienen prioridad</spw_disableserverconfig>
 	<spw_hydrophonemonitoring>Monitoreo de Hidrófonos</spw_hydrophonemonitoring>
 	<spw_listening>Escuchando...</spw_listening>
 	<spw_invalidinput>Entrada Inválida</spw_invalidinput>

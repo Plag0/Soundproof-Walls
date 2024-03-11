@@ -92,8 +92,8 @@
 	<spw_hidesettings>Hide Menu Button</spw_hidesettings>
 	<spw_hidesettingstooltip>Warning: Enabling this setting will remove the "Soundproof Settings" button from your UI. You must manually edit or delete your config file to restore this setting.</spw_hidesettingstooltip>
 
-	<spw_updateserverconfig>Soundproof Walls: Host modified settings - the server config has been updated</spw_updateserverconfig>
-	<spw_disableserverconfig>Soundproof Walls: Host disabled setting synchronization - local configs now take priority</spw_disableserverconfig>
+	<spw_updateserverconfig>modified settings - the server config has been updated</spw_updateserverconfig>
+	<spw_disableserverconfig>disabled setting synchronization - local configs now take priority</spw_disableserverconfig>
 	<spw_hydrophonemonitoring>Monitor Hydrophones</spw_hydrophonemonitoring>
 	<spw_listening>Listening...</spw_listening>
 	<spw_invalidinput>Invalid Input</spw_invalidinput>

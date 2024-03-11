@@ -92,8 +92,8 @@
 	<spw_hidesettings>Cacher les boutons du menu</spw_hidesettings>
 	<spw_hidesettingstooltip>Attention: Activer ce paramètre retirera le "Paramètre de l'insonorisation" de votre menu. Vous devrez modifier ou supprimer manuellement votre fichier de configuration pour restaurer ce paramètre.</spw_hidesettingstooltip>
 
-	<spw_updateserverconfig>Murs insonorisés: Hôte a modifié les paramètres - la configuration serveur a été mise à jour</spw_updateserverconfig>
-	<spw_disableserverconfig>Murs insonorisés: Hôte a désactivé la synchronisation des paramètres - la configuration locale devient maintenant prioritaire</spw_disableserverconfig>
+	<spw_updateserverconfig>a modifié les paramètres - la configuration serveur a été mise à jour</spw_updateserverconfig>
+	<spw_disableserverconfig>a désactivé la synchronisation des paramètres - la configuration locale devient maintenant prioritaire</spw_disableserverconfig>
 	<spw_hydrophonemonitoring>Ecoute des Hydrophones</spw_hydrophonemonitoring>
 	<spw_listening>Ecoute...</spw_listening>
 	<spw_invalidinput>Entrée Invalide</spw_invalidinput>

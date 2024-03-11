@@ -92,8 +92,8 @@
 	<spw_hidesettings>隐藏菜单按钮</spw_hidesettings>
 	<spw_hidesettingstooltip>警告：启用此设置将从您的UI中移除“隔音设置”按钮。您必须手动编辑或删除配置文件以恢复此设置。</spw_hidesettingstooltip>
 
-	<spw_updateserverconfig>隔音墙：主机修改了设置 - 服务器配置已更新</spw_updateserverconfig>
-	<spw_disableserverconfig>隔音墙：主机禁用了设置同步 - 现在优先使用本地配置</spw_disableserverconfig>
+	<spw_updateserverconfig>修改了设置 - 服务器配置已更新</spw_updateserverconfig>
+	<spw_disableserverconfig>禁用了设置同步 - 现在优先使用本地配置</spw_disableserverconfig>
 	<spw_hydrophonemonitoring>水听器监控</spw_hydrophonemonitoring>
 	<spw_listening>正在监听...</spw_listening>
 	<spw_invalidinput>无效输入</spw_invalidinput>

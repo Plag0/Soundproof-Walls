@@ -92,8 +92,8 @@
 	<spw_hidesettings>메뉴 버튼 숨기기</spw_hidesettings>
 	<spw_hidesettingstooltip>경고: 이 설정을 활성화하면 UI에서 "방음 설정" 버튼이 제거됩니다. 이 설정을 복원하려면 구성 파일을 수동으로 편집하거나 삭제해야 합니다.</spw_hidesettingstooltip>
 
-	<spw_updateserverconfig>방음 벽: 호스트가 설정을 수정했습니다 - 서버 구성이 업데이트되었습니다</spw_updateserverconfig>
-	<spw_disableserverconfig>방음 벽: 호스트가 설정 동기화를 비활성화했습니다 - 로컬 구성이 우선합니다</spw_disableserverconfig>
+	<spw_updateserverconfig>가 설정을 수정했습니다 - 서버 구성이 업데이트되었습니다</spw_updateserverconfig>
+	<spw_disableserverconfig>가 설정 동기화를 비활성화했습니다 - 로컬 구성이 우선합니다</spw_disableserverconfig>
 	<spw_hydrophonemonitoring>수중 청음기 모니터링</spw_hydrophonemonitoring>
 	<spw_listening>청취 중...</spw_listening>
 	<spw_invalidinput>잘못된 입력</spw_invalidinput>

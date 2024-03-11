@@ -92,8 +92,8 @@
 	<spw_hidesettings>Skryj menu ustawień</spw_hidesettings>
 	<spw_hidesettingstooltip>Uwaga: Włączenie tego ustawienia spowoduje zniknięcie przycisku "Ustawienia Soundproof" z twojego UI. Będzie potrzeba manualnej edycji pliku konfiguracyjnego w przypadku potrzeby zmiany tego ustawienia.</spw_hidesettingstooltip>
 
-	<spw_updateserverconfig>Ściany Soundproof: Ustawienia modyfikowane przez hosta - ustawienia hosta zostały zaktualizowane</spw_updateserverconfig>
-	<spw_disableserverconfig>Ściany Soundproof: Host disabled setting synchronization - ustawienia lokalne mają teraz priorytet</spw_disableserverconfig>
+	<spw_updateserverconfig>Ustawienia modyfikowane przez hosta - ustawienia hosta zostały zaktualizowane</spw_updateserverconfig>
+	<spw_disableserverconfig>disabled setting synchronization - ustawienia lokalne mają teraz priorytet</spw_disableserverconfig>
 	<spw_hydrophonemonitoring>Monitorowanie hydrofonów</spw_hydrophonemonitoring>
 	<spw_listening>Podsłuchiwanie...</spw_listening>
 	<spw_invalidinput>Niepoprawna wartość wprowadzona</spw_invalidinput>

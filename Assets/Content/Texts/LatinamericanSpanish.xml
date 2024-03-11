@@ -92,8 +92,8 @@
 	<spw_hidesettings>Ocultar Botón de Menú</spw_hidesettings>
 	<spw_hidesettingstooltip>Advertencia: Habilitar esta opción eliminará el botón "Opciones de Aislamiento Acústico" de tu interfaz. Deberás editar o eliminar manualmente tu archivo de configuración para restaurar esta opción.</spw_hidesettingstooltip>
 
-	<spw_updateserverconfig>Muros Aislantes de Sonido: Configuraciones modificadas por el anfitrión - la configuración del servidor ha sido actualizada</spw_updateserverconfig>
-	<spw_disableserverconfig>Muros Aislantes de Sonido: El anfitrión ha deshabilitado la sincronización de configuraciones - Las configuraciones locales ahora tienen prioridad</spw_disableserverconfig>
+	<spw_updateserverconfig>Configuraciones modificadas por el anfitrión - la configuración del servidor ha sido actualizada</spw_updateserverconfig>
+	<spw_disableserverconfig>El anfitrión ha deshabilitado la sincronización de configuraciones - Las configuraciones locales ahora tienen prioridad</spw_disableserverconfig>
 	<spw_hydrophonemonitoring>Monitoreo de Hidrófonos</spw_hydrophonemonitoring>
 	<spw_listening>Escuchando...</spw_listening>
 	<spw_invalidinput>Entrada Inválida</spw_invalidinput>

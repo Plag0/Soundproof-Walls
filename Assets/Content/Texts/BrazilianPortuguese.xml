@@ -92,8 +92,8 @@
 	<spw_hidesettings>Esconder Botão do Menu</spw_hidesettings>
 	<spw_hidesettingstooltip>Aviso: Ativar esta configuração removerá o botão "Configurações de Isolamento Acústico" da sua UI. Você deve editar ou deletar manualmente seu arquivo de configuração para restaurar esta configuração.</spw_hidesettingstooltip>
 
-	<spw_updateserverconfig>Paredes à Prova de Som: O host modificou as configurações - a configuração do servidor foi atualizada</spw_updateserverconfig>
-	<spw_disableserverconfig>Paredes à Prova de Som: O host desativou a sincronização de configurações - as configurações locais agora têm prioridade</spw_disableserverconfig>
+	<spw_updateserverconfig>modificou as configurações - a configuração do servidor foi atualizada</spw_updateserverconfig>
+	<spw_disableserverconfig>desativou a sincronização de configurações - as configurações locais agora têm prioridade</spw_disableserverconfig>
 	<spw_hydrophonemonitoring>Monitoramento de Hidrofones</spw_hydrophonemonitoring>
 	<spw_listening>Ouvindo...</spw_listening>
 	<spw_invalidinput>Entrada Inválida</spw_invalidinput>

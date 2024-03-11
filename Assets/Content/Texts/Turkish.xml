@@ -92,8 +92,8 @@
 	<spw_hidesettings>Menü Düğmesini Gizle</spw_hidesettings>
 	<spw_hidesettingstooltip>Uyarı: Bu ayarı etkinleştirmek, UI'nızdan "Ses Yalıtım Ayarları" düğmesini kaldırır. Bu ayarı geri yüklemek için yapılandırma dosyanızı manuel olarak düzenlemeniz veya silmeniz gerekir.</spw_hidesettingstooltip>
 
-	<spw_updateserverconfig>Ses Yalıtımlı Duvarlar: Host ayarları değiştirdi - sunucu yapılandırması güncellendi</spw_updateserverconfig>
-	<spw_disableserverconfig>Ses Yalıtımlı Duvarlar: Host ayar senkronizasyonunu devre dışı bıraktı - yerel yapılandırmalar artık önceliklidir</spw_disableserverconfig>
+	<spw_updateserverconfig>ayarları değiştirdi - sunucu yapılandırması güncellendi</spw_updateserverconfig>
+	<spw_disableserverconfig>ayar senkronizasyonunu devre dışı bıraktı - yerel yapılandırmalar artık önceliklidir</spw_disableserverconfig>
 	<spw_hydrophonemonitoring>Hidrofonları İzleme</spw_hydrophonemonitoring>
 	<spw_listening>Dinleniyor...</spw_listening>
 	<spw_invalidinput>Geçersiz Giriş</spw_invalidinput>

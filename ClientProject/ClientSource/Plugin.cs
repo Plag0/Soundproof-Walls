@@ -10,6 +10,7 @@ using HarmonyLib;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace SoundproofWalls
 {
@@ -39,7 +40,7 @@ namespace SoundproofWalls
         static float LastFlowPathCheckTime = 0f;
         static float LastFirePathCheckTime = 0f;
 
-        static float LastCorrectionCheckTime = 5f;
+        static float LastSyncUpdateTime = 5f;
 
         static Sound? BubbleSound;
         static Sound? RadioBubbleSound;
@@ -86,7 +87,7 @@ namespace SoundproofWalls
 
             GameMain.LuaCs.Hook.Add("client.connected", "spw_client.connected", (object[] args) =>
             {
-                UpdateServerConfig();
+                //UpdateServerConfig(); // Not needed now that the config updates every n seconds.
                 return null;
             });
 
@@ -134,11 +135,6 @@ namespace SoundproofWalls
             harmony.Patch(
                 typeof(SoundPlayer).GetMethod(nameof(SoundPlayer.PlaySound), new Type[] { typeof(Sound), typeof(Vector2), typeof(float), typeof(float), typeof(float), typeof(Hull), typeof(bool) }),
                 new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_PlaySound))));
-
-            // ShouldMuffleSounds prefix and blank replacement patch
-            harmony.Patch(
-                typeof(SoundPlayer).GetMethod(nameof(SoundPlayer.ShouldMuffleSound)),
-                new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_ShouldMuffleSounds))));
 
             //WaterFlowSounds postfix patch
             harmony.Patch(
@@ -199,7 +195,6 @@ namespace SoundproofWalls
                 typeof(SoundChannel).GetMethod(nameof(SoundChannel.Dispose)),
                 null,
                 new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_Dispose))));
-
 #if !LINUX
             // Draw prefix patch
             // A line in this method causes MonoMod to crash on Linux due to an unmanaged PAL_SEHException
@@ -208,31 +203,53 @@ namespace SoundproofWalls
                 typeof(GUI).GetMethod(nameof(GUI.Draw)),
                 new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_Draw))));
 #endif
-
             // TogglePauseMenu postfix
             harmony.Patch(
                 typeof(GUI).GetMethod(nameof(GUI.TogglePauseMenu)),
                 null,
                 new HarmonyMethod(typeof(EasySettings).GetMethod(nameof(EasySettings.SPW_TogglePauseMenu))));
 
+            // ShouldMuffleSounds prefix and blank replacement patch
+            harmony.Patch(
+                typeof(SoundPlayer).GetMethod(nameof(SoundPlayer.ShouldMuffleSound)),
+                new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_ShouldMuffleSounds))));
+
             // Clients receiving the host's config.
             GameMain.LuaCs.Networking.Receive("SPW_UpdateConfigClient", (object[] args) =>
             {
                 IReadMessage msg = (IReadMessage)args[0];
-                Config? newServerConfig = JsonSerializer.Deserialize<Config>(msg.ReadString());
 
-                bool shouldReloadRoundSounds = ShouldReloadRoundSounds(newServerConfig);
+                string data = msg.ReadString();
+                bool manualUpdate = false;
+                byte configSenderId = 1;
+                string newConfig = DataAppender.RemoveData(data, out manualUpdate, out configSenderId);
 
-                serverConfig = newServerConfig;
+                Config? newServerConfig = JsonSerializer.Deserialize<Config>(newConfig);
 
-                if (shouldReloadRoundSounds) { ReloadRoundSounds(); }
-                SoundChannelMuffleInfo.Clear(); // Clear muffle info objects in case advanced settings were changed.
+                bool shouldReloadRoundSound = ShouldReloadRoundSounds(newServerConfig);
+                bool shouldClearMuffleInfo = ShouldClearMuffleInfo(newServerConfig);
+                
+                serverConfig = newServerConfig; 
 
-                LuaCsLogger.Log(TextManager.Get("spw_updateserverconfig").Value, Color.LimeGreen);
+                if (shouldReloadRoundSound) { ReloadRoundSounds(); }
+                if (shouldClearMuffleInfo) { SoundChannelMuffleInfo.Clear(); }
+
+                if (manualUpdate)
+                {
+                    string updaterName = GameMain.Client.ConnectedClients.FirstOrDefault(client => client.SessionId == configSenderId)?.Name ?? "unknown";
+                    LuaCsLogger.Log($"Soundproof Walls: \"{updaterName}\" {TextManager.Get("spw_updateserverconfig").Value}", Color.LimeGreen);
+                }
             });
 
             GameMain.LuaCs.Networking.Receive("SPW_DisableConfigClient", (object[] args) =>
             {
+                IReadMessage msg = (IReadMessage)args[0];
+
+                string data = msg.ReadString();
+                bool manualUpdate = false;
+                byte configSenderId = 1;
+                string newConfig = DataAppender.RemoveData(data, out manualUpdate, out configSenderId);
+
                 bool shouldReloadRoundSounds = ShouldReloadRoundSounds(LocalConfig);
 
                 serverConfig = null;
@@ -240,7 +257,11 @@ namespace SoundproofWalls
                 if (shouldReloadRoundSounds) { ReloadRoundSounds(); }
                 SoundChannelMuffleInfo.Clear();
 
-                LuaCsLogger.Log(TextManager.Get("spw_disableserverconfig").Value, Color.LimeGreen);
+                if (manualUpdate)
+                {
+                    string updaterName = GameMain.Client.ConnectedClients.FirstOrDefault(client => client.SessionId == configSenderId)?.Name ?? "unknown";
+                    LuaCsLogger.Log($"Soundproof Walls: \"{updaterName}\" {TextManager.Get("spw_disableserverconfig").Value}", Color.MonoGameOrange);
+                }
             });
 
             ModPath = GetModDirectory();
@@ -328,14 +349,10 @@ namespace SoundproofWalls
                 Muffled = false;
                 Reason = MuffleReason.None;
 
-                if (skipProcess)
+                if (skipProcess && Channel.Category != "voip")
                 {
                     IgnorePitch = true;
                     Muffled = false;
-                    if (Channel.Category == "voip")
-                    {
-                        DisposeAllBubbleChannels();
-                    }
                     return;
                 }
 
@@ -551,23 +568,36 @@ namespace SoundproofWalls
             }
         }
 
-        // Called when the client changes a setting.
-        public static void UpdateServerConfig()
+        // Called every 5 seconds or when the client changes a setting.
+        public static void UpdateServerConfig(bool manualUpdate = false)
         {
-            if (GameMain.IsMultiplayer && (GameMain.Client.IsServerOwner || GameMain.Client.HasPermission(ClientPermissions.Ban)))
+            if (!GameMain.IsMultiplayer) { return; }
+
+            foreach (Client client in GameMain.Client.ConnectedClients)
             {
-                if (localConfig.SyncSettings)
+                if (client.IsOwner || client.HasPermission(ClientPermissions.Ban))
                 {
-                    IWriteMessage message = GameMain.LuaCs.Networking.Start("SPW_UpdateConfigServer");
-                    message.WriteString(JsonSerializer.Serialize(localConfig));
-                    GameMain.LuaCs.Networking.Send(message);
+                    // Give up if you're not the 1st candidate. Note: This has been changed so all admins send their configs to the server.
+                    //if (client.SessionId != GameMain.Client.SessionId) { return; }
+
+                    if (localConfig.SyncSettings)
+                    {
+                        string data = DataAppender.AppendData(JsonSerializer.Serialize(localConfig), manualUpdate, GameMain.Client.SessionId);
+                        IWriteMessage message = GameMain.LuaCs.Networking.Start("SPW_UpdateConfigServer");
+                        message.WriteString(data);
+                        GameMain.LuaCs.Networking.Send(message);
+                    }
+                    else if (ServerConfig != null)
+                    {
+                        string data = DataAppender.AppendData("_", manualUpdate, GameMain.Client.SessionId);
+                        IWriteMessage message = GameMain.LuaCs.Networking.Start("SPW_DisableConfigServer");
+                        message.WriteString(data);
+                        GameMain.LuaCs.Networking.Send(message);
+                    }
+
+                    return;
                 }
-                else if (ServerConfig != null)
-                {
-                    IWriteMessage message = GameMain.LuaCs.Networking.Start("SPW_DisableConfigServer");
-                    GameMain.LuaCs.Networking.Send(message);
-                }
-            };
+            }
         }
 
         public static bool ShouldReloadRoundSounds(Config newConfig) // this matters because reloading round sounds will freeze the game.
@@ -578,6 +608,20 @@ namespace SoundproofWalls
             double newFreq = newConfig.Enabled ? newConfig.GeneralLowpassFrequency : vanillaFreq;
 
             return currentFreq != newFreq;
+        }
+
+        // TODO I don't like this but it might be the best way.
+        public static bool ShouldClearMuffleInfo(Config newConfig)
+        {
+            Config currentConfig = ServerConfig ?? LocalConfig;
+            return  !currentConfig.IgnoredSounds.SetEquals(newConfig.IgnoredSounds) ||
+                    !currentConfig.PitchIgnoredSounds.SetEquals(newConfig.PitchIgnoredSounds) ||
+                    !currentConfig.LowpassIgnoredSounds.SetEquals(newConfig.LowpassIgnoredSounds) ||
+                    !currentConfig.ContainerIgnoredSounds.SetEquals(newConfig.ContainerIgnoredSounds) ||
+                    !currentConfig.PathIgnoredSounds.SetEquals(newConfig.PathIgnoredSounds) ||
+                    !currentConfig.WaterIgnoredSounds.SetEquals(newConfig.WaterIgnoredSounds) ||
+                    !currentConfig.SubmersionIgnoredSounds.SetEquals(newConfig.SubmersionIgnoredSounds) ||
+                    !currentConfig.BubbleIgnoredNames.SetEquals(newConfig.SubmersionIgnoredSounds);
         }
 
         public static void ReloadRoundSounds()
@@ -698,52 +742,80 @@ namespace SoundproofWalls
 
         public static void UpdateHydrophoneSwitchesNew()
         {
+            Sonar instance = null;
+            GUIButton button = null;
+            GUITextBlock textBlock = null;
+
             foreach (var kvp in HydrophoneSwitches)
             {
-                if (kvp.Value.Switch == null || kvp.Value.TextBlock == null) { return; }
-                Sonar instance = kvp.Key;
-                GUIButton button = kvp.Value.Switch;
-                GUITextBlock textBlock = kvp.Value.TextBlock;
-                
-                if (instance.CurrentMode == Sonar.Mode.Active)
+                if (Character.Controlled?.SelectedItem?.GetComponent<Sonar>() is Sonar sonar && sonar == kvp.Key)
                 {
-                    IsUsingHydrophones = false;
-                    HydrophoneEfficiency = 0;
-                    if (button.Selected && button.Color != HydrophoneSwitch.buttonDisabledColor)
-                    {
-                        textBlock.TextColor = InterpolateColor(HydrophoneSwitch.textDisabledColor, HydrophoneSwitch.textDefaultColor, HydrophoneEfficiency);
-                        button.SelectedColor = InterpolateColor(HydrophoneSwitch.buttonDisabledColor, HydrophoneSwitch.buttonDefaultColor, HydrophoneEfficiency);
-                        button.Color = InterpolateColor(HydrophoneSwitch.buttonDisabledColor, HydrophoneSwitch.buttonDefaultColor, HydrophoneEfficiency);
-                        button.HoverColor = InterpolateColor(HydrophoneSwitch.buttonDisabledColor, HydrophoneSwitch.buttonDefaultColor, HydrophoneEfficiency);
-                    }
-                    else if (!button.Selected && button.Color == HydrophoneSwitch.buttonDisabledColor)
-                    {
-                        textBlock.TextColor = HydrophoneSwitch.textDefaultColor;
-                        button.SelectedColor = HydrophoneSwitch.buttonDefaultColor;
-                        button.Color = HydrophoneSwitch.buttonDefaultColor;
-                        button.HoverColor = HydrophoneSwitch.buttonDefaultColor;
-                    }
+                    instance = sonar;
+                    button = kvp.Value.Switch;
+                    textBlock = kvp.Value.TextBlock;
+                    break;
                 }
-                else if (instance.CurrentMode != Sonar.Mode.Active && HydrophoneEfficiency < 1)
+            }
+
+            if (instance == null || button == null || textBlock == null)
+            { 
+                // If not using any terminals start increasing hydrophone efficiency.
+                if (HydrophoneEfficiency < 1)
                 {
                     HydrophoneEfficiency += 0.005f * (HydrophoneEfficiency + 1);
-
-                    if (button.Selected)
-                    {
-                        textBlock.TextColor = InterpolateColor(HydrophoneSwitch.textDisabledColor, HydrophoneSwitch.textDefaultColor, HydrophoneEfficiency);
-                        button.SelectedColor = InterpolateColor(HydrophoneSwitch.buttonDisabledColor, HydrophoneSwitch.buttonDefaultColor, HydrophoneEfficiency);
-                        button.Color = InterpolateColor(HydrophoneSwitch.buttonDisabledColor, HydrophoneSwitch.buttonDefaultColor, HydrophoneEfficiency);
-                        button.HoverColor = InterpolateColor(HydrophoneSwitch.buttonDisabledColor, HydrophoneSwitch.buttonDefaultColor, HydrophoneEfficiency);
-
-                    }
-                    else if (!button.Selected && button.Color != HydrophoneSwitch.buttonDefaultColor)
-                    {
-                        textBlock.TextColor = HydrophoneSwitch.textDefaultColor;
-                        button.SelectedColor = HydrophoneSwitch.buttonDefaultColor;
-                        button.Color = HydrophoneSwitch.buttonDefaultColor;
-                        button.HoverColor = HydrophoneSwitch.buttonDefaultColor;
-                    }
                 }
+                return; 
+            }
+
+
+            if (instance.CurrentMode == Sonar.Mode.Active)
+            {
+                IsUsingHydrophones = false;
+                HydrophoneEfficiency = 0;
+                if (button.Selected && button.Color != HydrophoneSwitch.buttonDisabledColor)
+                {
+                    textBlock.TextColor = InterpolateColor(HydrophoneSwitch.textDisabledColor, HydrophoneSwitch.textDefaultColor, HydrophoneEfficiency);
+                    button.SelectedColor = InterpolateColor(HydrophoneSwitch.buttonDisabledColor, HydrophoneSwitch.buttonDefaultColor, HydrophoneEfficiency);
+                    button.Color = InterpolateColor(HydrophoneSwitch.buttonDisabledColor, HydrophoneSwitch.buttonDefaultColor, HydrophoneEfficiency);
+                    button.HoverColor = InterpolateColor(HydrophoneSwitch.buttonDisabledColor, HydrophoneSwitch.buttonDefaultColor, HydrophoneEfficiency);
+                }
+                else if (!button.Selected && button.Color == HydrophoneSwitch.buttonDisabledColor)
+                {
+                    textBlock.TextColor = HydrophoneSwitch.textDefaultColor;
+                    button.SelectedColor = HydrophoneSwitch.buttonDefaultColor;
+                    button.Color = HydrophoneSwitch.buttonDefaultColor;
+                    button.HoverColor = HydrophoneSwitch.buttonDefaultColor;
+                }
+            }
+
+            else if (instance.CurrentMode != Sonar.Mode.Active && HydrophoneEfficiency < 1)
+            {
+                HydrophoneEfficiency += 0.005f * (HydrophoneEfficiency + 1);
+
+                if (button.Selected)
+                {
+                    textBlock.TextColor = InterpolateColor(HydrophoneSwitch.textDisabledColor, HydrophoneSwitch.textDefaultColor, HydrophoneEfficiency);
+                    button.SelectedColor = InterpolateColor(HydrophoneSwitch.buttonDisabledColor, HydrophoneSwitch.buttonDefaultColor, HydrophoneEfficiency);
+                    button.Color = InterpolateColor(HydrophoneSwitch.buttonDisabledColor, HydrophoneSwitch.buttonDefaultColor, HydrophoneEfficiency);
+                    button.HoverColor = InterpolateColor(HydrophoneSwitch.buttonDisabledColor, HydrophoneSwitch.buttonDefaultColor, HydrophoneEfficiency);
+
+                }
+                else if (!button.Selected && button.Color != HydrophoneSwitch.buttonDefaultColor)
+                {
+                    textBlock.TextColor = HydrophoneSwitch.textDefaultColor;
+                    button.SelectedColor = HydrophoneSwitch.buttonDefaultColor;
+                    button.Color = HydrophoneSwitch.buttonDefaultColor;
+                    button.HoverColor = HydrophoneSwitch.buttonDefaultColor;
+                }
+            }
+
+            // If hydrophone efficiency increases back to 1 while not looking at a terminal. TODO could merge this with the above "else if"
+            else if (button.Color != HydrophoneSwitch.buttonDefaultColor && instance.CurrentMode != Sonar.Mode.Active && HydrophoneEfficiency >= 1)
+            {
+                textBlock.TextColor = HydrophoneSwitch.textDefaultColor;
+                button.SelectedColor = HydrophoneSwitch.buttonDefaultColor;
+                button.Color = HydrophoneSwitch.buttonDefaultColor;
+                button.HoverColor = HydrophoneSwitch.buttonDefaultColor;
             }
         }
 
@@ -822,12 +894,6 @@ namespace SoundproofWalls
                 {
                     HydrophoneSwitches[instance].State = !HydrophoneSwitches[instance].State;
                     button.Selected = HydrophoneSwitches[instance].State;
-                    if (GameMain.Client != null)
-                    {
-                        instance.unsentChanges = true;
-                        instance.correctionTimer = Sonar.CorrectionDelay;
-                    }
-
                     return true;
                 }
             };
@@ -843,7 +909,6 @@ namespace SoundproofWalls
 
             HydrophoneSwitches[instance].Switch = hydrophoneSwitch;
             HydrophoneSwitches[instance].TextBlock = hydrophoneSwitchText;
-
         }
 
         // Called at the end of a round or when Lua is reloaded.
@@ -977,6 +1042,8 @@ namespace SoundproofWalls
         }
 
         // All sounds start as muffled by default which highlights sounds that have the dontmuffle XML attribute.
+        [HarmonyPrefix]
+        [HarmonyPriority(2000)]
         public static bool SPW_ShouldMuffleSounds(ref bool __result)
         {
             if (!Config.Enabled) { return true; }
@@ -1055,14 +1122,7 @@ namespace SoundproofWalls
             
             if (queue == null)
             {
-                DebugConsole.Log("Failed to find voip queue - unmuffling voices");
-                foreach (Client c in instance.gameClient.ConnectedClients) // Another attempt to stop the perma muffle bug
-                { 
-                    if (c.VoipSound != null)
-                    {
-                        c.VoipSound.UseMuffleFilter = false;
-                    }
-                }
+                DebugConsole.Log("Failed to find voip queue");
                 return false;
             }
 
@@ -1080,8 +1140,6 @@ namespace SoundproofWalls
                 DebugConsole.Log("Recreating voipsound " + queueId);
                 client.VoipSound = new VoipSound(client.Name, GameMain.SoundManager, client.VoipQueue);
             }
-
-            client.VoipSound.UseMuffleFilter = false;
 
             GameMain.SoundManager.ForceStreamUpdate();
             GameMain.NetLobbyScreen?.SetPlayerSpeaking(client);
@@ -1107,7 +1165,11 @@ namespace SoundproofWalls
                 }
             }
 
-            if (!clientAlive) { return false; } // Stop here if spectator/lobby voice chat
+            if (!clientAlive) // Stop here if the speaker is spectating or in lobby.
+            {
+                client.VoipSound.UseMuffleFilter = false;
+                return false; 
+            }
 
             float speechImpedimentMultiplier = 1.0f - client.Character.SpeechImpediment / 100.0f;
             bool spectating = Character.Controlled == null;
@@ -1222,6 +1284,13 @@ namespace SoundproofWalls
 
         public static void SPW_Update()
         {
+            // Must be above the early return so the config being disabled can be enforced automatically.
+            if (Timing.TotalTime > LastSyncUpdateTime + 5)
+            {
+                UpdateServerConfig(manualUpdate: false);
+                LastSyncUpdateTime = (float)Timing.TotalTime;
+            }
+
             if (!Config.Enabled || !RoundStarted)
             {
                 lock (pitchedSoundsLock)
@@ -1244,12 +1313,6 @@ namespace SoundproofWalls
                 {
                     SoundsLoaded = true;
                 }
-            }
-
-            if (Timing.TotalTime > LastCorrectionCheckTime + 5)
-            {
-                CorrectSuperRareSoundBugs();
-                LastCorrectionCheckTime = (float)Timing.TotalTime;
             }
 
             if (Character.Controlled == null || LightManager.ViewTarget == null || GameMain.Instance.Paused) { return; }
@@ -1275,35 +1338,6 @@ namespace SoundproofWalls
             UpdateHydrophoneSwitches();
         }
 
-        // Insane that I have to do this but there are core issues at play here that I just can't explain.
-        public static void CorrectSuperRareSoundBugs()
-        {
-            if (GameMain.Client == null) { return; }
-            foreach (Client client in GameMain.Client.ConnectedClients)
-            {
-                SoundChannel? channel = client.VoipSound?.soundChannel;
-                if (channel == null) { continue; }
-
-                MuffleInfo muffleInfo = new MuffleInfo(channel, soundHull: client.Character?.CurrentHull, voiceOwner: client);
-
-                if (channel.Muffled != muffleInfo.Muffled)
-                {
-                    client.VoipSound.Dispose();
-                    client.VoipSound = null;
-                }
-
-                if (BubbleSoundChannels.TryGetValue(channel, out SoundChannel bubbleChannel))
-                {
-                    if ( (muffleInfo.Reason != MuffleReason.SoundInWater && muffleInfo.Reason != MuffleReason.BothInWater) || (client.Character != null && client.Character.OxygenAvailable >= 95) )
-                    {
-                        bubbleChannel.Looping = false;
-                        bubbleChannel.Dispose();
-                        bubbleChannel = null;
-                        BubbleSoundChannels.Remove(channel);
-                    }
-                }
-            }
-        }
         public static Hull? GetViewTargetHull()
         {
             if (IsViewTargetPlayer)
@@ -1367,12 +1401,16 @@ namespace SoundproofWalls
         public static void SPW_SoundChannel(SoundChannel __instance)
         {
             SoundChannel channel = __instance;
-            // "voip" is skipped here because some necessary details like Client are not available for creating the proper MuffleInfo in this scope.
-            if (!Config.Enabled || !RoundStarted || channel == null || channel.Category == "voip") { return; }
+
+            if (!Config.Enabled || !RoundStarted || channel == null) { return; }
 
             MuffleInfo muffleInfo = new MuffleInfo(channel, skipProcess: !channel.Muffled);
 
-            SoundChannelMuffleInfo[channel] = muffleInfo;
+            // Doesn't save the initial creation of a voipchannel muffleInfo because it doesn't have necessary details like VoiceOwner yet.
+            if (channel.Category != "voip") 
+            { 
+                SoundChannelMuffleInfo[channel] = muffleInfo;
+            }
 
             channel.Muffled = muffleInfo.Muffled;
 
@@ -3457,7 +3495,7 @@ namespace SoundproofWalls
             {
                 if (ShouldUpdateServerConfig)
                 {
-                    SoundproofWalls.UpdateServerConfig();
+                    SoundproofWalls.UpdateServerConfig(manualUpdate: true);
                     ShouldUpdateServerConfig = false;
 
                     // Dump muffle info if advanced settings are changed in singleplayer/nosync

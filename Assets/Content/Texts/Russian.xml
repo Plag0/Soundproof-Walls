@@ -93,8 +93,8 @@
 	<spw_hidesettings>Скрыть меню (навсегда)</spw_hidesettings>
 	<spw_hidesettingstooltip>‖color:gui.red‖ВНИМАНИЕ‖end‖: При включении, удалит кнопку настроек мода из графического интерфейса. Вам придётся вручную удалить или отредактировать config.json мода, чтобы вернуть кнопку настроек.</spw_hidesettingstooltip>
 
-	<spw_updateserverconfig>SPW: Хост изменил настройки - конфиг сервера обновлён</spw_updateserverconfig>
-	<spw_disableserverconfig>SPW: Хост выключил синхронизацию - локальные конфиги теперь берут приоритет</spw_disableserverconfig>
+	<spw_updateserverconfig>изменил настройки - конфиг сервера обновлён</spw_updateserverconfig>
+	<spw_disableserverconfig>выключил синхронизацию - локальные конфиги теперь берут приоритет</spw_disableserverconfig>
 	<spw_hydrophonemonitoring>Слушать гидрофон</spw_hydrophonemonitoring>
 	<spw_listening>Проигрывание...</spw_listening>
 	<spw_invalidinput>Ошибка ввода</spw_invalidinput>

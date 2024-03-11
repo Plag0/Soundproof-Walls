@@ -92,8 +92,8 @@
 	<spw_hidesettings>Menü-Button verstecken</spw_hidesettings>
 	<spw_hidesettingstooltip>ACHTUNG: Wird diese Einstellung aktiviert, verschwindet die "Schallicht-Einstellungen" Taste von der UI. Die Konfig-Datei muss manuell geändert werden, um diese wiederherzustellen</spw_hidesettingstooltip>
 
-	<spw_updateserverconfig>Schalldichte Wände: Host-Einstellungen geändert - Serverkonfig modifiziert</spw_updateserverconfig>
-	<spw_disableserverconfig>Schalldichte Wände: Synchronization deaktiviert - Lokalkonfigs nehmen Priorität</spw_disableserverconfig>
+	<spw_updateserverconfig>Einstellungen geändert - Serverkonfig modifiziert</spw_updateserverconfig>
+	<spw_disableserverconfig>Synchronization deaktiviert - Lokalkonfigs nehmen Priorität</spw_disableserverconfig>
 	<spw_hydrophonemonitoring>Überwache Hydrophone</spw_hydrophonemonitoring>
 	<spw_listening>Lauschen...</spw_listening>
 	<spw_invalidinput>Invalider Input</spw_invalidinput>

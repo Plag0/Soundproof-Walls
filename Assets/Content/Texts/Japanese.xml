@@ -92,8 +92,8 @@
 	<spw_hidesettings>メニューのボタンを隠れる</spw_hidesettings>
 	<spw_hidesettingstooltip>注意※：この設定を使うとUIから防音の設定を無くす。このボタンを見直して欲しいならば、コンフィグを消しないとか編まないといけないです。</spw_hidesettingstooltip>
 
-	<spw_updateserverconfig>防音のモッド：ホストは設定を変わりました。サーバーのコンフィグを反映しました。</spw_updateserverconfig>
-	<spw_disableserverconfig>防音のモッド：ホストはシンクロの設定をオフにしました。プレイヤークライエントのコンフィグ設定を優先されるようになりました。</spw_disableserverconfig>
+	<spw_updateserverconfig>は設定を変わりました。サーバーのコンフィグを反映しました。</spw_updateserverconfig>
+	<spw_disableserverconfig>はシンクロの設定をオフにしました。プレイヤークライエントのコンフィグ設定を優先されるようになりました。</spw_disableserverconfig>
 	<spw_hydrophonemonitoring>聴音器を聞く</spw_hydrophonemonitoring>
 	<spw_listening>視聴中、、、</spw_listening>
 	<spw_invalidinput>無効の入力</spw_invalidinput>
