@@ -13,6 +13,9 @@
       <Reference Include="Barotrauma">
         <HintPath>..\Refs\OSX\Barotrauma.dll</HintPath>
       </Reference>
+	  <Reference Include="BarotraumaCore">
+		<HintPath>..\Refs\OSX\BarotraumaCore.dll</HintPath>
+	  </Reference>
       <Reference Include="Farseer.NetStandard">
         <HintPath>..\Refs\Farseer.NetStandard.dll</HintPath>
       </Reference>

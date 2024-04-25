@@ -13,6 +13,9 @@
       <Reference Include="Barotrauma">
         <HintPath>..\Refs\Linux\Barotrauma.dll</HintPath>
       </Reference>
+	  <Reference Include="BarotraumaCore">
+		<HintPath>..\Refs\Linux\BarotraumaCore.dll</HintPath>
+	  </Reference>
       <Reference Include="Farseer.NetStandard">
         <HintPath>..\Refs\Farseer.NetStandard.dll</HintPath>
       </Reference>

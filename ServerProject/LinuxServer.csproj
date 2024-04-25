@@ -13,6 +13,9 @@
       <Reference Include="DedicatedServer">
         <HintPath>..\Refs\Linux\DedicatedServer.dll</HintPath>
       </Reference>
+      <Reference Include="BarotraumaCore">
+	    <HintPath>..\Refs\Linux\BarotraumaCore.dll</HintPath>
+	  </Reference>
       <Reference Include="Farseer.NetStandard">
         <HintPath>..\Refs\Farseer.NetStandard.dll</HintPath>
       </Reference>

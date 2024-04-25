@@ -45,40 +45,6 @@ namespace SoundproofWalls
             return false;
         }
 
-        public class DataAppender
-        {
-            private const string Delimiter = "|";
-
-            public static string AppendData(string originalString, bool boolData, byte byteData)
-            {
-                return $"{originalString}{Delimiter}{boolData}{Delimiter}{byteData}";
-            }
-
-            public static string RemoveData(string data, out bool boolData, out byte byteData)
-            {
-                string[] parts = data.Split(new[] { Delimiter }, StringSplitOptions.None);
-
-                if (parts.Length < 3)
-                {
-                    throw new FormatException("The appended string does not contain enough parts to extract data.");
-                }
-
-                string originalString = string.Join(Delimiter, parts.Take(parts.Length - 2));
-
-                if (bool.TryParse(parts[parts.Length - 2], out bool tempBoolData) && byte.TryParse(parts.Last(), out byte tempByteData))
-                {
-                    boolData = tempBoolData;
-                    byteData = tempByteData;
-                }
-                else
-                {
-                    throw new FormatException("Failed to parse the appended data.");
-                }
-
-                return originalString;
-            }
-        }
-
         public void OnLoadCompleted()
         {
 
@@ -92,6 +58,40 @@ namespace SoundproofWalls
         public void Dispose()
         {
             harmony.UnpatchAll();
+        }
+    }
+
+    public class DataAppender
+    {
+        private const string Delimiter = "|";
+
+        public static string AppendData(string originalString, bool boolData, byte byteData)
+        {
+            return $"{originalString}{Delimiter}{boolData}{Delimiter}{byteData}";
+        }
+
+        public static string RemoveData(string data, out bool boolData, out byte byteData)
+        {
+            string[] parts = data.Split(new[] { Delimiter }, StringSplitOptions.None);
+
+            if (parts.Length < 3)
+            {
+                throw new FormatException("The appended string does not contain enough parts to extract data.");
+            }
+
+            string originalString = string.Join(Delimiter, parts.Take(parts.Length - 2));
+
+            if (bool.TryParse(parts[parts.Length - 2], out bool tempBoolData) && byte.TryParse(parts.Last(), out byte tempByteData))
+            {
+                boolData = tempBoolData;
+                byteData = tempByteData;
+            }
+            else
+            {
+                throw new FormatException("Failed to parse the appended data.");
+            }
+
+            return originalString;
         }
     }
 }

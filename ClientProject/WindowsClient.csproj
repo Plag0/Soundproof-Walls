@@ -31,6 +31,9 @@
     <Reference Include="Barotrauma">
       <HintPath>..\Refs\Windows\Barotrauma.dll</HintPath>
     </Reference>
+	<Reference Include="BarotraumaCore">
+		<HintPath>..\Refs\Windows\BarotraumaCore.dll</HintPath>
+	</Reference>
     <Reference Include="Farseer.NetStandard">
       <HintPath>..\Refs\Farseer.NetStandard.dll</HintPath>
     </Reference>

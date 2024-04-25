@@ -1,7 +1,5 @@
 ﻿using Barotrauma;
 using Barotrauma.Networking;
-using System.Diagnostics;
-using System.Text.Json;
 
 namespace SoundproofWalls
 {
@@ -9,7 +7,7 @@ namespace SoundproofWalls
     {
         static float LastSyncReceiveTime = 0;
         static String LastConfig = "";
-        static byte LastConfigOwnerID = GameMain.Server.ConnectedClients[0]?.SessionId ?? (byte)1;
+        static byte LastConfigOwnerID = (byte)1;
 
         public static void InitServer()
         {

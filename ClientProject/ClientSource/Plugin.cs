@@ -10,7 +10,6 @@ using HarmonyLib;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using System.Text.RegularExpressions;
-using System.Diagnostics;
 
 namespace SoundproofWalls
 {
@@ -1138,7 +1137,7 @@ namespace SoundproofWalls
             if (client.VoipSound == null)
             {
                 DebugConsole.Log("Recreating voipsound " + queueId);
-                client.VoipSound = new VoipSound(client.Name, GameMain.SoundManager, client.VoipQueue);
+                client.VoipSound = new VoipSound(client, GameMain.SoundManager, client.VoipQueue);
             }
 
             GameMain.SoundManager.ForceStreamUpdate();
@@ -1195,11 +1194,12 @@ namespace SoundproofWalls
                         ChatMessageType.Radio : ChatMessageType.Default;
             }
 
-            client.Character.ShowSpeechBubble(1.25f, ChatMessage.MessageColor[(int)messageType]);
+            client.Character.ShowTextlessSpeechBubble(1.25f, ChatMessage.MessageColor[(int)messageType]);
 
             // Range.
             if (messageType == ChatMessageType.Radio)
             {
+                client.VoipSound.UsingRadio = true;
                 client.VoipSound.SetRange(senderRadio.Range * VoipClient.RangeNear * speechImpedimentMultiplier * radioRangeMultiplier, senderRadio.Range * speechImpedimentMultiplier * radioRangeMultiplier);
                 if (distanceFactor > VoipClient.RangeNear && !spectating)
                 {
@@ -1209,7 +1209,8 @@ namespace SoundproofWalls
             }
             else
             {
-                client.VoipSound.SetRange(ChatMessage.SpeakRange * VoipClient.RangeNear * speechImpedimentMultiplier * localRangeMultiplier, ChatMessage.SpeakRange * speechImpedimentMultiplier * localRangeMultiplier);
+                client.VoipSound.UsingRadio = false;
+                client.VoipSound.SetRange(ChatMessage.SpeakRangeVOIP * VoipClient.RangeNear * speechImpedimentMultiplier * localRangeMultiplier, ChatMessage.SpeakRangeVOIP * speechImpedimentMultiplier * localRangeMultiplier);
             }
 
             // Muffle Info stuff.
@@ -1287,8 +1288,8 @@ namespace SoundproofWalls
             // Must be above the early return so the config being disabled can be enforced automatically.
             if (Timing.TotalTime > LastSyncUpdateTime + 5)
             {
-                UpdateServerConfig(manualUpdate: false);
                 LastSyncUpdateTime = (float)Timing.TotalTime;
+                UpdateServerConfig(manualUpdate: false);
             }
 
             if (!Config.Enabled || !RoundStarted)
