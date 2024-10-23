@@ -1800,9 +1800,9 @@ namespace SoundproofWalls
                 }
             }
 
-            updateWaterAmbience(SoundPlayer.waterAmbienceIn, ambienceVolume * (1.0f - movementSoundVolume) * insideSubFactor);
-            updateWaterAmbience(SoundPlayer.waterAmbienceMoving, ambienceVolume * movementSoundVolume * insideSubFactor);
-            updateWaterAmbience(SoundPlayer.waterAmbienceOut, 1.0f - insideSubFactor);
+            updateWaterAmbience(SoundPlayer.waterAmbienceIn.Sound, ambienceVolume * (1.0f - movementSoundVolume) * insideSubFactor);
+            updateWaterAmbience(SoundPlayer.waterAmbienceMoving.Sound, ambienceVolume * movementSoundVolume * insideSubFactor);
+            updateWaterAmbience(SoundPlayer.waterAmbienceOut.Sound, 1.0f - insideSubFactor);
 
             return false;
         }
