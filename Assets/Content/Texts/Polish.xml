@@ -49,6 +49,8 @@
 	<spw_hydrophonepitch>Ton hydrofonu</spw_hydrophonepitch>
 	<spw_hydrophonelegacyswitch>Przełącznik dziedziczny hydrofonu</spw_hydrophonelegacyswitch>
 	<spw_hydrophonelegacyswitchtooltip>Użyj starej logiki przełączania hydrofonu (przełącznik jest wyłączany podczas używania aktywnego sonaru)</spw_hydrophonelegacyswitchtooltip>
+	<spw_hydrophoneswitchenabled>Przełącznik Hydrofonów Włączony</spw_hydrophoneswitchenabled>
+	<spw_hydrophoneswitchenabledtooltip>Przełącza istnienie przełącznika hydrofonów (wymaga ponownego uruchomienia rundy)</spw_hydrophoneswitchenabledtooltip>
 
 	<spw_ambiencesettings>Ustawienia dźwięków nastroju</spw_ambiencesettings>
 	<spw_unsubmergedwaterambiencevolume>Głośność wody podczas braku zanurzenia</spw_unsubmergedwaterambiencevolume>
@@ -79,6 +81,8 @@
 	<spw_muffleflowsoundstooltip>Stłumiaj dźwięki przelewania się wody od przecieków</spw_muffleflowsoundstooltip>
 	<spw_mufflefiresounds>Tłum dźwięki płomieni</spw_mufflefiresounds>
 	<spw_mufflefiresoundstooltip>Tłum dźwięki ognia</spw_mufflefiresoundstooltip>
+	<spw_muffledivingsuit>Tłumić Kombinezony Nurkowe</spw_muffledivingsuit>
+	<spw_muffledivingsuittooltip>Przełącza tłumienie dźwięków podczas noszenia kombinezonu nurkowego (niezalecane)</spw_muffledivingsuittooltip>
 	<spw_divingsuitpitch>Ton skafandrów</spw_divingsuitpitch>
 	<spw_divingsuitpitchtooltip>Ton dźwięków podczas noszenia skafandrów (nakłada się addytywnie)</spw_divingsuitpitchtooltip>
 	<spw_submergedpitch>Ton zanurzenia</spw_submergedpitch>

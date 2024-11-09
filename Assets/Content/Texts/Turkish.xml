@@ -49,6 +49,8 @@
 	<spw_hydrophonepitch>Hidrofon Tonu</spw_hydrophonepitch>
 	<spw_hydrophonelegacyswitch>Hidrofon Eski Anahtarı</spw_hydrophonelegacyswitch>
 	<spw_hydrophonelegacyswitchtooltip>Aktif sonar kullanılırken hidrofon anahtarının kapatılması eski mantığını kullanın</spw_hydrophonelegacyswitchtooltip>
+	<spw_hydrophoneswitchenabled>Hidrofon Anahtarı Etkin</spw_hydrophoneswitchenabled>
+	<spw_hydrophoneswitchenabledtooltip>Hidrofon anahtarının varlığını değiştirir (turun yeniden başlatılması gerekir)</spw_hydrophoneswitchenabledtooltip>
 
 	<spw_ambiencesettings>Ambiyans Ayarları</spw_ambiencesettings>
 	<spw_unsubmergedwaterambiencevolume>Su Altı Olmayan Ambiyans Ses Düzeyi</spw_unsubmergedwaterambiencevolume>
@@ -79,6 +81,8 @@
 	<spw_muffleflowsoundstooltip>Sızıntılardan gelen su akıntısı seslerinin boğulmasını açar/kapatır</spw_muffleflowsoundstooltip>
 	<spw_mufflefiresounds>Ateş Seslerini Boğma</spw_mufflefiresounds>
 	<spw_mufflefiresoundstooltip>Ateş seslerinin boğulmasını açar/kapatır</spw_mufflefiresoundstooltip>
+	<spw_muffledivingsuit>Dalış Tulumu Sustur</spw_muffledivingsuit>
+	<spw_muffledivingsuittooltip>Dalış tulumu giyerken seslerin susturulmasını açar/kapatır (önerilmez)</spw_muffledivingsuittooltip>
 	<spw_divingsuitpitch>Dalış Elbisesi Tonu</spw_divingsuitpitch>
 	<spw_divingsuitpitchtooltip>Dalış elbisesi giyerken seslerin tonu (üst üste eklenir)</spw_divingsuitpitchtooltip>
 	<spw_submergedpitch>Batık Ton</spw_submergedpitch>

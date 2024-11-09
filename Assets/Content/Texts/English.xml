@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <infotexts language="English" nowhitespace="false" translatedname="English">
 
-	<spw_settings>Soundproof Settings</spw_settings>
+	<spw_settings>Soundproof Walls</spw_settings>
 
 	<spw_generalsettings>General Settings</spw_generalsettings>
 	<spw_enabled>Enabled</spw_enabled>
@@ -49,6 +49,8 @@
 	<spw_hydrophonepitch>Hydrophone Pitch</spw_hydrophonepitch>
 	<spw_hydrophonelegacyswitch>Hydrophone Legacy Switch</spw_hydrophonelegacyswitch>
 	<spw_hydrophonelegacyswitchtooltip>Use the old hydrophone switch logic (switch is turned off when using active sonar)</spw_hydrophonelegacyswitchtooltip>
+	<spw_hydrophoneswitchenabled>Hydrophone Switch Enabled</spw_hydrophoneswitchenabled>
+	<spw_hydrophoneswitchenabledtooltip>Toggles the existence of the hydrophone switch (requires restarting the round)</spw_hydrophoneswitchenabledtooltip>
 
 	<spw_ambiencesettings>Ambience Settings</spw_ambiencesettings>
 	<spw_unsubmergedwaterambiencevolume>Unsubmerged Water Ambience Volume</spw_unsubmergedwaterambiencevolume>
@@ -79,6 +81,8 @@
 	<spw_muffleflowsoundstooltip>Toggle the muffling of water flow sounds from leaks</spw_muffleflowsoundstooltip>
 	<spw_mufflefiresounds>Muffle Fire Sounds</spw_mufflefiresounds>
 	<spw_mufflefiresoundstooltip>Toggle the muffling of fire sounds</spw_mufflefiresoundstooltip>
+	<spw_muffledivingsuit>Muffle Diving Suits</spw_muffledivingsuit>
+	<spw_muffledivingsuittooltip>Toggle the muffling of sounds when wearing a diving suit (not recommended)</spw_muffledivingsuittooltip>
 	<spw_divingsuitpitch>Diving Suit Pitch</spw_divingsuitpitch>
 	<spw_divingsuitpitchtooltip>The pitch of sounds when wearing a diving suit (stacks additively)</spw_divingsuitpitchtooltip>
 	<spw_submergedpitch>Submerged Pitch</spw_submergedpitch>

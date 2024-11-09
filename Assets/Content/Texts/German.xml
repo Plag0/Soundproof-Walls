@@ -49,6 +49,8 @@
 	<spw_hydrophonepitch>Hydrophon-Tonhöhe</spw_hydrophonepitch>
 	<spw_hydrophonelegacyswitch>Hydrophon Legacy Schalter</spw_hydrophonelegacyswitch>
 	<spw_hydrophonelegacyswitchtooltip>Verwenden Sie die alte Hydrophon-Schalterlogik (Schalter wird bei Verwendung von aktivem Sonar ausgeschaltet)</spw_hydrophonelegacyswitchtooltip>
+	<spw_hydrophoneswitchenabled>Hydrophonenschalter Aktiviert</spw_hydrophoneswitchenabled>
+	<spw_hydrophoneswitchenabledtooltip>Schaltet das Vorhandensein des Hydrophonenschalters um (erfordert einen Neustart der Runde)</spw_hydrophoneswitchenabledtooltip>
 
 	<spw_ambiencesettings>Ambiente-Einstellungen</spw_ambiencesettings>
 	<spw_unsubmergedwaterambiencevolume>Lautstärke des nicht untergetauchten Wasserambientes</spw_unsubmergedwaterambiencevolume>
@@ -79,6 +81,8 @@
 	<spw_muffleflowsoundstooltip>Aktiviere die Dämpfung von Wasserlecks</spw_muffleflowsoundstooltip>
 	<spw_mufflefiresounds>Dämpfe Feuergeräusche</spw_mufflefiresounds>
 	<spw_mufflefiresoundstooltip>Aktiviere die Dämpfung von Feuer</spw_mufflefiresoundstooltip>
+	<spw_muffledivingsuit>Taucheranzüge Dämpfen</spw_muffledivingsuit>
+	<spw_muffledivingsuittooltip>Schaltet die Dämpfung von Geräuschen beim Tragen eines Taucheranzugs um (nicht empfohlen)</spw_muffledivingsuittooltip>
 	<spw_divingsuitpitch>Tonhöhe (Taucheranzug)</spw_divingsuitpitch>
 	<spw_divingsuitpitchtooltip>Tonhöhe von Geräuschen, während der Spieler im Taucheranzug ist (Additiv)</spw_divingsuitpitchtooltip>
 	<spw_submergedpitch>Tonhöhe (Unterwasser)</spw_submergedpitch>

@@ -132,7 +132,7 @@ namespace SoundproofWalls
 
             //PlaySound prefix patch
             harmony.Patch(
-                typeof(SoundPlayer).GetMethod(nameof(SoundPlayer.PlaySound), new Type[] { typeof(Sound), typeof(Vector2), typeof(float), typeof(float), typeof(float), typeof(Hull), typeof(bool) }),
+                typeof(SoundPlayer).GetMethod(nameof(SoundPlayer.PlaySound), new Type[] { typeof(Sound), typeof(Vector2), typeof(float), typeof(float), typeof(float), typeof(Hull), typeof(bool), typeof(bool) }),
                 new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_PlaySound))));
 
             //WaterFlowSounds postfix patch
@@ -385,7 +385,7 @@ namespace SoundproofWalls
                 if (spectating)
                 {
                     Distance = Vector3.Distance(GameMain.SoundManager.ListenerPosition, new Vector3(soundWorldPos, 0.0f));
-                    Muffled = (soundInWater || soundContained) && !IgnoreLowpass && !canHearIntoWater && !IgnoreAll;
+                    Muffled = ((soundInWater && !canHearIntoWater) || soundContained) && !IgnoreLowpass && !IgnoreAll;
                     if (Muffled && soundInWater) { Reason = MuffleReason.SoundInWater; }
                     else if (Muffled && soundContained) { Reason = MuffleReason.NoPath; }
                     else { Reason = MuffleReason.None; }
@@ -399,15 +399,6 @@ namespace SoundproofWalls
                 if (IgnoreAll)
                 {
                     Distance = Vector2.Distance(listenPos, soundPos);
-                    return;
-                }
-
-                // Muffle if contained.
-                if (soundContained)
-                {
-                    Distance = Vector2.Distance(listenPos, soundPos);
-                    Reason = MuffleReason.NoPath;
-                    Muffled = true;
                     return;
                 }
 
@@ -427,6 +418,22 @@ namespace SoundproofWalls
                 {
                     Muffled = !IgnoreLowpass;
                     Reason = MuffleReason.NoPath;
+                    return;
+                }
+
+                // Muffle if contained.
+                if (soundContained)
+                {
+                    Reason = MuffleReason.NoPath;
+                    Muffled = !IgnoreLowpass;
+                    return;
+                }
+
+                //Optional wearing suit muffling
+                if (Config.MuffleDivingSuits && IsWearingDivingSuit)
+                {
+                    Reason = MuffleReason.NoPath;
+                    Muffled = !IgnoreLowpass;
                     return;
                 }
 
@@ -656,6 +663,8 @@ namespace SoundproofWalls
         
         public static void SetupHydrophoneSwitches()
         {
+            if (!Config.HydrophoneSwitchEnabled) { return; }
+
             foreach (Item item in Item.RepairableItems)
             {
                 if (item.Tags.Contains("command"))
@@ -679,6 +688,8 @@ namespace SoundproofWalls
 
         public static void NewHydrophoneSwitches()
         {
+            if (!Config.HydrophoneSwitchEnabled) { return; }
+
             foreach (Item item in Item.RepairableItems)
             {
                 if (item.Tags.Contains("command"))
@@ -877,7 +888,26 @@ namespace SoundproofWalls
                 instance.mineralScannerSwitch.Parent.RectTransform.RelativeSize.X,
                 instance.zoomSlider.Parent.RectTransform.RelativeSize.Y);
 
-            instance.PreventMineralScannerOverlap();
+            PreventMineralScannerOverlapCustom(instance.item, instance);
+        }
+
+        public static void PreventMineralScannerOverlapCustom(Item item, Sonar sonar)
+        {
+            if (item.GetComponent<Steering>() is { } steering && sonar.controlContainer is { } container)
+            {
+                int containerBottom = container.Rect.Y + container.Rect.Height,
+                    steeringTop = steering.ControlContainer.Rect.Top;
+
+                int amountRaised = 0;
+
+                while (GetContainerBottom() > steeringTop) { amountRaised++; }
+
+                container.RectTransform.AbsoluteOffset = new Point(0, -amountRaised*2);
+
+                int GetContainerBottom() => containerBottom - amountRaised;
+                
+                sonar.CanBeSelected = true;
+            }
         }
 
         public static void AddHydrophoneSwitchToGUI(Sonar instance)
@@ -2221,6 +2251,7 @@ namespace SoundproofWalls
                     string jsonContent = File.ReadAllText(ConfigPath);
                     _cachedConfig = JsonSerializer.Deserialize<Config>(jsonContent) ?? new Config();
                     UpdateConfigFromJson(jsonContent, _cachedConfig);
+                    SaveConfig(_cachedConfig);
                 }
                 catch (Exception ex)
                 {
@@ -2252,7 +2283,13 @@ namespace SoundproofWalls
 
         public static void SaveConfig(Config config)
         {
-            File.WriteAllText(ConfigPath, JsonSerializer.Serialize(config));
+            var options = new JsonSerializerOptions
+            {
+                // Ensure default values are included
+                DefaultIgnoreCondition = JsonIgnoreCondition.Never,
+                WriteIndented = true
+            };
+            File.WriteAllText(ConfigPath, JsonSerializer.Serialize(config, options));
         }
     }
     public class Config
@@ -2308,6 +2345,7 @@ namespace SoundproofWalls
         public float HydrophoneVolumeMultiplier { get; set; } = 1.1f;
         public float HydrophonePitchMultiplier { get; set; } = 0.65f;
         public bool HydrophoneLegacySwitch { get; set; } = false;
+        public bool HydrophoneSwitchEnabled { get; set; } = true;
 
         // Ambience
         public float UnsubmergedWaterAmbienceVolumeMultiplier { get; set; } = 0.3f;
@@ -2386,6 +2424,7 @@ namespace SoundproofWalls
         public bool MuffleSubmergedSounds { get; set; } = true; // the equivalent of adding all sounds into WaterIgnoredSounds
         public bool MuffleFlowSounds { get; set; } = true;
         public bool MuffleFireSounds { get; set; } = true;
+        public bool MuffleDivingSuits { get; set; } = false;
         public bool EstimatePathToFakeSounds { get; set; } = false;
         public float DivingSuitPitchMultiplier { get; set; } = 0.90f;
         public float SubmergedPitchMultiplier { get; set; } = 0.80f;
@@ -2817,8 +2856,17 @@ namespace SoundproofWalls
                     config.HydrophoneLegacySwitch = state;
                     ConfigManager.SaveConfig(config);
                 });
-                tick.Text = $"{TextManager.Get("spw_hydrophonelegacyswitch").Value}{Menu.GetServerValueString(nameof(config.Enabled))}";
+                tick.Text = $"{TextManager.Get("spw_hydrophonelegacyswitch").Value}{Menu.GetServerValueString(nameof(config.HydrophoneLegacySwitch))}";
                 tick.ToolTip = TextManager.Get("spw_hydrophonelegacyswitchtooltip").Value;
+
+                // Hydrophone Switch Enabled:
+                tick = EasySettings.TickBox(list.Content, string.Empty, config.HydrophoneSwitchEnabled, state =>
+                {
+                    config.HydrophoneSwitchEnabled = state;
+                    ConfigManager.SaveConfig(config);
+                });
+                tick.Text = $"{TextManager.Get("spw_hydrophoneswitchenabled").Value}{Menu.GetServerValueString(nameof(config.HydrophoneSwitchEnabled))}";
+                tick.ToolTip = TextManager.Get("spw_hydrophoneswitchenabledtooltip").Value;
 
 
                 // Ambience Settings:
@@ -3201,6 +3249,16 @@ namespace SoundproofWalls
                 });
                 tick.Text = $"{TextManager.Get("spw_mufflefiresounds").Value}{Menu.GetServerValueString(nameof(config.MuffleFireSounds))}";
                 tick.ToolTip = TextManager.Get("spw_mufflefiresoundstooltip").Value;
+
+                // Muffle Diving Suits:
+                tick = EasySettings.TickBox(list.Content, string.Empty, config.MuffleDivingSuits, state =>
+                {
+                    config.MuffleDivingSuits = state;
+                    ConfigManager.SaveConfig(config);
+                });
+                tick.Text = $"{TextManager.Get("spw_muffledivingsuit").Value}{Menu.GetServerValueString(nameof(config.MuffleDivingSuits))}";
+                tick.ToolTip = TextManager.Get("spw_muffledivingsuittooltip").Value;
+
 
                 // Diving Suit Pitch Multiplier
                 GUITextBlock textBlockDPM = EasySettings.TextBlock(list, string.Empty);

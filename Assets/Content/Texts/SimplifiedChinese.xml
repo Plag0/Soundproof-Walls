@@ -49,6 +49,8 @@
 	<spw_hydrophonepitch>水听器音调</spw_hydrophonepitch>
 	<spw_hydrophonelegacyswitch>水听器传统开关</spw_hydrophonelegacyswitch>
 	<spw_hydrophonelegacyswitchtooltip>使用旧的水听器开关逻辑（使用主动声纳时关闭开关）</spw_hydrophonelegacyswitchtooltip>
+	<spw_hydrophoneswitchenabled>水听器开关已启用</spw_hydrophoneswitchenabled>
+	<spw_hydrophoneswitchenabledtooltip>切换水听器开关的存在（需要重新启动回合）</spw_hydrophoneswitchenabledtooltip>
 
 	<spw_ambiencesettings>环境设置</spw_ambiencesettings>
 	<spw_unsubmergedwaterambiencevolume>非淹没水环境音量</spw_unsubmergedwaterambiencevolume>
@@ -79,6 +81,8 @@
 	<spw_muffleflowsoundstooltip>切换泄漏水流声音的消音</spw_muffleflowsoundstooltip>
 	<spw_mufflefiresounds>火焰声音消音</spw_mufflefiresounds>
 	<spw_mufflefiresoundstooltip>切换火焰声音的消音</spw_mufflefiresoundstooltip>
+	<spw_muffledivingsuit>减弱潜水服声音</spw_muffledivingsuit>
+	<spw_muffledivingsuittooltip>切换穿戴潜水服时声音的减弱（不推荐）</spw_muffledivingsuittooltip>
 	<spw_divingsuitpitch>潜水服音调</spw_divingsuitpitch>
 	<spw_divingsuitpitchtooltip>穿戴潜水服时声音的音调（叠加）</spw_divingsuitpitchtooltip>
 	<spw_submergedpitch>淹没音调</spw_submergedpitch>

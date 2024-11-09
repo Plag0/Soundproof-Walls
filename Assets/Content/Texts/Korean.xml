@@ -49,6 +49,8 @@
 	<spw_hydrophonepitch>수중 청음기 피치</spw_hydrophonepitch>
 	<spw_hydrophonelegacyswitch>수중 청음기 레거시 스위치</spw_hydrophonelegacyswitch>
 	<spw_hydrophonelegacyswitchtooltip>오래된 수중 청음기 스위치 로직 사용 (활성 소나 사용 시 스위치가 꺼짐)</spw_hydrophonelegacyswitchtooltip>
+	<spw_hydrophoneswitchenabled>하이드로폰 스위치 활성화됨</spw_hydrophoneswitchenabled>
+	<spw_hydrophoneswitchenabledtooltip>하이드로폰 스위치의 존재를 전환합니다 (라운드 재시작 필요)</spw_hydrophoneswitchenabledtooltip>
 
 	<spw_ambiencesettings>환경 설정</spw_ambiencesettings>
 	<spw_unsubmergedwaterambiencevolume>비수중 환경 볼륨</spw_unsubmergedwaterambiencevolume>
@@ -79,6 +81,8 @@
 	<spw_muffleflowsoundstooltip>누수로 인한 물 흐름 소리의 감소를 토글합니다</spw_muffleflowsoundstooltip>
 	<spw_mufflefiresounds>불 소리 감소</spw_mufflefiresounds>
 	<spw_mufflefiresoundstooltip>불 소리의 감소를 토글합니다</spw_mufflefiresoundstooltip>
+	<spw_muffledivingsuit>다이빙 슈트 소리 줄이기</spw_muffledivingsuit>
+	<spw_muffledivingsuittooltip>다이빙 슈트를 착용할 때 소리 줄이기를 전환합니다 (권장되지 않음)</spw_muffledivingsuittooltip>
 	<spw_divingsuitpitch>잠수복 피치</spw_divingsuitpitch>
 	<spw_divingsuitpitchtooltip>잠수복 착용 시 소리의 피치 (추가적으로 적용됩니다)</spw_divingsuitpitchtooltip>
 	<spw_submergedpitch>수중 피치</spw_submergedpitch>

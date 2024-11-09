@@ -49,7 +49,9 @@
 	<spw_hydrophonepitch>Hauteur sonore de l'hydrophone</spw_hydrophonepitch>
 	<spw_hydrophonelegacyswitch>Interrupteur ancien du hydrophone</spw_hydrophonelegacyswitch>
 	<spw_hydrophonelegacyswitchtooltip>Utiliser l'ancienne logique de l'interrupteur du hydrophone (l'interrupteur est désactivé lors de l'utilisation du sonar actif)</spw_hydrophonelegacyswitchtooltip>
-	
+	<spw_hydrophoneswitchenabled>Interrupteur Hydrophone Activé</spw_hydrophoneswitchenabled>
+	<spw_hydrophoneswitchenabledtooltip>Basculer l'existence de l'interrupteur hydrophone (nécessite de redémarrer la partie)</spw_hydrophoneswitchenabledtooltip>
+
 	<spw_ambiencesettings>Paramètres de l'ambiance</spw_ambiencesettings>
 	<spw_unsubmergedwaterambiencevolume>Volume de l'ambiance aquatique quand hors de l'eau</spw_unsubmergedwaterambiencevolume>
 	<spw_submergedwaterambiencevolume>Volume de l'ambiance aquatique quand submergé</spw_submergedwaterambiencevolume>
@@ -79,6 +81,8 @@
 	<spw_muffleflowsoundstooltip>Etouffe le sons des fuites d'eau</spw_muffleflowsoundstooltip>
 	<spw_mufflefiresounds>Etouffer les sons d'incendie</spw_mufflefiresounds>
 	<spw_mufflefiresoundstooltip>Etouffe les sons liés au feu</spw_mufflefiresoundstooltip>
+	<spw_muffledivingsuit>Amortir Combinaisons de Plongée</spw_muffledivingsuit>
+	<spw_muffledivingsuittooltip>Basculer l'amortissement des sons lorsqu'on porte une combinaison de plongée (non recommandé)</spw_muffledivingsuittooltip>
 	<spw_divingsuitpitch>Hauteur sonore des combinaisons</spw_divingsuitpitch>
 	<spw_divingsuitpitchtooltip>Hauteur des sons quand vous portez une combinaison de plongé (s'ajoute aux autres paramètres)</spw_divingsuitpitchtooltip>
 	<spw_submergedpitch>Hauteur sonore quand submergé</spw_submergedpitch>

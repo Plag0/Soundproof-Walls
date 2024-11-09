@@ -49,6 +49,9 @@
 	<spw_hydrophonepitch>Tom do Hidrofone</spw_hydrophonepitch>
 	<spw_hydrophonelegacyswitch>Chave de Legado do Hidrofone</spw_hydrophonelegacyswitch>
 	<spw_hydrophonelegacyswitchtooltip>Use a lógica antiga de chaveamento do hidrofone (a chave é desligada quando o sonar ativo está sendo usado)</spw_hydrophonelegacyswitchtooltip>
+	<spw_hydrophoneswitchenabled>Interruptor de Hidrofone Ativado</spw_hydrophoneswitchenabled>
+	<spw_hydrophoneswitchenabledtooltip>Alterna a existência do interruptor de hidrofone (requer reiniciar a rodada)</spw_hydrophoneswitchenabledtooltip>
+
 
 	<spw_ambiencesettings>Configurações de Ambiência</spw_ambiencesettings>
 	<spw_unsubmergedwaterambiencevolume>Volume de Ambiência de Água Não Submersa</spw_unsubmergedwaterambiencevolume>
@@ -79,6 +82,8 @@
 	<spw_muffleflowsoundstooltip>Alterna o abafamento de sons de fluxo de água de vazamentos</spw_muffleflowsoundstooltip>
 	<spw_mufflefiresounds>Abafar Sons de Fogo</spw_mufflefiresounds>
 	<spw_mufflefiresoundstooltip>Alterna o abafamento de sons de fogo</spw_mufflefiresoundstooltip>
+	<spw_muffledivingsuit>Amortecer Trajes de Mergulho</spw_muffledivingsuit>
+	<spw_muffledivingsuittooltip>Alterna o amortecimento dos sons ao usar um traje de mergulho (não recomendado)</spw_muffledivingsuittooltip>
 	<spw_divingsuitpitch>Tom do Traje de Mergulho</spw_divingsuitpitch>
 	<spw_divingsuitpitchtooltip>O tom dos sons quando usando um traje de mergulho (acumulativo)</spw_divingsuitpitchtooltip>
 	<spw_submergedpitch>Tom Submerso</spw_submergedpitch>

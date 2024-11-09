@@ -49,6 +49,8 @@
 	<spw_hydrophonepitch>聴音器の音高</spw_hydrophonepitch>
 	<spw_hydrophonelegacyswitch>聴音器のレガシースイッチ</spw_hydrophonelegacyswitch>
 	<spw_hydrophonelegacyswitchtooltip>古い聴音器スイッチのロジックを使用する（アクティブソナー使用時にスイッチがオフになる）</spw_hydrophonelegacyswitchtooltip>
+	<spw_hydrophoneswitchenabled>ハイドロフォンスイッチ有効</spw_hydrophoneswitchenabled>
+	<spw_hydrophoneswitchenabledtooltip>ハイドロフォンスイッチの存在を切り替えます（ラウンドの再起動が必要です）</spw_hydrophoneswitchenabledtooltip>
 
 	<spw_ambiencesettings>環境の設定</spw_ambiencesettings>
 	<spw_unsubmergedwaterambiencevolume>水以外に環境の音量</spw_unsubmergedwaterambiencevolume>
@@ -79,6 +81,8 @@
 	<spw_muffleflowsoundstooltip>漏洩から水の音を消す切り替える</spw_muffleflowsoundstooltip>
 	<spw_mufflefiresounds>火の音を消す</spw_mufflefiresounds>
 	<spw_mufflefiresoundstooltip>火の音を消す切り替える</spw_mufflefiresoundstooltip>
+	<spw_muffledivingsuit>ダイビングスーツの音を抑える</spw_muffledivingsuit>
+	<spw_muffledivingsuittooltip>ダイビングスーツを着用しているときの音の抑制を切り替えます（推奨されません）</spw_muffledivingsuittooltip>
 	<spw_divingsuitpitch>潜水服の音高</spw_divingsuitpitch>
 	<spw_divingsuitpitchtooltip>潜水服を着ってるの音高（加算的に積み重なる）</spw_divingsuitpitchtooltip>
 	<spw_submergedpitch>水中の音高</spw_submergedpitch>

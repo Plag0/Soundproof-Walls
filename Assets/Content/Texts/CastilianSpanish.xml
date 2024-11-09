@@ -49,6 +49,8 @@
 	<spw_hydrophonepitch>Tono del Hidrófono</spw_hydrophonepitch>
 	<spw_hydrophonelegacyswitch>Interruptor de Legado del Hidrófono</spw_hydrophonelegacyswitch>
 	<spw_hydrophonelegacyswitchtooltip>Usar la lógica antigua del interruptor del hidrófono (el interruptor se apaga al usar el sonar activo)</spw_hydrophonelegacyswitchtooltip>
+	<spw_hydrophoneswitchenabled>Interruptor de Hidrófono Activado</spw_hydrophoneswitchenabled>
+	<spw_hydrophoneswitchenabledtooltip>Alterna la existencia del interruptor de hidrófono (requiere reiniciar la ronda)</spw_hydrophoneswitchenabledtooltip>
 
 	<spw_ambiencesettings>Configuraciones de Ambiente</spw_ambiencesettings>
 	<spw_unsubmergedwaterambiencevolume>Volumen de Ambiente de Agua No Sumergida</spw_unsubmergedwaterambiencevolume>
@@ -79,6 +81,8 @@
 	<spw_muffleflowsoundstooltip>Alterna el amortiguamiento de sonidos de flujo de agua de fugas</spw_muffleflowsoundstooltip>
 	<spw_mufflefiresounds>Amortiguar Sonidos de Fuego</spw_mufflefiresounds>
 	<spw_mufflefiresoundstooltip>Alterna el amortiguamiento de sonidos de fuego</spw_mufflefiresoundstooltip>
+	<spw_muffledivingsuit>Amortiguar Trajes de Buceo</spw_muffledivingsuit>
+	<spw_muffledivingsuittooltip>Alterna el amortiguamiento de sonidos al usar un traje de buceo (no recomendado)</spw_muffledivingsuittooltip>
 	<spw_divingsuitpitch>Tono del Traje de Buceo</spw_divingsuitpitch>
 	<spw_divingsuitpitchtooltip>El tono de los sonidos al llevar puesto un traje de buceo (se acumula)</spw_divingsuitpitchtooltip>
 	<spw_submergedpitch>Tono Sumergido</spw_submergedpitch>
