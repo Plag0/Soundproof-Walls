@@ -10,6 +10,7 @@ using HarmonyLib;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using System.Text.RegularExpressions;
+using System.Collections;
 
 namespace SoundproofWalls
 {
@@ -40,6 +41,7 @@ namespace SoundproofWalls
         static float LastFirePathCheckTime = 0f;
 
         static float LastSyncUpdateTime = 5f;
+        static float LastBubbleUpdateTime = 0.2f;
 
         static Sound? BubbleSound;
         static Sound? RadioBubbleSound;
@@ -63,13 +65,12 @@ namespace SoundproofWalls
 
         static float LastDrawEavesdroppingTextTime = 0f;
         static float textFade = 0;
-
+        
         public static ThreadSafeDictionary<SoundChannel, MuffleInfo> SoundChannelMuffleInfo = new ThreadSafeDictionary<SoundChannel, MuffleInfo>();
         static Dictionary<SoundChannel, Character> HydrophoneSoundChannels = new Dictionary<SoundChannel, Character>();
         static Dictionary<Sonar, HydrophoneSwitch> HydrophoneSwitches = new Dictionary<Sonar, HydrophoneSwitch>();
 
-        // Key is the player's voip soundchannel. Value is the bubble sounds.
-        static Dictionary<SoundChannel, SoundChannel> BubbleSoundChannels = new Dictionary<SoundChannel, SoundChannel>();
+        public static ThreadSafeDictionary<Client, SoundChannel?> ClientBubbleSoundChannels = new ThreadSafeDictionary<Client, SoundChannel?>();
 
         static readonly object pitchedSoundsLock = new object();
         static HashSet<SoundChannel> PitchedSounds = new HashSet<SoundChannel>();
@@ -189,10 +190,9 @@ namespace SoundproofWalls
                 typeof(SoundPlayer).GetMethod(nameof(SoundPlayer.UpdateWaterAmbience), BindingFlags.Static | BindingFlags.NonPublic),
                 new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_UpdateWaterAmbience))));
 
-            // Dispose postfix patch
+            // Dispose prefix patch
             harmony.Patch(
                 typeof(SoundChannel).GetMethod(nameof(SoundChannel.Dispose)),
-                null,
                 new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_Dispose))));
 #if !LINUX
             // Draw prefix patch
@@ -296,6 +296,13 @@ namespace SoundproofWalls
             BothInWater
         }
 
+        public enum PlayerBubbleSoundState
+        {
+            DoNotPlayBubbles,
+            PlayRadioBubbles,
+            PlayLocalBubbles,
+        }
+
         public class MuffleInfo
         {
             public MuffleReason Reason = MuffleReason.None;
@@ -357,8 +364,8 @@ namespace SoundproofWalls
 
                 Character character = Character.Controlled;
                 Character? player = VoiceOwner?.Character;
-                Limb? playerHead = player?.AnimController?.GetLimb(LimbType.Head); // No need to default to mainLimb.
 
+                Limb? playerHead = player?.AnimController?.GetLimb(LimbType.Head); // No need to default to mainLimb because next line.
                 Vector2 soundWorldPos = playerHead?.WorldPosition ?? GetSoundChannelPos(Channel);
                 SoundHull = soundHull ?? Hull.FindHull(soundWorldPos, player?.CurrentHull ?? character?.CurrentHull);
                 Vector2 soundPos = LocalizePosition(soundWorldPos, SoundHull);
@@ -369,8 +376,7 @@ namespace SoundproofWalls
                 bool soundContained = emitter != null && !IgnoreContainer && IsContainedWithinContainer(emitter);
                 bool spectating = character == null || LightManager.ViewTarget == null;
 
-                PlayBubbleSounds(player, playerHead, Channel, soundInWater, messageType);
-
+                // Muffle radio comms underwater to make room for bubble sounds.
                 if (messageType == ChatMessageType.Radio)
                 {
                     if (soundInWater && player.OxygenAvailable < 95 && !PlayerIgnoresBubbles(player.Name))
@@ -476,76 +482,15 @@ namespace SoundproofWalls
 
             return localPos;
         }
-        public static void PlayBubbleSounds(Character? player, Limb? playerHead, SoundChannel voipChannel, bool soundInWater, ChatMessageType? messageType = null)
-        {
-            if (playerHead == null) return;
-
-            BubbleSoundChannels.TryGetValue(voipChannel, out SoundChannel? bubbleChannel);
-            bool isPlaying = bubbleChannel != null && bubbleChannel.IsPlaying && !bubbleChannel.FadingOutAndDisposing && 
-                (messageType == ChatMessageType.Radio && bubbleChannel.Sound.Filename.EndsWith("SPW_RadioBubblesLoopStereo.ogg") || 
-                messageType != ChatMessageType.Radio && bubbleChannel.Sound.Filename.EndsWith("SPW_BubblesLoopMono.ogg"));
-            bool shouldPlay = soundInWater && player.OxygenAvailable < 95;
-            Hull limbHull = playerHead.Hull;
-
-            if (shouldPlay && !PlayerIgnoresBubbles(player.Name))
-            {
-                if (!isPlaying)
-                {
-                    bubbleChannel?.Dispose();
-
-                    if (messageType == ChatMessageType.Radio)
-                    {
-                        bubbleChannel = RadioBubbleSound?.Play(position: null, gain: 1, freqMult: MathHelper.Lerp(0.8f, 1.2f, MathUtils.InverseLerp(0, 2, player.CurrentSpeed)), muffle: false);
-                    }
-                    else
-                    {
-                        bubbleChannel = SoundPlayer.PlaySound(BubbleSound, playerHead.WorldPosition, volume: 1, freqMult: MathHelper.Lerp(1, 4, MathUtils.InverseLerp(0, 2, player.CurrentSpeed)), ignoreMuffling: true);
-                    }
-
-                    if (bubbleChannel != null)
-                    {
-                        bubbleChannel.Looping = true;
-                        BubbleSoundChannels[voipChannel] = bubbleChannel;
-                    }
-                }
-                else
-                {
-                    if (messageType == ChatMessageType.Radio)
-                    {
-                        bubbleChannel.Position = GameMain.SoundManager.ListenerPosition;
-                        bubbleChannel.FrequencyMultiplier = MathHelper.Lerp(1, 2, MathUtils.InverseLerp(0, 2, player.CurrentSpeed));
-                    }
-                    else
-                    {
-                        bubbleChannel.Position = new Vector3(playerHead.WorldPosition, 0);
-                        bubbleChannel.FrequencyMultiplier = MathHelper.Lerp(1, 4, MathUtils.InverseLerp(0, 2, player.CurrentSpeed));
-                    }
-                    GameMain.ParticleManager.CreateParticle(
-                        "bubbles",
-                        playerHead.WorldPosition,
-                        velocity: playerHead.LinearVelocity * 10,
-                        rotation: 0,
-                        limbHull);
-                }
-            }
-            else if (isPlaying)
-            {
-                bubbleChannel.Looping = false;
-                bubbleChannel.Dispose();
-                bubbleChannel = null;
-                BubbleSoundChannels.Remove(voipChannel);
-            }
-        }
 
         public static void DisposeAllBubbleChannels()
         {
-            foreach (var kvp in BubbleSoundChannels) 
+            foreach (var kvp in ClientBubbleSoundChannels) 
             {
-                SoundChannel channel = kvp.Value;
-                channel.Looping = false;
-                channel.FadeOutAndDispose();
+                Client client = kvp.Key;
+                StopBubbleSound(client);
             }
-            BubbleSoundChannels.Clear();
+            ClientBubbleSoundChannels.Clear();
         }
 
         public static string? GetModDirectory()
@@ -1266,14 +1211,139 @@ namespace SoundproofWalls
             return false;
         }
 
+        // Get a client's messageType (same implementation seen in VoipClient_Read method).
+        public static ChatMessageType GetMessageType(Client client)
+        {
+            bool spectating = Character.Controlled == null;
+            WifiComponent senderRadio = null;
+            var messageType = ChatMessageType.Default;
+            if (!spectating)
+            {
+                messageType =
+                    !client.VoipQueue.ForceLocal &&
+                    ChatMessage.CanUseRadio(client.Character, out senderRadio) &&
+                    ChatMessage.CanUseRadio(Character.Controlled, out var recipientRadio) &&
+                    senderRadio.CanReceive(recipientRadio) ?
+                        ChatMessageType.Radio : ChatMessageType.Default;
+            }
+            else
+            {
+                messageType =
+                    !client.VoipQueue.ForceLocal &&
+                    ChatMessage.CanUseRadio(client.Character, out senderRadio) ?
+                        ChatMessageType.Radio : ChatMessageType.Default;
+            }
+
+            return messageType;
+        }
+
+        public static void StopBubbleSound(Client client)
+        {
+            if (!ClientBubbleSoundChannels.TryGetValue(client, out SoundChannel? bubbleChannel))
+            {
+                ClientBubbleSoundChannels.Remove(client);
+                return;
+            }
+
+            bubbleChannel.FrequencyMultiplier = 1.0f;
+            bubbleChannel.Looping = false;
+            bubbleChannel.Gain = 0; // Might be overkill.
+            bubbleChannel.Dispose();
+            ClientBubbleSoundChannels.Remove(client);
+        }
+
+        public static void UpdateBubbleSounds(Client client)
+        {
+            PlayerBubbleSoundState state = PlayerBubbleSoundState.DoNotPlayBubbles; // Default to not playing.
+
+            Character? player = client.Character;
+            Limb? playerHead = player?.AnimController?.GetLimb(LimbType.Head);
+
+            SoundChannel? voiceChannel = client.VoipSound?.soundChannel;
+
+            if (voiceChannel == null || player == null || playerHead == null)
+            {
+                StopBubbleSound(client);
+                return;
+            }
+
+            Vector2 soundWorldPos = playerHead.WorldPosition;
+            Hull soundHull = Hull.FindHull(soundWorldPos, player.CurrentHull);
+            Vector2 soundPos = LocalizePosition(soundWorldPos, soundHull);
+
+            bool soundInWater = SoundInWater(soundPos, soundHull);
+            var messageType = GetMessageType(client);
+
+            bool isPlaying = ClientBubbleSoundChannels.TryGetValue(client, out SoundChannel? currentBubbleChannel) && currentBubbleChannel != null;
+            bool soundMatches = true;
+
+            if (isPlaying)
+            {
+                soundMatches = currentBubbleChannel.Sound.Filename.EndsWith("SPW_RadioBubblesLoopStereo.ogg") && messageType == ChatMessageType.Radio ||
+                               currentBubbleChannel.Sound.Filename.EndsWith("SPW_BubblesLoopMono.ogg") && messageType != ChatMessageType.Radio;
+            }
+
+            // Check if bubbles should be playing.
+            if (soundMatches && soundInWater && player.OxygenAvailable < 95 && !PlayerIgnoresBubbles(player.Name))
+            {
+                state = messageType == ChatMessageType.Radio ? PlayerBubbleSoundState.PlayRadioBubbles : PlayerBubbleSoundState.PlayLocalBubbles;
+            }
+
+            if (state == PlayerBubbleSoundState.DoNotPlayBubbles)
+            {
+                StopBubbleSound(client);
+                return;
+            }
+
+            if (isPlaying) // Continue playing.
+            {
+                if (state == PlayerBubbleSoundState.PlayRadioBubbles) // Continue radio
+                {
+                    currentBubbleChannel.Position = GameMain.SoundManager.ListenerPosition;
+                    currentBubbleChannel.FrequencyMultiplier = MathHelper.Lerp(0.85f, 1.15f, MathUtils.InverseLerp(0, 2, player.CurrentSpeed));
+                }
+                else if (state == PlayerBubbleSoundState.PlayLocalBubbles) // Continue local
+                {
+                    currentBubbleChannel.Position = new Vector3(playerHead.WorldPosition, 0);
+                    currentBubbleChannel.FrequencyMultiplier = MathHelper.Lerp(1, 4, MathUtils.InverseLerp(0, 2, player.CurrentSpeed));
+                }
+
+                GameMain.ParticleManager.CreateParticle(
+                    "bubbles",
+                    playerHead.WorldPosition,
+                    velocity: playerHead.LinearVelocity * 10,
+                    rotation: 0,
+                    playerHead.Hull);
+            }
+
+            else // New sound
+            {
+                SoundChannel? newBubbleChannel = null;
+                if (state == PlayerBubbleSoundState.PlayRadioBubbles) // Start radio
+                {
+                    newBubbleChannel = SoundPlayer.PlaySound(RadioBubbleSound, new Vector2(GameMain.SoundManager.ListenerPosition.X, GameMain.SoundManager.ListenerPosition.Y), volume: 0.7f, freqMult: MathHelper.Lerp(0.85f, 1.15f, MathUtils.InverseLerp(0, 2, player.CurrentSpeed)), ignoreMuffling: true);
+                }
+                else if (state == PlayerBubbleSoundState.PlayLocalBubbles) // Start local
+                {
+                    newBubbleChannel = SoundPlayer.PlaySound(BubbleSound, playerHead.WorldPosition, volume: 1, range: 350, freqMult: MathHelper.Lerp(1, 4, MathUtils.InverseLerp(0, 2, player.CurrentSpeed)), ignoreMuffling: true);
+                }
+                
+                if (newBubbleChannel != null)
+                {
+                    newBubbleChannel.Looping = true;
+                    ClientBubbleSoundChannels[client] = newBubbleChannel;
+                }
+            }
+        }
+
         public static void SPW_UpdateVoipSound(Client __instance)
         {
-            if (!Config.Enabled || __instance?.VoipSound?.soundChannel == null || __instance.VoipSound.soundChannel.FadingOutAndDisposing == true || !__instance.VoipSound.soundChannel.IsPlaying)
+            VoipSound voipSound = __instance?.VoipSound;
+
+            if (!Config.Enabled || voipSound?.soundChannel == null || voipSound.soundChannel.FadingOutAndDisposing == true || !voipSound.soundChannel.IsPlaying)
             { 
                 return; 
             }
-
-            VoipSound voipSound = __instance.VoipSound;
 
             if (!SoundChannelMuffleInfo.TryGetValue(voipSound.soundChannel, out MuffleInfo muffleInfo))
             {
@@ -1283,6 +1353,7 @@ namespace SoundproofWalls
             ProcessVoipSound(voipSound, muffleInfo);
         }
 
+        // Runs at the start of the SoundChannel disposing method.
         public static void SPW_Dispose(SoundChannel __instance)
         {
             if (!Config.Enabled) { return; };
@@ -1291,12 +1362,6 @@ namespace SoundproofWalls
 
             SoundChannelMuffleInfo.Remove(__instance);
             HydrophoneSoundChannels.Remove(__instance);
-            if (BubbleSoundChannels.TryGetValue(__instance, out SoundChannel bubbleChannel))
-            {
-                bubbleChannel.Looping = false;
-                bubbleChannel.FadeOutAndDispose();
-                BubbleSoundChannels.Remove(__instance);
-            }
             lock (pitchedSoundsLock)
             {
                 PitchedSounds.Remove(__instance);
@@ -1343,6 +1408,29 @@ namespace SoundproofWalls
                 if (SoundsLoadedDelayTime <= 0)
                 {
                     SoundsLoaded = true;
+                }
+            }
+
+            // Bubble sound stuff.
+            if (GameMain.IsMultiplayer && Timing.TotalTime > LastBubbleUpdateTime + 0.2f)
+            {
+                LastBubbleUpdateTime = (float)Timing.TotalTime;
+
+                // In case a client disconnects while their bubble channel is playing.
+                foreach (var kvp in ClientBubbleSoundChannels)
+                {
+                    Client client = kvp.Key;
+
+                    if (!GameMain.Client.ConnectedClients.Contains(client))
+                    {
+                        StopBubbleSound(client);
+                    }
+                }
+
+                // Start, stop, or continue bubble sounds.
+                foreach (Client client in GameMain.Client.ConnectedClients)
+                {
+                    UpdateBubbleSounds(client);
                 }
             }
 
@@ -3718,8 +3806,8 @@ namespace SoundproofWalls
         public Action<GUIFrame> OnOpen { get; set; }
     }
 
-    // Using a custom wrapper instead of ConcurrentDictionary for performance reasons.
-    public class ThreadSafeDictionary<TKey, TValue>
+    // Using a custom wrapper instead of ConcurrentDictionary for performance.
+    public class ThreadSafeDictionary<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>, ICollection<KeyValuePair<TKey, TValue>>
     {
         private readonly object _syncRoot = new object();
         private readonly Dictionary<TKey, TValue> _dictionary = new Dictionary<TKey, TValue>();
@@ -3772,6 +3860,74 @@ namespace SoundproofWalls
             {
                 _dictionary.Clear();
             }
+        }
+
+        public int Count
+        {
+            get
+            {
+                lock (_syncRoot)
+                {
+                    return _dictionary.Count;
+                }
+            }
+        }
+
+        public bool IsReadOnly => false;
+
+        public void Add(KeyValuePair<TKey, TValue> item)
+        {
+            lock (_syncRoot)
+            {
+                ((ICollection<KeyValuePair<TKey, TValue>>)_dictionary).Add(item);
+            }
+        }
+
+        public bool Contains(KeyValuePair<TKey, TValue> item)
+        {
+            lock (_syncRoot)
+            {
+                return ((ICollection<KeyValuePair<TKey, TValue>>)_dictionary).Contains(item);
+            }
+        }
+
+        public bool ContainsKey(TKey key)
+        {
+            lock (_syncRoot)
+            {
+                return _dictionary.ContainsKey(key);
+            }
+        }
+
+        public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
+        {
+            lock (_syncRoot)
+            {
+                ((ICollection<KeyValuePair<TKey, TValue>>)_dictionary).CopyTo(array, arrayIndex);
+            }
+        }
+
+        public bool Remove(KeyValuePair<TKey, TValue> item)
+        {
+            lock (_syncRoot)
+            {
+                return ((ICollection<KeyValuePair<TKey, TValue>>)_dictionary).Remove(item);
+            }
+        }
+
+        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
+        {
+            Dictionary<TKey, TValue> snapshot;
+            lock (_syncRoot)
+            {
+                snapshot = new Dictionary<TKey, TValue>(_dictionary);
+            }
+            return snapshot.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }
