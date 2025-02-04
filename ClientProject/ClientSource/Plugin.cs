@@ -50,9 +50,6 @@ namespace SoundproofWalls
 
         static Hull? CameraHull = null;
 
-        public static bool SoundsLoaded = false;
-        public static float SoundsLoadedDelayTime = 3 * 60;
-
         static bool flowPrevWearingSuit = false;
         static bool flowPrevEarsInWater = false;
         static bool flowPrevUsingHydrophones = false;
@@ -69,7 +66,7 @@ namespace SoundproofWalls
         public static ThreadSafeDictionary<SoundChannel, MuffleInfo> SoundChannelMuffleInfo = new ThreadSafeDictionary<SoundChannel, MuffleInfo>();
         static Dictionary<SoundChannel, Character> HydrophoneSoundChannels = new Dictionary<SoundChannel, Character>();
         static Dictionary<Sonar, HydrophoneSwitch> HydrophoneSwitches = new Dictionary<Sonar, HydrophoneSwitch>();
-
+        static List<Sound?> SoundsToDispose = new List<Sound?>();
         public static ThreadSafeDictionary<Client, SoundChannel?> ClientBubbleSoundChannels = new ThreadSafeDictionary<Client, SoundChannel?>();
 
         static readonly object pitchedSoundsLock = new object();
@@ -575,35 +572,105 @@ namespace SoundproofWalls
                     !currentConfig.BubbleIgnoredNames.SetEquals(newConfig.SubmersionIgnoredSounds);
         }
 
-        public static void ReloadRoundSounds()
+        private static Sound? GetNewSound(Sound? oldSound)
         {
-            SoundsLoaded = false;
+            if (oldSound == null) { return null; }
+
+            if (oldSound.XElement != null)
+            {
+                return GameMain.SoundManager.LoadSound(oldSound.XElement, oldSound.Stream, oldSound.Filename);
+            }
+            else
+            {
+                return GameMain.SoundManager.LoadSound(oldSound.Filename, oldSound.Stream);
+            }
+        }
+
+        private static void ReloadComponentSounds()
+        {
             foreach (Item item in Item.ItemList)
             {
                 foreach (ItemComponent itemComponent in item.Components)
                 {
                     foreach (var kvp in itemComponent.sounds)
                     {
+                        itemComponent.StopSounds(kvp.Key);
                         foreach (ItemSound itemSound in kvp.Value)
                         {
-                            Sound newSound = GameMain.SoundManager.LoadSound(itemSound.RoundSound.Filename, itemSound.RoundSound.Stream);
+                            Sound? oldSound = itemSound.RoundSound.Sound;
+                            Sound? newSound = GetNewSound(oldSound);
                             itemSound.RoundSound.Sound = newSound;
-                            itemComponent.PlaySound(itemSound, itemComponent.Item.WorldPosition);
+                            SoundsToDispose.Add(oldSound);
                         }
                     }
 
                 }
             }
+        }
 
+        private static void ReloadStatusEffectSounds()
+        {
             foreach (StatusEffect statusEffect in StatusEffect.ActiveLoopingSounds)
             {
                 foreach (RoundSound roundSound in statusEffect.Sounds)
                 {
-                    Sound newSound = GameMain.SoundManager.LoadSound(roundSound.Filename, roundSound.Stream);
+                    Sound? newSound = GetNewSound(roundSound.Sound);
                     roundSound.Sound = newSound;
+                    SoundsToDispose.Add(roundSound.Sound);
                 }
             }
-            SoundsLoaded = true;
+        }
+
+        private static void ClearSoundsToDispose()
+        {
+            foreach (Sound? sound in SoundsToDispose)
+            {
+                if (sound != null)
+                {
+                    GameMain.SoundManager.RemoveSound(sound);
+                    sound.Dispose();
+                }
+            }
+            SoundsToDispose.Clear();
+        }
+
+        // Compatibility with my other mod, ReSound.
+        private static void StopResound(MoonSharp.Interpreter.DynValue? Resound)
+        {
+            if (Resound != null && Resound.Type == MoonSharp.Interpreter.DataType.Table)
+            {
+                MoonSharp.Interpreter.Table resoundTable = Resound.Table;
+                MoonSharp.Interpreter.DynValue stopFunction = resoundTable.Get("StopMod");
+                if (stopFunction != null && stopFunction.Type == MoonSharp.Interpreter.DataType.Function)
+                {
+                    GameMain.LuaCs.Lua.Call(stopFunction);
+                }
+            }
+        }
+
+        private static void StartResound(MoonSharp.Interpreter.DynValue? Resound)
+        {
+            if (Resound != null && Resound.Type == MoonSharp.Interpreter.DataType.Table)
+            {
+                MoonSharp.Interpreter.Table resoundTable = Resound.Table;
+                MoonSharp.Interpreter.DynValue startFunction = resoundTable.Get("StartMod");
+                if (startFunction != null && startFunction.Type == MoonSharp.Interpreter.DataType.Function)
+                {
+                    GameMain.LuaCs.Lua.Call(startFunction);
+                }
+            }
+        }
+
+        public static void ReloadRoundSounds()
+        {
+            MoonSharp.Interpreter.DynValue? Resound = GameMain.LuaCs.Lua.Globals.Get("Resound");
+            StopResound(Resound);
+
+            ReloadComponentSounds();
+            ReloadStatusEffectSounds();
+            ClearSoundsToDispose();
+
+            StartResound(Resound);
         }
         
         public static void SetupHydrophoneSwitches()
@@ -888,8 +955,6 @@ namespace SoundproofWalls
         // Called at the end of a round or when Lua is reloaded.
         public static void KillSPW()
         {
-            SoundsLoaded = false;
-            SoundsLoadedDelayTime = 3 * 60;
             SoundChannelMuffleInfo.Clear();
             DisposeAllBubbleChannels();
 
@@ -912,6 +977,10 @@ namespace SoundproofWalls
                     channel.FadeOutAndDispose();
                 }
             }
+
+            GameMain.SoundManager.RemoveSound(BubbleSound);
+            GameMain.SoundManager.RemoveSound(RadioBubbleSound);
+            GameMain.SoundManager.RemoveSound(HydrophoneMovementSound);
         }
 
         public static void PlayHydrophoneSounds()
@@ -1402,15 +1471,6 @@ namespace SoundproofWalls
                 return;
             }
 
-            if (!SoundsLoaded)
-            {
-                SoundsLoadedDelayTime -= 1;
-                if (SoundsLoadedDelayTime <= 0)
-                {
-                    SoundsLoaded = true;
-                }
-            }
-
             // Bubble sound stuff.
             if (GameMain.IsMultiplayer && Timing.TotalTime > LastBubbleUpdateTime + 0.2f)
             {
@@ -1481,13 +1541,13 @@ namespace SoundproofWalls
         {
             if (!Config.Enabled || __instance.GetType() != typeof(LowpassFilter)) { return true; };
 
-            if (SoundsLoaded)
+            if (frequency == 600f)
             {
-                frequency = Config.VoiceLowpassFrequency;
+                frequency = Config.GeneralLowpassFrequency;
             }
             else
             {
-                frequency = Config.GeneralLowpassFrequency;
+                frequency = Config.VoiceLowpassFrequency;
             }
             return true;
         }
@@ -2600,7 +2660,7 @@ namespace SoundproofWalls
                     {
                         slider_text = default_preset;
                     }
-                    else if (config.GeneralLowpassFrequency == 1600)
+                    else if (config.GeneralLowpassFrequency == 600)
                     {
                         slider_text = vanilla_preset;
                     }
