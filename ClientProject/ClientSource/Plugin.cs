@@ -34,8 +34,8 @@ namespace SoundproofWalls
         static float hydrophoneEfficiency = 1;
         static float HydrophoneEfficiency { get { return hydrophoneEfficiency; } set { hydrophoneEfficiency = Math.Clamp(value, 0, 1); } }
         static bool IsViewTargetPlayer;
-        public static bool EarsInWater;
-        public static bool IsWearingDivingSuit;
+        static bool EarsInWater;
+        static bool IsWearingDivingSuit;
 
         static float LastFlowPathCheckTime = 0f;
         static float LastFirePathCheckTime = 0f;
@@ -67,14 +67,13 @@ namespace SoundproofWalls
         static Dictionary<SoundChannel, Character> HydrophoneSoundChannels = new Dictionary<SoundChannel, Character>();
         static Dictionary<Sonar, HydrophoneSwitch> HydrophoneSwitches = new Dictionary<Sonar, HydrophoneSwitch>();
         static List<Sound?> SoundsToDispose = new List<Sound?>();
-        public static ThreadSafeDictionary<Client, SoundChannel?> ClientBubbleSoundChannels = new ThreadSafeDictionary<Client, SoundChannel?>();
+        static ThreadSafeDictionary<Client, SoundChannel?> ClientBubbleSoundChannels = new ThreadSafeDictionary<Client, SoundChannel?>();
 
         static readonly object pitchedSoundsLock = new object();
         static HashSet<SoundChannel> PitchedSounds = new HashSet<SoundChannel>();
 
         public void InitClient()
         {
-            // Lua reload patch
             GameMain.LuaCs.Hook.Add("loaded", "spw_loaded", (object[] args) =>
             {
                 UpdateServerConfig();
@@ -82,13 +81,6 @@ namespace SoundproofWalls
                 return null;
             });
 
-            GameMain.LuaCs.Hook.Add("client.connected", "spw_client.connected", (object[] args) =>
-            {
-                //UpdateServerConfig(); // Not needed now that the config updates every n seconds.
-                return null;
-            });
-
-            // Lua reload patch
             GameMain.LuaCs.Hook.Add("stop", "spw_stop", (object[] args) =>
             {
                 foreach (var kvp in HydrophoneSwitches)
@@ -355,13 +347,11 @@ namespace SoundproofWalls
                 if (skipProcess && Channel.Category != "voip")
                 {
                     IgnorePitch = true;
-                    Muffled = false;
                     return;
                 }
 
                 Character character = Character.Controlled;
                 Character? player = VoiceOwner?.Character;
-
                 Limb? playerHead = player?.AnimController?.GetLimb(LimbType.Head); // No need to default to mainLimb because next line.
                 Vector2 soundWorldPos = playerHead?.WorldPosition ?? GetSoundChannelPos(Channel);
                 SoundHull = soundHull ?? Hull.FindHull(soundWorldPos, player?.CurrentHull ?? character?.CurrentHull);
@@ -376,12 +366,13 @@ namespace SoundproofWalls
                 // Muffle radio comms underwater to make room for bubble sounds.
                 if (messageType == ChatMessageType.Radio)
                 {
-                    if (soundInWater && player.OxygenAvailable < 95 && !PlayerIgnoresBubbles(player.Name))
+                    bool wearingDivingGear = IsCharacterWearingDivingGear(player);
+                    bool oxygenReqMet = wearingDivingGear && player.Oxygen < 11 || !wearingDivingGear && player.OxygenAvailable < 96;
+                    if (oxygenReqMet && soundInWater && !PlayerIgnoresBubbles(player.Name))
                     {
                         Reason = MuffleReason.SoundInWater;
                         Muffled = true;
                     }
-
                     return; 
                 }
 
@@ -395,7 +386,9 @@ namespace SoundproofWalls
                     return;
                 }
 
-                Hull? listenHull = EavesdroppedHull ?? ViewTargetHull;
+                // For some reason, only when certain mods are enabled, accessing ViewTargetHull provides the wrong value.
+                // Value seems to be the hull player was in at time of reloading sounds. Works everywhere else??? Absolute mystery. We'll just use the Get method instead.
+                Hull? listenHull = EavesdroppedHull ?? GetViewTargetHull();
                 Vector2 listenPos = IsViewTargetPlayer ? character.AnimController.GetLimb(LimbType.Head)?.Position ?? character.AnimController.MainLimb.Position : LightManager.ViewTarget.Position;
                 Vector2 listenWorldPos = IsViewTargetPlayer ? character.AnimController.GetLimb(LimbType.Head)?.WorldPosition ?? character.AnimController.MainLimb.WorldPosition : LightManager.ViewTarget.WorldPosition;
 
@@ -416,7 +409,7 @@ namespace SoundproofWalls
 
                 // Gets path to sound. Returns MaxValue if no path or out of range.
                 Distance = !IgnorePath ? GetApproximateDistance(listenPos, soundPos, listenHull, SoundHull, Channel.Far) : Vector2.Distance(listenPos, soundPos);
-                
+
                 if (Distance == float.MaxValue)
                 {
                     Muffled = !IgnoreLowpass;
@@ -429,6 +422,14 @@ namespace SoundproofWalls
                 {
                     Reason = MuffleReason.NoPath;
                     Muffled = !IgnoreLowpass;
+                    return;
+                }
+
+                // Muffle the annoying vanilla exosuit sound if the player is wearing one.
+                if (character != null && IsCharacterWearingExoSuit(character) && Channel.Sound.Filename.EndsWith("WEAPONS_chargeUp.ogg"))
+                {
+                    Reason = MuffleReason.NoPath;
+                    Muffled = true;
                     return;
                 }
 
@@ -550,7 +551,7 @@ namespace SoundproofWalls
 
         public static bool ShouldReloadRoundSounds(Config newConfig) // this matters because reloading round sounds will freeze the game.
         {
-            double vanillaFreq = 1600;
+            double vanillaFreq = SoundPlayer.MuffleFilterFrequency;
             Config currentConfig = ServerConfig ?? LocalConfig;
             double currentFreq = currentConfig.Enabled ? currentConfig.GeneralLowpassFrequency : vanillaFreq;
             double newFreq = newConfig.Enabled ? newConfig.GeneralLowpassFrequency : vanillaFreq;
@@ -634,27 +635,27 @@ namespace SoundproofWalls
             SoundsToDispose.Clear();
         }
 
-        // Compatibility with my other mod, ReSound.
-        private static void StopResound(MoonSharp.Interpreter.DynValue? Resound)
+        // Compatibility with ReSound.
+        private static void StopResound(MoonSharp.Interpreter.DynValue Resound)
         {
-            if (Resound != null && Resound.Type == MoonSharp.Interpreter.DataType.Table)
+            if (Resound.Type == MoonSharp.Interpreter.DataType.Table)
             {
                 MoonSharp.Interpreter.Table resoundTable = Resound.Table;
                 MoonSharp.Interpreter.DynValue stopFunction = resoundTable.Get("StopMod");
-                if (stopFunction != null && stopFunction.Type == MoonSharp.Interpreter.DataType.Function)
+                if (stopFunction.Type == MoonSharp.Interpreter.DataType.Function)
                 {
                     GameMain.LuaCs.Lua.Call(stopFunction);
                 }
             }
         }
 
-        private static void StartResound(MoonSharp.Interpreter.DynValue? Resound)
+        private static void StartResound(MoonSharp.Interpreter.DynValue Resound)
         {
-            if (Resound != null && Resound.Type == MoonSharp.Interpreter.DataType.Table)
+            if (Resound.Type == MoonSharp.Interpreter.DataType.Table)
             {
                 MoonSharp.Interpreter.Table resoundTable = Resound.Table;
                 MoonSharp.Interpreter.DynValue startFunction = resoundTable.Get("StartMod");
-                if (startFunction != null && startFunction.Type == MoonSharp.Interpreter.DataType.Function)
+                if (startFunction.Type == MoonSharp.Interpreter.DataType.Function)
                 {
                     GameMain.LuaCs.Lua.Call(startFunction);
                 }
@@ -663,7 +664,7 @@ namespace SoundproofWalls
 
         public static void ReloadRoundSounds()
         {
-            MoonSharp.Interpreter.DynValue? Resound = GameMain.LuaCs.Lua.Globals.Get("Resound");
+            MoonSharp.Interpreter.DynValue Resound = GameMain.LuaCs.Lua.Globals.Get("Resound");
             StopResound(Resound);
 
             ReloadComponentSounds();
@@ -1084,13 +1085,11 @@ namespace SoundproofWalls
                 cam.Zoom / size, 0, 0.001f, Alignment.Center);
         }
 
-        // All sounds start as muffled by default which highlights sounds that have the dontmuffle XML attribute.
-        [HarmonyPrefix]
-        [HarmonyPriority(2000)]
+        // Replaces any usage of this method in the vanilla codebase. Returns false any time it is called.
         public static bool SPW_ShouldMuffleSounds(ref bool __result)
         {
             if (!Config.Enabled) { return true; }
-            __result = true;
+            __result = false;
             return false;
         }
 
@@ -1129,7 +1128,10 @@ namespace SoundproofWalls
                 {
                     Limb playerHead = character.AnimController.GetLimb(LimbType.Head) ?? character.AnimController.MainLimb;
                     Hull limbHull = playerHead.Hull;
-                    if (character.OxygenAvailable < 90 && SoundInWater(playerHead.Position, limbHull) && character.SpeechImpediment < 100 && !PlayerIgnoresBubbles(character.Name))
+                    bool wearingDivingGear = IsCharacterWearingDivingGear(character);
+                    bool oxygenReqMet = wearingDivingGear && character.Oxygen < 11 || !wearingDivingGear && character.OxygenAvailable < 96;
+
+                    if (oxygenReqMet && SoundInWater(playerHead.Position, limbHull) && character.SpeechImpediment < 100 && !PlayerIgnoresBubbles(character.Name))
                     {
                         GameMain.ParticleManager.CreateParticle(
                             "bubbles",
@@ -1306,6 +1308,23 @@ namespace SoundproofWalls
             return messageType;
         }
 
+        static bool IsCharacterWearingDivingGear(Character character)
+        {
+            Identifier id = new Identifier("diving");
+            Item outerItem = character.Inventory.GetItemInLimbSlot(InvSlotType.OuterClothes);
+            Item headItem = character.Inventory.GetItemInLimbSlot(InvSlotType.Head);
+
+            return (outerItem != null && outerItem.HasTag(id)) || (headItem != null && headItem.HasTag(id));
+        }
+
+        static bool IsCharacterWearingExoSuit(Character character)
+        {
+            Identifier id = new Identifier("deepdivinglarge");
+            Item outerItem = character.Inventory.GetItemInLimbSlot(InvSlotType.OuterClothes);
+
+            return outerItem != null && outerItem.HasTag(id);
+        }
+
         public static void StopBubbleSound(Client client)
         {
             if (!ClientBubbleSoundChannels.TryGetValue(client, out SoundChannel? bubbleChannel))
@@ -1343,6 +1362,9 @@ namespace SoundproofWalls
             bool soundInWater = SoundInWater(soundPos, soundHull);
             var messageType = GetMessageType(client);
 
+            bool wearingDivingGear = IsCharacterWearingDivingGear(player);
+            bool oxygenReqMet = wearingDivingGear && player.Oxygen < 11 || !wearingDivingGear && player.OxygenAvailable < 96;
+
             bool isPlaying = ClientBubbleSoundChannels.TryGetValue(client, out SoundChannel? currentBubbleChannel) && currentBubbleChannel != null;
             bool soundMatches = true;
 
@@ -1353,7 +1375,7 @@ namespace SoundproofWalls
             }
 
             // Check if bubbles should be playing.
-            if (soundMatches && soundInWater && player.OxygenAvailable < 95 && !PlayerIgnoresBubbles(player.Name))
+            if (soundMatches && soundInWater && oxygenReqMet && !PlayerIgnoresBubbles(player.Name))
             {
                 state = messageType == ChatMessageType.Radio ? PlayerBubbleSoundState.PlayRadioBubbles : PlayerBubbleSoundState.PlayLocalBubbles;
             }
@@ -1416,7 +1438,7 @@ namespace SoundproofWalls
 
             if (!SoundChannelMuffleInfo.TryGetValue(voipSound.soundChannel, out MuffleInfo muffleInfo))
             {
-                muffleInfo = new MuffleInfo(voipSound.soundChannel, soundHull: __instance.Character?.CurrentHull, voiceOwner: __instance);
+                muffleInfo = new MuffleInfo(voipSound.soundChannel, soundHull: __instance.Character?.CurrentHull, voiceOwner: __instance, messageType: GetMessageType(voipSound.client));
                 SoundChannelMuffleInfo[voipSound.soundChannel] = muffleInfo;
             }
             ProcessVoipSound(voipSound, muffleInfo);
@@ -1496,17 +1518,17 @@ namespace SoundproofWalls
 
             if (Character.Controlled == null || LightManager.ViewTarget == null || GameMain.Instance.Paused) { return; }
 
-            EavesdroppedHull = GetEavesdroppedHull();
-            IsUsingHydrophones = EavesdroppedHull == null && HydrophoneEfficiency > 0.01f && (Character.Controlled?.SelectedItem?.GetComponent<Sonar>() is Sonar sonar && HydrophoneSwitches.ContainsKey(sonar) && HydrophoneSwitches[sonar].State);
-            IsViewTargetPlayer = !Config.FocusTargetAudio || LightManager.ViewTarget as Character == Character.Controlled;
-            EarsInWater = IsViewTargetPlayer ? Character.Controlled.AnimController.HeadInWater : SoundInWater(LightManager.ViewTarget.Position, ViewTargetHull);
-            IsWearingDivingSuit = Character.Controlled?.LowPassMultiplier < 0.5f;
-
             if (Timing.TotalTime > LastViewTargetHullUpdateTime + 0.05)
             {
                 ViewTargetHull = GetViewTargetHull();
                 LastViewTargetHullUpdateTime = (float)Timing.TotalTime;
             }
+
+            EavesdroppedHull = GetEavesdroppedHull();
+            IsUsingHydrophones = EavesdroppedHull == null && HydrophoneEfficiency > 0.01f && (Character.Controlled?.SelectedItem?.GetComponent<Sonar>() is Sonar sonar && HydrophoneSwitches.ContainsKey(sonar) && HydrophoneSwitches[sonar].State);
+            IsViewTargetPlayer = !Config.FocusTargetAudio || LightManager.ViewTarget as Character == Character.Controlled;
+            EarsInWater = IsViewTargetPlayer ? Character.Controlled.AnimController.HeadInWater : SoundInWater(LightManager.ViewTarget.Position, ViewTargetHull);
+            IsWearingDivingSuit = Character.Controlled?.LowPassMultiplier < 0.5f;
 
             if (Timing.TotalTime > LastHydrophonePlayTime + 0.1)
             {
@@ -1541,7 +1563,7 @@ namespace SoundproofWalls
         {
             if (!Config.Enabled || __instance.GetType() != typeof(LowpassFilter)) { return true; };
 
-            if (frequency == 600f)
+            if (frequency == SoundPlayer.MuffleFilterFrequency)
             {
                 frequency = Config.GeneralLowpassFrequency;
             }
@@ -1583,7 +1605,7 @@ namespace SoundproofWalls
 
             if (!Config.Enabled || !RoundStarted || channel == null) { return; }
 
-            MuffleInfo muffleInfo = new MuffleInfo(channel, skipProcess: !channel.Muffled);
+            MuffleInfo muffleInfo = new MuffleInfo(channel, skipProcess: channel.Sound?.XElement?.GetAttributeBool("dontmuffle", false) ?? false);
 
             // Doesn't save the initial creation of a voipchannel muffleInfo because it doesn't have necessary details like VoiceOwner yet.
             if (channel.Category != "voip") 
@@ -1593,7 +1615,6 @@ namespace SoundproofWalls
 
             channel.Muffled = muffleInfo.Muffled;
 
-            // Could add custom Categories for avoiding this process when it's a component sound, but it doesn't really matter if everything goes through ProcessSingleSound.
             ProcessSingleSound(channel, muffleInfo);
         }
         public static bool SPW_ItemComponent_UpdateSounds(ItemComponent __instance)
@@ -1717,7 +1738,6 @@ namespace SoundproofWalls
             }
         }
 
-        //TODO merge all of these process functions into one.
         public static void ProcessSingleSound(SoundChannel channel, MuffleInfo muffleInfo)
         {
             if (muffleInfo.IgnoreAll) { return; }
@@ -2116,6 +2136,7 @@ namespace SoundproofWalls
             foreach (Gap g in startHull.ConnectedGaps)
             {
                 float distanceMultiplier = 1;
+                // For doors.
                 if (g.ConnectedDoor != null && !g.ConnectedDoor.IsBroken)
                 {
                     // Gap blocked if the door is closed or is curently closing and 90% closed.
@@ -2125,6 +2146,7 @@ namespace SoundproofWalls
                         distanceMultiplier *= distanceMultiplierFromDoors;
                     }
                 }
+                // For holes in hulls.
                 else if (g.Open <= 0.33f)
                 {
                     continue;
@@ -2496,7 +2518,7 @@ namespace SoundproofWalls
         public bool HydrophoneSwitchEnabled { get; set; } = true;
 
         // Ambience
-        public float UnsubmergedWaterAmbienceVolumeMultiplier { get; set; } = 0.3f;
+        public float UnsubmergedWaterAmbienceVolumeMultiplier { get; set; } = 0.18f;
         public float SubmergedWaterAmbienceVolumeMultiplier { get; set; } = 1.1f;
         public float HydrophoneWaterAmbienceVolumeMultiplier { get; set; } = 2f;
         public float WaterAmbienceTransitionSpeedMultiplier { get; set; } = 3.5f;
@@ -2648,6 +2670,7 @@ namespace SoundproofWalls
                 tick.ToolTip = TextManager.Get("spw_focustargetaudiotooltip").Value;
 
                 // General Lowpass Freq:
+                // The previous vanilla muffle frequency was 1600. Now it's 600 and can be accessed via SoundPlayer.MuffleFilterFrequency.
                 GUITextBlock textBlockGLF = EasySettings.TextBlock(list, string.Empty);
                 slider = EasySettings.Slider(list.Content, 10, 1600, (float)config.GeneralLowpassFrequency, value =>
                 {
@@ -2660,7 +2683,7 @@ namespace SoundproofWalls
                     {
                         slider_text = default_preset;
                     }
-                    else if (config.GeneralLowpassFrequency == 600)
+                    else if (config.GeneralLowpassFrequency == SoundPlayer.MuffleFilterFrequency)
                     {
                         slider_text = vanilla_preset;
                     }
@@ -2670,6 +2693,7 @@ namespace SoundproofWalls
                 slider.ToolTip = TextManager.Get("spw_lowpassfrequencytooltip");
 
                 // Voice Lowpass Freq:
+                // The default value of 800 is found in the VoipSound class under the initialization of the muffleFilters list.
                 GUITextBlock textBlockVLF = EasySettings.TextBlock(list, string.Empty);
                 slider = EasySettings.Slider(list.Content, 10, 800, (float)config.VoiceLowpassFrequency, value =>
                 {
