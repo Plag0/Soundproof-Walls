@@ -66,7 +66,7 @@ namespace SoundproofWalls
         public static ThreadSafeDictionary<SoundChannel, MuffleInfo> SoundChannelMuffleInfo = new ThreadSafeDictionary<SoundChannel, MuffleInfo>();
         static Dictionary<SoundChannel, Character> HydrophoneSoundChannels = new Dictionary<SoundChannel, Character>();
         static Dictionary<Sonar, HydrophoneSwitch> HydrophoneSwitches = new Dictionary<Sonar, HydrophoneSwitch>();
-        static List<Sound?> SoundsToDispose = new List<Sound?>();
+        static HashSet<Sound> SoundsToDispose = new HashSet<Sound>();
         static ThreadSafeDictionary<Client, SoundChannel?> ClientBubbleSoundChannels = new ThreadSafeDictionary<Client, SoundChannel?>();
 
         static readonly object pitchedSoundsLock = new object();
@@ -103,13 +103,13 @@ namespace SoundproofWalls
                 return null;
             });
 
-            //StartRound postfix patch
+            // StartRound postfix patch
             harmony.Patch(
                 typeof(GameSession).GetMethod(nameof(GameSession.StartRound), new Type[] { typeof(LevelData), typeof(bool), typeof(SubmarineInfo), typeof(SubmarineInfo) }),
                 null,
                 new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_StartRound))));
 
-            //EndRound postfix patch
+            // EndRound postfix patch
             harmony.Patch(
                 typeof(GameSession).GetMethod(nameof(GameSession.EndRound)),
                 null,
@@ -120,18 +120,23 @@ namespace SoundproofWalls
                 typeof(BiQuad).GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, new Type[] { typeof(int), typeof(double), typeof(double), typeof(double) }),
                 new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_BiQuad))));
 
-            //PlaySound prefix patch
+            // SoundPlayer_PlaySound prefix patch
             harmony.Patch(
                 typeof(SoundPlayer).GetMethod(nameof(SoundPlayer.PlaySound), new Type[] { typeof(Sound), typeof(Vector2), typeof(float), typeof(float), typeof(float), typeof(Hull), typeof(bool), typeof(bool) }),
-                new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_PlaySound))));
+                new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_SoundPlayer_PlaySound))));
 
-            //WaterFlowSounds postfix patch
+            // ItemComponent_PlaySound prefix patch
+            harmony.Patch(
+                typeof(ItemComponent).GetMethod(nameof(ItemComponent.PlaySound), BindingFlags.NonPublic | BindingFlags.Instance, new Type[] { typeof(ItemSound), typeof(Vector2) }),
+                new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_ItemComponent_PlaySound))));
+
+            // WaterFlowSounds postfix patch
             harmony.Patch(
                 typeof(SoundPlayer).GetMethod(nameof(SoundPlayer.UpdateWaterFlowSounds), BindingFlags.Static | BindingFlags.NonPublic),
                 null,
                 new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_UpdateWaterFlowMuffling))));
 
-            //FireSounds postfix patch
+            // FireSounds postfix patch
             harmony.Patch(
                 typeof(SoundPlayer).GetMethod(nameof(SoundPlayer.UpdateFireSounds), BindingFlags.Static | BindingFlags.NonPublic),
                 null,
@@ -386,9 +391,9 @@ namespace SoundproofWalls
                     return;
                 }
 
-                // For some reason, only when certain mods are enabled, accessing ViewTargetHull provides the wrong value.
-                // Value seems to be the hull player was in at time of reloading sounds. Works everywhere else??? Absolute mystery. We'll just use the Get method instead.
-                Hull? listenHull = EavesdroppedHull ?? GetViewTargetHull();
+                // For some reason, only when a Lua mod patches the SoundChannel ctor, accessing ViewTargetHull provides an old static value.
+                // Value seems to be the hull player was in at time of reloading sounds. Works everywhere else??? Absolute mystery. Using the Get method instead works.
+                Hull? listenHull = EavesdroppedHull ?? ViewTargetHull; //GetViewTargetHull();
                 Vector2 listenPos = IsViewTargetPlayer ? character.AnimController.GetLimb(LimbType.Head)?.Position ?? character.AnimController.MainLimb.Position : LightManager.ViewTarget.Position;
                 Vector2 listenWorldPos = IsViewTargetPlayer ? character.AnimController.GetLimb(LimbType.Head)?.WorldPosition ?? character.AnimController.MainLimb.WorldPosition : LightManager.ViewTarget.WorldPosition;
 
@@ -526,9 +531,6 @@ namespace SoundproofWalls
             {
                 if (client.IsOwner || client.HasPermission(ClientPermissions.Ban))
                 {
-                    // Give up if you're not the 1st candidate. Note: This has been changed so all admins send their configs to the server.
-                    //if (client.SessionId != GameMain.Client.SessionId) { return; }
-
                     if (localConfig.SyncSettings)
                     {
                         string data = DataAppender.AppendData(JsonSerializer.Serialize(localConfig), manualUpdate, GameMain.Client.SessionId);
@@ -559,7 +561,6 @@ namespace SoundproofWalls
             return currentFreq != newFreq;
         }
 
-        // TODO I don't like this but it might be the best way.
         public static bool ShouldClearMuffleInfo(Config newConfig)
         {
             Config currentConfig = ServerConfig ?? LocalConfig;
@@ -573,10 +574,8 @@ namespace SoundproofWalls
                     !currentConfig.BubbleIgnoredNames.SetEquals(newConfig.SubmersionIgnoredSounds);
         }
 
-        private static Sound? GetNewSound(Sound? oldSound)
+        private static Sound GetNewSound(Sound oldSound)
         {
-            if (oldSound == null) { return null; }
-
             if (oldSound.XElement != null)
             {
                 return GameMain.SoundManager.LoadSound(oldSound.XElement, oldSound.Stream, oldSound.Filename);
@@ -589,6 +588,8 @@ namespace SoundproofWalls
 
         private static void ReloadComponentSounds()
         {
+            Dictionary<string, Sound> updatedSounds = new Dictionary<string, Sound>();
+
             foreach (Item item in Item.ItemList)
             {
                 foreach (ItemComponent itemComponent in item.Components)
@@ -599,38 +600,50 @@ namespace SoundproofWalls
                         foreach (ItemSound itemSound in kvp.Value)
                         {
                             Sound? oldSound = itemSound.RoundSound.Sound;
-                            Sound? newSound = GetNewSound(oldSound);
+                            Sound? newSound = null;
+
+                            if (oldSound != null && !updatedSounds.TryGetValue(oldSound.Filename, out newSound))
+                            {
+                                newSound = GetNewSound(oldSound);
+                                updatedSounds.Add(oldSound.Filename, newSound);
+                            }
+
                             itemSound.RoundSound.Sound = newSound;
-                            SoundsToDispose.Add(oldSound);
+                            if (oldSound != null) SoundsToDispose.Add(oldSound);
                         }
                     }
-
                 }
             }
         }
 
         private static void ReloadStatusEffectSounds()
         {
+            Dictionary<string, Sound> updatedSounds = new Dictionary<string, Sound>();
+
             foreach (StatusEffect statusEffect in StatusEffect.ActiveLoopingSounds)
             {
                 foreach (RoundSound roundSound in statusEffect.Sounds)
                 {
-                    Sound? newSound = GetNewSound(roundSound.Sound);
+                    Sound? oldSound = roundSound.Sound;
+                    Sound? newSound = null;
+
+                    if (oldSound != null && !updatedSounds.TryGetValue(oldSound.Filename, out newSound))
+                    {
+                        newSound = GetNewSound(oldSound);
+                        updatedSounds.Add(oldSound.Filename, newSound);
+                    }
+
                     roundSound.Sound = newSound;
-                    SoundsToDispose.Add(roundSound.Sound);
+                    if (oldSound != null) SoundsToDispose.Add(oldSound);
                 }
             }
         }
 
         private static void ClearSoundsToDispose()
         {
-            foreach (Sound? sound in SoundsToDispose)
+            foreach (Sound sound in SoundsToDispose)
             {
-                if (sound != null)
-                {
-                    GameMain.SoundManager.RemoveSound(sound);
-                    sound.Dispose();
-                }
+                sound.Dispose();
             }
             SoundsToDispose.Clear();
         }
@@ -1574,7 +1587,39 @@ namespace SoundproofWalls
             return true;
         }
 
-        public static bool SPW_PlaySound(ref Sound sound, ref float? range, ref Vector2 position, ref Hull hullGuess)
+        // Stop the ItemComp PlaySound method from running if the itemSound.Range is too short, meaning the loopingSoundChannel is null.
+        public static bool SPW_ItemComponent_PlaySound(ref ItemSound itemSound, ref Vector2 position)
+        {
+            if (!Config.Enabled || Config.SoundRangeMultiplier >= 1 || !RoundStarted) { return true; }
+
+            float range = itemSound.Range;
+
+            if (!IsUsingHydrophones)
+            {
+                range *= Config.SoundRangeMultiplier;
+            }
+            else
+            {
+                Hull soundHull = Hull.FindHull(position, Character.Controlled?.CurrentHull, true);
+                if (soundHull == null || soundHull.Submarine != Character.Controlled?.Submarine)
+                {
+                    range += Config.HydrophoneSoundRange;
+                }
+                else
+                {
+                    range *= Config.SoundRangeMultiplier;
+                }
+            }
+
+            if (Vector2.DistanceSquared(new Vector2(GameMain.SoundManager.ListenerPosition.X, GameMain.SoundManager.ListenerPosition.Y), position) > range * range)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public static bool SPW_SoundPlayer_PlaySound(ref Sound sound, ref float? range, ref Vector2 position, ref Hull hullGuess)
         {
             if (!Config.Enabled || !RoundStarted || sound == null) { return true; }
 
