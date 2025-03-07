@@ -55,6 +55,10 @@
     <Reference Include="XNATypes">
       <HintPath>..\Refs\XNATypes.dll</HintPath>
     </Reference>
+	<Reference Include="NVorbis">
+		<HintPath>..\Refs\NVorbis.dll</HintPath>
+	</Reference>
+	  
   </ItemGroup>
 
   <PropertyGroup>

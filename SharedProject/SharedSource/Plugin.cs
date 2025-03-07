@@ -2,8 +2,9 @@
 using Barotrauma;
 using HarmonyLib;
 
-[assembly: IgnoresAccessChecksTo(assemblyName: "Barotrauma")]
-[assembly: IgnoresAccessChecksTo(assemblyName: "DedicatedServer")]
+[assembly: IgnoresAccessChecksTo("Barotrauma")]
+[assembly: IgnoresAccessChecksTo("DedicatedServer")]
+[assembly: IgnoresAccessChecksTo("BarotraumaCore")]
 
 namespace SoundproofWalls
 {
@@ -12,6 +13,8 @@ namespace SoundproofWalls
         readonly Harmony harmony = new Harmony("plag.barotrauma.soundproofwalls");
         public void Initialize()
         {
+            //harmony.PatchAll(); Not using annotations.
+
 #if SERVER
             InitServer();
 #elif CLIENT
