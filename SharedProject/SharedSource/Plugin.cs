@@ -13,6 +13,10 @@ namespace SoundproofWalls
         readonly Harmony harmony = new Harmony("plag.barotrauma.soundproofwalls");
         public void Initialize()
         {
+            // Compatibility with Lua mods that mess with with Sound objects.
+            LuaUserData.RegisterType("SoundproofWalls.ExtendedOggSound");
+            LuaUserData.RegisterType("SoundproofWalls.ExtendedSoundBuffers");
+
             //harmony.PatchAll(); Not using annotations.
 
 #if SERVER
@@ -60,7 +64,14 @@ namespace SoundproofWalls
         
         public void Dispose()
         {
+            LuaCsLogger.Log("Soundproof Walls: Stop hook started running.");
+
+#if CLIENT
+            ShutdownClient();
+#endif
             harmony.UnpatchAll();
+
+            LuaCsLogger.Log("Soundproof Walls: Stop hook stopped running.");
         }
     }
 

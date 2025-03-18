@@ -26,6 +26,8 @@
 	<spw_soundrangetooltip>Range of non-component sounds</spw_soundrangetooltip>
 	<spw_voicerange>Voice Range</spw_voicerange>
 	<spw_radiorange>Radio Range</spw_radiorange>
+	<spw_muffledsoundpitch>Pitch Strength</spw_muffledsoundpitch>
+	<spw_muffledsoundpitchtooltip>The overall strength of the distance-based pitch shifting effect for muffled sounds (does not apply to looping sounds).</spw_muffledsoundpitchtooltip>
 	
 	<spw_volumesettings>Volume Settings</spw_volumesettings>
 	<spw_muffledvoicevolume>Muffled Voice Volume</spw_muffledvoicevolume>
@@ -86,11 +88,9 @@
 	<spw_mufflefiresounds>Muffle Fire Sounds</spw_mufflefiresounds>
 	<spw_mufflefiresoundstooltip>Toggle the muffling of fire sounds</spw_mufflefiresoundstooltip>
 	<spw_divingsuitpitch>Diving Suit Pitch</spw_divingsuitpitch>
-	<spw_divingsuitpitchtooltip>The pitch of sounds when wearing a diving suit (stacks additively)</spw_divingsuitpitchtooltip>
+	<spw_divingsuitpitchtooltip>The pitch of sounds when wearing a diving suit (stacks additively with other pitch effects)</spw_divingsuitpitchtooltip>
 	<spw_submergedpitch>Submerged Pitch</spw_submergedpitch>
-	<spw_submergedpitchtooltip>The pitch of sounds when the listener is submerged (stacks additively)</spw_submergedpitchtooltip>
-	<spw_muffledsoundpitch>Muffled Sound Pitch</spw_muffledsoundpitch>
-	<spw_muffledsoundpitchtooltip>The pitch of non-looping sounds when they are muffled (stacks additively)</spw_muffledsoundpitchtooltip>
+	<spw_submergedpitchtooltip>The pitch of sounds when the listener is submerged (stacks additively with other pitch effects)</spw_submergedpitchtooltip>
 	<spw_muffledcomponentpitch>Muffled Component Pitch</spw_muffledcomponentpitch>
 	<spw_unmuffledcomponentpitch>Unmuffled Component Pitch</spw_unmuffledcomponentpitch>
 	<spw_muffledvoicepitch>Muffled Voice Pitch</spw_muffledvoicepitch>

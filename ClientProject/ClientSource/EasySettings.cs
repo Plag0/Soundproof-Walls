@@ -13,7 +13,8 @@ namespace SoundproofWalls
 
     public static class EasySettings
     {
-        private static bool ShouldUpdateServerConfig = false;
+        public static SoundproofWalls? SPW;
+        private static bool ShouldUpdateConfig = false;
 
         public static Config NewLocalConfig = ConfigManager.CloneConfig(SoundproofWalls.LocalConfig);
 
@@ -41,35 +42,33 @@ namespace SoundproofWalls
                     };
                 }
             }
-            else // On menu close
+            else // On menu close. Updates configs in multiplayer/singleplayer.
             {
-                if (ShouldUpdateServerConfig)
+                if (!ShouldUpdateConfig) { return; }
+
+                ShouldUpdateConfig = false;
+                Config oldConfig = SoundproofWalls.Config;
+                Config newConfig = NewLocalConfig;
+
+                SoundproofWalls.LocalConfig = ConfigManager.CloneConfig(newConfig);
+
+                // Multiplayer config update. Only admins can call this function.
+                if (GameMain.IsMultiplayer && (GameMain.Client.IsServerOwner || GameMain.Client.HasPermission(ClientPermissions.Ban)))
                 {
-                    Config oldConfig = SoundproofWalls.Config;
-                    Config newConfig = NewLocalConfig;
+                    SoundproofWalls.UploadServerConfig(manualUpdate: true);
+                }
 
-                    SoundproofWalls.LocalConfig = ConfigManager.CloneConfig(newConfig);
-
-                    LuaCsLogger.Log($"oldConfig: {oldConfig.DivingSuitLowpassFrequency} newConfig: {newConfig.DivingSuitLowpassFrequency}");
-
-                    // Only admins can call this function.
-                    if (GameMain.IsMultiplayer && (GameMain.Client.IsServerOwner || GameMain.Client.HasPermission(ClientPermissions.Ban)))
+                // Singleplayer/nosync config update.
+                if (!GameMain.IsMultiplayer || SoundproofWalls.ServerConfig == null)
+                {
+                    if (SPW != null)
                     {
-                        SoundproofWalls.UpdateServerConfig(manualUpdate: true);
+                        SPW.UpdateConfig(newConfig, oldConfig);
                     }
-
-                    // Dump muffle info if advanced settings are changed in singleplayer/nosync
-                    if (!GameMain.IsMultiplayer || SoundproofWalls.ServerConfig == null)
+                    else
                     {
-                        SoundproofWalls.SoundChannelMuffleInfo.Clear();
-
-                        // Reload sounds for singleplayer/nosync.
-                        bool shouldReloadSounds = SoundproofWalls.ShouldReloadSounds(newConfig: newConfig, oldConfig: oldConfig);
-                        if (shouldReloadSounds) { SoundproofWalls.ReloadSounds(); }
+                        LuaCsLogger.LogError("Instance of Soundproof Walls not found in EasySettings");
                     }
-
-
-                    ShouldUpdateServerConfig = false;
                 }
             }
         }
@@ -89,7 +88,7 @@ namespace SoundproofWalls
             tickBox.Selected = state ?? true;
             tickBox.OnSelected = (sender) =>
             {
-                ShouldUpdateServerConfig = true;
+                ShouldUpdateConfig = true;
                 onSelected(tickBox.State == GUIComponent.ComponentState.Selected);
                 return true;
             };
@@ -106,7 +105,7 @@ namespace SoundproofWalls
             scrollBar.OnMoved = (sender, args) =>
             {
                 onSelected(scrollBar.BarScrollValue);
-                ShouldUpdateServerConfig = startValue != Menu.RoundToNearestMultiple(scrollBar.BarScrollValue, multiple);
+                ShouldUpdateConfig = startValue != Menu.RoundToNearestMultiple(scrollBar.BarScrollValue, multiple);
                 return true;
             };
             scrollBar.RectTransform.RelativeOffset = new Vector2(0.01f, 0);
@@ -140,7 +139,7 @@ namespace SoundproofWalls
                 Vector2 textSize = textBox.Font.MeasureString(textBox.WrappedText);
                 textBox.RectTransform.NonScaledSize = new Point(textBox.RectTransform.NonScaledSize.X, Math.Max(listBox.Content.Rect.Height, (int)textSize.Y + 10));
                 listBox.UpdateScrollBarSize();
-                ShouldUpdateServerConfig = startValue != textBox.Text;
+                ShouldUpdateConfig = startValue != textBox.Text;
                 return true;
             };
 
@@ -192,7 +191,7 @@ namespace SoundproofWalls
             {
                 NewLocalConfig = new Config();
                 ConfigManager.SaveConfig(NewLocalConfig);
-                ShouldUpdateServerConfig = true;
+                ShouldUpdateConfig = true;
                 GUI.TogglePauseMenu();
                 return true;
             };

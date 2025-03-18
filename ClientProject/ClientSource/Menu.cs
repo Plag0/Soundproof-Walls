@@ -132,6 +132,10 @@ namespace SoundproofWalls
                 slider = EasySettings.Slider(list.Content, 10, SoundproofWalls.VANILLA_VOIP_LOWPASS_FREQUENCY, (float)config.VoiceLowpassFrequency, value =>
                 {
                     value = RoundToNearestMultiple(value, 10);
+
+                    // Prevents our BiQuad ctor from recieving a confusing frequency number used by the vanilla game.
+                    if (value == SoundPlayer.MuffleFilterFrequency) { value += 10; }
+
                     config.VoiceLowpassFrequency = value;
                     ConfigManager.SaveConfig(config);
 
@@ -217,6 +221,25 @@ namespace SoundproofWalls
                 });
                 textBlockRR.Text = $"{TextManager.Get("spw_radiorange").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.RadioRangeMultiplier))}";
                 slider.ToolTip = TextManager.Get("spw_radiorangetooltip");
+
+                // Muffled Pitch Strength Multiplier
+                GUITextBlock textBlockMSPM = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.Slider(list.Content, 0, 1, config.MuffledPitchStrengthMultiplier, value =>
+                {
+                    float realvalue = RoundToNearestMultiple(value, 0.01f);
+                    float displayValue = RoundToNearestMultiple(value * 100, 1);
+                    config.MuffledPitchStrengthMultiplier = realvalue;
+                    ConfigManager.SaveConfig(config);
+
+                    slider_text = string.Empty;
+                    if (config.MuffledPitchStrengthMultiplier == defaultConfig.MuffledPitchStrengthMultiplier)
+                    {
+                        slider_text = default_preset;
+                    }
+                    textBlockMSPM.Text = $"{TextManager.Get("spw_muffledsoundpitch").Value}: {displayValue}% {slider_text}";
+                });
+                textBlockMSPM.Text = $"{TextManager.Get("spw_muffledsoundpitch").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.MuffledPitchStrengthMultiplier))}";
+                slider.ToolTip = TextManager.Get("spw_muffledsoundpitchtooltip");
 
                 // Volume Settings:
                 EasySettings.TextBlock(list, TextManager.Get("spw_volumesettings").Value, y: 0.1f, size: 1.3f, color: Color.LightYellow);
@@ -893,25 +916,6 @@ namespace SoundproofWalls
                 });
                 textBlockSPM.Text = $"{TextManager.Get("spw_submergedpitch").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.SubmergedPitchMultiplier))}";
                 slider.ToolTip = TextManager.Get("spw_submergedpitchtooltip");
-
-                // Muffled Sound Pitch Multiplier
-                GUITextBlock textBlockMSPM = EasySettings.TextBlock(list, string.Empty);
-                slider = EasySettings.Slider(list.Content, 0.25f, 4, config.MuffledSoundPitchMultiplier, value =>
-                {
-                    float realvalue = RoundToNearestMultiple(value, 0.01f);
-                    float displayValue = RoundToNearestMultiple(value * 100, 1);
-                    config.MuffledSoundPitchMultiplier = realvalue;
-                    ConfigManager.SaveConfig(config);
-
-                    slider_text = string.Empty;
-                    if (config.MuffledSoundPitchMultiplier == defaultConfig.MuffledSoundPitchMultiplier)
-                    {
-                        slider_text = default_preset;
-                    }
-                    textBlockMSPM.Text = $"{TextManager.Get("spw_muffledsoundpitch").Value}: {displayValue}% {slider_text}";
-                });
-                textBlockMSPM.Text = $"{TextManager.Get("spw_muffledsoundpitch").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.MuffledSoundPitchMultiplier))}";
-                slider.ToolTip = TextManager.Get("spw_muffledsoundpitchtooltip");
 
                 // Muffled Component Pitch Multiplier
                 GUITextBlock textBlockMCPM = EasySettings.TextBlock(list, string.Empty);

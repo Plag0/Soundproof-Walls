@@ -31,16 +31,17 @@ namespace SoundproofWalls
         public bool SyncSettings { get; set; } = true;
         public bool TalkingRagdolls { get; set; } = true;
         public bool FocusTargetAudio { get; set; } = false;
-        public double GeneralLowpassFrequency { get; set; } = 320f;
+        public double GeneralLowpassFrequency { get; set; } = 300f;
         public double DivingSuitLowpassFrequency { get; set; } = 1200;
-        public double VoiceLowpassFrequency { get; set; } = 160f;
+        public double VoiceLowpassFrequency { get; set; } = 150f;
         public float SoundRangeMultiplier { get; set; } = 1.8f;
         public float VoiceRangeMultiplier { get; set; } = 0.80f;
         public float RadioRangeMultiplier { get; set; } = 0.75f;
+        public float MuffledPitchStrengthMultiplier { get; set; } = 1f;
 
         // Volume
-        public float MuffledSoundVolumeMultiplier { get; set; } = 0.65f;
-        public float MuffledVoiceVolumeMultiplier { get; set; } = 0.80f;
+        public float MuffledSoundVolumeMultiplier { get; set; } = 0.8f;
+        public float MuffledVoiceVolumeMultiplier { get; set; } = 0.8f;
         public float MuffledComponentVolumeMultiplier { get; set; } = 0.75f;
         public float SubmergedVolumeMultiplier { get; set; } = 3f;
         public float UnmuffledComponentVolumeMultiplier { get; set; } = 1f;
@@ -49,18 +50,18 @@ namespace SoundproofWalls
         public string EavesdroppingBind { get; set; } = "SecondaryMouse";
         public float EavesdroppingSoundVolumeMultiplier { get; set; } = 0.75f;
         public float EavesdroppingVoiceVolumeMultiplier { get; set; } = 0.70f;
-        public float EavesdroppingPitchMultiplier { get; set; } = 0.85f;
-        public int EavesdroppingMaxDistance { get; set; } = 40; // distance in cm from door
+        public float EavesdroppingPitchMultiplier { get; set; } = 0.9f;
+        public int EavesdroppingMaxDistance { get; set; } = 40; // Max distance in cm from gap.
 
         // Hydrophone monitoring
-        public float HydrophoneSoundRange { get; set; } = 7500; // range in cm
+        public float HydrophoneSoundRange { get; set; } = 7500; // In cm.
         public float HydrophoneVolumeMultiplier { get; set; } = 1.1f;
-        public float HydrophonePitchMultiplier { get; set; } = 0.75f;
+        public float HydrophonePitchMultiplier { get; set; } = 0.8f;
         public bool HydrophoneLegacySwitch { get; set; } = false;
         public bool HydrophoneSwitchEnabled { get; set; } = true;
 
         // Ambience
-        public float UnsubmergedWaterAmbienceVolumeMultiplier { get; set; } = 0.18f;
+        public float UnsubmergedWaterAmbienceVolumeMultiplier { get; set; } = 0.2f;
         public float SubmergedWaterAmbienceVolumeMultiplier { get; set; } = 1.1f;
         public float HydrophoneWaterAmbienceVolumeMultiplier { get; set; } = 2f;
         public float WaterAmbienceTransitionSpeedMultiplier { get; set; } = 3.5f;
@@ -139,9 +140,8 @@ namespace SoundproofWalls
         public bool MuffleDivingSuits { get; set; } = true;
         public bool MuffleExoSuitSound { get; set; } = true; // Muffles the sound of the exo suit moving when wearing it.
         public bool EstimatePathToFakeSounds { get; set; } = false;
-        public float MuffledSoundPitchMultiplier { get; set; } = 1f;
         public float DivingSuitPitchMultiplier { get; set; } = 1f;
-        public float SubmergedPitchMultiplier { get; set; } = 0.9f;
+        public float SubmergedPitchMultiplier { get; set; } = 1f;
         public float MuffledVoicePitchMultiplier { get; set; } = 1f;
         public float UnmuffledVoicePitchMultiplier { get; set; } = 1f;
         public float MuffledComponentPitchMultiplier { get; set; } = 1f;
