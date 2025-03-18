@@ -203,11 +203,6 @@ namespace SoundproofWalls
                 typeof(SoundChannel).GetProperty(nameof(SoundChannel.Muffled)).GetSetMethod(),
                 new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_SoundChannel_SetMuffled_Prefix))));
 
-            // BiQuad prefix patch. Used for changing the muffle frequency if using standard OggSounds.
-            harmony.Patch(
-                typeof(BiQuad).GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, new Type[] { typeof(int), typeof(double), typeof(double), typeof(double) }),
-                new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_BiQuad))));
-
             // VoipSound ApplyFilters prefix patch. Assigns muffle filters and processes gain & pitch.
             harmony.Patch(
                 typeof(VoipSound).GetMethod(nameof(VoipSound.ApplyFilters), BindingFlags.Public | BindingFlags.Instance, new Type[] { typeof(short[]), typeof(int) }),
