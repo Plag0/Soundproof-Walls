@@ -19,6 +19,7 @@ namespace SoundproofWalls
         public uint AlBuffer { get; private set; } = 0;
         public uint AlNormMuffledBuffer { get; private set; } = 0;
         public uint AlSuitMuffledBuffer { get; private set; } = 0;
+        public uint AlEavesdroppingMuffledBuffer { get; private set; } = 0;
 
         public ExtendedSoundBuffers(Sound sound) { this.sound = sound; }
         public void Dispose()
@@ -44,9 +45,17 @@ namespace SoundproofWalls
                     bufferPool.Add(AlSuitMuffledBuffer);
                 }
             }
+            if (AlEavesdroppingMuffledBuffer != 0)
+            {
+                lock (bufferPool)
+                {
+                    bufferPool.Add(AlEavesdroppingMuffledBuffer);
+                }
+            }
             AlBuffer = 0;
             AlNormMuffledBuffer = 0;
             AlSuitMuffledBuffer = 0;
+            AlEavesdroppingMuffledBuffer = 0;
         }
 
         public static void ClearPool()
@@ -65,7 +74,7 @@ namespace SoundproofWalls
             int alError;
             lock (bufferPool)
             {
-                while (bufferPool.Count < 3 && BuffersGenerated < MaxBuffers)
+                while (bufferPool.Count < 4 && BuffersGenerated < MaxBuffers)
                 {
                     Al.GenBuffer(out uint newBuffer);
                     alError = Al.GetError();
@@ -90,7 +99,7 @@ namespace SoundproofWalls
                     }
                 }
 
-                if (bufferPool.Count >= 3)
+                if (bufferPool.Count >= 4)
                 {
                     AlBuffer = bufferPool.First();
                     bufferPool.Remove(AlBuffer);
@@ -98,6 +107,8 @@ namespace SoundproofWalls
                     bufferPool.Remove(AlNormMuffledBuffer);
                     AlSuitMuffledBuffer = bufferPool.First();
                     bufferPool.Remove(AlSuitMuffledBuffer);
+                    AlEavesdroppingMuffledBuffer = bufferPool.First();
+                    bufferPool.Remove(AlEavesdroppingMuffledBuffer);
                     return true;
                 }
             }
@@ -123,9 +134,11 @@ namespace SoundproofWalls
                 AlBuffer = otherSound.Buffers.AlBuffer;
                 AlNormMuffledBuffer = otherSound.Buffers.AlNormMuffledBuffer;
                 AlSuitMuffledBuffer = otherSound.Buffers.AlSuitMuffledBuffer;
+                AlEavesdroppingMuffledBuffer = otherSound.Buffers.AlEavesdroppingMuffledBuffer;
                 otherSound.Buffers.AlBuffer = 0;
                 otherSound.Buffers.AlNormMuffledBuffer = 0;
                 otherSound.Buffers.AlSuitMuffledBuffer = 0;
+                otherSound.Buffers.AlEavesdroppingMuffledBuffer = 0;
 
                 // For performance reasons, sift the current sound to
                 // the end of the loadedSounds list, that way it'll
@@ -144,6 +157,10 @@ namespace SoundproofWalls
                 if (!Al.IsBuffer(AlSuitMuffledBuffer))
                 {
                     throw new Exception(sound.Filename + " has an invalid suit muffled buffer!");
+                }
+                if (!Al.IsBuffer(AlEavesdroppingMuffledBuffer))
+                {
+                    throw new Exception(sound.Filename + " has an invalid eavesdropping muffled buffer!");
                 }
 
                 return true;

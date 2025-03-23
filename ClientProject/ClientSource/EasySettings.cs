@@ -96,7 +96,7 @@ namespace SoundproofWalls
             return tickBox;
         }
 
-        public static GUIScrollBar Slider(GUIFrame parent, float min, float max, float? value, Action<float> onSelected, float multiple = 0.01f, bool reloadRoundSounds = false)
+        public static GUIScrollBar Slider(GUIFrame parent, float min, float max, float? value, Action<float> onSelected, float multiple = 0.01f)
         {
             GUIScrollBar scrollBar = new GUIScrollBar(new RectTransform(new Vector2(1f, 0.1f), parent.RectTransform), 0.1f, style: "GUISlider");
             scrollBar.Range = new Vector2(min, max);
@@ -110,6 +110,49 @@ namespace SoundproofWalls
             };
             scrollBar.RectTransform.RelativeOffset = new Vector2(0.01f, 0);
             return scrollBar;
+        }
+
+        public static GUIScrollBar LogSlider(GUIFrame parent, float logMin, float logMax, float? value, Action<float> onSelected, float multiple = 0.01f)
+        {
+            // Convert the limits to log space
+            float logMinValue = (float)Math.Log10(logMin);
+            float logMaxValue = (float)Math.Log10(logMax);
+
+            // Create the slider with linear range in log space
+            GUIScrollBar scrollBar = new GUIScrollBar(new RectTransform(new Vector2(1f, 0.1f), parent.RectTransform), 0.1f, style: "GUISlider");
+            scrollBar.Range = new Vector2(logMinValue, logMaxValue);
+
+            // Set initial value in log space
+            float initialValue = value ?? (float)Math.Pow(10, (logMinValue + logMaxValue) / 2);
+            float initialLogValue = (float)Math.Log10(initialValue);
+            scrollBar.BarScrollValue = initialLogValue;
+
+            // Store the actual starting value (not the log of it)
+            float startValue = initialValue;
+
+            scrollBar.OnMoved = (sender, args) =>
+            {
+                // Convert back from log space to normal space
+                float actualValue = (float)Math.Pow(10, scrollBar.BarScrollValue);
+
+                // Round the actual value for consistent comparison
+                float roundedValue = Menu.RoundToNearestMultiple(actualValue, multiple);
+
+                onSelected(roundedValue);
+
+                ShouldUpdateConfig = Math.Abs(startValue - roundedValue) > 0.001f;
+
+                LuaCsLogger.Log($"start value: {startValue} new value: {roundedValue} should update? {ShouldUpdateConfig}");
+                return true;
+            };
+
+            scrollBar.RectTransform.RelativeOffset = new Vector2(0.01f, 0);
+            return scrollBar;
+        }
+
+        public static float GetConvertedValue(this GUIScrollBar scrollBar)
+        {
+            return (float)Math.Pow(10, scrollBar.BarScrollValue);
         }
 
         public static GUITextBlock TextBlock(GUIListBox list, string text, float x = 1f, float y = 0.05f, float size = 1, Color? color = null)
@@ -126,19 +169,22 @@ namespace SoundproofWalls
             return textBlock;
         }
 
-        public static GUITextBox MultiLineTextBox(RectTransform rectTransform, string text, float? height)
+        public static GUITextBox MultiLineTextBox(RectTransform rectTransform, string text, float? height = null)
         {
-            GUIListBox listBox = new GUIListBox(new RectTransform(new Vector2(1, height ?? 0.2f), rectTransform));
+            GUIListBox listBox = new GUIListBox(new RectTransform(new Vector2(1, height ?? 1), rectTransform));
             GUITextBox textBox = new GUITextBox(new RectTransform(new Vector2(1, 1), listBox.Content.RectTransform), text, wrap: true, style: "GUITextBoxNoBorder");
-
-            textBox.OnSelected += (sender, key) => { UpdateMessageScrollFromCaret(textBox, listBox); };
+            listBox.RectTransform.NonScaledSize = new Point(listBox.RectTransform.NonScaledSize.X, (int)listBox.Font.MeasureString(textBox.WrappedText).Y + 30);
+            listBox.ScrollBarEnabled = false;
+            //textBox.OnSelected += (sender, key) => { UpdateMessageScrollFromCaret(textBox, listBox); };
 
             string startValue = text;
             textBox.OnTextChangedDelegate = (sender, e) =>
             {
                 Vector2 textSize = textBox.Font.MeasureString(textBox.WrappedText);
-                textBox.RectTransform.NonScaledSize = new Point(textBox.RectTransform.NonScaledSize.X, Math.Max(listBox.Content.Rect.Height, (int)textSize.Y + 10));
-                listBox.UpdateScrollBarSize();
+                listBox.RectTransform.NonScaledSize = new Point(listBox.RectTransform.NonScaledSize.X, (int)listBox.Font.MeasureString(textBox.WrappedText).Y + 30);
+                textBox.RectTransform.NonScaledSize = new Point(textBox.RectTransform.NonScaledSize.X, Math.Max(listBox.Content.Rect.Height, (int)textSize.Y + 15));
+                //listBox.UpdateScrollBarSize();
+                textBox.SetText(textBox.Text, store: false);
                 ShouldUpdateConfig = startValue != textBox.Text;
                 return true;
             };

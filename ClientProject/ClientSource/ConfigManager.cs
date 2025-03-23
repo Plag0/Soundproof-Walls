@@ -16,6 +16,7 @@ namespace SoundproofWalls
                 return _cachedConfig;
             }
 
+            // Create default config if file doesn't exist
             if (!File.Exists(ConfigPath))
             {
                 _cachedConfig = new Config();
@@ -26,9 +27,26 @@ namespace SoundproofWalls
                 try
                 {
                     string jsonContent = File.ReadAllText(ConfigPath);
-                    _cachedConfig = JsonSerializer.Deserialize<Config>(jsonContent) ?? new Config();
-                    UpdateConfigFromJson(jsonContent, _cachedConfig);
-                    SaveConfig(_cachedConfig);
+                    var userConfig = JsonSerializer.Deserialize<Config>(jsonContent);
+
+                    if (userConfig == null)
+                    {
+                        _cachedConfig = new Config();
+                    }
+                    else
+                    {
+                        // Create a new config with default values
+                        _cachedConfig = new Config();
+
+                        // Copy existing values from user config to preserve their settings
+                        CopyExistingValues(userConfig, _cachedConfig);
+
+                        // Save the updated config which now has both user values and any new default values
+                        SaveConfig(_cachedConfig);
+                    }
+
+                    // Ensure any derived properties are set correctly
+                    _cachedConfig.EavesdroppingKeyOrMouse = _cachedConfig.ParseEavesdroppingBind();
                 }
                 catch (Exception ex)
                 {
@@ -36,26 +54,25 @@ namespace SoundproofWalls
                     _cachedConfig = new Config();
                 }
             }
-
             return _cachedConfig;
         }
 
-        private static void UpdateConfigFromJson(string jsonContent, Config config)
+        /// <summary>
+        /// Copies values from user config to the new config with defaults
+        /// </summary>
+        private static void CopyExistingValues(Config source, Config destination)
         {
-            var jsonConfig = JsonSerializer.Deserialize<Config>(jsonContent);
-
-            if (jsonConfig == null) return;
-
             foreach (var property in typeof(Config).GetProperties())
             {
-                var jsonValue = property.GetValue(jsonConfig);
-                if (jsonValue != null)
+                if (property.CanWrite) // Skip read-only properties
                 {
-                    property.SetValue(config, jsonValue);
+                    var value = property.GetValue(source);
+                    if (value != null) // Only copy non-null values
+                    {
+                        property.SetValue(destination, value);
+                    }
                 }
             }
-
-            config.EavesdroppingKeyOrMouse = config.ParseEavesdroppingBind();
         }
 
         public static void SaveConfig(Config config)

@@ -10,6 +10,7 @@ namespace SoundproofWalls
     public static class Menu
     {
         static Config defaultConfig = new Config();
+        public static JsonSerializerOptions jsonOptions = new JsonSerializerOptions { WriteIndented = true };
         public static void LoadMenu()
         {
             EasySettings.AddMenu(TextManager.Get("spw_settings").Value, parent =>
@@ -84,7 +85,7 @@ namespace SoundproofWalls
                 // General Lowpass Freq:
                 // The previous vanilla muffle frequency was 1600. Now it's 600 and can be accessed via SoundPlayer.MuffleFilterFrequency.
                 GUITextBlock textBlockGLF = EasySettings.TextBlock(list, string.Empty);
-                slider = EasySettings.Slider(list.Content, 10, 1600, (float)config.GeneralLowpassFrequency, value =>
+                slider = EasySettings.LogSlider(list.Content, 10, 1600, (float)config.GeneralLowpassFrequency, value =>
                 {
                     value = RoundToNearestMultiple(value, 10);
                     config.GeneralLowpassFrequency = value;
@@ -100,14 +101,14 @@ namespace SoundproofWalls
                         slider_text = vanilla_preset;
                     }
                     textBlockGLF.Text = $"{TextManager.Get("spw_lowpassfrequency").Value}: {value}Hz {slider_text}";
-                }, 10, true);
-                textBlockGLF.Text = $"{TextManager.Get("spw_lowpassfrequency").Value}: {RoundToNearestMultiple(slider.BarScrollValue, 10)}Hz{GetServerValueString(nameof(config.GeneralLowpassFrequency), "Hz")}";
+                }, 10);
+                textBlockGLF.Text = $"{TextManager.Get("spw_lowpassfrequency").Value}: {RoundToNearestMultiple(slider.GetConvertedValue(), 10)}Hz{GetServerValueString(nameof(config.GeneralLowpassFrequency), "Hz")}";
                 slider.ToolTip = TextManager.Get("spw_lowpassfrequencytooltip");
 
                 // Suit Lowpass Freq:
                 // In vanilla this is not a separate thing and is the same as the general muffle frequency.
                 GUITextBlock textBlockSLF = EasySettings.TextBlock(list, string.Empty);
-                slider = EasySettings.Slider(list.Content, 10, 3200, (float)config.DivingSuitLowpassFrequency, value =>
+                slider = EasySettings.LogSlider(list.Content, 10, 3200, (float)config.DivingSuitLowpassFrequency, value =>
                 {
                     value = RoundToNearestMultiple(value, 10);
                     config.DivingSuitLowpassFrequency = value;
@@ -123,35 +124,9 @@ namespace SoundproofWalls
                         slider_text = vanilla_preset;
                     }
                     textBlockSLF.Text = $"{TextManager.Get("spw_suitlowpassfrequency").Value}: {value}Hz {slider_text}";
-                }, 10, true);
-                textBlockSLF.Text = $"{TextManager.Get("spw_suitlowpassfrequency").Value}: {RoundToNearestMultiple(slider.BarScrollValue, 10)}Hz{GetServerValueString(nameof(config.DivingSuitLowpassFrequency), "Hz")}";
-                slider.ToolTip = TextManager.Get("spw_suitlowpassfrequencytooltip");
-
-                // Voice Lowpass Freq:
-                GUITextBlock textBlockVLF = EasySettings.TextBlock(list, string.Empty);
-                slider = EasySettings.Slider(list.Content, 10, SoundproofWalls.VANILLA_VOIP_LOWPASS_FREQUENCY, (float)config.VoiceLowpassFrequency, value =>
-                {
-                    value = RoundToNearestMultiple(value, 10);
-
-                    // Prevents our BiQuad ctor from recieving a confusing frequency number used by the vanilla game.
-                    if (value == SoundPlayer.MuffleFilterFrequency) { value += 10; }
-
-                    config.VoiceLowpassFrequency = value;
-                    ConfigManager.SaveConfig(config);
-
-                    slider_text = string.Empty;
-                    if (config.VoiceLowpassFrequency == defaultConfig.VoiceLowpassFrequency)
-                    {
-                        slider_text = default_preset;
-                    }
-                    else if (config.VoiceLowpassFrequency == SoundproofWalls.VANILLA_VOIP_LOWPASS_FREQUENCY)
-                    {
-                        slider_text = vanilla_preset;
-                    }
-                    textBlockVLF.Text = $"{TextManager.Get("spw_voicelowpassfrequency").Value}: {value}Hz {slider_text}";
                 }, 10);
-                textBlockVLF.Text = $"{TextManager.Get("spw_voicelowpassfrequency").Value}: {RoundToNearestMultiple(slider.BarScrollValue, 10)}Hz{GetServerValueString(nameof(config.VoiceLowpassFrequency), "Hz")}";
-                slider.ToolTip = TextManager.Get("spw_voicelowpassfrequencytooltip");
+                textBlockSLF.Text = $"{TextManager.Get("spw_suitlowpassfrequency").Value}: {RoundToNearestMultiple(slider.GetConvertedValue(), 10)}Hz{GetServerValueString(nameof(config.DivingSuitLowpassFrequency), "Hz")}";
+                slider.ToolTip = TextManager.Get("spw_suitlowpassfrequencytooltip");
 
                 // Sound Range:
                 GUITextBlock textBlockSR = EasySettings.TextBlock(list, string.Empty);
@@ -224,22 +199,92 @@ namespace SoundproofWalls
 
                 // Muffled Pitch Strength Multiplier
                 GUITextBlock textBlockMSPM = EasySettings.TextBlock(list, string.Empty);
-                slider = EasySettings.Slider(list.Content, 0, 1, config.MuffledPitchStrengthMultiplier, value =>
+                slider = EasySettings.Slider(list.Content, 0, 1, config.MuffledSoundPitchMultiplier, value =>
                 {
                     float realvalue = RoundToNearestMultiple(value, 0.01f);
                     float displayValue = RoundToNearestMultiple(value * 100, 1);
-                    config.MuffledPitchStrengthMultiplier = realvalue;
+                    config.MuffledSoundPitchMultiplier = realvalue;
                     ConfigManager.SaveConfig(config);
 
                     slider_text = string.Empty;
-                    if (config.MuffledPitchStrengthMultiplier == defaultConfig.MuffledPitchStrengthMultiplier)
+                    if (config.MuffledSoundPitchMultiplier == defaultConfig.MuffledSoundPitchMultiplier)
                     {
                         slider_text = default_preset;
                     }
                     textBlockMSPM.Text = $"{TextManager.Get("spw_muffledsoundpitch").Value}: {displayValue}% {slider_text}";
                 });
-                textBlockMSPM.Text = $"{TextManager.Get("spw_muffledsoundpitch").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.MuffledPitchStrengthMultiplier))}";
+                textBlockMSPM.Text = $"{TextManager.Get("spw_muffledsoundpitch").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.MuffledSoundPitchMultiplier))}";
                 slider.ToolTip = TextManager.Get("spw_muffledsoundpitchtooltip");
+
+                // Voice Settings:
+                EasySettings.TextBlock(list, TextManager.Get("spw_voicesettings").Value, y: 0.1f, size: 1.3f, color: Color.LightYellow);
+
+                // Voice Lowpass Freq:
+                GUITextBlock textBlockVLF = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.LogSlider(list.Content, 10, SoundproofWalls.VANILLA_VOIP_LOWPASS_FREQUENCY * 1.5f, (float)config.VoiceLowpassFrequency, value =>
+                {
+                    value = RoundToNearestMultiple(value, 10);
+
+                    // Prevents our BiQuad ctor from recieving a confusing frequency number used by the vanilla game.
+                    if (value == SoundPlayer.MuffleFilterFrequency) { value += 10; }
+
+                    config.VoiceLowpassFrequency = value;
+                    ConfigManager.SaveConfig(config);
+
+                    slider_text = string.Empty;
+                    if (config.VoiceLowpassFrequency == defaultConfig.VoiceLowpassFrequency)
+                    {
+                        slider_text = default_preset;
+                    }
+                    else if (config.VoiceLowpassFrequency == SoundproofWalls.VANILLA_VOIP_LOWPASS_FREQUENCY)
+                    {
+                        slider_text = vanilla_preset;
+                    }
+                    textBlockVLF.Text = $"{TextManager.Get("spw_voicelowpassfrequency").Value}: {value}Hz {slider_text}";
+                }, 10);
+                textBlockVLF.Text = $"{TextManager.Get("spw_voicelowpassfrequency").Value}: {RoundToNearestMultiple(slider.GetConvertedValue(), 10)}Hz{GetServerValueString(nameof(config.VoiceLowpassFrequency), "Hz")}";
+                slider.ToolTip = TextManager.Get("spw_voicelowpassfrequencytooltip");
+
+                // Radio Bandpass Quality Factor:
+                GUITextBlock textBlockRBQ = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.LogSlider(list.Content, 0.5f, 10.0f, (float)config.RadioBandpassQualityFactor, value =>
+                {
+                    value = RoundToNearestMultiple(value, 0.1f);
+                    LuaCsLogger.Log($"{value}");
+                    config.RadioBandpassQualityFactor = value;
+                    LuaCsLogger.Log($"{config.RadioBandpassQualityFactor}");
+                    ConfigManager.SaveConfig(config);
+                    slider_text = string.Empty;
+
+                    if (config.RadioBandpassQualityFactor == defaultConfig.RadioBandpassQualityFactor) { slider_text = default_preset; }
+                    else if (config.RadioBandpassQualityFactor == 0.7f) { slider_text = vanilla_preset; }
+
+                    textBlockRBQ.Text = $"{TextManager.Get("spw_radiobandpassqualityfactor").Value}: {value} {slider_text}";
+                }, 0.1f);
+                textBlockRBQ.Text = $"{TextManager.Get("spw_radiobandpassqualityfactor").Value}: {RoundToNearestMultiple(slider.GetConvertedValue(), 0.1f)}{GetServerValueString(nameof(config.RadioBandpassQualityFactor), "")}";
+                slider.ToolTip = TextManager.Get("spw_radiobandpassqualityfactortooltip");
+
+                // Radio Bandpass Center Frequency:
+                GUITextBlock textBlockRCF = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.LogSlider(list.Content, 300, SoundproofWalls.VANILLA_VOIP_BANDPASS_FREQUENCY * 1.5f, (float)config.RadioBandpassFrequency, value =>
+                {
+                    value = (float)RoundToNearestMultiple(value, 10);
+
+                    // Prevents our BiQuad ctor from recieving a confusing frequency number used by the vanilla game.
+                    if (value == SoundproofWalls.VANILLA_VOIP_BANDPASS_FREQUENCY) { value += 10; }
+
+                    config.RadioBandpassFrequency = value;
+                    ConfigManager.SaveConfig(config);
+                    slider_text = string.Empty;
+
+                    if (config.RadioBandpassFrequency == defaultConfig.RadioBandpassQualityFactor) { slider_text = default_preset; }
+                    else if (config.RadioBandpassFrequency == SoundproofWalls.VANILLA_VOIP_BANDPASS_FREQUENCY) { slider_text = vanilla_preset; }
+
+                    textBlockRCF.Text = $"{TextManager.Get("spw_radiobandpassfrequency").Value}: {value}Hz {slider_text}";
+                }, 0.01f);
+                textBlockRCF.Text = $"{TextManager.Get("spw_radiobandpassfrequency").Value}: {RoundToNearestMultiple(slider.GetConvertedValue(), 10)}Hz{GetServerValueString(nameof(config.RadioBandpassFrequency), "")}";
+                slider.ToolTip = TextManager.Get("spw_radiobandpassfrequencytooltip");
+
 
                 // Volume Settings:
                 EasySettings.TextBlock(list, TextManager.Get("spw_volumesettings").Value, y: 0.1f, size: 1.3f, color: Color.LightYellow);
@@ -422,6 +467,15 @@ namespace SoundproofWalls
                 // Hydrophone Settings:
                 EasySettings.TextBlock(list, TextManager.Get("spw_hydrophonesettings").Value, y: 0.1f, size: 1.3f, color: Color.LightYellow);
 
+                // Hydrophone Switch Enabled:
+                tick = EasySettings.TickBox(list.Content, string.Empty, config.HydrophoneSwitchEnabled, state =>
+                {
+                    config.HydrophoneSwitchEnabled = state;
+                    ConfigManager.SaveConfig(config);
+                });
+                tick.Text = $"{TextManager.Get("spw_hydrophoneswitchenabled").Value}{Menu.GetServerValueString(nameof(config.HydrophoneSwitchEnabled))}";
+                tick.ToolTip = TextManager.Get("spw_hydrophoneswitchenabledtooltip").Value;
+
                 // Hydrophone Extra Sound Range:
                 GUITextBlock textBlockHSR = EasySettings.TextBlock(list, string.Empty);
                 slider = EasySettings.Slider(list.Content, 0, 20000, config.HydrophoneSoundRange, value =>
@@ -478,24 +532,6 @@ namespace SoundproofWalls
                 });
                 textBlockHSP.Text = $"{TextManager.Get("spw_hydrophonepitch").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.HydrophonePitchMultiplier))}";
                 slider.ToolTip = TextManager.Get("spw_hydrophonepitchtooltip");
-
-                // Hydrophone Legacy Switch:
-                tick = EasySettings.TickBox(list.Content, string.Empty, config.HydrophoneLegacySwitch, state =>
-                {
-                    config.HydrophoneLegacySwitch = state;
-                    ConfigManager.SaveConfig(config);
-                });
-                tick.Text = $"{TextManager.Get("spw_hydrophonelegacyswitch").Value}{Menu.GetServerValueString(nameof(config.HydrophoneLegacySwitch))}";
-                tick.ToolTip = TextManager.Get("spw_hydrophonelegacyswitchtooltip").Value;
-
-                // Hydrophone Switch Enabled:
-                tick = EasySettings.TickBox(list.Content, string.Empty, config.HydrophoneSwitchEnabled, state =>
-                {
-                    config.HydrophoneSwitchEnabled = state;
-                    ConfigManager.SaveConfig(config);
-                });
-                tick.Text = $"{TextManager.Get("spw_hydrophoneswitchenabled").Value}{Menu.GetServerValueString(nameof(config.HydrophoneSwitchEnabled))}";
-                tick.ToolTip = TextManager.Get("spw_hydrophoneswitchenabledtooltip").Value;
 
 
                 // Ambience Settings:
@@ -581,254 +617,6 @@ namespace SoundproofWalls
                 });
                 textBlockWATS.Text = $"{TextManager.Get("spw_waterambiencetransitionspeed").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.WaterAmbienceTransitionSpeedMultiplier))}";
                 slider.ToolTip = TextManager.Get("spw_waterambiencetransitionspeedtooltip");
-
-
-                // Advanced Sound Settings:
-                EasySettings.TextBlock(list, TextManager.Get("spw_advancedsoundsettings").Value, y: 0.1f, size: 1.3f, color: Color.LightYellow);
-
-                // Sound Volume Multipliers:
-                GUITextBlock textBlockSVM = EasySettings.TextBlock(list, $"{TextManager.Get("spw_soundvolumemultipliers").Value}{GetServerDictString(nameof(config.SoundVolumeMultipliers))}");
-                GUITextBox soundListSVM = EasySettings.MultiLineTextBox(list.Content.RectTransform, FormatDictJsonTextBox(JsonSerializer.Serialize(config.SoundVolumeMultipliers)), 0.09f);
-                soundListSVM.OnTextChangedDelegate = (textBox, text) =>
-                {
-                    try
-                    {
-                        config.SoundVolumeMultipliers = JsonSerializer.Deserialize<Dictionary<string, float>>(textBox.Text);
-                        ConfigManager.SaveConfig(config);
-                        textBlockSVM.Text = TextManager.Get("spw_soundvolumemultipliers").Value;
-                    }
-                    catch (JsonException)
-                    {
-                        textBlockSVM.Text = $"{TextManager.Get("spw_soundvolumemultipliers").Value} ({TextManager.Get("spw_invalidinput").Value})";
-                    }
-                    return true;
-                };
-                // Reset button:
-                GUIButton button = new GUIButton(new RectTransform(new Vector2(1, 0.2f), list.Content.RectTransform), TextManager.Get("spw_reset").Value, Alignment.Center, "GUIButtonSmall");
-                button.OnClicked = (sender, args) =>
-                {
-                    config.SoundVolumeMultipliers = defaultConfig.SoundVolumeMultipliers;
-                    ConfigManager.SaveConfig(config);
-                    soundListSVM.Text = FormatDictJsonTextBox(JsonSerializer.Serialize(config.SoundVolumeMultipliers));
-                    return true;
-                };
-
-
-                // Ignored Sounds:
-                GUITextBlock textBlockIS = EasySettings.TextBlock(list, $"{TextManager.Get("spw_ignoredsounds").Value}{GetServerHashSetString(nameof(config.IgnoredSounds))}");
-                GUITextBox soundListIS = EasySettings.MultiLineTextBox(list.Content.RectTransform, FormatDictJsonTextBox(JsonSerializer.Serialize(config.IgnoredSounds)), 0.09f);
-                soundListIS.OnTextChangedDelegate = (textBox, text) =>
-                {
-                    try
-                    {
-                        config.IgnoredSounds = JsonSerializer.Deserialize<HashSet<string>>(textBox.Text);
-                        ConfigManager.SaveConfig(config);
-                        textBlockIS.Text = TextManager.Get("spw_ignoredsounds").Value;
-                    }
-                    catch (JsonException)
-                    {
-                        textBlockIS.Text = $"{TextManager.Get("spw_ignoredsounds").Value} ({TextManager.Get("spw_invalidinput").Value})";
-                    }
-                    return true;
-                };
-                // Reset button:
-                button = new GUIButton(new RectTransform(new Vector2(1, 0.2f), list.Content.RectTransform), TextManager.Get("spw_reset").Value, Alignment.Center, "GUIButtonSmall");
-                button.OnClicked = (sender, args) =>
-                {
-                    config.IgnoredSounds = defaultConfig.IgnoredSounds;
-                    ConfigManager.SaveConfig(config);
-                    soundListIS.Text = FormatDictJsonTextBox(JsonSerializer.Serialize(config.IgnoredSounds));
-                    return true;
-                };
-
-                // Pitch Ignored Sounds:
-                GUITextBlock textBlockPIS = EasySettings.TextBlock(list, $"{TextManager.Get("spw_pitchignoredsounds").Value}{GetServerHashSetString(nameof(config.PitchIgnoredSounds))}");
-                GUITextBox soundListPIS = EasySettings.MultiLineTextBox(list.Content.RectTransform, FormatDictJsonTextBox(JsonSerializer.Serialize(config.PitchIgnoredSounds)), 0.09f);
-                soundListPIS.OnTextChangedDelegate = (textBox, text) =>
-                {
-                    try
-                    {
-                        config.PitchIgnoredSounds = JsonSerializer.Deserialize<HashSet<string>>(textBox.Text);
-                        ConfigManager.SaveConfig(config);
-                        textBlockPIS.Text = TextManager.Get("spw_pitchignoredsounds").Value;
-                    }
-                    catch (JsonException)
-                    {
-                        textBlockPIS.Text = $"{TextManager.Get("spw_pitchignoredsounds").Value} ({TextManager.Get("spw_invalidinput").Value})";
-                    }
-                    return true;
-                };
-                // Reset button:
-                button = new GUIButton(new RectTransform(new Vector2(1, 0.2f), list.Content.RectTransform), TextManager.Get("spw_reset").Value, Alignment.Center, "GUIButtonSmall");
-                button.OnClicked = (sender, args) =>
-                {
-                    config.PitchIgnoredSounds = defaultConfig.PitchIgnoredSounds;
-                    ConfigManager.SaveConfig(config);
-                    soundListPIS.Text = FormatDictJsonTextBox(JsonSerializer.Serialize(config.PitchIgnoredSounds));
-                    return true;
-                };
-
-                // Lowpass Ignored Sounds:
-                GUITextBlock textBlockLIS = EasySettings.TextBlock(list, $"{TextManager.Get("spw_lowpassignoredsounds").Value}{GetServerHashSetString(nameof(config.LowpassIgnoredSounds))}");
-                GUITextBox soundListLIS = EasySettings.MultiLineTextBox(list.Content.RectTransform, FormatDictJsonTextBox(JsonSerializer.Serialize(config.LowpassIgnoredSounds)), 0.09f);
-                soundListLIS.OnTextChangedDelegate = (textBox, text) =>
-                {
-                    try
-                    {
-                        config.LowpassIgnoredSounds = JsonSerializer.Deserialize<HashSet<string>>(textBox.Text);
-                        ConfigManager.SaveConfig(config);
-                        textBlockLIS.Text = TextManager.Get("spw_lowpassignoredsounds").Value;
-                    }
-                    catch (JsonException)
-                    {
-                        textBlockLIS.Text = $"{TextManager.Get("spw_lowpassignoredsounds").Value} ({TextManager.Get("spw_invalidinput").Value})";
-                    }
-                    return true;
-                };
-                // Reset button:
-                button = new GUIButton(new RectTransform(new Vector2(1, 0.2f), list.Content.RectTransform), TextManager.Get("spw_reset").Value, Alignment.Center, "GUIButtonSmall");
-                button.OnClicked = (sender, args) =>
-                {
-                    config.LowpassIgnoredSounds = defaultConfig.LowpassIgnoredSounds;
-                    ConfigManager.SaveConfig(config);
-                    soundListLIS.Text = FormatDictJsonTextBox(JsonSerializer.Serialize(config.LowpassIgnoredSounds));
-                    return true;
-                };
-
-                // Path Ignored Sounds:
-                GUITextBlock textBlockPathIS = EasySettings.TextBlock(list, $"{TextManager.Get("spw_pathignoredsounds").Value}{GetServerHashSetString(nameof(config.PathIgnoredSounds))}");
-                GUITextBox soundListPathIS = EasySettings.MultiLineTextBox(list.Content.RectTransform, FormatDictJsonTextBox(JsonSerializer.Serialize(config.PathIgnoredSounds)), 0.09f);
-                soundListPathIS.OnTextChangedDelegate = (textBox, text) =>
-                {
-                    try
-                    {
-                        config.PathIgnoredSounds = JsonSerializer.Deserialize<HashSet<string>>(textBox.Text);
-                        ConfigManager.SaveConfig(config);
-                        textBlockPathIS.Text = TextManager.Get("spw_pathignoredsounds").Value;
-                    }
-                    catch (JsonException)
-                    {
-                        textBlockPathIS.Text = $"{TextManager.Get("spw_pathignoredsounds").Value} ({TextManager.Get("spw_invalidinput").Value})";
-                    }
-                    return true;
-                };
-                // Reset button:
-                button = new GUIButton(new RectTransform(new Vector2(1, 0.2f), list.Content.RectTransform), TextManager.Get("spw_reset").Value, Alignment.Center, "GUIButtonSmall");
-                button.OnClicked = (sender, args) =>
-                {
-                    config.PathIgnoredSounds = defaultConfig.PathIgnoredSounds;
-                    ConfigManager.SaveConfig(config);
-                    soundListPathIS.Text = FormatDictJsonTextBox(JsonSerializer.Serialize(config.PathIgnoredSounds));
-                    return true;
-                };
-
-                // Container Ignored Sounds:
-                GUITextBlock textBlockCIS = EasySettings.TextBlock(list, $"{TextManager.Get("spw_containerignoredsounds").Value}{GetServerHashSetString(nameof(config.ContainerIgnoredSounds))}");
-                GUITextBox soundListCIS = EasySettings.MultiLineTextBox(list.Content.RectTransform, FormatDictJsonTextBox(JsonSerializer.Serialize(config.ContainerIgnoredSounds)), 0.09f);
-                soundListCIS.OnTextChangedDelegate = (textBox, text) =>
-                {
-                    try
-                    {
-                        config.ContainerIgnoredSounds = JsonSerializer.Deserialize<HashSet<string>>(textBox.Text);
-                        ConfigManager.SaveConfig(config);
-                        textBlockCIS.Text = TextManager.Get("spw_containerignoredsounds").Value;
-                    }
-                    catch (JsonException)
-                    {
-                        textBlockCIS.Text = $"{TextManager.Get("spw_containerignoredsounds").Value} ({TextManager.Get("spw_invalidinput").Value})";
-                    }
-                    return true;
-                };
-                // Reset button:
-                button = new GUIButton(new RectTransform(new Vector2(1, 0.2f), list.Content.RectTransform), TextManager.Get("spw_reset").Value, Alignment.Center, "GUIButtonSmall");
-                button.OnClicked = (sender, args) =>
-                {
-                    config.ContainerIgnoredSounds = defaultConfig.ContainerIgnoredSounds;
-                    ConfigManager.SaveConfig(config);
-                    soundListCIS.Text = FormatDictJsonTextBox(JsonSerializer.Serialize(config.ContainerIgnoredSounds));
-                    return true;
-                };
-
-                // Water Ignored Sounds:
-                GUITextBlock textBlockWIS = EasySettings.TextBlock(list, $"{TextManager.Get("spw_waterignoredsounds").Value}{GetServerHashSetString(nameof(config.WaterIgnoredSounds))}");
-                GUITextBox soundListWIS = EasySettings.MultiLineTextBox(list.Content.RectTransform, FormatDictJsonTextBox(JsonSerializer.Serialize(config.WaterIgnoredSounds)), 0.09f);
-                soundListWIS.OnTextChangedDelegate = (textBox, text) =>
-                {
-                    try
-                    {
-                        config.WaterIgnoredSounds = JsonSerializer.Deserialize<HashSet<string>>(textBox.Text);
-                        ConfigManager.SaveConfig(config);
-                        textBlockWIS.Text = TextManager.Get("spw_waterignoredsounds").Value;
-                    }
-                    catch (JsonException)
-                    {
-                        textBlockWIS.Text = $"{TextManager.Get("spw_waterignoredsounds").Value} ({TextManager.Get("spw_invalidinput").Value})";
-                    }
-                    return true;
-                };
-                // Reset button:
-                button = new GUIButton(new RectTransform(new Vector2(1, 0.2f), list.Content.RectTransform), TextManager.Get("spw_reset").Value, Alignment.Center, "GUIButtonSmall");
-                button.OnClicked = (sender, args) =>
-                {
-                    config.WaterIgnoredSounds = defaultConfig.WaterIgnoredSounds;
-                    ConfigManager.SaveConfig(config);
-                    soundListWIS.Text = FormatDictJsonTextBox(JsonSerializer.Serialize(config.WaterIgnoredSounds));
-                    return true;
-                };
-
-                // Submersion Ignored Sounds:
-                GUITextBlock textBlockSIS = EasySettings.TextBlock(list, $"{TextManager.Get("spw_submersionignoredsounds").Value}{GetServerHashSetString(nameof(config.SubmersionIgnoredSounds))}");
-                GUITextBox soundListSIS = EasySettings.MultiLineTextBox(list.Content.RectTransform, FormatDictJsonTextBox(JsonSerializer.Serialize(config.SubmersionIgnoredSounds)), 0.09f);
-                soundListSIS.OnTextChangedDelegate = (textBox, text) =>
-                {
-                    try
-                    {
-                        config.SubmersionIgnoredSounds = JsonSerializer.Deserialize<HashSet<string>>(textBox.Text);
-                        ConfigManager.SaveConfig(config);
-                        textBlockSIS.Text = TextManager.Get("spw_submersionignoredsounds").Value;
-                    }
-                    catch (JsonException)
-                    {
-                        textBlockSIS.Text = $"{TextManager.Get("spw_submersionignoredsounds").Value} ({TextManager.Get("spw_invalidinput").Value})";
-                    }
-                    return true;
-                };
-                // Reset button:
-                button = new GUIButton(new RectTransform(new Vector2(1, 0.2f), list.Content.RectTransform), TextManager.Get("spw_reset").Value, Alignment.Center, "GUIButtonSmall");
-                button.OnClicked = (sender, args) =>
-                {
-                    config.SubmersionIgnoredSounds = defaultConfig.SubmersionIgnoredSounds;
-                    ConfigManager.SaveConfig(config);
-                    soundListSIS.Text = FormatDictJsonTextBox(JsonSerializer.Serialize(config.SubmersionIgnoredSounds));
-                    return true;
-                };
-
-                // Bubble Ignored Players:
-                GUITextBlock textBlockBIP = EasySettings.TextBlock(list, $"{TextManager.Get("spw_bubbleignorednames").Value}{GetServerHashSetString(nameof(config.BubbleIgnoredNames))}");
-                GUITextBox soundListBIP = EasySettings.MultiLineTextBox(list.Content.RectTransform, FormatDictJsonTextBox(JsonSerializer.Serialize(config.BubbleIgnoredNames)), 0.09f);
-                soundListBIP.OnTextChangedDelegate = (textBox, text) =>
-                {
-                    try
-                    {
-                        config.BubbleIgnoredNames = JsonSerializer.Deserialize<HashSet<string>>(textBox.Text);
-                        ConfigManager.SaveConfig(config);
-                        textBlockBIP.Text = TextManager.Get("spw_bubbleignorednames").Value;
-                    }
-                    catch (JsonException)
-                    {
-                        textBlockBIP.Text = $"{TextManager.Get("spw_bubbleignorednames").Value} ({TextManager.Get("spw_invalidinput").Value})";
-                    }
-                    return true;
-                };
-                // Reset button:
-                button = new GUIButton(new RectTransform(new Vector2(1, 0.2f), list.Content.RectTransform), TextManager.Get("spw_reset").Value, Alignment.Center, "GUIButtonSmall");
-                button.OnClicked = (sender, args) =>
-                {
-                    config.BubbleIgnoredNames = defaultConfig.BubbleIgnoredNames;
-                    ConfigManager.SaveConfig(config);
-                    soundListBIP.Text = FormatDictJsonTextBox(JsonSerializer.Serialize(config.BubbleIgnoredNames));
-                    return true;
-                };
 
 
                 // Niche Settings:
@@ -992,6 +780,255 @@ namespace SoundproofWalls
                 });
                 textBlockUVP.Text = $"{TextManager.Get("spw_unmuffledvoicepitch").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.UnmuffledVoicePitchMultiplier))}";
                 slider.ToolTip = TextManager.Get("spw_unmuffledvoicepitchtooltip");
+
+
+                // Advanced Sound Settings:
+                EasySettings.TextBlock(list, TextManager.Get("spw_advancedsoundsettings").Value, y: 0.1f, size: 1.3f, color: Color.LightYellow);
+
+                // Custom sounds:
+                GUITextBlock textBlockCS = EasySettings.TextBlock(list, $"{TextManager.Get("spw_customsounds").Value}{GetServerDictString(nameof(config.CustomSounds))}");
+                GUITextBox soundListCS = EasySettings.MultiLineTextBox(list.Content.RectTransform, JsonSerializer.Serialize(config.CustomSounds, jsonOptions));
+                soundListCS.OnTextChangedDelegate = (textBox, text) =>
+                {
+                    try
+                    {
+                        config.CustomSounds = JsonSerializer.Deserialize<HashSet<CustomSound>>(textBox.Text);
+                        ConfigManager.SaveConfig(config);
+                        textBlockCS.Text = TextManager.Get("spw_customsounds").Value;
+                    }
+                    catch (JsonException)
+                    {
+                        textBlockCS.Text = $"{TextManager.Get("spw_customsounds").Value} ({TextManager.Get("spw_invalidinput").Value})";
+                    }
+                    return true;
+                };
+                // Reset button:
+                GUIButton button = new GUIButton(new RectTransform(new Vector2(1, 0.2f), list.Content.RectTransform), TextManager.Get("spw_reset").Value, Alignment.Center, "GUIButtonSmall");
+                button.OnClicked = (sender, args) =>
+                {
+                    config.CustomSounds = defaultConfig.CustomSounds;
+                    ConfigManager.SaveConfig(config);
+                    soundListCS.Text = JsonSerializer.Serialize(config.CustomSounds, jsonOptions);
+                    return true;
+                };
+
+
+                // Ignored Sounds:
+                GUITextBlock textBlockIS = EasySettings.TextBlock(list, $"{TextManager.Get("spw_ignoredsounds").Value}{GetServerHashSetString(nameof(config.IgnoredSounds))}");
+                GUITextBox soundListIS = EasySettings.MultiLineTextBox(list.Content.RectTransform, JsonSerializer.Serialize(config.IgnoredSounds, jsonOptions), 0.15f);
+                soundListIS.OnTextChangedDelegate = (textBox, text) =>
+                {
+                    try
+                    {
+                        config.IgnoredSounds = JsonSerializer.Deserialize<HashSet<string>>(textBox.Text);
+                        ConfigManager.SaveConfig(config);
+                        textBlockIS.Text = TextManager.Get("spw_ignoredsounds").Value;
+                    }
+                    catch (JsonException)
+                    {
+                        textBlockIS.Text = $"{TextManager.Get("spw_ignoredsounds").Value} ({TextManager.Get("spw_invalidinput").Value})";
+                    }
+                    return true;
+                };
+                // Reset button:
+                button = new GUIButton(new RectTransform(new Vector2(1, 0.2f), list.Content.RectTransform), TextManager.Get("spw_reset").Value, Alignment.Center, "GUIButtonSmall");
+                button.OnClicked = (sender, args) =>
+                {
+                    config.IgnoredSounds = defaultConfig.IgnoredSounds;
+                    ConfigManager.SaveConfig(config);
+                    soundListIS.Text = JsonSerializer.Serialize(config.IgnoredSounds, jsonOptions);
+                    return true;
+                };
+
+                // Water Ignored Sounds:
+                GUITextBlock textBlockWIS = EasySettings.TextBlock(list, $"{TextManager.Get("spw_waterignoredsounds").Value}{GetServerHashSetString(nameof(config.WaterIgnoredSounds))}");
+                GUITextBox soundListWIS = EasySettings.MultiLineTextBox(list.Content.RectTransform, JsonSerializer.Serialize(config.WaterIgnoredSounds, jsonOptions), 0.15f);
+                soundListWIS.OnTextChangedDelegate = (textBox, text) =>
+                {
+                    try
+                    {
+                        config.WaterIgnoredSounds = JsonSerializer.Deserialize<HashSet<string>>(textBox.Text);
+                        ConfigManager.SaveConfig(config);
+                        textBlockWIS.Text = TextManager.Get("spw_waterignoredsounds").Value;
+                    }
+                    catch (JsonException)
+                    {
+                        textBlockWIS.Text = $"{TextManager.Get("spw_waterignoredsounds").Value} ({TextManager.Get("spw_invalidinput").Value})";
+                    }
+                    return true;
+                };
+                // Reset button:
+                button = new GUIButton(new RectTransform(new Vector2(1, 0.2f), list.Content.RectTransform), TextManager.Get("spw_reset").Value, Alignment.Center, "GUIButtonSmall");
+                button.OnClicked = (sender, args) =>
+                {
+                    config.WaterIgnoredSounds = defaultConfig.WaterIgnoredSounds;
+                    ConfigManager.SaveConfig(config);
+                    soundListWIS.Text = JsonSerializer.Serialize(config.WaterIgnoredSounds, jsonOptions);
+                    return true;
+                };
+
+                // Submersion Ignored Sounds:
+                GUITextBlock textBlockSIS = EasySettings.TextBlock(list, $"{TextManager.Get("spw_submersionignoredsounds").Value}{GetServerHashSetString(nameof(config.SubmersionIgnoredSounds))}");
+                GUITextBox soundListSIS = EasySettings.MultiLineTextBox(list.Content.RectTransform, JsonSerializer.Serialize(config.SubmersionIgnoredSounds, jsonOptions), 0.15f);
+                soundListSIS.OnTextChangedDelegate = (textBox, text) =>
+                {
+                    try
+                    {
+                        config.SubmersionIgnoredSounds = JsonSerializer.Deserialize<HashSet<string>>(textBox.Text);
+                        ConfigManager.SaveConfig(config);
+                        textBlockSIS.Text = TextManager.Get("spw_submersionignoredsounds").Value;
+                    }
+                    catch (JsonException)
+                    {
+                        textBlockSIS.Text = $"{TextManager.Get("spw_submersionignoredsounds").Value} ({TextManager.Get("spw_invalidinput").Value})";
+                    }
+                    return true;
+                };
+                // Reset button:
+                button = new GUIButton(new RectTransform(new Vector2(1, 0.2f), list.Content.RectTransform), TextManager.Get("spw_reset").Value, Alignment.Center, "GUIButtonSmall");
+                button.OnClicked = (sender, args) =>
+                {
+                    config.SubmersionIgnoredSounds = defaultConfig.SubmersionIgnoredSounds;
+                    ConfigManager.SaveConfig(config);
+                    soundListSIS.Text = JsonSerializer.Serialize(config.SubmersionIgnoredSounds, jsonOptions);
+                    return true;
+                };
+
+                // Path Ignored Sounds:
+                GUITextBlock textBlockPathIS = EasySettings.TextBlock(list, $"{TextManager.Get("spw_pathignoredsounds").Value}{GetServerHashSetString(nameof(config.PathIgnoredSounds))}");
+                GUITextBox soundListPathIS = EasySettings.MultiLineTextBox(list.Content.RectTransform, JsonSerializer.Serialize(config.PathIgnoredSounds, jsonOptions), 0.15f);
+                soundListPathIS.OnTextChangedDelegate = (textBox, text) =>
+                {
+                    try
+                    {
+                        config.PathIgnoredSounds = JsonSerializer.Deserialize<HashSet<string>>(textBox.Text);
+                        ConfigManager.SaveConfig(config);
+                        textBlockPathIS.Text = TextManager.Get("spw_pathignoredsounds").Value;
+                    }
+                    catch (JsonException)
+                    {
+                        textBlockPathIS.Text = $"{TextManager.Get("spw_pathignoredsounds").Value} ({TextManager.Get("spw_invalidinput").Value})";
+                    }
+                    return true;
+                };
+                // Reset button:
+                button = new GUIButton(new RectTransform(new Vector2(1, 0.2f), list.Content.RectTransform), TextManager.Get("spw_reset").Value, Alignment.Center, "GUIButtonSmall");
+                button.OnClicked = (sender, args) =>
+                {
+                    config.PathIgnoredSounds = defaultConfig.PathIgnoredSounds;
+                    ConfigManager.SaveConfig(config);
+                    soundListPathIS.Text = JsonSerializer.Serialize(config.PathIgnoredSounds, jsonOptions);
+                    return true;
+                };
+
+                // Pitch Ignored Sounds:
+                GUITextBlock textBlockPIS = EasySettings.TextBlock(list, $"{TextManager.Get("spw_pitchignoredsounds").Value}{GetServerHashSetString(nameof(config.PitchIgnoredSounds))}");
+                GUITextBox soundListPIS = EasySettings.MultiLineTextBox(list.Content.RectTransform, JsonSerializer.Serialize(config.PitchIgnoredSounds, jsonOptions), 0.15f);
+                soundListPIS.OnTextChangedDelegate = (textBox, text) =>
+                {
+                    try
+                    {
+                        config.PitchIgnoredSounds = JsonSerializer.Deserialize<HashSet<string>>(textBox.Text);
+                        ConfigManager.SaveConfig(config);
+                        textBlockPIS.Text = TextManager.Get("spw_pitchignoredsounds").Value;
+                    }
+                    catch (JsonException)
+                    {
+                        textBlockPIS.Text = $"{TextManager.Get("spw_pitchignoredsounds").Value} ({TextManager.Get("spw_invalidinput").Value})";
+                    }
+                    return true;
+                };
+                // Reset button:
+                button = new GUIButton(new RectTransform(new Vector2(1, 0.2f), list.Content.RectTransform), TextManager.Get("spw_reset").Value, Alignment.Center, "GUIButtonSmall");
+                button.OnClicked = (sender, args) =>
+                {
+                    config.PitchIgnoredSounds = defaultConfig.PitchIgnoredSounds;
+                    ConfigManager.SaveConfig(config);
+                    soundListPIS.Text = JsonSerializer.Serialize(config.PitchIgnoredSounds, jsonOptions);
+                    return true;
+                };
+
+                // Lowpass Ignored Sounds:
+                GUITextBlock textBlockLIS = EasySettings.TextBlock(list, $"{TextManager.Get("spw_lowpassignoredsounds").Value}{GetServerHashSetString(nameof(config.LowpassIgnoredSounds))}");
+                GUITextBox soundListLIS = EasySettings.MultiLineTextBox(list.Content.RectTransform, JsonSerializer.Serialize(config.LowpassIgnoredSounds, jsonOptions), 0.15f);
+                soundListLIS.OnTextChangedDelegate = (textBox, text) =>
+                {
+                    try
+                    {
+                        config.LowpassIgnoredSounds = JsonSerializer.Deserialize<HashSet<string>>(textBox.Text);
+                        ConfigManager.SaveConfig(config);
+                        textBlockLIS.Text = TextManager.Get("spw_lowpassignoredsounds").Value;
+                    }
+                    catch (JsonException)
+                    {
+                        textBlockLIS.Text = $"{TextManager.Get("spw_lowpassignoredsounds").Value} ({TextManager.Get("spw_invalidinput").Value})";
+                    }
+                    return true;
+                };
+                // Reset button:
+                button = new GUIButton(new RectTransform(new Vector2(1, 0.2f), list.Content.RectTransform), TextManager.Get("spw_reset").Value, Alignment.Center, "GUIButtonSmall");
+                button.OnClicked = (sender, args) =>
+                {
+                    config.LowpassIgnoredSounds = defaultConfig.LowpassIgnoredSounds;
+                    ConfigManager.SaveConfig(config);
+                    soundListLIS.Text = JsonSerializer.Serialize(config.LowpassIgnoredSounds, jsonOptions);
+                    return true;
+                };
+
+                // Container Ignored Sounds:
+                GUITextBlock textBlockCIS = EasySettings.TextBlock(list, $"{TextManager.Get("spw_containerignoredsounds").Value}{GetServerHashSetString(nameof(config.ContainerIgnoredSounds))}");
+                GUITextBox soundListCIS = EasySettings.MultiLineTextBox(list.Content.RectTransform, JsonSerializer.Serialize(config.ContainerIgnoredSounds, jsonOptions), 0.15f);
+                soundListCIS.OnTextChangedDelegate = (textBox, text) =>
+                {
+                    try
+                    {
+                        config.ContainerIgnoredSounds = JsonSerializer.Deserialize<HashSet<string>>(textBox.Text);
+                        ConfigManager.SaveConfig(config);
+                        textBlockCIS.Text = TextManager.Get("spw_containerignoredsounds").Value;
+                    }
+                    catch (JsonException)
+                    {
+                        textBlockCIS.Text = $"{TextManager.Get("spw_containerignoredsounds").Value} ({TextManager.Get("spw_invalidinput").Value})";
+                    }
+                    return true;
+                };
+                // Reset button:
+                button = new GUIButton(new RectTransform(new Vector2(1, 0.2f), list.Content.RectTransform), TextManager.Get("spw_reset").Value, Alignment.Center, "GUIButtonSmall");
+                button.OnClicked = (sender, args) =>
+                {
+                    config.ContainerIgnoredSounds = defaultConfig.ContainerIgnoredSounds;
+                    ConfigManager.SaveConfig(config);
+                    soundListCIS.Text = JsonSerializer.Serialize(config.ContainerIgnoredSounds, jsonOptions);
+                    return true;
+                };
+
+                // Bubble Ignored Players:
+                GUITextBlock textBlockBIP = EasySettings.TextBlock(list, $"{TextManager.Get("spw_bubbleignorednames").Value}{GetServerHashSetString(nameof(config.BubbleIgnoredNames))}");
+                textBlockBIP.ToolTip = "hello hello";
+                GUITextBox soundListBIP = EasySettings.MultiLineTextBox(list.Content.RectTransform, JsonSerializer.Serialize(config.BubbleIgnoredNames, jsonOptions), 0.15f);
+                soundListBIP.OnTextChangedDelegate = (textBox, text) =>
+                {
+                    try
+                    {
+                        config.BubbleIgnoredNames = JsonSerializer.Deserialize<HashSet<string>>(textBox.Text);
+                        ConfigManager.SaveConfig(config);
+                        textBlockBIP.Text = TextManager.Get("spw_bubbleignorednames").Value;
+                    }
+                    catch (JsonException)
+                    {
+                        textBlockBIP.Text = $"{TextManager.Get("spw_bubbleignorednames").Value} ({TextManager.Get("spw_invalidinput").Value})";
+                    }
+                    return true;
+                };
+                // Reset button:
+                button = new GUIButton(new RectTransform(new Vector2(1, 0.2f), list.Content.RectTransform), TextManager.Get("spw_reset").Value, Alignment.Center, "GUIButtonSmall");
+                button.OnClicked = (sender, args) =>
+                {
+                    config.BubbleIgnoredNames = defaultConfig.BubbleIgnoredNames;
+                    ConfigManager.SaveConfig(config);
+                    soundListBIP.Text = JsonSerializer.Serialize(config.BubbleIgnoredNames, jsonOptions);
+                    return true;
+                };
             });
         }
         public static string GetServerValueString(string propertyName, string suffix = "", float divideBy = 1)
@@ -1102,23 +1139,6 @@ namespace SoundproofWalls
             }
 
             return string.Empty;
-        }
-
-        public static string FormatDictJsonTextBox(string str)
-        {
-            string pattern = "},\"";
-            string replacement = "},\n\"";
-
-            // Use Regex to replace all occurrences of the pattern in the string
-            str = Regex.Replace(str, pattern, replacement);
-
-            // Add newline after first character and before last character, if the string length is more than 1
-            if (str.Length > 1)
-            {
-                str = str.Substring(0, 1) + "\n" + str.Substring(1, str.Length - 2) + "\n" + str.Substring(str.Length - 1);
-            }
-
-            return str;
         }
 
         public static float RoundToNearestMultiple(float num, float input)

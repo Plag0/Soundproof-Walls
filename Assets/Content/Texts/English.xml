@@ -21,13 +21,19 @@
 	<spw_suitlowpassfrequency>Suit Lowpass Frequency</spw_suitlowpassfrequency>
 	<spw_suitlowpassfrequencytooltip>The corner frequency used to muffle sounds when wearing a diving suit. Requires "Muffle Diving Suits" to be enabled (adjusting this setting mid-round will briefly freeze the game)</spw_suitlowpassfrequencytooltip>
 	<spw_voicelowpassfrequency>Voice Lowpass Frequency</spw_voicelowpassfrequency>
-	<spw_voicelowpassfrequencytooltip>The corner frequency used to muffle voice chat. Can stack additively with the suit lowpass frequency</spw_voicelowpassfrequencytooltip>
+	<spw_voicelowpassfrequencytooltip>The corner frequency used to muffle voice chat.</spw_voicelowpassfrequencytooltip>
+	<spw_radiobandpassqualityfactor>Radio Bandpass Strength</spw_radiobandpassqualityfactor>
+	<spw_radiobandpassqualityfactortooltip>The quality factor of the radio bandpass filter. Defines how wide or narrow the filter is around its center frequency</spw_radiobandpassqualityfactortooltip>
 	<spw_soundrange>Sound Range</spw_soundrange>
 	<spw_soundrangetooltip>Range of non-component sounds</spw_soundrangetooltip>
 	<spw_voicerange>Voice Range</spw_voicerange>
 	<spw_radiorange>Radio Range</spw_radiorange>
 	<spw_muffledsoundpitch>Pitch Strength</spw_muffledsoundpitch>
 	<spw_muffledsoundpitchtooltip>The overall strength of the distance-based pitch shifting effect for muffled sounds (does not apply to looping sounds).</spw_muffledsoundpitchtooltip>
+
+	<spw_voicesettings>Voice Settings</spw_voicesettings>
+	<spw_radiobandpassfrequency>Radio Bandpass Frequency</spw_radiobandpassfrequency>
+	<spw_radiobandpassfrequencytooltip>The center frequency of the bandpass filter. Defines the frequencies </spw_radiobandpassfrequencytooltip>
 	
 	<spw_volumesettings>Volume Settings</spw_volumesettings>
 	<spw_muffledvoicevolume>Muffled Voice Volume</spw_muffledvoicevolume>
@@ -66,7 +72,7 @@
 	<spw_waterambiencetransitionspeedtooltip>The speed at which the water ambience transitions between volume presets</spw_waterambiencetransitionspeedtooltip>
 		
 	<spw_advancedsoundsettings>Advanced Sound Settings</spw_advancedsoundsettings>
-	<spw_soundvolumemultipliers>Sound Volume Multipliers</spw_soundvolumemultipliers>
+	<spw_customsounds>Custom Sounds</spw_customsounds>
 	<spw_ignoredsounds>Ignored Sounds</spw_ignoredsounds>
 	<spw_lowpassignoredsounds>Lowpass Ignored Sounds</spw_lowpassignoredsounds>
 	<spw_pitchignoredsounds>Pitch Ignored Sounds</spw_pitchignoredsounds>

@@ -18,6 +18,7 @@ namespace SoundproofWalls
 
         public short[] NormMuffleBuffer = Array.Empty<short>();
         public short[] SuitMuffleBuffer = Array.Empty<short>();
+        public short[] EavesdroppingMuffleBuffer = Array.Empty<short>();
 
 
         private new ExtendedSoundBuffers buffers;
@@ -55,6 +56,7 @@ namespace SoundproofWalls
 
                     SuitMuffleBuffer = result.SuitMuffleBuffer;
                     NormMuffleBuffer = result.NormMuffleBuffer;
+                    EavesdroppingMuffleBuffer = result.EavesdroppingMuffleBuffer;
 
                     playbackAmplitude = result.PlaybackAmplitude;
                     Owner.KillChannels(this); // prevents INVALID_OPERATION error
@@ -67,6 +69,7 @@ namespace SoundproofWalls
             short[] SampleBuffer,
             short[] NormMuffleBuffer,
             short[] SuitMuffleBuffer,
+            short[] EavesdroppingMuffleBuffer,
             List<float> PlaybackAmplitude);
 
         private static async Task<TaskResult> LoadSamples(VorbisReader reader)
@@ -79,6 +82,7 @@ namespace SoundproofWalls
             var sampleBuffer = new short[bufferSize];
             var normMuffleBuffer = new short[bufferSize];
             var suitMuffleBuffer = new short[bufferSize];
+            var eavesdroppingMuffleBuffer = new short[bufferSize];
 
             int readSamples = await Task.Run(() => reader.ReadSamples(floatBuffer, 0, bufferSize));
 
@@ -100,15 +104,21 @@ namespace SoundproofWalls
             float[] floatSuitBuffer = new float[bufferSize];
             Array.Copy(floatBuffer, floatSuitBuffer, bufferSize);
 
+            // Create a copy of floatBuffer for the eavesdropping version.
+            float[] floatEavesdroppingBuffer = new float[bufferSize];
+            Array.Copy(floatBuffer, floatEavesdroppingBuffer, bufferSize);
+
             // Create muffled buffers.
             MuffleBuffer(floatBuffer, reader.SampleRate);
             MuffleBufferSuit(floatSuitBuffer, reader.SampleRate);
+            MuffleBufferEavesdropping(floatEavesdroppingBuffer, reader.SampleRate);
 
             // Cast muffled buffers to short[]
             CastBuffer(floatBuffer, normMuffleBuffer, readSamples);
             CastBuffer(floatSuitBuffer, suitMuffleBuffer, readSamples);
+            CastBuffer(floatEavesdroppingBuffer, eavesdroppingMuffleBuffer, readSamples);
 
-            return new TaskResult(sampleBuffer, normMuffleBuffer, suitMuffleBuffer, playbackAmplitude);
+            return new TaskResult(sampleBuffer, normMuffleBuffer, suitMuffleBuffer, eavesdroppingMuffleBuffer, playbackAmplitude);
         }
 
         public override float GetAmplitudeAtPlaybackPos(int playbackPos)
@@ -154,6 +164,12 @@ namespace SoundproofWalls
             filter.Process(buffer);
         }
 
+        static void MuffleBufferEavesdropping(float[] buffer, int sampleRate)
+        {
+            var filter = new LowpassFilter(sampleRate, SoundproofWalls.Config.EavesdroppingLowpassFrequency);
+            filter.Process(buffer);
+        }
+
         public override void InitializeAlBuffers()
         {
             if (buffers != null && SoundBuffers.BuffersGenerated < SoundBuffers.MaxBuffers)
@@ -165,7 +181,7 @@ namespace SoundproofWalls
         public override void FillAlBuffers()
         {
             if (Stream) { return; }
-            if (sampleBuffer.Length == 0 || NormMuffleBuffer.Length == 0 || SuitMuffleBuffer.Length == 0) { return; }
+            if (sampleBuffer.Length == 0 || NormMuffleBuffer.Length == 0 || SuitMuffleBuffer.Length == 0 || EavesdroppingMuffleBuffer.Length == 0) { return; }
             buffers ??= new ExtendedSoundBuffers(this);
             if (!buffers.RequestAlBuffers()) { return; }
 
@@ -183,6 +199,9 @@ namespace SoundproofWalls
 
             Al.BufferData(buffers.AlSuitMuffledBuffer, ALFormat, SuitMuffleBuffer,
                 SuitMuffleBuffer.Length * sizeof(short), SampleRate);
+
+            Al.BufferData(buffers.AlEavesdroppingMuffledBuffer, ALFormat, EavesdroppingMuffleBuffer,
+                EavesdroppingMuffleBuffer.Length * sizeof(short), SampleRate);
 
             alError = Al.GetError();
             if (alError != Al.NoError)
