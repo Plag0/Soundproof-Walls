@@ -16,9 +16,9 @@ namespace SoundproofWalls
 
         private short[] sampleBuffer = Array.Empty<short>();
 
-        public short[] NormMuffleBuffer = Array.Empty<short>();
-        public short[] SuitMuffleBuffer = Array.Empty<short>();
-        public short[] EavesdroppingMuffleBuffer = Array.Empty<short>();
+        public short[] HeavyMuffleBuffer = Array.Empty<short>();
+        public short[] LightMuffleBuffer = Array.Empty<short>();
+        public short[] MediumMuffleBuffer = Array.Empty<short>();
 
 
         private new ExtendedSoundBuffers buffers;
@@ -54,9 +54,9 @@ namespace SoundproofWalls
                     }
                     sampleBuffer = result.SampleBuffer;
 
-                    SuitMuffleBuffer = result.SuitMuffleBuffer;
-                    NormMuffleBuffer = result.NormMuffleBuffer;
-                    EavesdroppingMuffleBuffer = result.EavesdroppingMuffleBuffer;
+                    LightMuffleBuffer = result.LightMuffleBuffer;
+                    HeavyMuffleBuffer = result.HeavyMuffleBuffer;
+                    MediumMuffleBuffer = result.MediumMuffleBuffer;
 
                     playbackAmplitude = result.PlaybackAmplitude;
                     Owner.KillChannels(this); // prevents INVALID_OPERATION error
@@ -67,9 +67,9 @@ namespace SoundproofWalls
 
         private readonly record struct TaskResult(
             short[] SampleBuffer,
-            short[] NormMuffleBuffer,
-            short[] SuitMuffleBuffer,
-            short[] EavesdroppingMuffleBuffer,
+            short[] HeavyMuffleBuffer,
+            short[] LightMuffleBuffer,
+            short[] MediumMuffleBuffer,
             List<float> PlaybackAmplitude);
 
         private static async Task<TaskResult> LoadSamples(VorbisReader reader)
@@ -78,13 +78,13 @@ namespace SoundproofWalls
 
             int bufferSize = (int)reader.TotalSamples * reader.Channels;
 
-            float[] floatBuffer = new float[bufferSize];
+            float[] floatHeavyBuffer = new float[bufferSize];
             var sampleBuffer = new short[bufferSize];
-            var normMuffleBuffer = new short[bufferSize];
-            var suitMuffleBuffer = new short[bufferSize];
-            var eavesdroppingMuffleBuffer = new short[bufferSize];
+            var heavyMuffleBuffer = new short[bufferSize];
+            var lightMuffleBuffer = new short[bufferSize];
+            var meidumMuffleBuffer = new short[bufferSize];
 
-            int readSamples = await Task.Run(() => reader.ReadSamples(floatBuffer, 0, bufferSize));
+            int readSamples = await Task.Run(() => reader.ReadSamples(floatHeavyBuffer, 0, bufferSize));
 
             var playbackAmplitude = new List<float>();
             for (int i = 0; i < bufferSize; i += reader.Channels * AMPLITUDE_SAMPLE_COUNT)
@@ -93,32 +93,32 @@ namespace SoundproofWalls
                 for (int j = i; j < i + reader.Channels * AMPLITUDE_SAMPLE_COUNT; j++)
                 {
                     if (j >= bufferSize) { break; }
-                    maxAmplitude = Math.Max(maxAmplitude, Math.Abs(floatBuffer[j]));
+                    maxAmplitude = Math.Max(maxAmplitude, Math.Abs(floatHeavyBuffer[j]));
                 }
                 playbackAmplitude.Add(maxAmplitude);
             }
 
-            CastBuffer(floatBuffer, sampleBuffer, readSamples);
+            CastBuffer(floatHeavyBuffer, sampleBuffer, readSamples);
 
-            // Create a copy of floatBuffer for the suit version.
-            float[] floatSuitBuffer = new float[bufferSize];
-            Array.Copy(floatBuffer, floatSuitBuffer, bufferSize);
+            // Create a copy of floatHeavyBuffer for the light version.
+            float[] floatLightBuffer = new float[bufferSize];
+            Array.Copy(floatHeavyBuffer, floatLightBuffer, bufferSize);
 
-            // Create a copy of floatBuffer for the eavesdropping version.
-            float[] floatEavesdroppingBuffer = new float[bufferSize];
-            Array.Copy(floatBuffer, floatEavesdroppingBuffer, bufferSize);
+            // Create a copy of floatHeavyBuffer for the me iumversion.
+            float[] floatMediumBuffer = new float[bufferSize];
+            Array.Copy(floatHeavyBuffer, floatMediumBuffer, bufferSize);
 
             // Create muffled buffers.
-            MuffleBuffer(floatBuffer, reader.SampleRate);
-            MuffleBufferSuit(floatSuitBuffer, reader.SampleRate);
-            MuffleBufferEavesdropping(floatEavesdroppingBuffer, reader.SampleRate);
+            MuffleBufferHeavy(floatHeavyBuffer, reader.SampleRate);
+            MuffleBufferLight(floatLightBuffer, reader.SampleRate);
+            MuffleBufferMedium(floatMediumBuffer, reader.SampleRate);
 
             // Cast muffled buffers to short[]
-            CastBuffer(floatBuffer, normMuffleBuffer, readSamples);
-            CastBuffer(floatSuitBuffer, suitMuffleBuffer, readSamples);
-            CastBuffer(floatEavesdroppingBuffer, eavesdroppingMuffleBuffer, readSamples);
+            CastBuffer(floatHeavyBuffer, heavyMuffleBuffer, readSamples);
+            CastBuffer(floatLightBuffer, lightMuffleBuffer, readSamples);
+            CastBuffer(floatMediumBuffer, meidumMuffleBuffer, readSamples);
 
-            return new TaskResult(sampleBuffer, normMuffleBuffer, suitMuffleBuffer, eavesdroppingMuffleBuffer, playbackAmplitude);
+            return new TaskResult(sampleBuffer, heavyMuffleBuffer, lightMuffleBuffer, meidumMuffleBuffer, playbackAmplitude);
         }
 
         public override float GetAmplitudeAtPlaybackPos(int playbackPos)
@@ -146,27 +146,27 @@ namespace SoundproofWalls
                 streamFloatBuffer = new float[buffer.Length];
             }
             int readSamples = streamReader.ReadSamples(streamFloatBuffer, 0, buffer.Length);
-            //MuffleBuffer(floatBuffer, reader.Channels);
+            //MuffleBufferHeavy(floatHeavyBuffer, reader.Channels);
             CastBuffer(streamFloatBuffer, buffer, readSamples);
 
             return readSamples;
         }
 
-        static void MuffleBuffer(float[] buffer, int sampleRate)
+        static void MuffleBufferHeavy(float[] buffer, int sampleRate)
         {
-            var filter = new LowpassFilter(sampleRate, SoundproofWalls.Config.GeneralLowpassFrequency);
+            var filter = new LowpassFilter(sampleRate, SoundproofWalls.Config.HeavyLowpassFrequency);
             filter.Process(buffer);
         }
 
-        static void MuffleBufferSuit(float[] buffer, int sampleRate)
+        static void MuffleBufferLight(float[] buffer, int sampleRate)
         {
-            var filter = new LowpassFilter(sampleRate, SoundproofWalls.Config.DivingSuitLowpassFrequency);
+            var filter = new LowpassFilter(sampleRate, SoundproofWalls.Config.LightLowpassFrequency);
             filter.Process(buffer);
         }
 
-        static void MuffleBufferEavesdropping(float[] buffer, int sampleRate)
+        static void MuffleBufferMedium(float[] buffer, int sampleRate)
         {
-            var filter = new LowpassFilter(sampleRate, SoundproofWalls.Config.EavesdroppingLowpassFrequency);
+            var filter = new LowpassFilter(sampleRate, SoundproofWalls.Config.MediumLowpassFrequency);
             filter.Process(buffer);
         }
 
@@ -181,7 +181,7 @@ namespace SoundproofWalls
         public override void FillAlBuffers()
         {
             if (Stream) { return; }
-            if (sampleBuffer.Length == 0 || NormMuffleBuffer.Length == 0 || SuitMuffleBuffer.Length == 0 || EavesdroppingMuffleBuffer.Length == 0) { return; }
+            if (sampleBuffer.Length == 0 || HeavyMuffleBuffer.Length == 0 || LightMuffleBuffer.Length == 0 || MediumMuffleBuffer.Length == 0) { return; }
             buffers ??= new ExtendedSoundBuffers(this);
             if (!buffers.RequestAlBuffers()) { return; }
 
@@ -194,20 +194,40 @@ namespace SoundproofWalls
                 throw new Exception("Failed to set regular buffer data for non-streamed audio! " + Al.GetErrorString(alError));
             }
 
-            Al.BufferData(buffers.AlNormMuffledBuffer, ALFormat, NormMuffleBuffer,
-                NormMuffleBuffer.Length * sizeof(short), SampleRate);
-
-            Al.BufferData(buffers.AlSuitMuffledBuffer, ALFormat, SuitMuffleBuffer,
-                SuitMuffleBuffer.Length * sizeof(short), SampleRate);
-
-            Al.BufferData(buffers.AlEavesdroppingMuffledBuffer, ALFormat, EavesdroppingMuffleBuffer,
-                EavesdroppingMuffleBuffer.Length * sizeof(short), SampleRate);
+            Al.BufferData(buffers.AlHeavyMuffledBuffer, ALFormat, HeavyMuffleBuffer,
+                HeavyMuffleBuffer.Length * sizeof(short), SampleRate);
 
             alError = Al.GetError();
             if (alError != Al.NoError)
             {
-                throw new Exception("Failed to set muffled buffer data for non-streamed audio! " + Al.GetErrorString(alError));
+                throw new Exception("Failed to set heavy muffled buffer data for non-streamed audio! " + Al.GetErrorString(alError));
             }
+
+            Al.BufferData(buffers.AlMediumMuffledBuffer, ALFormat, MediumMuffleBuffer,
+                MediumMuffleBuffer.Length * sizeof(short), SampleRate);
+
+            alError = Al.GetError();
+            if (alError != Al.NoError)
+            {
+                throw new Exception("Failed to set medium muffled buffer data for non-streamed audio! " + Al.GetErrorString(alError));
+            }
+
+            Al.BufferData(buffers.AlLightMuffledBuffer, ALFormat, LightMuffleBuffer,
+                LightMuffleBuffer.Length * sizeof(short), SampleRate);
+
+            alError = Al.GetError();
+            if (alError != Al.NoError)
+            {
+                throw new Exception("Failed to set light muffled buffer data for non-streamed audio! " + Al.GetErrorString(alError));
+            }
+        }
+
+        // This override is not included in the vanilla OggSound but in our case it's required to prevent memory leaks.
+        public override void DeleteAlBuffers()
+        {
+            Owner.KillChannels(this);
+            buffers?.Dispose();
+            base.buffers?.Dispose();
         }
 
         public override void Dispose()
@@ -217,7 +237,12 @@ namespace SoundproofWalls
                 streamReader?.Dispose();
             }
 
-            base.Dispose();
+            if (disposed) { return; }
+
+            DeleteAlBuffers();
+
+            Owner.RemoveSound(this);
+            disposed = true;
         }
     }
 }

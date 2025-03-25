@@ -4,24 +4,26 @@
 	<spw_settings>Soundproof Walls</spw_settings>
 
 	<spw_generalsettings>General Settings</spw_generalsettings>
+	<spw_syncsettingsalert>Note: This server has syncing enabled - all players will automatically use the host's settings (values in parentheses)</spw_syncsettingsalert>
 	<spw_enabled>Enabled</spw_enabled>
 	<spw_disabled>Disabled</spw_disabled>
 	<spw_enabledtooltip>Toggles all functionality of the mod</spw_enabledtooltip>
 	<spw_syncsettings>Sync Settings</spw_syncsettings>
-	<spw_syncsettingstooltip>Toggles the syncing of host and client configs</spw_syncsettingstooltip>
-	<spw_syncsettingsalert>Note: This server has syncing enabled - all players will automatically use the host's settings (values in parentheses)</spw_syncsettingsalert>
+	<spw_syncsettingstooltip>Requires server-side Lua to be running.\nSynchronizes the host/admin's local config file with all players connected to the server (this is achieved by creating a separate config held server-side for players' to inherit. This setting does not modify any local config files)</spw_syncsettingstooltip>
+	<spw_extendedsoundsenabled>Extended Sounds</spw_extendedsoundsenabled>
+	<spw_extendedsoundsenabledtooltip>Load additional lowpass buffers for more muffle variety at the cost of longer loading times (~1s) and more memory usage (~200MB). While this setting is highly recommended, it may clash with other Lua/C# mods that modify sounds. Disable this setting if you are experiencing crashes (adjusting this setting mid-round will briefly freeze the game as new buffers are loaded)</spw_extendedsoundsenabledtooltip>
 	<spw_talkingragdolls>Talking Ragdolls</spw_talkingragdolls>
-	<spw_talkingragdollstooltip>Hear players speak when they are ragdolled (does not apply to stuns)</spw_talkingragdollstooltip>
-	<spw_muffledivingsuit>Muffle Diving Suits</spw_muffledivingsuit>
-	<spw_muffledivingsuittooltip>Toggle the muffling of sounds when wearing a diving suit. Uses the suit lowpass frequency (adjusting this setting mid-round will briefly freeze the game)</spw_muffledivingsuittooltip>
+	<spw_talkingragdollstooltip>Hear players speak when they are ragdolled as long as they're not stunned</spw_talkingragdollstooltip>
 	<spw_focustargetaudio>Focus Target Audio</spw_focustargetaudio>
 	<spw_focustargetaudiotooltip>Simulate audio from the POV of the current target (i.e., you hear what the turret/camera hears)</spw_focustargetaudiotooltip>
-	<spw_lowpassfrequency>Lowpass Frequency</spw_lowpassfrequency>
-	<spw_lowpassfrequencytooltip>The corner frequency used to muffle sounds (adjusting this setting mid-round will briefly freeze the game)</spw_lowpassfrequencytooltip>
-	<spw_suitlowpassfrequency>Suit Lowpass Frequency</spw_suitlowpassfrequency>
-	<spw_suitlowpassfrequencytooltip>The corner frequency used to muffle sounds when wearing a diving suit. Requires "Muffle Diving Suits" to be enabled (adjusting this setting mid-round will briefly freeze the game)</spw_suitlowpassfrequencytooltip>
+	<spw_heavylowpassfrequency>Heavy Lowpass Frequency</spw_heavylowpassfrequency>
+	<spw_heavylowpassfrequencytooltip>The corner frequency used to muffle sounds that are heavily obstructed by walls or water (adjusting this setting mid-round will briefly freeze the game as new buffers are loaded)</spw_heavylowpassfrequencytooltip>
+	<spw_mediumlowpassfrequency>Mild Lowpass Frequency</spw_mediumlowpassfrequency>
+	<spw_mediumlowpassfrequencytooltip>Requires "Extended Sounds" to be enabled to affect sounds.\nThe corner frequency used to muffle sounds/voices that are mildly obstructed when propagating through walls or heard via eavesdropping (adjusting this setting mid-round will briefly freeze the game as new buffers are loaded)</spw_mediumlowpassfrequencytooltip>
+	<spw_lightlowpassfrequency>Light Lowpass Frequency</spw_lightlowpassfrequency>
+	<spw_lightlowpassfrequencytooltip>Requires "Extended Sounds" to be enabled to affect sounds.\nThe corner frequency used to muffle sounds/voices that are slightly obstructed by diving suits or heard in other structures via hydrophones (adjusting this setting mid-round will briefly freeze the game as new buffers are loaded)</spw_lightlowpassfrequencytooltip>
 	<spw_voicelowpassfrequency>Voice Lowpass Frequency</spw_voicelowpassfrequency>
-	<spw_voicelowpassfrequencytooltip>The corner frequency used to muffle voice chat.</spw_voicelowpassfrequencytooltip>
+	<spw_voicelowpassfrequencytooltip>The corner frequency used to muffle player voices that are heavily obstructed by walls or water. If a voice is not heavily obstructed, the light or medium slider will be used instead</spw_voicelowpassfrequencytooltip>
 	<spw_radiobandpassqualityfactor>Radio Bandpass Strength</spw_radiobandpassqualityfactor>
 	<spw_radiobandpassqualityfactortooltip>The quality factor of the radio bandpass filter. Defines how wide or narrow the filter is around its center frequency</spw_radiobandpassqualityfactortooltip>
 	<spw_soundrange>Sound Range</spw_soundrange>
@@ -31,6 +33,9 @@
 	<spw_muffledsoundpitch>Pitch Strength</spw_muffledsoundpitch>
 	<spw_muffledsoundpitchtooltip>The overall strength of the distance-based pitch shifting effect for muffled sounds (does not apply to looping sounds).</spw_muffledsoundpitchtooltip>
 
+	<spw_muffledivingsuit>Muffle Diving Suits</spw_muffledivingsuit>
+	<spw_muffledivingsuittooltip>Requires "Extended Sounds" to be enabled.\nToggles the slight muffling of sounds when wearing a diving suit</spw_muffledivingsuittooltip>
+	
 	<spw_voicesettings>Voice Settings</spw_voicesettings>
 	<spw_radiobandpassfrequency>Radio Bandpass Frequency</spw_radiobandpassfrequency>
 	<spw_radiobandpassfrequencytooltip>The center frequency of the bandpass filter. Defines the frequencies </spw_radiobandpassfrequencytooltip>

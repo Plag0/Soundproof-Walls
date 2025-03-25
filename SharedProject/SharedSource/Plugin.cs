@@ -67,7 +67,7 @@ namespace SoundproofWalls
             LuaCsLogger.Log("Soundproof Walls: Stop hook started running.");
 
 #if CLIENT
-            ShutdownClient();
+            ShutdownClient(stopping: true);
 #endif
             harmony.UnpatchAll();
 

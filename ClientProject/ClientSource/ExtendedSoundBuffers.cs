@@ -5,7 +5,7 @@ using OpenAL;
 
 namespace SoundproofWalls
 {
-    internal sealed class ExtendedSoundBuffers : IDisposable
+    sealed class ExtendedSoundBuffers : IDisposable
     {
         private static readonly HashSet<uint> bufferPool = new HashSet<uint>();
 #if OSX
@@ -17,9 +17,9 @@ namespace SoundproofWalls
         private readonly Sound sound;
 
         public uint AlBuffer { get; private set; } = 0;
-        public uint AlNormMuffledBuffer { get; private set; } = 0;
-        public uint AlSuitMuffledBuffer { get; private set; } = 0;
-        public uint AlEavesdroppingMuffledBuffer { get; private set; } = 0;
+        public uint AlHeavyMuffledBuffer { get; private set; } = 0;
+        public uint AlLightMuffledBuffer { get; private set; } = 0;
+        public uint AlMediumMuffledBuffer { get; private set; } = 0;
 
         public ExtendedSoundBuffers(Sound sound) { this.sound = sound; }
         public void Dispose()
@@ -31,31 +31,31 @@ namespace SoundproofWalls
                     bufferPool.Add(AlBuffer);
                 }
             }
-            if (AlNormMuffledBuffer != 0)
+            if (AlHeavyMuffledBuffer != 0)
             {
                 lock (bufferPool)
                 {
-                    bufferPool.Add(AlNormMuffledBuffer);
+                    bufferPool.Add(AlHeavyMuffledBuffer);
                 }
             }
-            if (AlSuitMuffledBuffer != 0)
+            if (AlLightMuffledBuffer != 0)
             {
                 lock (bufferPool)
                 {
-                    bufferPool.Add(AlSuitMuffledBuffer);
+                    bufferPool.Add(AlLightMuffledBuffer);
                 }
             }
-            if (AlEavesdroppingMuffledBuffer != 0)
+            if (AlMediumMuffledBuffer != 0)
             {
                 lock (bufferPool)
                 {
-                    bufferPool.Add(AlEavesdroppingMuffledBuffer);
+                    bufferPool.Add(AlMediumMuffledBuffer);
                 }
             }
             AlBuffer = 0;
-            AlNormMuffledBuffer = 0;
-            AlSuitMuffledBuffer = 0;
-            AlEavesdroppingMuffledBuffer = 0;
+            AlHeavyMuffledBuffer = 0;
+            AlLightMuffledBuffer = 0;
+            AlMediumMuffledBuffer = 0;
         }
 
         public static void ClearPool()
@@ -70,7 +70,7 @@ namespace SoundproofWalls
 
         public bool RequestAlBuffers()
         {
-            if (AlBuffer != 0) { return false; }
+            if (AlBuffer != 0 || AlHeavyMuffledBuffer != 0 || AlMediumMuffledBuffer != 0 || AlLightMuffledBuffer != 0) { return false; }
             int alError;
             lock (bufferPool)
             {
@@ -103,12 +103,12 @@ namespace SoundproofWalls
                 {
                     AlBuffer = bufferPool.First();
                     bufferPool.Remove(AlBuffer);
-                    AlNormMuffledBuffer = bufferPool.First();
-                    bufferPool.Remove(AlNormMuffledBuffer);
-                    AlSuitMuffledBuffer = bufferPool.First();
-                    bufferPool.Remove(AlSuitMuffledBuffer);
-                    AlEavesdroppingMuffledBuffer = bufferPool.First();
-                    bufferPool.Remove(AlEavesdroppingMuffledBuffer);
+                    AlHeavyMuffledBuffer = bufferPool.First();
+                    bufferPool.Remove(AlHeavyMuffledBuffer);
+                    AlMediumMuffledBuffer = bufferPool.First();
+                    bufferPool.Remove(AlMediumMuffledBuffer);
+                    AlLightMuffledBuffer = bufferPool.First();
+                    bufferPool.Remove(AlLightMuffledBuffer);
                     return true;
                 }
             }
@@ -132,13 +132,13 @@ namespace SoundproofWalls
                 otherSound.Owner.KillChannels(otherSound);
 
                 AlBuffer = otherSound.Buffers.AlBuffer;
-                AlNormMuffledBuffer = otherSound.Buffers.AlNormMuffledBuffer;
-                AlSuitMuffledBuffer = otherSound.Buffers.AlSuitMuffledBuffer;
-                AlEavesdroppingMuffledBuffer = otherSound.Buffers.AlEavesdroppingMuffledBuffer;
+                AlHeavyMuffledBuffer = otherSound.Buffers.AlHeavyMuffledBuffer;
+                AlLightMuffledBuffer = otherSound.Buffers.AlLightMuffledBuffer;
+                AlMediumMuffledBuffer = otherSound.Buffers.AlMediumMuffledBuffer;
                 otherSound.Buffers.AlBuffer = 0;
-                otherSound.Buffers.AlNormMuffledBuffer = 0;
-                otherSound.Buffers.AlSuitMuffledBuffer = 0;
-                otherSound.Buffers.AlEavesdroppingMuffledBuffer = 0;
+                otherSound.Buffers.AlHeavyMuffledBuffer = 0;
+                otherSound.Buffers.AlLightMuffledBuffer = 0;
+                otherSound.Buffers.AlMediumMuffledBuffer = 0;
 
                 // For performance reasons, sift the current sound to
                 // the end of the loadedSounds list, that way it'll
@@ -150,17 +150,17 @@ namespace SoundproofWalls
                 {
                     throw new Exception(sound.Filename + " has an invalid buffer!");
                 }
-                if (!Al.IsBuffer(AlNormMuffledBuffer))
+                if (!Al.IsBuffer(AlHeavyMuffledBuffer))
                 {
-                    throw new Exception(sound.Filename + " has an invalid normal muffled buffer!");
+                    throw new Exception(sound.Filename + " has an invalid heavy muffled buffer!");
                 }
-                if (!Al.IsBuffer(AlSuitMuffledBuffer))
+                if (!Al.IsBuffer(AlLightMuffledBuffer))
                 {
-                    throw new Exception(sound.Filename + " has an invalid suit muffled buffer!");
+                    throw new Exception(sound.Filename + " has an invalid light muffled buffer!");
                 }
-                if (!Al.IsBuffer(AlEavesdroppingMuffledBuffer))
+                if (!Al.IsBuffer(AlMediumMuffledBuffer))
                 {
-                    throw new Exception(sound.Filename + " has an invalid eavesdropping muffled buffer!");
+                    throw new Exception(sound.Filename + " has an invalid medium muffled buffer!");
                 }
 
                 return true;

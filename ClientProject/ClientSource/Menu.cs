@@ -55,6 +55,16 @@ namespace SoundproofWalls
                     tick.ToolTip = TextManager.Get("spw_syncsettingstooltip").Value;
                 }
 
+                // Enable Extended Sounds:
+                tick = EasySettings.TickBox(list.Content, string.Empty, config.ExtendedSoundsEnabled, state =>
+                {
+                    config.ExtendedSoundsEnabled = state;
+                    ConfigManager.SaveConfig(config);
+                });
+                tick.Text = $"{TextManager.Get("spw_extendedsoundsenabled").Value}{Menu.GetServerValueString(nameof(config.ExtendedSoundsEnabled))}";
+                tick.ToolTip = TextManager.Get("spw_extendedsoundsenabledtooltip").Value;
+
+
                 // Talk While Ragdoll:
                 tick = EasySettings.TickBox(list.Content, string.Empty, config.TalkingRagdolls, state =>
                 {
@@ -63,15 +73,6 @@ namespace SoundproofWalls
                 });
                 tick.Text = $"{TextManager.Get("spw_talkingragdolls").Value}{Menu.GetServerValueString(nameof(config.TalkingRagdolls))}";
                 tick.ToolTip = TextManager.Get("spw_talkingragdollstooltip").Value;
-
-                // Muffle Diving Suits:
-                tick = EasySettings.TickBox(list.Content, string.Empty, config.MuffleDivingSuits, state =>
-                {
-                    config.MuffleDivingSuits = state;
-                    ConfigManager.SaveConfig(config);
-                });
-                tick.Text = $"{TextManager.Get("spw_muffledivingsuit").Value}{Menu.GetServerValueString(nameof(config.MuffleDivingSuits))}";
-                tick.ToolTip = TextManager.Get("spw_muffledivingsuittooltip").Value;
 
                 // Focus Target Audio:
                 tick = EasySettings.TickBox(list.Content, string.Empty, config.FocusTargetAudio, state =>
@@ -82,51 +83,66 @@ namespace SoundproofWalls
                 tick.Text = $"{TextManager.Get("spw_focustargetaudio").Value}{Menu.GetServerValueString(nameof(config.FocusTargetAudio))}";
                 tick.ToolTip = TextManager.Get("spw_focustargetaudiotooltip").Value;
 
-                // General Lowpass Freq:
+                // Heavy Obstruction Lowpass Freq:
                 // The previous vanilla muffle frequency was 1600. Now it's 600 and can be accessed via SoundPlayer.MuffleFilterFrequency.
-                GUITextBlock textBlockGLF = EasySettings.TextBlock(list, string.Empty);
-                slider = EasySettings.LogSlider(list.Content, 10, 1600, (float)config.GeneralLowpassFrequency, value =>
+                GUITextBlock textBlockHOF = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.LogSlider(list.Content, 10, 1600, (float)config.HeavyLowpassFrequency, value =>
                 {
                     value = RoundToNearestMultiple(value, 10);
-                    config.GeneralLowpassFrequency = value;
+                    config.HeavyLowpassFrequency = value;
                     ConfigManager.SaveConfig(config);
 
                     slider_text = string.Empty;
-                    if (config.GeneralLowpassFrequency == defaultConfig.GeneralLowpassFrequency)
+                    if (config.HeavyLowpassFrequency == defaultConfig.HeavyLowpassFrequency)
                     {
                         slider_text = default_preset;
                     }
-                    else if (config.GeneralLowpassFrequency == SoundPlayer.MuffleFilterFrequency)
+                    else if (config.HeavyLowpassFrequency == SoundPlayer.MuffleFilterFrequency)
                     {
                         slider_text = vanilla_preset;
                     }
-                    textBlockGLF.Text = $"{TextManager.Get("spw_lowpassfrequency").Value}: {value}Hz {slider_text}";
+                    textBlockHOF.Text = $"{TextManager.Get("spw_heavylowpassfrequency").Value}: {value}Hz {slider_text}";
                 }, 10);
-                textBlockGLF.Text = $"{TextManager.Get("spw_lowpassfrequency").Value}: {RoundToNearestMultiple(slider.GetConvertedValue(), 10)}Hz{GetServerValueString(nameof(config.GeneralLowpassFrequency), "Hz")}";
-                slider.ToolTip = TextManager.Get("spw_lowpassfrequencytooltip");
+                textBlockHOF.Text = $"{TextManager.Get("spw_heavylowpassfrequency").Value}: {RoundToNearestMultiple(slider.GetConvertedValue(), 10)}Hz{GetServerValueString(nameof(config.HeavyLowpassFrequency), "Hz")}";
+                slider.ToolTip = TextManager.Get("spw_heavylowpassfrequencytooltip");
 
-                // Suit Lowpass Freq:
-                // In vanilla this is not a separate thing and is the same as the general muffle frequency.
-                GUITextBlock textBlockSLF = EasySettings.TextBlock(list, string.Empty);
-                slider = EasySettings.LogSlider(list.Content, 10, 3200, (float)config.DivingSuitLowpassFrequency, value =>
+                // Medium Obstruction Lowpass Freq:
+                GUITextBlock textBlockMOF = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.LogSlider(list.Content, 10, 3200, (float)config.MediumLowpassFrequency, value =>
                 {
                     value = RoundToNearestMultiple(value, 10);
-                    config.DivingSuitLowpassFrequency = value;
+                    config.MediumLowpassFrequency = value;
                     ConfigManager.SaveConfig(config);
 
                     slider_text = string.Empty;
-                    if (config.DivingSuitLowpassFrequency == defaultConfig.DivingSuitLowpassFrequency)
+                    if (config.MediumLowpassFrequency == defaultConfig.MediumLowpassFrequency)
                     {
                         slider_text = default_preset;
                     }
-                    else if (config.DivingSuitLowpassFrequency == SoundPlayer.MuffleFilterFrequency)
-                    {
-                        slider_text = vanilla_preset;
-                    }
-                    textBlockSLF.Text = $"{TextManager.Get("spw_suitlowpassfrequency").Value}: {value}Hz {slider_text}";
+
+                    textBlockMOF.Text = $"{TextManager.Get("spw_mediumlowpassfrequency").Value}: {value}Hz {slider_text}";
                 }, 10);
-                textBlockSLF.Text = $"{TextManager.Get("spw_suitlowpassfrequency").Value}: {RoundToNearestMultiple(slider.GetConvertedValue(), 10)}Hz{GetServerValueString(nameof(config.DivingSuitLowpassFrequency), "Hz")}";
-                slider.ToolTip = TextManager.Get("spw_suitlowpassfrequencytooltip");
+                textBlockMOF.Text = $"{TextManager.Get("spw_mediumlowpassfrequency").Value}: {RoundToNearestMultiple(slider.GetConvertedValue(), 10)}Hz{GetServerValueString(nameof(config.MediumLowpassFrequency), "Hz")}";
+                slider.ToolTip = TextManager.Get("spw_mediumlowpassfrequencytooltip");
+
+                // Light Obstruction Lowpass Freq:
+                GUITextBlock textBlockLOF = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.LogSlider(list.Content, 10, 3200, (float)config.LightLowpassFrequency, value =>
+                {
+                    value = RoundToNearestMultiple(value, 10);
+                    config.LightLowpassFrequency = value;
+                    ConfigManager.SaveConfig(config);
+
+                    slider_text = string.Empty;
+                    if (config.LightLowpassFrequency == defaultConfig.LightLowpassFrequency)
+                    {
+                        slider_text = default_preset;
+                    }
+
+                    textBlockLOF.Text = $"{TextManager.Get("spw_lightlowpassfrequency").Value}: {value}Hz {slider_text}";
+                }, 10);
+                textBlockLOF.Text = $"{TextManager.Get("spw_lightlowpassfrequency").Value}: {RoundToNearestMultiple(slider.GetConvertedValue(), 10)}Hz{GetServerValueString(nameof(config.LightLowpassFrequency), "Hz")}";
+                slider.ToolTip = TextManager.Get("spw_lightlowpassfrequencytooltip");
 
                 // Sound Range:
                 GUITextBlock textBlockSR = EasySettings.TextBlock(list, string.Empty);
@@ -216,33 +232,46 @@ namespace SoundproofWalls
                 textBlockMSPM.Text = $"{TextManager.Get("spw_muffledsoundpitch").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.MuffledSoundPitchMultiplier))}";
                 slider.ToolTip = TextManager.Get("spw_muffledsoundpitchtooltip");
 
+
+                // Muffled Settings:
+
+                // Muffle Diving Suits:
+                tick = EasySettings.TickBox(list.Content, string.Empty, config.MuffleDivingSuits, state =>
+                {
+                    config.MuffleDivingSuits = state;
+                    ConfigManager.SaveConfig(config);
+                });
+                tick.Text = $"{TextManager.Get("spw_muffledivingsuit").Value}{Menu.GetServerValueString(nameof(config.MuffleDivingSuits))}";
+                tick.ToolTip = TextManager.Get("spw_muffledivingsuittooltip").Value;
+
+
                 // Voice Settings:
                 EasySettings.TextBlock(list, TextManager.Get("spw_voicesettings").Value, y: 0.1f, size: 1.3f, color: Color.LightYellow);
 
                 // Voice Lowpass Freq:
                 GUITextBlock textBlockVLF = EasySettings.TextBlock(list, string.Empty);
-                slider = EasySettings.LogSlider(list.Content, 10, SoundproofWalls.VANILLA_VOIP_LOWPASS_FREQUENCY * 1.5f, (float)config.VoiceLowpassFrequency, value =>
+                slider = EasySettings.LogSlider(list.Content, 10, SoundproofWalls.VANILLA_VOIP_LOWPASS_FREQUENCY * 1.5f, (float)config.VoiceHeavyLowpassFrequency, value =>
                 {
                     value = RoundToNearestMultiple(value, 10);
 
                     // Prevents our BiQuad ctor from recieving a confusing frequency number used by the vanilla game.
                     if (value == SoundPlayer.MuffleFilterFrequency) { value += 10; }
 
-                    config.VoiceLowpassFrequency = value;
+                    config.VoiceHeavyLowpassFrequency = value;
                     ConfigManager.SaveConfig(config);
 
                     slider_text = string.Empty;
-                    if (config.VoiceLowpassFrequency == defaultConfig.VoiceLowpassFrequency)
+                    if (config.VoiceHeavyLowpassFrequency == defaultConfig.VoiceHeavyLowpassFrequency)
                     {
                         slider_text = default_preset;
                     }
-                    else if (config.VoiceLowpassFrequency == SoundproofWalls.VANILLA_VOIP_LOWPASS_FREQUENCY)
+                    else if (config.VoiceHeavyLowpassFrequency == SoundproofWalls.VANILLA_VOIP_LOWPASS_FREQUENCY)
                     {
                         slider_text = vanilla_preset;
                     }
                     textBlockVLF.Text = $"{TextManager.Get("spw_voicelowpassfrequency").Value}: {value}Hz {slider_text}";
                 }, 10);
-                textBlockVLF.Text = $"{TextManager.Get("spw_voicelowpassfrequency").Value}: {RoundToNearestMultiple(slider.GetConvertedValue(), 10)}Hz{GetServerValueString(nameof(config.VoiceLowpassFrequency), "Hz")}";
+                textBlockVLF.Text = $"{TextManager.Get("spw_voicelowpassfrequency").Value}: {RoundToNearestMultiple(slider.GetConvertedValue(), 10)}Hz{GetServerValueString(nameof(config.VoiceHeavyLowpassFrequency), "Hz")}";
                 slider.ToolTip = TextManager.Get("spw_voicelowpassfrequencytooltip");
 
                 // Radio Bandpass Quality Factor:
@@ -667,7 +696,7 @@ namespace SoundproofWalls
                 tick.Text = $"{TextManager.Get("spw_mufflefiresounds").Value}{Menu.GetServerValueString(nameof(config.MuffleFireSounds))}";
                 tick.ToolTip = TextManager.Get("spw_mufflefiresoundstooltip").Value;
 
-                // Diving Suit Pitch Multiplier
+                // Diving LightObstruction Pitch Multiplier
                 GUITextBlock textBlockDPM = EasySettings.TextBlock(list, string.Empty);
                 slider = EasySettings.Slider(list.Content, 0.25f, 4, config.DivingSuitPitchMultiplier, value =>
                 {
@@ -841,13 +870,13 @@ namespace SoundproofWalls
                 };
 
                 // Water Ignored Sounds:
-                GUITextBlock textBlockWIS = EasySettings.TextBlock(list, $"{TextManager.Get("spw_waterignoredsounds").Value}{GetServerHashSetString(nameof(config.WaterIgnoredSounds))}");
-                GUITextBox soundListWIS = EasySettings.MultiLineTextBox(list.Content.RectTransform, JsonSerializer.Serialize(config.WaterIgnoredSounds, jsonOptions), 0.15f);
+                GUITextBlock textBlockWIS = EasySettings.TextBlock(list, $"{TextManager.Get("spw_waterignoredsounds").Value}{GetServerHashSetString(nameof(config.SurfaceIgnoredSounds))}");
+                GUITextBox soundListWIS = EasySettings.MultiLineTextBox(list.Content.RectTransform, JsonSerializer.Serialize(config.SurfaceIgnoredSounds, jsonOptions), 0.15f);
                 soundListWIS.OnTextChangedDelegate = (textBox, text) =>
                 {
                     try
                     {
-                        config.WaterIgnoredSounds = JsonSerializer.Deserialize<HashSet<string>>(textBox.Text);
+                        config.SurfaceIgnoredSounds = JsonSerializer.Deserialize<HashSet<string>>(textBox.Text);
                         ConfigManager.SaveConfig(config);
                         textBlockWIS.Text = TextManager.Get("spw_waterignoredsounds").Value;
                     }
@@ -861,9 +890,9 @@ namespace SoundproofWalls
                 button = new GUIButton(new RectTransform(new Vector2(1, 0.2f), list.Content.RectTransform), TextManager.Get("spw_reset").Value, Alignment.Center, "GUIButtonSmall");
                 button.OnClicked = (sender, args) =>
                 {
-                    config.WaterIgnoredSounds = defaultConfig.WaterIgnoredSounds;
+                    config.SurfaceIgnoredSounds = defaultConfig.SurfaceIgnoredSounds;
                     ConfigManager.SaveConfig(config);
-                    soundListWIS.Text = JsonSerializer.Serialize(config.WaterIgnoredSounds, jsonOptions);
+                    soundListWIS.Text = JsonSerializer.Serialize(config.SurfaceIgnoredSounds, jsonOptions);
                     return true;
                 };
 
@@ -891,6 +920,33 @@ namespace SoundproofWalls
                     config.SubmersionIgnoredSounds = defaultConfig.SubmersionIgnoredSounds;
                     ConfigManager.SaveConfig(config);
                     soundListSIS.Text = JsonSerializer.Serialize(config.SubmersionIgnoredSounds, jsonOptions);
+                    return true;
+                };
+
+                // Wall Propagating Sounds:
+                GUITextBlock textBlockWPS = EasySettings.TextBlock(list, $"{TextManager.Get("spw_wallpropagatingsounds").Value}{GetServerHashSetString(nameof(config.WallPropagatingSounds))}");
+                GUITextBox soundListWPS = EasySettings.MultiLineTextBox(list.Content.RectTransform, JsonSerializer.Serialize(config.WallPropagatingSounds, jsonOptions), 0.15f);
+                soundListWPS.OnTextChangedDelegate = (textBox, text) =>
+                {
+                    try
+                    {
+                        config.WallPropagatingSounds = JsonSerializer.Deserialize<HashSet<string>>(textBox.Text);
+                        ConfigManager.SaveConfig(config);
+                        textBlockWPS.Text = TextManager.Get("spw_wallpropagatingsounds").Value;
+                    }
+                    catch (JsonException)
+                    {
+                        textBlockWPS.Text = $"{TextManager.Get("spw_wallpropagatingsounds").Value} ({TextManager.Get("spw_invalidinput").Value})";
+                    }
+                    return true;
+                };
+                // Reset button:
+                button = new GUIButton(new RectTransform(new Vector2(1, 0.2f), list.Content.RectTransform), TextManager.Get("spw_reset").Value, Alignment.Center, "GUIButtonSmall");
+                button.OnClicked = (sender, args) =>
+                {
+                    config.WallPropagatingSounds = defaultConfig.WallPropagatingSounds;
+                    ConfigManager.SaveConfig(config);
+                    soundListWPS.Text = JsonSerializer.Serialize(config.WallPropagatingSounds, jsonOptions);
                     return true;
                 };
 
@@ -945,6 +1001,33 @@ namespace SoundproofWalls
                     config.PitchIgnoredSounds = defaultConfig.PitchIgnoredSounds;
                     ConfigManager.SaveConfig(config);
                     soundListPIS.Text = JsonSerializer.Serialize(config.PitchIgnoredSounds, jsonOptions);
+                    return true;
+                };
+
+                // Lowpass Forced Sounds:
+                GUITextBlock textBlockLFS = EasySettings.TextBlock(list, $"{TextManager.Get("spw_lowpassforcedsounds").Value}{GetServerHashSetString(nameof(config.LowpassForcedSounds))}");
+                GUITextBox soundListLFS = EasySettings.MultiLineTextBox(list.Content.RectTransform, JsonSerializer.Serialize(config.LowpassForcedSounds, jsonOptions), 0.15f);
+                soundListLFS.OnTextChangedDelegate = (textBox, text) =>
+                {
+                    try
+                    {
+                        config.LowpassForcedSounds = JsonSerializer.Deserialize<HashSet<string>>(textBox.Text);
+                        ConfigManager.SaveConfig(config);
+                        textBlockLFS.Text = TextManager.Get("spw_lowpassforcedsounds").Value;
+                    }
+                    catch (JsonException)
+                    {
+                        textBlockLFS.Text = $"{TextManager.Get("spw_lowpassforcedsounds").Value} ({TextManager.Get("spw_invalidinput").Value})";
+                    }
+                    return true;
+                };
+                // Reset button:
+                button = new GUIButton(new RectTransform(new Vector2(1, 0.2f), list.Content.RectTransform), TextManager.Get("spw_reset").Value, Alignment.Center, "GUIButtonSmall");
+                button.OnClicked = (sender, args) =>
+                {
+                    config.LowpassForcedSounds = defaultConfig.LowpassForcedSounds;
+                    ConfigManager.SaveConfig(config);
+                    soundListLFS.Text = JsonSerializer.Serialize(config.LowpassForcedSounds, jsonOptions);
                     return true;
                 };
 

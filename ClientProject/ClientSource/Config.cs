@@ -29,15 +29,26 @@ namespace SoundproofWalls
         // General
         public bool Enabled { get; set; } = true;
         public bool SyncSettings { get; set; } = true;
-        public bool MuffleDivingSuits { get; set; } = true;
+        public bool ExtendedSoundsEnabled { get; set; } = true; // Allows muffling of diving suits, eavesdropped sounds, hydrophoned sounds, propagating sounds, and path ignored sounds, at the cost of high loading times and memory use.
         public bool TalkingRagdolls { get; set; } = true;
         public bool FocusTargetAudio { get; set; } = true;
-        public double GeneralLowpassFrequency { get; set; } = 200f;
-        public double DivingSuitLowpassFrequency { get; set; } = 1200; // Also used to muffle propagating sounds and path ignored sounds.
-        public float SoundRangeMultiplier { get; set; } = 1.8f;
+        public double HeavyLowpassFrequency { get; set; } = 200f; // Used for wall and water obstructions.
+        public double MediumLowpassFrequency { get; set; } = 700; // Used for eavesdropping.
+        public double LightLowpassFrequency { get; set; } = 1200; // Used for wearing suits, propagating sounds, and path ignored sounds.
+        public double VoiceHeavyLowpassFrequency { get; set; } = 150f; // Used when a player's voice is muffled heavily. Otherwise, uses medium or light.
+        public float SoundRangeMultiplier { get; set; } = 2.0f;
+        public float SoundPropagationRange { get; set; } = 500; // Area^2 that a sound in WallPropagatingSounds can search for a hull to propagate to.
+
+        // Muffle
+        public bool MuffleDivingSuits { get; set; } = true; // Requires ExtendedSoundsEnabled to be on.
+        public bool MuffleEavesdropping { get; set; } = true; // Requires ExtendedSoundsEnabled to be on.
+        public bool MuffleSubmergedPlayer { get; set; } = true; // the equivalent of adding all sounds into SubmersionIgnoredSounds
+        public bool MuffleSubmergedViewTarget { get; set; } = true; // ^
+        public bool MuffleSubmergedSounds { get; set; } = true; // the equivalent of adding all sounds into SurfaceIgnoredSounds
+        public bool MuffleFlowSounds { get; set; } = true;
+        public bool MuffleFireSounds { get; set; } = true;
 
         // Voice
-        public double VoiceLowpassFrequency { get; set; } = 150f;
         public double RadioBandpassFrequency { get; set; } = 1200;
         public float RadioBandpassQualityFactor { get; set; } = 2.5f;
         public float RadioDistortion { get; set; } = 0.0f;
@@ -54,15 +65,13 @@ namespace SoundproofWalls
         public float MuffledSoundVolumeMultiplier { get; set; } = 0.8f;
         public float MuffledVoiceVolumeMultiplier { get; set; } = 0.8f;
         public float MuffledComponentVolumeMultiplier { get; set; } = 0.75f;
-        public float SubmergedVolumeMultiplier { get; set; } = 3f;
+        public float SubmergedVolumeMultiplier { get; set; } = 2.5f;
         public float UnmuffledComponentVolumeMultiplier { get; set; } = 1f;
         public float FlowSoundVolumeMultiplier { get; set; } = 0.9f;
         public float FireSoundVolumeMultiplier { get; set; } = 1f;
 
         // Eavesdropping
         public string EavesdroppingBind { get; set; } = "SecondaryMouse";
-        public bool MuffleEavesdropping { get; set; } = true;
-        public double EavesdroppingLowpassFrequency { get; set; } = 700;
         public float EavesdroppingSoundVolumeMultiplier { get; set; } = 1.1f;
         public float EavesdroppingVoiceVolumeMultiplier { get; set; } = 0.9f;
         public float EavesdroppingPitchMultiplier { get; set; } = 1f;
@@ -72,20 +81,29 @@ namespace SoundproofWalls
 
         // Hydrophone monitoring
         public float HydrophoneSoundRange { get; set; } = 7500; // In cm.
-        public float HydrophoneVolumeMultiplier { get; set; } = 1.1f;
+        public float HydrophoneVolumeMultiplier { get; set; } = 1.5f;
         public float HydrophonePitchMultiplier { get; set; } = 0.8f;
-        public bool HydrophoneLegacySwitch { get; set; } = false;
         public bool HydrophoneSwitchEnabled { get; set; } = true;
+        public bool HydrophoneLegacySwitch { get; set; } = false;
 
         // Ambience
         public float UnsubmergedWaterAmbienceVolumeMultiplier { get; set; } = 0.2f;
-        public float SubmergedWaterAmbienceVolumeMultiplier { get; set; } = 1.1f;
-        public float HydrophoneWaterAmbienceVolumeMultiplier { get; set; } = 2f;
+        public float SubmergedWaterAmbienceVolumeMultiplier { get; set; } = 0.9f;
+        public float HydrophoneWaterAmbienceVolumeMultiplier { get; set; } = 2.0f;
         public float WaterAmbienceTransitionSpeedMultiplier { get; set; } = 3.5f;
+
+        // Pitch settings
+        public float MuffledSoundPitchMultiplier { get; set; } = 1f; // Strength of the distance-based pitch effect on muffled non-looping sounds.
+        public float DivingSuitPitchMultiplier { get; set; } = 1f;
+        public float SubmergedPitchMultiplier { get; set; } = 1f;
+        public float MuffledComponentPitchMultiplier { get; set; } = 1f;
+        public float UnmuffledComponentPitchMultiplier { get; set; } = 1f;
+        public float MuffledVoicePitchMultiplier { get; set; } = 1f;
+        public float UnmuffledVoicePitchMultiplier { get; set; } = 1f;
 
         // Advanced settings
 
-        // A general rule is to keep the most vague names at the bottom.
+        // A general rule is to keep the most vague names at the bottom so when searching for a match the more specific ones can be found first.
         public HashSet<CustomSound> CustomSounds { get; set; } = new HashSet<CustomSound>(new ElementEqualityComparer())
         {
             new CustomSound("footstep", 0.9f),
@@ -119,6 +137,53 @@ namespace SoundproofWalls
             "pickitem",
         };
 
+        // Sounds that don't treat the surface of the water like another wall and can pass in and out freely.
+        public HashSet<string> SurfaceIgnoredSounds { get; set; } = new HashSet<string>
+        {
+            "splash",
+            "footstep", // Prevents footsteps from being muffled when standing in an inch of water.
+            "door",
+            "pump",
+            "alien"
+        };
+
+        // Submerged sounds that can freely travel through their body of water without it being treated like a wall.
+        // Note: this is only relevant if the listener's ears are also submerged.
+        //       It's not necessary for a sound to ignore submersion to exit through the ignored surface.
+        //       This setting is basically, "can the listener's ears hear this sound clearly when they are submerged with it or is it muffled?"
+        public HashSet<string> SubmersionIgnoredSounds { get; set; } = new HashSet<string>
+        {
+            "/characters/", // Enemy creatures.
+            "divingsuit",
+            "sonardecoy",
+            "alienturret",
+            "alien_artifactholderloop"
+        };
+
+        public HashSet<string> WallPropagatingSounds { get; set; } = new HashSet<string>
+        {
+            "damage/structure",
+            "damage/creak",
+            "damage/glass",
+            "damage/damage_alienruins",
+            "electricaldischarge",
+
+            // Allow turrets to be heard from the hull directly below/above them.
+            "railgun", // Includes the turret moving sounds.
+            "chaingunshot",
+            "flakgun",
+            "coilgun",
+            "lasergunshot",
+        };
+
+        // Alarms/sirens should be able to be heard across the ship regardless of walls.
+        public HashSet<string> PathIgnoredSounds { get; set; } = new HashSet<string>
+        {
+            "items/alarmdivingloop.ogg",
+            "items/alarmbuzzerloop.ogg",
+            "items/warningsiren.ogg"
+        };
+
         public HashSet<string> PitchIgnoredSounds { get; set; } = new HashSet<string>
         {
             "deconstructor",
@@ -128,10 +193,6 @@ namespace SoundproofWalls
             "female"
         };
 
-        public HashSet<string> LowpassIgnoredSounds { get; set; } = new HashSet<string>
-        {
-        };
-
         // Sounds that ignore muffling by default that should still be checked by MuffleInfo.
         public HashSet<string> LowpassForcedSounds { get; set; } = new HashSet<string>
         {
@@ -139,67 +200,18 @@ namespace SoundproofWalls
             "barotrauma/content/sounds/fire"
         };
 
+        public HashSet<string> LowpassIgnoredSounds { get; set; } = new HashSet<string>
+        {
+        };
+
         public HashSet<string> ContainerIgnoredSounds { get; set; } = new HashSet<string>
         {
-        };
-        // Alarms/sirens should be able to be heard across the ship regardless of walls.
-        public HashSet<string> PathIgnoredSounds { get; set; } = new HashSet<string>
-        {
-            "items/alarmdivingloop.ogg",
-            "items/alarmbuzzerloop.ogg",
-            "items/warningsiren.ogg"
-        };
-
-        // Ignore sounds in water without player - Underwater sounds that are NOT occluded when propagating from water to air.
-        public HashSet<string> WaterIgnoredSounds { get; set; } = new HashSet<string>
-        {
-            "splash",
-            "footstep",
-            "door",
-            "pump",
-            "emp",
-            "electricaldischarge",
-            "sonardecoy",
-            "alien"
-        };
-
-        // Ignore sounds in water with player - Underwater sounds that can be heard clearly when also underwater.
-        public HashSet<string> SubmersionIgnoredSounds { get; set; } = new HashSet<string>
-        {
-            "/characters/",
-            "divingsuit",
-            "sonardecoy",
-            "alienturret",
-            "alien_artifactholderloop"
-        };
-        public HashSet<string> WallPropagatingSounds { get; set; } = new HashSet<string>
-        {
-            "damage/structure",
-            "damage/creak",
-            "damage/glass",
-            "damage/damage_alienruins",
         };
 
         public HashSet<string> BubbleIgnoredNames { get; set; } = new HashSet<string>
         {
         };
 
-        // Extra settings
-        public bool MuffleSubmergedPlayer { get; set; } = true; // the equivalent of adding all sounds into SubmersionIgnoredSounds
-        public bool MuffleSubmergedViewTarget { get; set; } = true; // ^
-        public bool MuffleSubmergedSounds { get; set; } = true; // the equivalent of adding all sounds into WaterIgnoredSounds
-        public bool MuffleFlowSounds { get; set; } = true;
-        public bool MuffleFireSounds { get; set; } = true;
-        public bool MuffleExoSuitSound { get; set; } = true; // Muffles the sound of the exo suit moving when wearing it.
-        public bool EstimatePathToFakeSounds { get; set; } = false;
-        public float SoundPropagationRange { get; set; } = 500; // Range in x/y direction that a sound in WallPropagatingSounds can search for a hull to propagate to.
-        public float MuffledSoundPitchMultiplier { get; set; } = 1f; // Strength of the distance-based pitch effect on muffled non-looping sounds.
-        public float DivingSuitPitchMultiplier { get; set; } = 1f;
-        public float SubmergedPitchMultiplier { get; set; } = 1f;
-        public float MuffledVoicePitchMultiplier { get; set; } = 1f;
-        public float UnmuffledVoicePitchMultiplier { get; set; } = 1f;
-        public float MuffledComponentPitchMultiplier { get; set; } = 1f;
-        public float UnmuffledComponentPitchMultiplier { get; set; } = 1f;
         [JsonIgnore]
         public bool HideSettings { get; set; } = false;
     }
