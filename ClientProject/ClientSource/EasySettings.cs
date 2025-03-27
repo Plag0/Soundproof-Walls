@@ -142,7 +142,7 @@ namespace SoundproofWalls
 
                 ShouldUpdateConfig = Math.Abs(startValue - roundedValue) > 0.001f;
 
-                LuaCsLogger.Log($"start value: {startValue} new value: {roundedValue} should update? {ShouldUpdateConfig}");
+                //LuaCsLogger.Log($"start value: {startValue} new value: {roundedValue} should update? {ShouldUpdateConfig}");
                 return true;
             };
 

@@ -6,12 +6,11 @@
 	<spw_generalsettings>General Settings</spw_generalsettings>
 	<spw_syncsettingsalert>Note: This server has syncing enabled - all players will automatically use the host's settings (values in parentheses)</spw_syncsettingsalert>
 	<spw_enabled>Enabled</spw_enabled>
-	<spw_disabled>Disabled</spw_disabled>
 	<spw_enabledtooltip>Toggles all functionality of the mod</spw_enabledtooltip>
-	<spw_syncsettings>Sync Settings</spw_syncsettings>
-	<spw_syncsettingstooltip>Requires server-side Lua to be running.\nSynchronizes the host/admin's local config file with all players connected to the server (this is achieved by creating a separate config held server-side for players' to inherit. This setting does not modify any local config files)</spw_syncsettingstooltip>
 	<spw_extendedsoundsenabled>Extended Sounds</spw_extendedsoundsenabled>
 	<spw_extendedsoundsenabledtooltip>Load additional lowpass buffers for more muffle variety at the cost of longer loading times (~1s) and more memory usage (~200MB). While this setting is highly recommended, it may clash with other Lua/C# mods that modify sounds. Disable this setting if you are experiencing crashes (adjusting this setting mid-round will briefly freeze the game as new buffers are loaded)</spw_extendedsoundsenabledtooltip>
+	<spw_syncsettings>Sync Settings</spw_syncsettings>
+	<spw_syncsettingstooltip>Requires server-side Lua to be running.\nSynchronizes the host/admin's local config file with all players connected to the server (this is achieved by creating a separate config held server-side for players' to inherit. This setting does not modify any local config files)</spw_syncsettingstooltip>
 	<spw_talkingragdolls>Talking Ragdolls</spw_talkingragdolls>
 	<spw_talkingragdollstooltip>Hear players speak when they are ragdolled as long as they're not stunned</spw_talkingragdollstooltip>
 	<spw_focustargetaudio>Focus Target Audio</spw_focustargetaudio>
@@ -22,25 +21,54 @@
 	<spw_mediumlowpassfrequencytooltip>Requires "Extended Sounds" to be enabled to affect sounds.\nThe corner frequency used to muffle sounds/voices that are mildly obstructed when propagating through walls or heard via eavesdropping (adjusting this setting mid-round will briefly freeze the game as new buffers are loaded)</spw_mediumlowpassfrequencytooltip>
 	<spw_lightlowpassfrequency>Light Lowpass Frequency</spw_lightlowpassfrequency>
 	<spw_lightlowpassfrequencytooltip>Requires "Extended Sounds" to be enabled to affect sounds.\nThe corner frequency used to muffle sounds/voices that are slightly obstructed by diving suits or heard in other structures via hydrophones (adjusting this setting mid-round will briefly freeze the game as new buffers are loaded)</spw_lightlowpassfrequencytooltip>
-	<spw_voicelowpassfrequency>Voice Lowpass Frequency</spw_voicelowpassfrequency>
-	<spw_voicelowpassfrequencytooltip>The corner frequency used to muffle player voices that are heavily obstructed by walls or water. If a voice is not heavily obstructed, the light or medium slider will be used instead</spw_voicelowpassfrequencytooltip>
-	<spw_radiobandpassqualityfactor>Radio Bandpass Strength</spw_radiobandpassqualityfactor>
-	<spw_radiobandpassqualityfactortooltip>The quality factor of the radio bandpass filter. Defines how wide or narrow the filter is around its center frequency</spw_radiobandpassqualityfactortooltip>
 	<spw_soundrange>Sound Range</spw_soundrange>
 	<spw_soundrangetooltip>Range of non-component sounds</spw_soundrangetooltip>
-	<spw_voicerange>Voice Range</spw_voicerange>
-	<spw_radiorange>Radio Range</spw_radiorange>
-	<spw_muffledsoundpitch>Pitch Strength</spw_muffledsoundpitch>
-	<spw_muffledsoundpitchtooltip>The overall strength of the distance-based pitch shifting effect for muffled sounds (does not apply to looping sounds).</spw_muffledsoundpitchtooltip>
-
-	<spw_muffledivingsuit>Muffle Diving Suits</spw_muffledivingsuit>
-	<spw_muffledivingsuittooltip>Requires "Extended Sounds" to be enabled.\nToggles the slight muffling of sounds when wearing a diving suit</spw_muffledivingsuittooltip>
+	<spw_soundpropagationrange>Sound Propagation Range</spw_soundpropagationrange>
+	<spw_soundpropagationrangetooltip>The maximum distance that a sound in the "Wall Propagating Sounds" list can search for a nearby hull to propagate into</spw_soundpropagationrangetooltip>
 	
 	<spw_voicesettings>Voice Settings</spw_voicesettings>
+	<spw_voicelowpassfrequency>Voice Heavy Lowpass Frequency</spw_voicelowpassfrequency>
+	<spw_voicelowpassfrequencytooltip>The corner frequency used to muffle player voices that are heavily obstructed by walls or water. If a voice is not heavily obstructed, the standard light or medium slider will be used instead</spw_voicelowpassfrequencytooltip>
 	<spw_radiobandpassfrequency>Radio Bandpass Frequency</spw_radiobandpassfrequency>
-	<spw_radiobandpassfrequencytooltip>The center frequency of the bandpass filter. Defines the frequencies </spw_radiobandpassfrequencytooltip>
+	<spw_radiobandpassfrequencytooltip>The center frequency of the bandpass filter. The frequencies in this area (the size of which is controlled by the Q factor setting below) are allowed to pass through the radio</spw_radiobandpassfrequencytooltip>
+	<spw_radiobandpassqualityfactor>Radio Bandpass Q Factor</spw_radiobandpassqualityfactor>
+	<spw_radiobandpassqualityfactortooltip>The quality factor of the radio bandpass filter. Defines how tight the filter is around its center frequency. A higher value creates a more "intense" effect</spw_radiobandpassqualityfactortooltip>
+	<spw_radiodistortion>Radio Distortion</spw_radiodistortion>
+	<spw_radiodistortiontooltip>The amount of distortion applied to player voices over the radio</spw_radiodistortiontooltip>
+	<spw_radiostatic>Radio Static</spw_radiostatic>
+	<spw_radiostatictooltip>The amount of static heard over the radio</spw_radiostatictooltip>
+	<spw_radiocompressionthreshold>Radio Compression Threshold</spw_radiocompressionthreshold>
+	<spw_radiocompressionthresholdtooltip></spw_radiocompressionthresholdtooltip>
+	<spw_radiocompressionratio>Radio Compression Ratio</spw_radiocompressionratio>
+	<spw_radiocompressionratiotooltip></spw_radiocompressionratiotooltip>
+	<spw_voicerange>Voice Range</spw_voicerange>
+	<spw_radiorange>Radio Range</spw_radiorange>
+
+	<spw_muffledsettings>Muffle Settings</spw_muffledsettings>
+	<spw_muffledivingsuit>Muffle Diving Suits</spw_muffledivingsuit>
+	<spw_muffledivingsuittooltip>Requires "Extended Sounds" to be enabled.\nToggles the slight muffling of sounds when wearing a diving suit</spw_muffledivingsuittooltip>
+	<spw_muffleeavesdropping>Muffle Eavesdropped Sounds</spw_muffleeavesdropping>
+	<spw_muffleeavesdroppingtolltip>Requires "Extended Sounds" to be enabled.\nSounds heard through surfaces via eavesdropping are slightly muffled</spw_muffleeavesdroppingtolltip>
+	<spw_mufflesubmergedplayer>Muffle Submerged Player</spw_mufflesubmergedplayer>
+	<spw_mufflesubmergedplayertooltip>Muffle audio when your head is underwater (recommended)</spw_mufflesubmergedplayertooltip>
+	<spw_mufflesubmergedviewtarget>Muffle Submerged View Target</spw_mufflesubmergedviewtarget>
+	<spw_mufflesubmergedviewtargettooltip>Muffle audio when your viewed target is underwater (e.g., turrets, cameras, etc)</spw_mufflesubmergedviewtargettooltip>
+	<spw_mufflesubmergedsounds>Muffle Submerged Sounds</spw_mufflesubmergedsounds>
+	<spw_mufflesubmergedsoundstooltip>Muffle sounds that are positioned under the surface of the water (recommended)</spw_mufflesubmergedsoundstooltip>
+	<spw_muffleflowsounds>Muffle Flow Sounds</spw_muffleflowsounds>
+	<spw_muffleflowsoundstooltip>Toggle the muffling of water flow sounds from leaks when the player is submerged, eavesdropping, or using hydrophones</spw_muffleflowsoundstooltip>
+	<spw_mufflefiresounds>Muffle Fire Sounds</spw_mufflefiresounds>
+	<spw_mufflefiresoundstooltip>Toggle the muffling of fire sounds</spw_mufflefiresoundstooltip>
 	
 	<spw_volumesettings>Volume Settings</spw_volumesettings>
+	<spw_sidechaining>Sidechaining</spw_sidechaining>
+	<spw_sidechainingtooltip>Briefly ducks the volume of all sounds when a sound in the "Custom Sounds" list with a "SidechainMultiplier" greater than zero is played</spw_sidechainingtooltip>
+	<spw_sidechainintensitymaster>Sidechain Intensity Master</spw_sidechainintensitymaster>
+	<spw_sidechainintensitymastertooltip>A multiplier applied to all sidechain multipliers in the "Custom Sounds" list</spw_sidechainintensitymastertooltip>
+	<spw_sidechainreleasemaster>Sidechain Release Master</spw_sidechainreleasemaster>
+	<spw_sidechainreleasemastertooltip>A flat amount of time added to all releases in the "Custom Sounds" list</spw_sidechainreleasemastertooltip>
+	<spw_sidechainreleasecurve>Sidechain Release Curve</spw_sidechainreleasecurve>
+	<spw_sidechainreleasecurvetooltip>The exponent used to calculate the shape of the sidechain release curve. Values below one start slowly and decay more sharply towards the end. Values above one drop quickly and flatten out towards the end</spw_sidechainreleasecurvetooltip>
 	<spw_muffledvoicevolume>Muffled Voice Volume</spw_muffledvoicevolume>
 	<spw_muffledvoicevolumetooltip>Volume of lowpassed player voices behind a wall/water surface</spw_muffledvoicevolumetooltip>
 	<spw_muffledsoundvolume>Muffled Sound Volume</spw_muffledsoundvolume>
@@ -50,25 +78,37 @@
 	<spw_unmuffledcomponentvolume>Unmuffled Component Volume</spw_unmuffledcomponentvolume>
 	<spw_submergedvolume>Submerged Volume</spw_submergedvolume>
 	<spw_submergedvolumetooltip>The volume of submerged sounds when the listener is also submerged in the same body of water</spw_submergedvolumetooltip>
+	<spw_flowsoundvolume>Flow Sound Volume</spw_flowsoundvolume>
+	<spw_flowsoundvolumetooltip>The volume of flowing water caused by leaks in the submarine</spw_flowsoundvolumetooltip>
+	<spw_firesoundvolume>Fire Sound Volume</spw_firesoundvolume>
+	<spw_firesoundvolumetooltip>The volume of fires</spw_firesoundvolumetooltip>
 
 	<spw_eavesdroppingsettings>Eavesdrop Settings</spw_eavesdroppingsettings>
 	<spw_eavesdroppingbind>Listen Bind</spw_eavesdroppingbind>
-	<spw_eavesdroppingsoundvolume>Eavesdropping Sound Volume</spw_eavesdroppingsoundvolume>
-	<spw_eavesdroppingvoicevolume>Eavesdropping Voice Volume</spw_eavesdroppingvoicevolume>
-	<spw_eavesdroppingpitch>Eavesdropping Sound Pitch</spw_eavesdroppingpitch>
+	<spw_eavesdroppingenabled>Eavesdropping Enabled</spw_eavesdroppingenabled>
+	<spw_eavesdroppingenabledtooltip>Toggles the player's ability to eavesdrop</spw_eavesdroppingenabledtooltip>
+	<spw_eavesdroppingfade>Eavesdropping Fade</spw_eavesdroppingfade>
+	<spw_eavesdroppingfadetooltip>Play a smooth audio transition and a subtle activation sound when the player starts eavesdropping</spw_eavesdroppingfadetooltip>
+	<spw_eavesdroppingfadeduration>Eavesdropping Fade Duration</spw_eavesdroppingfadeduration>
+	<spw_eavesdroppingfadedurationtooltip>The amount of seconds that the eavesdropping fade transition takes</spw_eavesdroppingfadedurationtooltip>
+	<spw_eavesdroppingthreshold>Eavesdropping Threshold</spw_eavesdroppingthreshold>
+	<spw_eavesdroppingthresholdtooltip>The percentage of the fade transition that must play before the player starts hearing sounds on the opposite side of the door</spw_eavesdroppingthresholdtooltip>
 	<spw_eavesdroppingmaxdistance>Eavesdropping Max Distance</spw_eavesdroppingmaxdistance>
 	<spw_eavesdroppingmaxdistancetooltip>The maximum distance the player's head can be from a door while eavesdropping</spw_eavesdroppingmaxdistancetooltip>
+	<spw_eavesdroppingsoundvolume>Eavesdropped Sound Volume</spw_eavesdroppingsoundvolume>
+	<spw_eavesdroppingvoicevolume>Eavesdropped Voice Volume</spw_eavesdroppingvoicevolume>
+	<spw_eavesdroppingpitch>Eavesdropped Sound Pitch</spw_eavesdroppingpitch>
 
 	<spw_hydrophonesettings>Hydrophone Settings</spw_hydrophonesettings>
+	<spw_hydrophoneswitchenabled>Hydrophone Switch Enabled</spw_hydrophoneswitchenabled>
+	<spw_hydrophoneswitchenabledtooltip>Toggles the existence of the hydrophone switch (requires restarting the round)</spw_hydrophoneswitchenabledtooltip>
+	<spw_hydrophonelegacyswitch>Hydrophone Legacy Switch</spw_hydrophonelegacyswitch>
+	<spw_hydrophonelegacyswitchtooltip>Use the old hydrophone switch logic (switch is turned off when using active sonar)</spw_hydrophonelegacyswitchtooltip>
 	<spw_hydrophonerange>Hydrophone Range</spw_hydrophonerange>
 	<spw_hydrophonerangetooltip>The range of underwater movement sounds and the additional range added to all sounds outside the submarine</spw_hydrophonerangetooltip>
 	<spw_hydrophonevolume>Hydrophone Volume</spw_hydrophonevolume>
 	<spw_hydrophonepitch>Hydrophone Pitch</spw_hydrophonepitch>
-	<spw_hydrophonelegacyswitch>Hydrophone Legacy Switch</spw_hydrophonelegacyswitch>
-	<spw_hydrophonelegacyswitchtooltip>Use the old hydrophone switch logic (switch is turned off when using active sonar)</spw_hydrophonelegacyswitchtooltip>
-	<spw_hydrophoneswitchenabled>Hydrophone Switch Enabled</spw_hydrophoneswitchenabled>
-	<spw_hydrophoneswitchenabledtooltip>Toggles the existence of the hydrophone switch (requires restarting the round)</spw_hydrophoneswitchenabledtooltip>
-
+	
 	<spw_ambiencesettings>Ambience Settings</spw_ambiencesettings>
 	<spw_unsubmergedwaterambiencevolume>Unsubmerged Water Ambience Volume</spw_unsubmergedwaterambiencevolume>
 	<spw_submergedwaterambiencevolume>Submerged Water Ambience Volume</spw_submergedwaterambiencevolume>
@@ -76,8 +116,25 @@
 	<spw_waterambiencetransitionspeed>Water Ambience Transition Speed</spw_waterambiencetransitionspeed>
 	<spw_waterambiencetransitionspeedtooltip>The speed at which the water ambience transitions between volume presets</spw_waterambiencetransitionspeedtooltip>
 		
+	<spw_pitchsettings>Pitch Settings</spw_pitchsettings>
+	<spw_divingsuitpitch>Diving Suit Pitch</spw_divingsuitpitch>
+	<spw_divingsuitpitchtooltip>The pitch of sounds when wearing a diving suit (stacks additively with other pitch effects)</spw_divingsuitpitchtooltip>
+	<spw_submergedpitch>Submerged Pitch</spw_submergedpitch>
+	<spw_submergedpitchtooltip>The pitch of sounds when the listener is submerged (stacks additively with other pitch effects)</spw_submergedpitchtooltip>
+	<spw_muffledsoundpitch>Muffled Sound Pitch Strength</spw_muffledsoundpitch>
+	<spw_muffledsoundpitchtooltip>The strength of the distance-based pitch shifting effect for havily muffled sounds (does not apply to looping sounds).</spw_muffledsoundpitchtooltip>
+	<spw_muffledcomponentpitch>Muffled Looping Sound Pitch</spw_muffledcomponentpitch>
+	<spw_muffledcomponentpitchtooltip>The pitch of muffled looping sounds (e.g. vents, reactor, engine, etc)</spw_muffledcomponentpitchtooltip>
+	<spw_unmuffledcomponentpitch>Unmuffled Component Pitch</spw_unmuffledcomponentpitch>
+	<spw_unmuffledcomponentpitchtooltip>The pitch of normal component sounds. Not recommended. Just for fun</spw_unmuffledcomponentpitchtooltip>
+	<spw_muffledvoicepitch>Muffled Voice Pitch</spw_muffledvoicepitch>
+	<spw_muffledvoicepitchtooltip>Not recommended. Just for fun</spw_muffledvoicepitchtooltip>
+	<spw_unmuffledvoicepitch>Unmuffled Voice Pitch</spw_unmuffledvoicepitch>
+	<spw_unmuffledvoicepitchtooltip>Not recommended. Just for fun</spw_unmuffledvoicepitchtooltip>
+	
 	<spw_advancedsoundsettings>Advanced Sound Settings</spw_advancedsoundsettings>
 	<spw_customsounds>Custom Sounds</spw_customsounds>
+	<spw_customsoundstooltip>Tweak the volume of any vanilla or modded sounds. Providing a sidechain multiplier above zero will mark the sound(s) for sidechaining, lowering the volume of other sounds by the amount specified (a value of 1 is equal to a 100% volume reduction). The release value controls how many seconds it takes for the sidechain multiplier to decay to back to zero after the sound plays. Sounds in the exclusion list are ignored, allowing for more selective group targeting.</spw_customsoundstooltip>
 	<spw_ignoredsounds>Ignored Sounds</spw_ignoredsounds>
 	<spw_lowpassignoredsounds>Lowpass Ignored Sounds</spw_lowpassignoredsounds>
 	<spw_pitchignoredsounds>Pitch Ignored Sounds</spw_pitchignoredsounds>
@@ -87,38 +144,21 @@
 	<spw_submersionignoredsounds>Submersion Ignored Sounds</spw_submersionignoredsounds>
 	<spw_bubbleignorednames>Bubble Ignored Names</spw_bubbleignorednames>
 
-	<spw_nichesettings>Niche Settings</spw_nichesettings>
-	<spw_mufflesubmergedplayer>Muffle Submerged Player</spw_mufflesubmergedplayer>
-	<spw_mufflesubmergedplayertooltip>Muffle audio when your head is underwater (recommended)</spw_mufflesubmergedplayertooltip>
-	<spw_mufflesubmergedviewtarget>Muffle Submerged View Target</spw_mufflesubmergedviewtarget>
-	<spw_mufflesubmergedviewtargettooltip>Muffle audio when your viewed target is underwater (e.g., turrets, cameras, etc)</spw_mufflesubmergedviewtargettooltip>
-	<spw_mufflesubmergedsounds>Muffle Submerged Sounds</spw_mufflesubmergedsounds>
-	<spw_mufflesubmergedsoundstooltip>Muffle sounds that are positioned under the surface of the water (recommended)</spw_mufflesubmergedsoundstooltip>
-	<spw_muffleflowsounds>Muffle Flow Sounds</spw_muffleflowsounds>
-	<spw_muffleflowsoundstooltip>Toggle the muffling of water flow sounds from leaks</spw_muffleflowsoundstooltip>
-	<spw_mufflefiresounds>Muffle Fire Sounds</spw_mufflefiresounds>
-	<spw_mufflefiresoundstooltip>Toggle the muffling of fire sounds</spw_mufflefiresoundstooltip>
-	<spw_divingsuitpitch>Diving Suit Pitch</spw_divingsuitpitch>
-	<spw_divingsuitpitchtooltip>The pitch of sounds when wearing a diving suit (stacks additively with other pitch effects)</spw_divingsuitpitchtooltip>
-	<spw_submergedpitch>Submerged Pitch</spw_submergedpitch>
-	<spw_submergedpitchtooltip>The pitch of sounds when the listener is submerged (stacks additively with other pitch effects)</spw_submergedpitchtooltip>
-	<spw_muffledcomponentpitch>Muffled Component Pitch</spw_muffledcomponentpitch>
-	<spw_unmuffledcomponentpitch>Unmuffled Component Pitch</spw_unmuffledcomponentpitch>
-	<spw_muffledvoicepitch>Muffled Voice Pitch</spw_muffledvoicepitch>
-	<spw_muffledvoicepitchtooltip>Not recommended. Just for fun</spw_muffledvoicepitchtooltip>
-	<spw_unmuffledvoicepitch>Unmuffled Voice Pitch</spw_unmuffledvoicepitch>
-	<spw_unmuffledvoicepitchtooltip>Not recommended. Just for fun</spw_unmuffledvoicepitchtooltip>
 	<spw_hidesettings>Hide Menu Button</spw_hidesettings>
-	<spw_hidesettingstooltip>Warning: Enabling this setting will remove the "Soundproof Settings" button from your UI. Requiring you to type "soundproof" in the console to open it again.</spw_hidesettingstooltip>
-
+	<spw_hidesettingstooltip>Warning: Enabling this setting will remove the "Soundproof Settings" button from your UI. Requiring you to type "spw" in the console to open it again.</spw_hidesettingstooltip>
+	
 	<spw_updateserverconfig>modified settings - the server config has been updated</spw_updateserverconfig>
 	<spw_disableserverconfig>disabled setting synchronization - local configs now take priority</spw_disableserverconfig>
 	<spw_hydrophonemonitoring>Monitor Hydrophones</spw_hydrophonemonitoring>
 	<spw_listening>Listening...</spw_listening>
 	<spw_invalidinput>Invalid Input</spw_invalidinput>
+	<spw_disabled>Disabled</spw_disabled>
 	<spw_default>(Default)</spw_default>
 	<spw_vanilla>(Vanilla)</spw_vanilla>
 	<spw_custom>(Custom)</spw_custom>
+	<spw_linear>(Linear)</spw_linear>
+	<spw_concave>(Concave)</spw_concave>
+	<spw_convex>(Convex)</spw_convex>
 	<spw_reset>Reset</spw_reset>
 	<spw_resetall>Reset All</spw_resetall>
 </infotexts>

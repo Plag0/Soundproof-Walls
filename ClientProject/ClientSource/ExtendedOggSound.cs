@@ -2,6 +2,7 @@
 using Barotrauma.Sounds;
 using NVorbis;
 using OpenAL;
+using System;
 
 namespace SoundproofWalls
 {
@@ -185,10 +186,13 @@ namespace SoundproofWalls
             buffers ??= new ExtendedSoundBuffers(this);
             if (!buffers.RequestAlBuffers()) { return; }
 
+            // Clear error state.
+            int alError = Al.GetError();
+
             Al.BufferData(buffers.AlBuffer, ALFormat, sampleBuffer,
                 sampleBuffer.Length * sizeof(short), SampleRate);
 
-            int alError = Al.GetError();
+            alError = Al.GetError();
             if (alError != Al.NoError)
             {
                 throw new Exception("Failed to set regular buffer data for non-streamed audio! " + Al.GetErrorString(alError));
@@ -200,6 +204,7 @@ namespace SoundproofWalls
             alError = Al.GetError();
             if (alError != Al.NoError)
             {
+                
                 throw new Exception("Failed to set heavy muffled buffer data for non-streamed audio! " + Al.GetErrorString(alError));
             }
 

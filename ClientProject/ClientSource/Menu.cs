@@ -43,6 +43,15 @@ namespace SoundproofWalls
                 tick.Text = $"{TextManager.Get("spw_enabled").Value}{Menu.GetServerValueString(nameof(config.Enabled))}";
                 tick.ToolTip = TextManager.Get("spw_enabledtooltip").Value;
 
+                // Enable Extended Sounds:
+                tick = EasySettings.TickBox(list.Content, string.Empty, config.ExtendedSoundsEnabled, state =>
+                {
+                    config.ExtendedSoundsEnabled = state;
+                    ConfigManager.SaveConfig(config);
+                });
+                tick.Text = $"{TextManager.Get("spw_extendedsoundsenabled").Value}{Menu.GetServerValueString(nameof(config.ExtendedSoundsEnabled))}";
+                tick.ToolTip = TextManager.Get("spw_extendedsoundsenabledtooltip").Value;
+
                 // Sync Settings (Visible to host only):
                 if (Client.ClientList.Count > 0 && GameMain.Client.SessionId == Client.ClientList[0].SessionId)
                 {
@@ -55,17 +64,7 @@ namespace SoundproofWalls
                     tick.ToolTip = TextManager.Get("spw_syncsettingstooltip").Value;
                 }
 
-                // Enable Extended Sounds:
-                tick = EasySettings.TickBox(list.Content, string.Empty, config.ExtendedSoundsEnabled, state =>
-                {
-                    config.ExtendedSoundsEnabled = state;
-                    ConfigManager.SaveConfig(config);
-                });
-                tick.Text = $"{TextManager.Get("spw_extendedsoundsenabled").Value}{Menu.GetServerValueString(nameof(config.ExtendedSoundsEnabled))}";
-                tick.ToolTip = TextManager.Get("spw_extendedsoundsenabledtooltip").Value;
-
-
-                // Talk While Ragdoll:
+                // Talking Ragdolls:
                 tick = EasySettings.TickBox(list.Content, string.Empty, config.TalkingRagdolls, state =>
                 {
                     config.TalkingRagdolls = state;
@@ -86,7 +85,7 @@ namespace SoundproofWalls
                 // Heavy Obstruction Lowpass Freq:
                 // The previous vanilla muffle frequency was 1600. Now it's 600 and can be accessed via SoundPlayer.MuffleFilterFrequency.
                 GUITextBlock textBlockHOF = EasySettings.TextBlock(list, string.Empty);
-                slider = EasySettings.LogSlider(list.Content, 10, 1600, (float)config.HeavyLowpassFrequency, value =>
+                slider = EasySettings.LogSlider(list.Content, 10, 3200, (float)config.HeavyLowpassFrequency, value =>
                 {
                     value = RoundToNearestMultiple(value, 10);
                     config.HeavyLowpassFrequency = value;
@@ -167,6 +166,157 @@ namespace SoundproofWalls
                 textBlockSR.Text = $"{TextManager.Get("spw_soundrange").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.SoundRangeMultiplier))}";
                 slider.ToolTip = TextManager.Get("spw_soundrangetooltip");
 
+                // Sound Propagation Range:
+                GUITextBlock textBlockSPR = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.Slider(list.Content, 0, 2000, config.SoundPropagationRange, value =>
+                {
+                    float realvalue = RoundToNearestMultiple(value, 100);
+                    float displayValue = RoundToNearestMultiple(value / 100, 1);
+                    config.SoundPropagationRange = (int)realvalue;
+                    ConfigManager.SaveConfig(config);
+
+                    slider_text = string.Empty;
+                    if (config.SoundPropagationRange == defaultConfig.SoundPropagationRange)
+                    {
+                        slider_text = default_preset;
+                    }
+                    textBlockSPR.Text = $"{TextManager.Get("spw_soundpropagationrange").Value}: +{displayValue}m {slider_text}";
+                }, 1);
+                textBlockSPR.Text = $"{TextManager.Get("spw_soundpropagationrange").Value}: +{RoundToNearestMultiple(slider.BarScrollValue / 100, 1)}m{GetServerValueString(nameof(config.SoundPropagationRange), "m", 100)}";
+                slider.ToolTip = TextManager.Get("spw_soundpropagationrangetooltip");
+
+
+                // Voice Settings:
+                EasySettings.TextBlock(list, TextManager.Get("spw_voicesettings").Value, y: 0.1f, size: 1.3f, color: Color.LightYellow);
+
+                // Voice Heavy Lowpass Freq:
+                GUITextBlock textBlockVLF = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.LogSlider(list.Content, 10, SoundproofWalls.VANILLA_VOIP_LOWPASS_FREQUENCY * 1.5f, (float)config.VoiceHeavyLowpassFrequency, value =>
+                {
+                    value = RoundToNearestMultiple(value, 10);
+
+                    // Prevents our BiQuad ctor from recieving a confusing frequency number used by the vanilla game.
+                    if (value == SoundPlayer.MuffleFilterFrequency) { value += 10; }
+
+                    config.VoiceHeavyLowpassFrequency = value;
+                    ConfigManager.SaveConfig(config);
+
+                    slider_text = string.Empty;
+                    if (config.VoiceHeavyLowpassFrequency == defaultConfig.VoiceHeavyLowpassFrequency)
+                    {
+                        slider_text = default_preset;
+                    }
+                    else if (config.VoiceHeavyLowpassFrequency == SoundproofWalls.VANILLA_VOIP_LOWPASS_FREQUENCY)
+                    {
+                        slider_text = vanilla_preset;
+                    }
+                    textBlockVLF.Text = $"{TextManager.Get("spw_voicelowpassfrequency").Value}: {value}Hz {slider_text}";
+                }, 10);
+                textBlockVLF.Text = $"{TextManager.Get("spw_voicelowpassfrequency").Value}: {RoundToNearestMultiple(slider.GetConvertedValue(), 10)}Hz{GetServerValueString(nameof(config.VoiceHeavyLowpassFrequency), "Hz")}";
+                slider.ToolTip = TextManager.Get("spw_voicelowpassfrequencytooltip");
+
+                // Radio Bandpass Center Frequency:
+                GUITextBlock textBlockRCF = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.LogSlider(list.Content, 300, SoundproofWalls.VANILLA_VOIP_BANDPASS_FREQUENCY * 1.5f, (float)config.RadioBandpassFrequency, value =>
+                {
+                    value = (float)RoundToNearestMultiple(value, 10);
+
+                    // Prevents our BiQuad ctor from recieving a confusing frequency number used by the vanilla game.
+                    if (value == SoundproofWalls.VANILLA_VOIP_BANDPASS_FREQUENCY) { value += 10; }
+
+                    config.RadioBandpassFrequency = value;
+                    ConfigManager.SaveConfig(config);
+                    slider_text = string.Empty;
+
+                    if (config.RadioBandpassFrequency == defaultConfig.RadioBandpassQualityFactor) { slider_text = default_preset; }
+                    else if (config.RadioBandpassFrequency == SoundproofWalls.VANILLA_VOIP_BANDPASS_FREQUENCY) { slider_text = vanilla_preset; }
+
+                    textBlockRCF.Text = $"{TextManager.Get("spw_radiobandpassfrequency").Value}: {value}Hz {slider_text}";
+                }, 0.01f);
+                textBlockRCF.Text = $"{TextManager.Get("spw_radiobandpassfrequency").Value}: {RoundToNearestMultiple(slider.GetConvertedValue(), 10)}Hz{GetServerValueString(nameof(config.RadioBandpassFrequency), "")}";
+                slider.ToolTip = TextManager.Get("spw_radiobandpassfrequencytooltip");
+
+                // Radio Bandpass Quality Factor:
+                GUITextBlock textBlockRBQ = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.LogSlider(list.Content, 0.5f, 10.0f, (float)config.RadioBandpassQualityFactor, value =>
+                {
+                    value = RoundToNearestMultiple(value, 0.1f);
+                    config.RadioBandpassQualityFactor = value;
+                    ConfigManager.SaveConfig(config);
+                    slider_text = string.Empty;
+
+                    if (config.RadioBandpassQualityFactor == defaultConfig.RadioBandpassQualityFactor) { slider_text = default_preset; }
+                    else if (config.RadioBandpassQualityFactor == 0.7f) { slider_text = vanilla_preset; }
+
+                    textBlockRBQ.Text = $"{TextManager.Get("spw_radiobandpassqualityfactor").Value}: {value} {slider_text}";
+                }, 0.1f);
+                textBlockRBQ.Text = $"{TextManager.Get("spw_radiobandpassqualityfactor").Value}: {RoundToNearestMultiple(slider.GetConvertedValue(), 0.1f)}{GetServerValueString(nameof(config.RadioBandpassQualityFactor), "")}";
+                slider.ToolTip = TextManager.Get("spw_radiobandpassqualityfactortooltip");
+
+                // Radio Distortion:
+                GUITextBlock textBlockRD = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.Slider(list.Content, 0, 10.0f, (float)config.RadioDistortion, value =>
+                {
+                    value = RoundToNearestMultiple(value, 0.1f);
+                    config.RadioDistortion = value;
+                    ConfigManager.SaveConfig(config);
+                    slider_text = string.Empty;
+
+                    if (config.RadioDistortion == defaultConfig.RadioDistortion) { slider_text = default_preset; }
+
+                    textBlockRD.Text = $"{TextManager.Get("spw_radiodistortion").Value}: {value} {slider_text}";
+                }, 0.1f);
+                textBlockRD.Text = $"{TextManager.Get("spw_radiodistortion").Value}: {RoundToNearestMultiple(slider.BarScrollValue, 0.1f)}{GetServerValueString(nameof(config.RadioDistortion), "")}";
+                slider.ToolTip = TextManager.Get("spw_radiodistortiontooltip");
+
+                // Radio Static:
+                GUITextBlock textBlockRS = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.Slider(list.Content, 0, 10.0f, (float)config.RadioStatic, value =>
+                {
+                    value = RoundToNearestMultiple(value, 0.1f);
+                    config.RadioStatic = value;
+                    ConfigManager.SaveConfig(config);
+                    slider_text = string.Empty;
+
+                    if (config.RadioStatic == defaultConfig.RadioStatic) { slider_text = default_preset; }
+
+                    textBlockRS.Text = $"{TextManager.Get("spw_radiostatic").Value}: {value} {slider_text}";
+                }, 0.1f);
+                textBlockRS.Text = $"{TextManager.Get("spw_radiostatic").Value}: {RoundToNearestMultiple(slider.BarScrollValue, 0.1f)}{GetServerValueString(nameof(config.RadioStatic), "")}";
+                slider.ToolTip = TextManager.Get("spw_radiostatictooltip");
+
+                // Radio Compression Threshold:
+                GUITextBlock textBlockRCT = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.LogSlider(list.Content, 0.1f, 10.0f, (float)config.RadioCompressionThreshold, value =>
+                {
+                    value = RoundToNearestMultiple(value, 0.1f);
+                    config.RadioCompressionThreshold = value;
+                    ConfigManager.SaveConfig(config);
+                    slider_text = string.Empty;
+
+                    if (config.RadioCompressionThreshold == defaultConfig.RadioCompressionThreshold) { slider_text = default_preset; }
+
+                    textBlockRCT.Text = $"{TextManager.Get("spw_radiocompressionthreshold").Value}: {value} {slider_text}";
+                }, 0.1f);
+                textBlockRCT.Text = $"{TextManager.Get("spw_radiocompressionthreshold").Value}: {RoundToNearestMultiple(slider.GetConvertedValue(), 0.1f)}{GetServerValueString(nameof(config.RadioCompressionThreshold), "")}";
+                slider.ToolTip = TextManager.Get("spw_radiocompressionthresholdtooltip");
+
+                // Radio Compression Ratio:
+                GUITextBlock textBlockRCR = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.LogSlider(list.Content, 0.1f, 36.0f, (float)config.RadioCompressionRatio, value =>
+                {
+                    value = RoundToNearestMultiple(value, 0.1f);
+                    config.RadioCompressionRatio = value;
+                    ConfigManager.SaveConfig(config);
+                    slider_text = string.Empty;
+
+                    if (config.RadioCompressionRatio == defaultConfig.RadioCompressionRatio) { slider_text = default_preset; }
+
+                    textBlockRCR.Text = $"{TextManager.Get("spw_radiocompressionratio").Value}: {value} {slider_text}";
+                }, 0.1f);
+                textBlockRCR.Text = $"{TextManager.Get("spw_radiocompressionratio").Value}: {RoundToNearestMultiple(slider.GetConvertedValue(), 0.1f)}{GetServerValueString(nameof(config.RadioCompressionRatio), "")}";
+                slider.ToolTip = TextManager.Get("spw_radiocompressionratiotooltip");
+
                 // Voice Range:
                 GUITextBlock textBlockVR = EasySettings.TextBlock(list, string.Empty);
                 slider = EasySettings.Slider(list.Content, 0, 3, config.VoiceRangeMultiplier, value =>
@@ -213,27 +363,9 @@ namespace SoundproofWalls
                 textBlockRR.Text = $"{TextManager.Get("spw_radiorange").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.RadioRangeMultiplier))}";
                 slider.ToolTip = TextManager.Get("spw_radiorangetooltip");
 
-                // Muffled Pitch Strength Multiplier
-                GUITextBlock textBlockMSPM = EasySettings.TextBlock(list, string.Empty);
-                slider = EasySettings.Slider(list.Content, 0, 1, config.MuffledSoundPitchMultiplier, value =>
-                {
-                    float realvalue = RoundToNearestMultiple(value, 0.01f);
-                    float displayValue = RoundToNearestMultiple(value * 100, 1);
-                    config.MuffledSoundPitchMultiplier = realvalue;
-                    ConfigManager.SaveConfig(config);
-
-                    slider_text = string.Empty;
-                    if (config.MuffledSoundPitchMultiplier == defaultConfig.MuffledSoundPitchMultiplier)
-                    {
-                        slider_text = default_preset;
-                    }
-                    textBlockMSPM.Text = $"{TextManager.Get("spw_muffledsoundpitch").Value}: {displayValue}% {slider_text}";
-                });
-                textBlockMSPM.Text = $"{TextManager.Get("spw_muffledsoundpitch").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.MuffledSoundPitchMultiplier))}";
-                slider.ToolTip = TextManager.Get("spw_muffledsoundpitchtooltip");
-
 
                 // Muffled Settings:
+                EasySettings.TextBlock(list, TextManager.Get("spw_muffledsettings").Value, y: 0.1f, size: 1.3f, color: Color.LightYellow);
 
                 // Muffle Diving Suits:
                 tick = EasySettings.TickBox(list.Content, string.Empty, config.MuffleDivingSuits, state =>
@@ -244,98 +376,139 @@ namespace SoundproofWalls
                 tick.Text = $"{TextManager.Get("spw_muffledivingsuit").Value}{Menu.GetServerValueString(nameof(config.MuffleDivingSuits))}";
                 tick.ToolTip = TextManager.Get("spw_muffledivingsuittooltip").Value;
 
-
-                // Voice Settings:
-                EasySettings.TextBlock(list, TextManager.Get("spw_voicesettings").Value, y: 0.1f, size: 1.3f, color: Color.LightYellow);
-
-                // Voice Lowpass Freq:
-                GUITextBlock textBlockVLF = EasySettings.TextBlock(list, string.Empty);
-                slider = EasySettings.LogSlider(list.Content, 10, SoundproofWalls.VANILLA_VOIP_LOWPASS_FREQUENCY * 1.5f, (float)config.VoiceHeavyLowpassFrequency, value =>
+                // Muffle Eavesdropping:
+                tick = EasySettings.TickBox(list.Content, string.Empty, config.MuffleEavesdropping, state =>
                 {
-                    value = RoundToNearestMultiple(value, 10);
-
-                    // Prevents our BiQuad ctor from recieving a confusing frequency number used by the vanilla game.
-                    if (value == SoundPlayer.MuffleFilterFrequency) { value += 10; }
-
-                    config.VoiceHeavyLowpassFrequency = value;
+                    config.MuffleEavesdropping = state;
                     ConfigManager.SaveConfig(config);
+                });
+                tick.Text = $"{TextManager.Get("spw_muffleeavesdropping").Value}{Menu.GetServerValueString(nameof(config.MuffleEavesdropping))}";
+                tick.ToolTip = TextManager.Get("spw_muffleeavesdroppingtooltip").Value;
 
-                    slider_text = string.Empty;
-                    if (config.VoiceHeavyLowpassFrequency == defaultConfig.VoiceHeavyLowpassFrequency)
-                    {
-                        slider_text = default_preset;
-                    }
-                    else if (config.VoiceHeavyLowpassFrequency == SoundproofWalls.VANILLA_VOIP_LOWPASS_FREQUENCY)
-                    {
-                        slider_text = vanilla_preset;
-                    }
-                    textBlockVLF.Text = $"{TextManager.Get("spw_voicelowpassfrequency").Value}: {value}Hz {slider_text}";
-                }, 10);
-                textBlockVLF.Text = $"{TextManager.Get("spw_voicelowpassfrequency").Value}: {RoundToNearestMultiple(slider.GetConvertedValue(), 10)}Hz{GetServerValueString(nameof(config.VoiceHeavyLowpassFrequency), "Hz")}";
-                slider.ToolTip = TextManager.Get("spw_voicelowpassfrequencytooltip");
-
-                // Radio Bandpass Quality Factor:
-                GUITextBlock textBlockRBQ = EasySettings.TextBlock(list, string.Empty);
-                slider = EasySettings.LogSlider(list.Content, 0.5f, 10.0f, (float)config.RadioBandpassQualityFactor, value =>
+                // Muffle Submerged Player:
+                tick = EasySettings.TickBox(list.Content, string.Empty, config.MuffleSubmergedPlayer, state =>
                 {
-                    value = RoundToNearestMultiple(value, 0.1f);
-                    LuaCsLogger.Log($"{value}");
-                    config.RadioBandpassQualityFactor = value;
-                    LuaCsLogger.Log($"{config.RadioBandpassQualityFactor}");
+                    config.MuffleSubmergedPlayer = state;
                     ConfigManager.SaveConfig(config);
-                    slider_text = string.Empty;
+                });
+                tick.Text = $"{TextManager.Get("spw_mufflesubmergedplayer").Value}{Menu.GetServerValueString(nameof(config.MuffleSubmergedPlayer))}";
+                tick.ToolTip = TextManager.Get("spw_mufflesubmergedplayertooltip").Value;
 
-                    if (config.RadioBandpassQualityFactor == defaultConfig.RadioBandpassQualityFactor) { slider_text = default_preset; }
-                    else if (config.RadioBandpassQualityFactor == 0.7f) { slider_text = vanilla_preset; }
-
-                    textBlockRBQ.Text = $"{TextManager.Get("spw_radiobandpassqualityfactor").Value}: {value} {slider_text}";
-                }, 0.1f);
-                textBlockRBQ.Text = $"{TextManager.Get("spw_radiobandpassqualityfactor").Value}: {RoundToNearestMultiple(slider.GetConvertedValue(), 0.1f)}{GetServerValueString(nameof(config.RadioBandpassQualityFactor), "")}";
-                slider.ToolTip = TextManager.Get("spw_radiobandpassqualityfactortooltip");
-
-                // Radio Bandpass Center Frequency:
-                GUITextBlock textBlockRCF = EasySettings.TextBlock(list, string.Empty);
-                slider = EasySettings.LogSlider(list.Content, 300, SoundproofWalls.VANILLA_VOIP_BANDPASS_FREQUENCY * 1.5f, (float)config.RadioBandpassFrequency, value =>
+                // Muffle Submerged View Target:
+                tick = EasySettings.TickBox(list.Content, string.Empty, config.MuffleSubmergedViewTarget, state =>
                 {
-                    value = (float)RoundToNearestMultiple(value, 10);
-
-                    // Prevents our BiQuad ctor from recieving a confusing frequency number used by the vanilla game.
-                    if (value == SoundproofWalls.VANILLA_VOIP_BANDPASS_FREQUENCY) { value += 10; }
-
-                    config.RadioBandpassFrequency = value;
+                    config.MuffleSubmergedViewTarget = state;
                     ConfigManager.SaveConfig(config);
-                    slider_text = string.Empty;
+                });
+                tick.Text = $"{TextManager.Get("spw_mufflesubmergedviewtarget").Value}{Menu.GetServerValueString(nameof(config.MuffleSubmergedViewTarget))}";
+                tick.ToolTip = TextManager.Get("spw_mufflesubmergedviewtargettooltip").Value;
 
-                    if (config.RadioBandpassFrequency == defaultConfig.RadioBandpassQualityFactor) { slider_text = default_preset; }
-                    else if (config.RadioBandpassFrequency == SoundproofWalls.VANILLA_VOIP_BANDPASS_FREQUENCY) { slider_text = vanilla_preset; }
+                // Muffle Submerged Sounds:
+                tick = EasySettings.TickBox(list.Content, string.Empty, config.MuffleSubmergedSounds, state =>
+                {
+                    config.MuffleSubmergedSounds = state;
+                    ConfigManager.SaveConfig(config);
+                });
+                tick.Text = $"{TextManager.Get("spw_mufflesubmergedsounds").Value}{Menu.GetServerValueString(nameof(config.MuffleSubmergedSounds))}";
+                tick.ToolTip = TextManager.Get("spw_mufflesubmergedsoundstooltip").Value;
 
-                    textBlockRCF.Text = $"{TextManager.Get("spw_radiobandpassfrequency").Value}: {value}Hz {slider_text}";
-                }, 0.01f);
-                textBlockRCF.Text = $"{TextManager.Get("spw_radiobandpassfrequency").Value}: {RoundToNearestMultiple(slider.GetConvertedValue(), 10)}Hz{GetServerValueString(nameof(config.RadioBandpassFrequency), "")}";
-                slider.ToolTip = TextManager.Get("spw_radiobandpassfrequencytooltip");
+                // Muffle Flow Sounds:
+                tick = EasySettings.TickBox(list.Content, string.Empty, config.MuffleFlowSounds, state =>
+                {
+                    config.MuffleFlowSounds = state;
+                    ConfigManager.SaveConfig(config);
+                });
+                tick.Text = $"{TextManager.Get("spw_muffleflowsounds").Value}{Menu.GetServerValueString(nameof(config.MuffleFlowSounds))}";
+                tick.ToolTip = TextManager.Get("spw_muffleflowsoundstooltip").Value;
+
+                // Muffle Fire Sounds:
+                tick = EasySettings.TickBox(list.Content, string.Empty, config.MuffleFireSounds, state =>
+                {
+                    config.MuffleFireSounds = state;
+                    ConfigManager.SaveConfig(config);
+                });
+                tick.Text = $"{TextManager.Get("spw_mufflefiresounds").Value}{Menu.GetServerValueString(nameof(config.MuffleFireSounds))}";
+                tick.ToolTip = TextManager.Get("spw_mufflefiresoundstooltip").Value;
 
 
                 // Volume Settings:
                 EasySettings.TextBlock(list, TextManager.Get("spw_volumesettings").Value, y: 0.1f, size: 1.3f, color: Color.LightYellow);
 
-                // Muffled Voice Volume:
-                GUITextBlock textBlockMVV = EasySettings.TextBlock(list, string.Empty);
-                slider = EasySettings.Slider(list.Content, 0, 3, config.MuffledVoiceVolumeMultiplier, value =>
+                // Enable Sidechaining:
+                tick = EasySettings.TickBox(list.Content, string.Empty, config.Sidechaining, state =>
+                {
+                    config.Sidechaining = state;
+                    ConfigManager.SaveConfig(config);
+                });
+                tick.Text = $"{TextManager.Get("spw_sidechaining").Value}{Menu.GetServerValueString(nameof(config.Sidechaining))}";
+                tick.ToolTip = TextManager.Get("spw_sidechainingtooltip").Value;
+
+                // Sidechain Intensity Master:
+                GUITextBlock textBlockSIM = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.Slider(list.Content, 0, 3, config.SidechainIntensityMaster, value =>
                 {
                     float realvalue = RoundToNearestMultiple(value, 0.01f);
                     float displayValue = RoundToNearestMultiple(value * 100, 1);
-                    config.MuffledVoiceVolumeMultiplier = realvalue;
+                    config.SidechainIntensityMaster = realvalue;
                     ConfigManager.SaveConfig(config);
 
                     slider_text = string.Empty;
-                    if (config.MuffledVoiceVolumeMultiplier == defaultConfig.MuffledVoiceVolumeMultiplier)
+                    if (config.SidechainIntensityMaster == defaultConfig.SidechainIntensityMaster)
                     {
                         slider_text = default_preset;
                     }
-                    textBlockMVV.Text = $"{TextManager.Get("spw_muffledvoicevolume").Value}: {displayValue}% {slider_text}";
+                    else if (config.SidechainIntensityMaster == 1)
+                    {
+                        slider_text = vanilla_preset;
+                    }
+                    textBlockSIM.Text = $"{TextManager.Get("spw_sidechainintensitymaster").Value}: {displayValue}% {slider_text}";
                 });
-                textBlockMVV.Text = $"{TextManager.Get("spw_muffledvoicevolume").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.MuffledVoiceVolumeMultiplier))}";
-                slider.ToolTip = TextManager.Get("spw_muffledvoicevolumetooltip");
+                textBlockSIM.Text = $"{TextManager.Get("spw_sidechainintensitymaster").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.SidechainIntensityMaster))}";
+                slider.ToolTip = TextManager.Get("spw_sidechainintensitymastertooltip");
+
+                // Sidechain Release Master:
+                GUITextBlock textBlockSRM = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.Slider(list.Content, -10, 10, config.SidechainReleaseMaster, value =>
+                {
+                    float realvalue = RoundToNearestMultiple(value, 0.1f);
+                    config.SidechainReleaseMaster = realvalue;
+                    ConfigManager.SaveConfig(config);
+
+                    string slider_operator = "";
+                    slider_text = string.Empty;
+                    if (config.SidechainReleaseMaster == defaultConfig.SidechainReleaseMaster)
+                    {
+                        slider_text = default_preset;
+                    }
+
+                    if (realvalue > 0)
+                    {
+                        slider_operator = "+";
+                    }
+                    textBlockSRM.Text = $"{TextManager.Get("spw_sidechainreleasemaster").Value}: {slider_operator}{realvalue}s {slider_text}";
+                }, 0.1f);
+                textBlockSRM.Text = $"{TextManager.Get("spw_sidechainreleasemaster").Value}: {RoundToNearestMultiple(slider.BarScrollValue, 0.1f)}s{GetServerValueString(nameof(config.SidechainReleaseMaster), "s")}";
+                slider.ToolTip = TextManager.Get("spw_sidechainreleasemastertooltip");
+
+                // Sidechain Release Curve:
+                GUITextBlock textBlockSRC = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.LogSlider(list.Content, 0.1f, 5.0f, (float)config.SidechainReleaseCurve, value =>
+                {
+                    value = RoundToNearestMultiple(value, 0.1f);
+                    config.SidechainReleaseCurve = value;
+                    ConfigManager.SaveConfig(config);
+                    slider_text = string.Empty;
+
+                    if (config.SidechainReleaseCurve == 1) { slider_text = TextManager.Get("spw_linear").Value; }
+                    else if (config.SidechainReleaseCurve < 1) { slider_text = TextManager.Get("spw_concave").Value; }
+                    else if (config.SidechainReleaseCurve > 1) { slider_text = TextManager.Get("spw_convex").Value; }
+
+                    if (config.SidechainReleaseCurve == defaultConfig.SidechainReleaseCurve) { slider_text += " " + default_preset; }
+
+                    textBlockSRC.Text = $"{TextManager.Get("spw_sidechainreleasecurve").Value}: {value} {slider_text}";
+                }, 0.1f);
+                textBlockSRC.Text = $"{TextManager.Get("spw_sidechainreleasecurve").Value}: {RoundToNearestMultiple(slider.GetConvertedValue(), 0.1f)}{GetServerValueString(nameof(config.SidechainReleaseCurve), "")}";
+                slider.ToolTip = TextManager.Get("spw_sidechainreleasecurvetooltip");
 
                 // Muffled Sound Volume:
                 GUITextBlock textBlockMSV = EasySettings.TextBlock(list, string.Empty);
@@ -355,6 +528,25 @@ namespace SoundproofWalls
                 });
                 textBlockMSV.Text = $"{TextManager.Get("spw_muffledsoundvolume").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.MuffledSoundVolumeMultiplier))}";
                 slider.ToolTip = TextManager.Get("spw_muffledsoundvolumetooltip");
+
+                // Muffled Voice Volume:
+                GUITextBlock textBlockMVV = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.Slider(list.Content, 0, 3, config.MuffledVoiceVolumeMultiplier, value =>
+                {
+                    float realvalue = RoundToNearestMultiple(value, 0.01f);
+                    float displayValue = RoundToNearestMultiple(value * 100, 1);
+                    config.MuffledVoiceVolumeMultiplier = realvalue;
+                    ConfigManager.SaveConfig(config);
+
+                    slider_text = string.Empty;
+                    if (config.MuffledVoiceVolumeMultiplier == defaultConfig.MuffledVoiceVolumeMultiplier)
+                    {
+                        slider_text = default_preset;
+                    }
+                    textBlockMVV.Text = $"{TextManager.Get("spw_muffledvoicevolume").Value}: {displayValue}% {slider_text}";
+                });
+                textBlockMVV.Text = $"{TextManager.Get("spw_muffledvoicevolume").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.MuffledVoiceVolumeMultiplier))}";
+                slider.ToolTip = TextManager.Get("spw_muffledvoicevolumetooltip");
 
                 // Muffled Component Volume:
                 GUITextBlock textBlockMCV = EasySettings.TextBlock(list, string.Empty);
@@ -413,13 +605,124 @@ namespace SoundproofWalls
                 textBlockSV.Text = $"{TextManager.Get("spw_submergedvolume").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.SubmergedVolumeMultiplier))}";
                 slider.ToolTip = TextManager.Get("spw_submergedvolumetooltip");
 
+                // Flow Sound Volume Multiplier:
+                GUITextBlock textBlockFLSV = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.Slider(list.Content, 0, 3, config.FlowSoundVolumeMultiplier, value =>
+                {
+                    float realvalue = RoundToNearestMultiple(value, 0.01f);
+                    float displayValue = RoundToNearestMultiple(value * 100, 1);
+                    config.FlowSoundVolumeMultiplier = realvalue;
+                    ConfigManager.SaveConfig(config);
+
+                    slider_text = string.Empty;
+                    if (config.FlowSoundVolumeMultiplier == defaultConfig.FlowSoundVolumeMultiplier)
+                    {
+                        slider_text = default_preset;
+                    }
+                    textBlockFLSV.Text = $"{TextManager.Get("spw_flowsoundvolume").Value}: {displayValue}% {slider_text}";
+                });
+                textBlockFLSV.Text = $"{TextManager.Get("spw_flowsoundvolume").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.FlowSoundVolumeMultiplier))}";
+                slider.ToolTip = TextManager.Get("spw_flowsoundvolumetooltip");
+
+                // Fire Sound Volume Multiplier:
+                GUITextBlock textBlockFISV = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.Slider(list.Content, 0, 3, config.FireSoundVolumeMultiplier, value =>
+                {
+                    float realvalue = RoundToNearestMultiple(value, 0.01f);
+                    float displayValue = RoundToNearestMultiple(value * 100, 1);
+                    config.FireSoundVolumeMultiplier = realvalue;
+                    ConfigManager.SaveConfig(config);
+
+                    slider_text = string.Empty;
+                    if (config.FireSoundVolumeMultiplier == defaultConfig.FireSoundVolumeMultiplier)
+                    {
+                        slider_text = default_preset;
+                    }
+                    textBlockFISV.Text = $"{TextManager.Get("spw_firesoundvolume").Value}: {displayValue}% {slider_text}";
+                });
+                textBlockFISV.Text = $"{TextManager.Get("spw_firesoundvolume").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.FireSoundVolumeMultiplier))}";
+                slider.ToolTip = TextManager.Get("spw_firesoundvolumetooltip");
+
 
                 // Eavesdropping Settings:
                 EasySettings.TextBlock(list, TextManager.Get("spw_eavesdroppingsettings").Value, y: 0.1f, size: 1.3f, color: Color.LightYellow);
 
+                // Eavesdropping Enabled:
+                tick = EasySettings.TickBox(list.Content, string.Empty, config.EavesdroppingEnabled, state =>
+                {
+                    config.EavesdroppingEnabled = state;
+                    ConfigManager.SaveConfig(config);
+                });
+                tick.Text = $"{TextManager.Get("spw_eavesdroppingenabled").Value}{Menu.GetServerValueString(nameof(config.EavesdroppingEnabled))}";
+                tick.ToolTip = TextManager.Get("spw_eavesdroppingenabledtooltip").Value;
+
+                // Eavesdropping Fade Enabled:
+                tick = EasySettings.TickBox(list.Content, string.Empty, config.EavesdroppingFadeEnabled, state =>
+                {
+                    config.EavesdroppingFadeEnabled = state;
+                    ConfigManager.SaveConfig(config);
+                });
+                tick.Text = $"{TextManager.Get("spw_eavesdroppingfade").Value}{Menu.GetServerValueString(nameof(config.EavesdroppingFadeEnabled))}";
+                tick.ToolTip = TextManager.Get("spw_eavesdroppingfadetooltip").Value;
+
+                // Eavesdropping Fade Duration:
+                GUITextBlock textBlockEFT = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.Slider(list.Content, 0.1f, 10, config.EavesdroppingFadeDuration, value =>
+                {
+                    float realvalue = RoundToNearestMultiple(value, 0.1f);
+                    config.EavesdroppingFadeDuration = realvalue;
+                    ConfigManager.SaveConfig(config);
+
+                    slider_text = string.Empty;
+                    if (config.EavesdroppingFadeDuration == defaultConfig.EavesdroppingFadeDuration)
+                    {
+                        slider_text = default_preset;
+                    }
+                    textBlockEFT.Text = $"{TextManager.Get("spw_eavesdroppingfadeduration").Value}: {realvalue}s {slider_text}";
+                }, 0.1f);
+                textBlockEFT.Text = $"{TextManager.Get("spw_eavesdroppingfadeduration").Value}: {RoundToNearestMultiple(slider.BarScrollValue, 0.1f)}s{GetServerValueString(nameof(config.EavesdroppingFadeDuration), "s")}";
+                slider.ToolTip = TextManager.Get("spw_eavesdroppingfadedurationtooltip");
+
+                // Eavesdropping Threshold:
+                GUITextBlock textBlockET = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.Slider(list.Content, 0, 1, config.EavesdroppingThreshold, value =>
+                {
+                    float realvalue = RoundToNearestMultiple(value, 0.01f);
+                    float displayValue = RoundToNearestMultiple(value * 100, 1);
+                    config.EavesdroppingThreshold = realvalue;
+                    ConfigManager.SaveConfig(config);
+
+                    slider_text = string.Empty;
+                    if (config.EavesdroppingThreshold == defaultConfig.EavesdroppingThreshold)
+                    {
+                        slider_text = default_preset;
+                    }
+                    textBlockET.Text = $"{TextManager.Get("spw_eavesdroppingthreshold").Value}: {displayValue}% {slider_text}";
+                });
+                textBlockET.Text = $"{TextManager.Get("spw_eavesdroppingthreshold").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.EavesdroppingThreshold))}";
+                slider.ToolTip = TextManager.Get("spw_eavesdroppingthresholdtooltip");
+
+                // Eavesdropping Max Distance:
+                GUITextBlock textBlockEMD = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.Slider(list.Content, 0, 100, config.EavesdroppingMaxDistance, value =>
+                {
+                    value = RoundToNearestMultiple(value, 1);
+                    config.EavesdroppingMaxDistance = (int)value;
+                    ConfigManager.SaveConfig(config);
+
+                    slider_text = string.Empty;
+                    if (config.EavesdroppingMaxDistance == defaultConfig.EavesdroppingMaxDistance)
+                    {
+                        slider_text = default_preset;
+                    }
+                    textBlockEMD.Text = $"{TextManager.Get("spw_eavesdroppingmaxdistance").Value}: {value}cm {slider_text}";
+                }, 1);
+                textBlockEMD.Text = $"{TextManager.Get("spw_eavesdroppingmaxdistance").Value}: {RoundToNearestMultiple(slider.BarScrollValue, 1)}cm{GetServerValueString(nameof(config.EavesdroppingMaxDistance), "cm")}";
+                slider.ToolTip = TextManager.Get("spw_eavesdroppingmaxdistancetooltip");
+
                 // Eavesdropping Sound Volume:
                 GUITextBlock textBlockESV = EasySettings.TextBlock(list, string.Empty);
-                slider = EasySettings.Slider(list.Content, 0, 2, config.EavesdroppingSoundVolumeMultiplier, value =>
+                slider = EasySettings.Slider(list.Content, 0, 3, config.EavesdroppingSoundVolumeMultiplier, value =>
                 {
                     float realvalue = RoundToNearestMultiple(value, 0.01f);
                     float displayValue = RoundToNearestMultiple(value * 100, 1);
@@ -438,7 +741,7 @@ namespace SoundproofWalls
 
                 // Eavesdropping Voice Volume:
                 GUITextBlock textBlockEVV = EasySettings.TextBlock(list, string.Empty);
-                slider = EasySettings.Slider(list.Content, 0, 2, config.EavesdroppingVoiceVolumeMultiplier, value =>
+                slider = EasySettings.Slider(list.Content, 0, 3, config.EavesdroppingVoiceVolumeMultiplier, value =>
                 {
                     float realvalue = RoundToNearestMultiple(value, 0.01f);
                     float displayValue = RoundToNearestMultiple(value * 100, 1);
@@ -473,24 +776,6 @@ namespace SoundproofWalls
                 });
                 textBlockESP.Text = $"{TextManager.Get("spw_eavesdroppingpitch").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.EavesdroppingPitchMultiplier))}";
                 slider.ToolTip = TextManager.Get("spw_eavesdroppingpitchtooltip");
-
-                // Eavesdropping Max Distance:
-                GUITextBlock textBlockEMD = EasySettings.TextBlock(list, string.Empty);
-                slider = EasySettings.Slider(list.Content, 0, 100, config.EavesdroppingMaxDistance, value =>
-                {
-                    value = RoundToNearestMultiple(value, 1);
-                    config.EavesdroppingMaxDistance = (int)value;
-                    ConfigManager.SaveConfig(config);
-
-                    slider_text = string.Empty;
-                    if (config.EavesdroppingMaxDistance == defaultConfig.EavesdroppingMaxDistance)
-                    {
-                        slider_text = default_preset;
-                    }
-                    textBlockEMD.Text = $"{TextManager.Get("spw_eavesdroppingmaxdistance").Value}: {value}cm {slider_text}";
-                }, 1);
-                textBlockEMD.Text = $"{TextManager.Get("spw_eavesdroppingmaxdistance").Value}: {RoundToNearestMultiple(slider.BarScrollValue, 1)}cm{GetServerValueString(nameof(config.EavesdroppingMaxDistance), "cm")}";
-                slider.ToolTip = TextManager.Get("spw_eavesdroppingmaxdistancetooltip");
 
 
                 // Hydrophone Settings:
@@ -648,55 +933,10 @@ namespace SoundproofWalls
                 slider.ToolTip = TextManager.Get("spw_waterambiencetransitionspeedtooltip");
 
 
-                // Niche Settings:
-                EasySettings.TextBlock(list, TextManager.Get("spw_nichesettings").Value, y: 0.1f, size: 1.3f, color: Color.LightYellow);
+                // Pitch Settings:
+                EasySettings.TextBlock(list, TextManager.Get("spw_pitchsettings").Value, y: 0.1f, size: 1.3f, color: Color.LightYellow);
 
-                // Muffle Submerged Player:
-                tick = EasySettings.TickBox(list.Content, string.Empty, config.MuffleSubmergedPlayer, state =>
-                {
-                    config.MuffleSubmergedPlayer = state;
-                    ConfigManager.SaveConfig(config);
-                });
-                tick.Text = $"{TextManager.Get("spw_mufflesubmergedplayer").Value}{Menu.GetServerValueString(nameof(config.MuffleSubmergedPlayer))}";
-                tick.ToolTip = TextManager.Get("spw_mufflesubmergedplayertooltip").Value;
-
-                // Muffle Submerged View Target:
-                tick = EasySettings.TickBox(list.Content, string.Empty, config.MuffleSubmergedViewTarget, state =>
-                {
-                    config.MuffleSubmergedViewTarget = state;
-                    ConfigManager.SaveConfig(config);
-                });
-                tick.Text = $"{TextManager.Get("spw_mufflesubmergedviewtarget").Value}{Menu.GetServerValueString(nameof(config.MuffleSubmergedViewTarget))}";
-                tick.ToolTip = TextManager.Get("spw_mufflesubmergedviewtargettooltip").Value;
-
-                // Muffle Submerged Sounds:
-                tick = EasySettings.TickBox(list.Content, string.Empty, config.MuffleSubmergedSounds, state =>
-                {
-                    config.MuffleSubmergedSounds = state;
-                    ConfigManager.SaveConfig(config);
-                });
-                tick.Text = $"{TextManager.Get("spw_mufflesubmergedsounds").Value}{Menu.GetServerValueString(nameof(config.MuffleSubmergedSounds))}";
-                tick.ToolTip = TextManager.Get("spw_mufflesubmergedsoundstooltip").Value;
-
-                // Muffle Flow Sounds:
-                tick = EasySettings.TickBox(list.Content, string.Empty, config.MuffleFlowSounds, state =>
-                {
-                    config.MuffleFlowSounds = state;
-                    ConfigManager.SaveConfig(config);
-                });
-                tick.Text = $"{TextManager.Get("spw_muffleflowsounds").Value}{Menu.GetServerValueString(nameof(config.MuffleFlowSounds))}";
-                tick.ToolTip = TextManager.Get("spw_muffleflowsoundstooltip").Value;
-
-                // Muffle Fire Sounds:
-                tick = EasySettings.TickBox(list.Content, string.Empty, config.MuffleFireSounds, state =>
-                {
-                    config.MuffleFireSounds = state;
-                    ConfigManager.SaveConfig(config);
-                });
-                tick.Text = $"{TextManager.Get("spw_mufflefiresounds").Value}{Menu.GetServerValueString(nameof(config.MuffleFireSounds))}";
-                tick.ToolTip = TextManager.Get("spw_mufflefiresoundstooltip").Value;
-
-                // Diving LightObstruction Pitch Multiplier
+                // Diving Suit Pitch Multiplier
                 GUITextBlock textBlockDPM = EasySettings.TextBlock(list, string.Empty);
                 slider = EasySettings.Slider(list.Content, 0.25f, 4, config.DivingSuitPitchMultiplier, value =>
                 {
@@ -734,7 +974,26 @@ namespace SoundproofWalls
                 textBlockSPM.Text = $"{TextManager.Get("spw_submergedpitch").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.SubmergedPitchMultiplier))}";
                 slider.ToolTip = TextManager.Get("spw_submergedpitchtooltip");
 
-                // Muffled Component Pitch Multiplier
+                // Muffled Sound Pitch Strength Multiplier
+                GUITextBlock textBlockMSPM = EasySettings.TextBlock(list, string.Empty);
+                slider = EasySettings.Slider(list.Content, 0, 1, config.MuffledSoundPitchMultiplier, value =>
+                {
+                    float realvalue = RoundToNearestMultiple(value, 0.01f);
+                    float displayValue = RoundToNearestMultiple(value * 100, 1);
+                    config.MuffledSoundPitchMultiplier = realvalue;
+                    ConfigManager.SaveConfig(config);
+
+                    slider_text = string.Empty;
+                    if (config.MuffledSoundPitchMultiplier == defaultConfig.MuffledSoundPitchMultiplier)
+                    {
+                        slider_text = default_preset;
+                    }
+                    textBlockMSPM.Text = $"{TextManager.Get("spw_muffledsoundpitch").Value}: {displayValue}% {slider_text}";
+                });
+                textBlockMSPM.Text = $"{TextManager.Get("spw_muffledsoundpitch").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.MuffledSoundPitchMultiplier))}";
+                slider.ToolTip = TextManager.Get("spw_muffledsoundpitchtooltip");
+
+                // Muffled Looping Sound Pitch Multiplier
                 GUITextBlock textBlockMCPM = EasySettings.TextBlock(list, string.Empty);
                 slider = EasySettings.Slider(list.Content, 0.25f, 4, config.MuffledComponentPitchMultiplier, value =>
                 {
@@ -831,6 +1090,7 @@ namespace SoundproofWalls
                     }
                     return true;
                 };
+                soundListCS.ToolTip = TextManager.Get("spw_customsoundstooltip");
                 // Reset button:
                 GUIButton button = new GUIButton(new RectTransform(new Vector2(1, 0.2f), list.Content.RectTransform), TextManager.Get("spw_reset").Value, Alignment.Center, "GUIButtonSmall");
                 button.OnClicked = (sender, args) =>
@@ -869,7 +1129,7 @@ namespace SoundproofWalls
                     return true;
                 };
 
-                // Water Ignored Sounds:
+                // Surface Ignored Sounds:
                 GUITextBlock textBlockWIS = EasySettings.TextBlock(list, $"{TextManager.Get("spw_waterignoredsounds").Value}{GetServerHashSetString(nameof(config.SurfaceIgnoredSounds))}");
                 GUITextBox soundListWIS = EasySettings.MultiLineTextBox(list.Content.RectTransform, JsonSerializer.Serialize(config.SurfaceIgnoredSounds, jsonOptions), 0.15f);
                 soundListWIS.OnTextChangedDelegate = (textBox, text) =>

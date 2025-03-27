@@ -61,7 +61,8 @@
                 return 0f;
             }
 
-            float multiplierRatio = (float)Math.Pow(1 - progress, 0.3f);
+            float exponent = SoundproofWalls.Config.SidechainReleaseCurve;
+            float multiplierRatio = (float)Math.Pow(1 - progress, exponent);
 
             // Max out at 0.98 to prevent auto-disposing of SoundChannels unnecessarily.
             SidechainMultiplier = Math.Clamp(sidechainStartingValue * multiplierRatio, 0, 0.98f);
