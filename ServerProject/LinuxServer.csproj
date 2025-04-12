@@ -6,38 +6,53 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
-    <ItemGroup>
-      <Reference Include="0Harmony">
-        <HintPath>..\Refs\0Harmony.dll</HintPath>
-      </Reference>
-      <Reference Include="DedicatedServer">
-        <HintPath>..\Refs\Linux\DedicatedServer.dll</HintPath>
-      </Reference>
-      <Reference Include="BarotraumaCore">
-	    <HintPath>..\Refs\Linux\BarotraumaCore.dll</HintPath>
-	  </Reference>
-      <Reference Include="Farseer.NetStandard">
-        <HintPath>..\Refs\Farseer.NetStandard.dll</HintPath>
-      </Reference>
-      <Reference Include="Lidgren.NetStandard">
-        <HintPath>..\Refs\Lidgren.NetStandard.dll</HintPath>
-      </Reference>
-      <Reference Include="Mono.Cecil">
-        <HintPath>..\Refs\Mono.Cecil.dll</HintPath>
-      </Reference>
-      <Reference Include="MonoGame.Framework.Linux.NetStandard">
-        <HintPath>..\Refs\MonoGame.Framework.Linux.NetStandard.dll</HintPath>
-      </Reference>
-      <Reference Include="MonoMod.Common">
-        <HintPath>..\Refs\MonoMod.Common.dll</HintPath>
-      </Reference>
-      <Reference Include="MoonSharp.Interpreter">
-        <HintPath>..\Refs\MoonSharp.Interpreter.dll</HintPath>
-      </Reference>
-      <Reference Include="XNATypes">
-        <HintPath>..\Refs\XNATypes.dll</HintPath>
-      </Reference>
-    </ItemGroup>
+	<ItemGroup>
+		<Reference Include="0Harmony">
+			<HintPath>..\Refs\0Harmony.dll</HintPath>
+		</Reference>
+		<Reference Include="DedicatedServer">
+			<HintPath>..\Refs\Linux\DedicatedServer.dll</HintPath>
+		</Reference>
+		<Reference Include="BarotraumaCore">
+			<HintPath>..\Refs\Linux\BarotraumaCore.dll</HintPath>
+		</Reference>
+		<Reference Include="Farseer.NetStandard">
+			<HintPath>..\Refs\Farseer.NetStandard.dll</HintPath>
+		</Reference>
+		<Reference Include="Lidgren.NetStandard">
+			<HintPath>..\Refs\Lidgren.NetStandard.dll</HintPath>
+		</Reference>
+		<Reference Include="Mono.Cecil">
+			<HintPath>..\Refs\Mono.Cecil.dll</HintPath>
+		</Reference>
+		<Reference Include="MonoGame.Framework.Linux.NetStandard">
+			<HintPath>..\Refs\MonoGame.Framework.Linux.NetStandard.dll</HintPath>
+		</Reference>
+		<Reference Include="MonoMod.Backports">
+			<HintPath>..\Refs\MonoMod.Backports.dll</HintPath>
+		</Reference>
+		<Reference Include="MonoMod.Iced">
+			<HintPath>..\Refs\MonoMod.Iced.dll</HintPath>
+		</Reference>
+		<Reference Include="MonoMod.ILHelpers">
+			<HintPath>..\Refs\MonoMod.ILHelpers.dll</HintPath>
+		</Reference>
+		<Reference Include="MonoMod.RuntimeDetour">
+			<HintPath>..\Refs\MonoMod.RuntimeDetour.dll</HintPath>
+		</Reference>
+		<Reference Include="MonoMod.Utils">
+			<HintPath>..\Refs\MonoMod.Utils.dll</HintPath>
+		</Reference>
+		<Reference Include="MoonSharp.Interpreter">
+			<HintPath>..\Refs\MoonSharp.Interpreter.dll</HintPath>
+		</Reference>
+		<Reference Include="NVorbis">
+			<HintPath>..\Refs\NVorbis.dll</HintPath>
+		</Reference>
+		<Reference Include="XNATypes">
+			<HintPath>..\Refs\XNATypes.dll</HintPath>
+		</Reference>
+	</ItemGroup>
 
     <Import Project="..\SharedProject\SharedProject.projitems" Label="Shared" />
     <Import Project="../Build.props" />

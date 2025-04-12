@@ -5,7 +5,7 @@ using OpenAL;
 
 namespace SoundproofWalls
 {
-    internal sealed class ExtendedOggSound : Sound
+    internal sealed class ReducedOggSound : Sound
     {
         private readonly VorbisReader streamReader;
 
@@ -15,25 +15,17 @@ namespace SoundproofWalls
         private const int AMPLITUDE_SAMPLE_COUNT = 4410; //100ms in a 44100hz file
 
         private short[] sampleBuffer = Array.Empty<short>();
-        private short[] reverbBuffer = Array.Empty<short>();
-        private short[] muffleBufferHeavy = Array.Empty<short>();
-        private short[] muffleBufferMedium = Array.Empty<short>();
-        private short[] muffleBufferLight = Array.Empty<short>();
 
-
-        private new ExtendedSoundBuffers buffers;
-        public new ExtendedSoundBuffers Buffers
+        private new ReducedSoundBuffers buffers;
+        public new ReducedSoundBuffers Buffers
         {
             get { return !Stream ? buffers : null; }
         }
 
-        public ExtendedOggSound(SoundManager owner, string filename, bool stream, ContentXElement xElement) : base(owner, filename,
+        public ReducedOggSound(SoundManager owner, string filename, bool stream, ContentXElement xElement) : base(owner, filename,
             stream, true, xElement)
         {
             var reader = new VorbisReader(Filename);
-
-            // Allow for more simulatenous instances so rapdily repeated sounds with long reverbs on them (e.g. gunshots) don't get skipped.
-            MaxSimultaneousInstances = 10;
 
             ALFormat = reader.Channels == 1 ? Al.FormatMono16 : Al.FormatStereo16;
             SampleRate = reader.SampleRate;
@@ -56,10 +48,6 @@ namespace SoundproofWalls
                         return;
                     }
                     sampleBuffer = result.SampleBuffer;
-                    reverbBuffer = result.ReverbBuffer;
-                    muffleBufferLight = result.MuffleBufferLight;
-                    muffleBufferHeavy = result.MuffleBufferHeavy;
-                    muffleBufferMedium = result.MuffleBufferMedium;
 
                     playbackAmplitude = result.PlaybackAmplitude;
                     Owner.KillChannels(this); // prevents INVALID_OPERATION error
@@ -71,10 +59,6 @@ namespace SoundproofWalls
 
         private readonly record struct TaskResult(
             short[] SampleBuffer,
-            short[] ReverbBuffer,
-            short[] MuffleBufferHeavy,
-            short[] MuffleBufferLight,
-            short[] MuffleBufferMedium,
             List<float> PlaybackAmplitude);
 
         private static async Task<TaskResult> LoadSamples(VorbisReader reader)
@@ -85,9 +69,6 @@ namespace SoundproofWalls
 
             float[] floatBuffer = new float[bufferSize];
             var sampleBuffer = new short[bufferSize];
-            var muffleBufferHeavy = new short[bufferSize];
-            var muffleBufferLight = new short[bufferSize];
-            var muffleBufferMedium = new short[bufferSize];
 
             int readSamples = await Task.Run(() => reader.ReadSamples(floatBuffer, 0, bufferSize));
 
@@ -105,30 +86,7 @@ namespace SoundproofWalls
 
             CastBuffer(floatBuffer, sampleBuffer, readSamples);
 
-            // Create a copy of floatBuffer for the muffled light version.
-            float[] floatBufferLight = new float[bufferSize];
-            Array.Copy(floatBuffer, floatBufferLight, bufferSize);
-
-            // Create a copy of floatBuffer for the muffled medium version.
-            float[] floatBufferMedium = new float[bufferSize];
-            Array.Copy(floatBuffer, floatBufferMedium, bufferSize);
-
-            // Create reverb buffer.
-            float[] floatReverbBuffer = GetReverbBuffer(floatBuffer, reader.SampleRate);
-            var reverbBuffer = new short[floatReverbBuffer.Length];
-
-            // Create muffle buffers.
-            MuffleBufferHeavy(floatBuffer, reader.SampleRate);
-            MuffleBufferLight(floatBufferLight, reader.SampleRate);
-            MuffleBufferMedium(floatBufferMedium, reader.SampleRate);
-
-            // Cast muffled buffers to short[]
-            CastBuffer(floatReverbBuffer, reverbBuffer, floatReverbBuffer.Length);
-            CastBuffer(floatBuffer, muffleBufferHeavy, readSamples);
-            CastBuffer(floatBufferLight, muffleBufferLight, readSamples);
-            CastBuffer(floatBufferMedium, muffleBufferMedium, readSamples);
-
-            return new TaskResult(sampleBuffer, reverbBuffer, muffleBufferHeavy, muffleBufferLight, muffleBufferMedium, playbackAmplitude);
+            return new TaskResult(sampleBuffer, playbackAmplitude);
         }
 
         public override float GetAmplitudeAtPlaybackPos(int playbackPos)
@@ -156,39 +114,14 @@ namespace SoundproofWalls
                 streamFloatBuffer = new float[buffer.Length];
             }
             int readSamples = streamReader.ReadSamples(streamFloatBuffer, 0, buffer.Length);
-            //MuffleBufferHeavy(floatBuffer, reader.Channels);
             CastBuffer(streamFloatBuffer, buffer, readSamples);
 
             return readSamples;
         }
 
-        static float[] GetReverbBuffer(float[] buffer, int sampleRate)
-        {
-            var filter = new ReverbFilter(sampleRate, 2);
-            return filter.ProcessBufferWithTail(buffer, sampleRate);
-        }
-
-        static void MuffleBufferHeavy(float[] buffer, int sampleRate)
-        {
-            var filter = new LowpassFilter(sampleRate, SoundproofWalls.Config.HeavyLowpassFrequency);
-            filter.Process(buffer);
-        }
-
-        static void MuffleBufferLight(float[] buffer, int sampleRate)
-        {
-            var filter = new LowpassFilter(sampleRate, SoundproofWalls.Config.LightLowpassFrequency);
-            filter.Process(buffer);
-        }
-
-        static void MuffleBufferMedium(float[] buffer, int sampleRate)
-        {
-            var filter = new LowpassFilter(sampleRate, SoundproofWalls.Config.MediumLowpassFrequency);
-            filter.Process(buffer);
-        }
-
         public override void InitializeAlBuffers()
         {
-            if (buffers != null && ExtendedSoundBuffers.BuffersGenerated < ExtendedSoundBuffers.MaxBuffers)
+            if (buffers != null && ReducedSoundBuffers.BuffersGenerated < ReducedSoundBuffers.MaxBuffers)
             {
                 FillAlBuffers();
             }
@@ -197,8 +130,8 @@ namespace SoundproofWalls
         public override void FillAlBuffers()
         {
             if (Stream) { return; }
-            if (sampleBuffer.Length == 0 || reverbBuffer.Length == 0 || muffleBufferHeavy.Length == 0 || muffleBufferLight.Length == 0 || muffleBufferMedium.Length == 0) { return; }
-            buffers ??= new ExtendedSoundBuffers(this);
+            if (sampleBuffer.Length == 0) { return; }
+            buffers ??= new ReducedSoundBuffers(this);
             if (!buffers.RequestAlBuffers()) { return; }
 
             // Clear error state.
@@ -209,22 +142,6 @@ namespace SoundproofWalls
             Al.BufferData(buffers.AlBuffer, ALFormat, sampleBuffer, sampleBuffer.Length * sizeof(short), SampleRate);
             alError = Al.GetError();
             if (alError != Al.NoError) { throw new Exception("Failed to set regular buffer data for non-streamed audio! " + Al.GetErrorString(alError)); }
-
-            Al.BufferData(buffers.AlHeavyMuffledBuffer, ALFormat, muffleBufferHeavy, muffleBufferHeavy.Length * sizeof(short), SampleRate);
-            alError = Al.GetError();
-            if (alError != Al.NoError) { throw new Exception("Failed to set heavy muffled buffer data for non-streamed audio! " + Al.GetErrorString(alError)); }
-
-            Al.BufferData(buffers.AlMediumMuffledBuffer, ALFormat, muffleBufferMedium, muffleBufferMedium.Length * sizeof(short), SampleRate);
-            alError = Al.GetError();
-            if (alError != Al.NoError) { throw new Exception("Failed to set medium muffled buffer data for non-streamed audio! " + Al.GetErrorString(alError)); }
-
-            Al.BufferData(buffers.AlLightMuffledBuffer, ALFormat, muffleBufferLight, muffleBufferLight.Length * sizeof(short), SampleRate);
-            alError = Al.GetError();
-            if (alError != Al.NoError) { throw new Exception("Failed to set light muffled buffer data for non-streamed audio! " + Al.GetErrorString(alError)); }
-
-            Al.BufferData(buffers.AlReverbBuffer, ALFormat, reverbBuffer, reverbBuffer.Length * sizeof(short), SampleRate);
-            alError = Al.GetError();
-            if (alError != Al.NoError) { throw new Exception("Failed to set reverb buffer data for non-streamed audio! " + Al.GetErrorString(alError)); }
         }
 
         // This override is not included in the vanilla OggSound but in our case it's required to prevent memory leaks.

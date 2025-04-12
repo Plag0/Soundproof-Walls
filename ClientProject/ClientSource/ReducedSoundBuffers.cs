@@ -5,11 +5,11 @@ using OpenAL;
 
 namespace SoundproofWalls
 {
-    sealed class ExtendedSoundBuffers : IDisposable
+    sealed class ReducedSoundBuffers : IDisposable
     {
         private static readonly HashSet<uint> bufferPool = new HashSet<uint>();
 #if OSX
-        public const int MaxBuffers = 400; //TODO: check that this value works for macOS
+        public const int MaxBuffers = 400;
 #else
         public const int MaxBuffers = 32000;
 #endif
@@ -17,12 +17,8 @@ namespace SoundproofWalls
         private readonly Sound sound;
 
         public uint AlBuffer { get; private set; } = 0;
-        public uint AlReverbBuffer { get; private set; } = 0;
-        public uint AlHeavyMuffledBuffer { get; private set; } = 0;
-        public uint AlLightMuffledBuffer { get; private set; } = 0;
-        public uint AlMediumMuffledBuffer { get; private set; } = 0;
 
-        public ExtendedSoundBuffers(Sound sound) { this.sound = sound; }
+        public ReducedSoundBuffers(Sound sound) { this.sound = sound; }
         public void Dispose()
         {
             if (AlBuffer != 0)
@@ -32,39 +28,7 @@ namespace SoundproofWalls
                     bufferPool.Add(AlBuffer);
                 }
             }
-            if (AlReverbBuffer != 0)
-            {
-                lock (bufferPool)
-                {
-                    bufferPool.Add(AlReverbBuffer);
-                }
-            }
-            if (AlHeavyMuffledBuffer != 0)
-            {
-                lock (bufferPool)
-                {
-                    bufferPool.Add(AlHeavyMuffledBuffer);
-                }
-            }
-            if (AlLightMuffledBuffer != 0)
-            {
-                lock (bufferPool)
-                {
-                    bufferPool.Add(AlLightMuffledBuffer);
-                }
-            }
-            if (AlMediumMuffledBuffer != 0)
-            {
-                lock (bufferPool)
-                {
-                    bufferPool.Add(AlMediumMuffledBuffer);
-                }
-            }
             AlBuffer = 0;
-            AlReverbBuffer = 0;
-            AlHeavyMuffledBuffer = 0;
-            AlLightMuffledBuffer = 0;
-            AlMediumMuffledBuffer = 0;
         }
 
         public static void ClearPool()
@@ -79,11 +43,11 @@ namespace SoundproofWalls
 
         public bool RequestAlBuffers()
         {
-            if (AlBuffer != 0 || AlReverbBuffer != 0 || AlHeavyMuffledBuffer != 0 || AlMediumMuffledBuffer != 0 || AlLightMuffledBuffer != 0) { return false; }
+            if (AlBuffer != 0) { return false; }
             int alError;
             lock (bufferPool)
             {
-                while (bufferPool.Count < 5 && BuffersGenerated < MaxBuffers)
+                while (bufferPool.Count < 1 && BuffersGenerated < MaxBuffers)
                 {
                     Al.GenBuffer(out uint newBuffer);
                     alError = Al.GetError();
@@ -108,18 +72,10 @@ namespace SoundproofWalls
                     }
                 }
 
-                if (bufferPool.Count >= 5)
+                if (bufferPool.Count >= 1)
                 {
                     AlBuffer = bufferPool.First();
                     bufferPool.Remove(AlBuffer);
-                    AlReverbBuffer = bufferPool.First();
-                    bufferPool.Remove(AlReverbBuffer);
-                    AlHeavyMuffledBuffer = bufferPool.First();
-                    bufferPool.Remove(AlHeavyMuffledBuffer);
-                    AlMediumMuffledBuffer = bufferPool.First();
-                    bufferPool.Remove(AlMediumMuffledBuffer);
-                    AlLightMuffledBuffer = bufferPool.First();
-                    bufferPool.Remove(AlLightMuffledBuffer);
                     return true;
                 }
             }
@@ -127,7 +83,7 @@ namespace SoundproofWalls
             //can't generate any more OpenAL buffers! we'll have to steal a buffer from someone...
             foreach (var s in sound.Owner.LoadedSounds)
             {
-                if (s is not ExtendedOggSound otherSound) { continue; }
+                if (s is not ReducedOggSound otherSound) { continue; }
                 if (otherSound == sound) { continue; }
                 if (otherSound.IsPlaying()) { continue; }
                 if (otherSound.Buffers == null) { continue; }
@@ -143,15 +99,7 @@ namespace SoundproofWalls
                 otherSound.Owner.KillChannels(otherSound);
 
                 AlBuffer = otherSound.Buffers.AlBuffer;
-                AlReverbBuffer = otherSound.Buffers.AlReverbBuffer;
-                AlHeavyMuffledBuffer = otherSound.Buffers.AlHeavyMuffledBuffer;
-                AlLightMuffledBuffer = otherSound.Buffers.AlLightMuffledBuffer;
-                AlMediumMuffledBuffer = otherSound.Buffers.AlMediumMuffledBuffer;
                 otherSound.Buffers.AlBuffer = 0;
-                otherSound.Buffers.AlReverbBuffer = 0;
-                otherSound.Buffers.AlHeavyMuffledBuffer = 0;
-                otherSound.Buffers.AlLightMuffledBuffer = 0;
-                otherSound.Buffers.AlMediumMuffledBuffer = 0;
 
                 // For performance reasons, sift the current sound to
                 // the end of the loadedSounds list, that way it'll
@@ -162,22 +110,6 @@ namespace SoundproofWalls
                 if (!Al.IsBuffer(AlBuffer))
                 {
                     throw new Exception(sound.Filename + " has an invalid buffer!");
-                }
-                if (!Al.IsBuffer(AlReverbBuffer))
-                {
-                    throw new Exception(sound.Filename + " has an invalid reverb buffer!");
-                }
-                if (!Al.IsBuffer(AlHeavyMuffledBuffer))
-                {
-                    throw new Exception(sound.Filename + " has an invalid heavy muffled buffer!");
-                }
-                if (!Al.IsBuffer(AlLightMuffledBuffer))
-                {
-                    throw new Exception(sound.Filename + " has an invalid light muffled buffer!");
-                }
-                if (!Al.IsBuffer(AlMediumMuffledBuffer))
-                {
-                    throw new Exception(sound.Filename + " has an invalid medium muffled buffer!");
                 }
 
                 return true;

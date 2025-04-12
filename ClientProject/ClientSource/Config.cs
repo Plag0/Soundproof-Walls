@@ -5,6 +5,19 @@ namespace SoundproofWalls
 {
     public class Config
     {
+        [JsonIgnore]
+        public const uint EFFECT_PROCESSING_VANILLA = 0;
+        [JsonIgnore]
+        public const uint EFFECT_PROCESSING_STATIC = 1;
+        [JsonIgnore]
+        public const uint EFFECT_PROCESSING_DYNAMIC = 2;
+
+        [JsonIgnore]
+        public bool VanillaFx => EffectProcessingMode == EFFECT_PROCESSING_VANILLA;
+        [JsonIgnore]
+        public bool StaticFx => EffectProcessingMode == EFFECT_PROCESSING_STATIC;
+        [JsonIgnore]
+        public bool DynamicFx => EffectProcessingMode == EFFECT_PROCESSING_DYNAMIC;
 
         [JsonIgnore]
         public KeyOrMouse EavesdroppingKeyOrMouse { get; set; } = new KeyOrMouse(MouseButton.SecondaryMouse);
@@ -28,11 +41,11 @@ namespace SoundproofWalls
 
         // General
         public bool Enabled { get; set; } = true;
-        public bool ExtendedSoundsEnabled { get; set; } = true; // Allows muffling of diving suits, eavesdropped sounds, hydrophoned sounds, propagating sounds, and path ignored sounds, at the cost of high loading times and memory use.
+        public uint EffectProcessingMode { get; set; } = 2;
         public bool SyncSettings { get; set; } = true;
         public bool TalkingRagdolls { get; set; } = true;
         public bool FocusTargetAudio { get; set; } = true;
-        public double HeavyLowpassFrequency { get; set; } = 200f; // Used for wall and water obstructions.
+        public double HeavyLowpassFrequency { get; set; } = 200; // Used for wall and water obstructions.
         public double MediumLowpassFrequency { get; set; } = 700; // Used for eavesdropping.
         public double LightLowpassFrequency { get; set; } = 1200; // Used for wearing suits, propagating sounds, and path ignored sounds.
         public float SoundRangeMultiplier { get; set; } = 2.0f;
@@ -40,18 +53,18 @@ namespace SoundproofWalls
 
         // Voice
         public double VoiceHeavyLowpassFrequency { get; set; } = 150f; // Used when a player's voice is muffled heavily. Otherwise, uses medium or light.
-        public double RadioBandpassFrequency { get; set; } = 1200;
+        public double RadioBandpassFrequency { get; set; } = 2010;
         public float RadioBandpassQualityFactor { get; set; } = 2.5f;
         public float RadioDistortion { get; set; } = 0.0f;
         public float RadioStatic { get; set; } = 0.0f;
-        public float RadioCompressionThreshold { get; set; } = 0.5f;
-        public float RadioCompressionRatio { get; set; } = 4.0f;
+        public float RadioCompressionThreshold { get; set; } = 0.2f;
+        public float RadioCompressionRatio { get; set; } = 0.2f;
         public float VoiceRangeMultiplier { get; set; } = 0.80f;
         public float RadioRangeMultiplier { get; set; } = 0.75f;
 
         // Muffle
-        public bool MuffleDivingSuits { get; set; } = true; // Requires ExtendedSoundsEnabled to be on.
-        public bool MuffleEavesdropping { get; set; } = true; // Requires ExtendedSoundsEnabled to be on.
+        public bool MuffleDivingSuits { get; set; } = true; // Requires StaticEffectProcessing to be on.
+        public bool MuffleEavesdropping { get; set; } = true; // Requires StaticEffectProcessing to be on.
         public bool MuffleSubmergedPlayer { get; set; } = true; // the equivalent of adding all sounds into SubmersionIgnoredSounds
         public bool MuffleSubmergedViewTarget { get; set; } = true; // ^
         public bool MuffleSubmergedSounds { get; set; } = true; // the equivalent of adding all sounds into SurfaceIgnoredSounds
@@ -60,6 +73,7 @@ namespace SoundproofWalls
 
         // Volume
         public bool Sidechaining { get; set; } = true;
+        public bool SidechainingDucksMusic { get; set; } = false;
         public float SidechainIntensityMaster { get; set; } = 1f;
         public float SidechainReleaseMaster { get; set; } = 0;
         public float SidechainReleaseCurve { get; set; } = 0.4f;
@@ -171,6 +185,8 @@ namespace SoundproofWalls
             "damage/damage_alienruins",
             "doorbreak",
             "electricaldischarge",
+            "sonarping",
+            "explosion",
 
             // Allow turrets to be heard from the hull directly below/above them.
             "railgun", // Includes the turret moving sounds.
@@ -194,6 +210,7 @@ namespace SoundproofWalls
             "items/alarmbuzzerloop.ogg",
             "items/warningsiren.ogg",
             "items/fabricators",
+            "door",
             "sonar",
             "male",
             "female"
@@ -203,7 +220,9 @@ namespace SoundproofWalls
         public HashSet<string> LowpassForcedSounds { get; set; } = new HashSet<string>
         {
             "barotrauma/content/sounds/water/flow",
-            "barotrauma/content/sounds/fire"
+            "barotrauma/content/sounds/fire",
+            "spineling", // It seems that spineling attacks ignore muffling.
+            "sonardecoy"
         };
 
         public HashSet<string> LowpassIgnoredSounds { get; set; } = new HashSet<string>

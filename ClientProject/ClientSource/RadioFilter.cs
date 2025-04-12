@@ -48,7 +48,7 @@ namespace SoundproofWalls
             sample = compressor.Process(sample);
 
             // Add static noise (transmission artifacts)
-            sample = AddStatic(sample, staticAmount);
+            //sample = AddStatic(sample, staticAmount);
 
             return sample;
         }

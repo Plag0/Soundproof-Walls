@@ -1,6 +1,6 @@
-﻿using System.Runtime.CompilerServices;
-using Barotrauma;
+﻿using Barotrauma;
 using HarmonyLib;
+using System.Runtime.CompilerServices;
 
 [assembly: IgnoresAccessChecksTo("Barotrauma")]
 [assembly: IgnoresAccessChecksTo("DedicatedServer")]
@@ -16,6 +16,8 @@ namespace SoundproofWalls
             // Compatibility with Lua mods that mess with with Sound objects.
             LuaUserData.RegisterType("SoundproofWalls.ExtendedOggSound");
             LuaUserData.RegisterType("SoundproofWalls.ExtendedSoundBuffers");
+            LuaUserData.RegisterType("SoundproofWalls.ReducedOggSound");
+            LuaUserData.RegisterType("SoundproofWalls.ReducedSoundBuffers");
 
             //harmony.PatchAll(); Not using annotations.
 
@@ -67,9 +69,9 @@ namespace SoundproofWalls
             LuaCsLogger.Log("Soundproof Walls: Stop hook started running.");
 
 #if CLIENT
-            ShutdownClient(stopping: true);
+            DisposeClient();
 #endif
-            harmony.UnpatchAll();
+            harmony.UnpatchSelf();
 
             LuaCsLogger.Log("Soundproof Walls: Stop hook stopped running.");
         }

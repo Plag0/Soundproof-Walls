@@ -2,13 +2,19 @@
 <infotexts language="English" nowhitespace="false" translatedname="English">
 
 	<spw_settings>Soundproof Walls</spw_settings>
-
+	<spw_openmenuhelp>Opens the Soundproof Walls settings menu.</spw_openmenuhelp>
 	<spw_generalsettings>General Settings</spw_generalsettings>
 	<spw_syncsettingsalert>Note: This server has syncing enabled - all players will automatically use the host's settings (values in parentheses)</spw_syncsettingsalert>
 	<spw_enabled>Enabled</spw_enabled>
 	<spw_enabledtooltip>Toggles all functionality of the mod</spw_enabledtooltip>
-	<spw_extendedsoundsenabled>Extended Sounds</spw_extendedsoundsenabled>
-	<spw_extendedsoundsenabledtooltip>Load additional lowpass buffers for more muffle variety at the cost of longer loading times (~1s) and more memory usage (~200MB). While this setting is highly recommended, it may clash with other Lua/C# mods that modify sounds. Disable this setting if you are experiencing crashes (adjusting this setting mid-round will briefly freeze the game as new buffers are loaded)</spw_extendedsoundsenabledtooltip>
+	<spw_effectprocessingmode>Effect Processing</spw_effectprocessingmode>
+	<spw_effectprocessingmodetooltip>How Soundproof Walls processes audio effects. Each mode has unique pros and cons which can dramatically change the experience (adjusting this setting while playing will briefly freeze the game as buffers are loaded/unloaded)</spw_effectprocessingmodetooltip>
+	<spw_vanillafx>Classic</spw_vanillafx>
+	<spw_vanillafxtooltip>This is classic Soundproof Walls. Modifies the muffle buffer provided by the vanilla game.\nPros:\n• Zero performance considerations\n\nCons:\n• Only one muffle frequency (creates a very on/off feel)\n• No reverb support</spw_vanillafxtooltip>
+	<spw_staticfx>Static</spw_staticfx>
+	<spw_staticfxtooltip>Adds two new muffle presets (light and medium) and reverb for certain sounds by creating additional buffers.\nPros:\n• Three total muffle frequencies allow for more nuanced audio\n• Reverb support for non-looping sounds\n\nCons:\n• Longer loading times (~2s) and more memory usage (~250MB)\n•Potential for instability with other sound-based Lua/C# mods (extremely unlikely)</spw_staticfxtooltip>
+	<spw_dynamicfx>Dynamic</spw_dynamicfx>
+	<spw_dynamicfxtooltip>Highly recommended. Uses the OpenAL Effects Extension to simulate advanced audio effects in real-time.\nPros:\n• Unlimited muffle frequencies for maximum variety\n• Muffle strength is determined by advanced factors such as the number of surfaces the sound travelled through\n• Sounds are heard from the direction they came from instead of just their origin point, and can appear to come from multiple directions based on the environment.\n\nCons:\n• Higher CPU load which may impact performance</spw_dynamicfxtooltip>
 	<spw_syncsettings>Sync Settings</spw_syncsettings>
 	<spw_syncsettingstooltip>Requires server-side Lua to be running.\nSynchronizes the host/admin's local config file with all players connected to the server (this is achieved by creating a separate config held server-side for players' to inherit. This setting does not modify any local config files)</spw_syncsettingstooltip>
 	<spw_talkingragdolls>Talking Ragdolls</spw_talkingragdolls>
@@ -16,11 +22,11 @@
 	<spw_focustargetaudio>Focus Target Audio</spw_focustargetaudio>
 	<spw_focustargetaudiotooltip>Simulate audio from the POV of the current target (i.e., you hear what the turret/camera hears)</spw_focustargetaudiotooltip>
 	<spw_heavylowpassfrequency>Heavy Lowpass Frequency</spw_heavylowpassfrequency>
-	<spw_heavylowpassfrequencytooltip>The corner frequency used to muffle sounds that are heavily obstructed by walls or water (adjusting this setting mid-round will briefly freeze the game as new buffers are loaded)</spw_heavylowpassfrequencytooltip>
+	<spw_heavylowpassfrequencytooltip>Used by the "Classic" and "Static" effect processing modes.\nThe corner frequency used to muffle sounds that are heavily obstructed by walls or water (adjusting this setting mid-round will briefly freeze the game as new buffers are loaded)</spw_heavylowpassfrequencytooltip>
 	<spw_mediumlowpassfrequency>Mild Lowpass Frequency</spw_mediumlowpassfrequency>
-	<spw_mediumlowpassfrequencytooltip>Requires "Extended Sounds" to be enabled to affect sounds.\nThe corner frequency used to muffle sounds/voices that are mildly obstructed when propagating through walls or heard via eavesdropping (adjusting this setting mid-round will briefly freeze the game as new buffers are loaded)</spw_mediumlowpassfrequencytooltip>
+	<spw_mediumlowpassfrequencytooltip>Used by the "Static" effect processing mode.\nThe corner frequency used to muffle sounds/voices that are mildly obstructed when propagating through walls or heard via eavesdropping (adjusting this setting mid-round will briefly freeze the game as new buffers are loaded)</spw_mediumlowpassfrequencytooltip>
 	<spw_lightlowpassfrequency>Light Lowpass Frequency</spw_lightlowpassfrequency>
-	<spw_lightlowpassfrequencytooltip>Requires "Extended Sounds" to be enabled to affect sounds.\nThe corner frequency used to muffle sounds/voices that are slightly obstructed by diving suits or heard in other structures via hydrophones (adjusting this setting mid-round will briefly freeze the game as new buffers are loaded)</spw_lightlowpassfrequencytooltip>
+	<spw_lightlowpassfrequencytooltip>Used by the "Static" effect processing mode.\nThe corner frequency used to muffle sounds/voices that are slightly obstructed by diving suits or heard in other structures via hydrophones (adjusting this setting mid-round will briefly freeze the game as new buffers are loaded)</spw_lightlowpassfrequencytooltip>
 	<spw_soundrange>Sound Range</spw_soundrange>
 	<spw_soundrangetooltip>Range of non-component sounds</spw_soundrangetooltip>
 	<spw_soundpropagationrange>Sound Propagation Range</spw_soundpropagationrange>
