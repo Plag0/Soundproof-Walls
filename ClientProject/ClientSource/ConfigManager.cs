@@ -9,6 +9,10 @@ namespace SoundproofWalls
         public static readonly string ConfigPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SoundproofWalls_Config.json");
         private static Config _cachedConfig = LoadConfig();
 
+        public static Config LocalConfig = LoadConfig();
+        public static Config? ServerConfig = null;
+        public static Config Config { get { return ServerConfig ?? LocalConfig; } }
+
         public static Config LoadConfig()
         {
             if (_cachedConfig != null)

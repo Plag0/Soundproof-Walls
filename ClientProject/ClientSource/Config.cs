@@ -94,7 +94,7 @@ namespace SoundproofWalls
         public float EavesdroppingPitchMultiplier { get; set; } = 1f;
         public int EavesdroppingMaxDistance { get; set; } = 50; // Max distance in cm from gap.
         public float EavesdroppingFadeDuration { get; set; } = 1.75f;
-        public float EavesdroppingThreshold { get; set; } = 0.3f; // How high EavesdroppingEfficiency needs to be before your listening hull swaps.
+        public float EavesdroppingThreshold { get; set; } = 0.3f; // How high Efficiency needs to be before your listening hull swaps.
 
         // Hydrophone monitoring
         public bool HydrophoneSwitchEnabled { get; set; } = true;
@@ -216,7 +216,7 @@ namespace SoundproofWalls
             "female"
         };
 
-        // Sounds that ignore muffling by default that should still be checked by MuffleInfo.
+        // Sounds that ignore muffling by default that should still be checked by SoundInfo.
         public HashSet<string> LowpassForcedSounds { get; set; } = new HashSet<string>
         {
             "barotrauma/content/sounds/water/flow",

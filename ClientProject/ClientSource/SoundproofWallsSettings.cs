@@ -3,75 +3,43 @@ using Barotrauma;
 using Microsoft.Xna.Framework;
 using System.Reflection;
 using System.Text.Json;
-using static Barotrauma.GUIComponent;
-
 
 namespace SoundproofWalls
 {
-    /// <summary>
-    /// Merged static class containing all functionality for the Soundproof Walls settings menu.
-    /// Use HandlePauseMenuToggle() for patching the pause menu open/close event.
-    /// Use ForceOpenMenu() to open the menu directly (e.g., via console command) - this will ensure the pause menu is open.
-    /// Settings are applied ONLY when the pause menu closes.
-    /// </summary>
     public static class SoundproofWallsSettings
     {
-        // --- Members from Menu.cs ---
         static Config defaultConfig = new Config();
         public static JsonSerializerOptions jsonOptions = new JsonSerializerOptions { WriteIndented = true };
 
-        // --- Members from EasySettings.cs ---
-        public static SoundproofWalls? SPW; // Assign this instance if needed for config updates
+        public static SoundproofWalls? SPW;
         private static bool ShouldUpdateConfig = false;
         public static Config NewLocalConfig = ConfigManager.CloneConfig(SoundproofWalls.LocalConfig);
         public static GUIFrame? currentMenuFrame = null; // To hold the reference to the created menu
         public static GUIScrollBar? EffectsModeSlider = null;
         private static GUIButton? settingsButton = null; // To store the button added to the pause menu
 
-        /// <summary>
-        /// Call this method to directly open the settings menu (e.g., via console command).
-        /// It ensures the main pause menu is open first, then displays the settings within it.
-        /// </summary>
         public static void ForceOpenMenu()
         {
-            // Ensure the pause menu is open
             if (!GUI.PauseMenuOpen)
             {
                 GUI.TogglePauseMenu();
-                // If TogglePauseMenu has a delay, HandlePauseMenuToggle called below might
-                // initially not find the pause menu, but it should work on the next frame.
-                // A more robust solution might involve waiting a frame, but try this first.
             }
 
-            // Ensure the button is added (if not already) by calling the toggle handler
             HandlePauseMenuToggle();
 
-            // Explicitly show the frame within the pause menu context
-            // This ensures it appears even if HandlePauseMenuToggle was just adding the button.
-            if (GUI.PauseMenuOpen) // Double-check pause menu is actually open now
+            if (GUI.PauseMenuOpen)
             {
                 ShowSettingsFrame();
             }
         }
 
-
-        // Replace the existing HandlePauseMenuToggle method with this:
-        /// <summary>
-        /// This method should be called whenever the pause menu is opened OR closed.
-        /// On open, it adds a button to the pause menu list.
-        /// On close, it applies pending settings.
-        /// Target your patch/hook for the pause menu toggle event to this method.
-        /// </summary>
         public static void HandlePauseMenuToggle()
         {
-            if (GUI.PauseMenuOpen) // Pause menu is OPENING
+            if (GUI.PauseMenuOpen)
             {
                 GUIFrame pauseMenuFrame = GUI.PauseMenu;
                 if (pauseMenuFrame == null) return;
 
-                // --- Find the list where buttons are added ---
-                // This follows the original EasySettings logic: frame -> child[1] -> child[0]
-                // This might be fragile and depend on the exact pause menu structure.
                 GUIComponent? pauseMenuList = null;
                 try
                 {
@@ -142,19 +110,10 @@ namespace SoundproofWalls
                     currentMenuFrame.Visible = false;
                 }
 
-                // Apply configuration changes if needed - This is the ONLY place settings were applied previously.
                 ApplyPendingSettings();
-
-                // Optional: Nullify button reference when pause menu closes?
-                // settingsButton = null; // Depends if you want to re-find it every time or rely on the reference
             }
         }
 
-        // Add this new method:
-        /// <summary>
-        /// Creates (if necessary) and shows the actual settings UI frame.
-        /// Called when the button in the pause menu is clicked.
-        /// </summary>
         private static void ShowSettingsFrame()
         {
             GUIFrame parentElement = GUI.PauseMenu; // Parent to pause menu
