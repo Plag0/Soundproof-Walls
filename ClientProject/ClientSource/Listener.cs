@@ -47,18 +47,19 @@ namespace SoundproofWalls
                 return;
             }
 
+            IsEavesdropping = EavesdroppedHull != null && EavesdropManager.Efficiency >= ConfigManager.Config.EavesdroppingThreshold;
+
             EavesdroppedHull = GetListenerEavesdroppedHull();
             CurrentHull = GetListenerHull();
             FocusedHull = IsEavesdropping ? EavesdroppedHull : CurrentHull;
 
-            IsCharacter = !SoundproofWalls.Config.FocusTargetAudio || LightManager.ViewTarget as Character == Character.Controlled;
-            IsSubmerged = IsCharacter ? Character.Controlled?.AnimController?.HeadInWater == true : LightManager.ViewTarget != null && SoundproofWalls.SoundInWater(LightManager.ViewTarget.Position, CurrentHull);
-            IsEavesdropping = EavesdroppedHull != null && EavesdropManager.Efficiency >= SoundproofWalls.Config.EavesdroppingThreshold;
+            IsCharacter = !ConfigManager.Config.FocusTargetAudio || LightManager.ViewTarget as Character == Character.Controlled;
+            IsSubmerged = IsCharacter ? Character.Controlled?.AnimController?.HeadInWater == true : LightManager.ViewTarget != null && Util.SoundInWater(LightManager.ViewTarget.Position, CurrentHull);
             IsUsingHydrophones = HydrophoneManager.HydrophoneEfficiency > 0.01f && Character.Controlled?.SelectedItem?.GetComponent<Sonar>() is Sonar sonar && HydrophoneManager.HydrophoneSwitches.ContainsKey(sonar) && HydrophoneManager.HydrophoneSwitches[sonar].State;
             IsWearingDivingSuit = Character.Controlled?.LowPassMultiplier < 0.5f;
             IsWearingExoSuit = IsCharacterWearingExoSuit(character!);
             
-            Limb head = SoundproofWalls.GetCharacterHead(character!);
+            Limb head = Util.GetCharacterHead(character!);
             LocalPos = IsCharacter ? head.Position : LightManager.ViewTarget?.Position ?? Vector2.Zero;
             WorldPos = IsCharacter ? head.WorldPosition : LightManager.ViewTarget?.WorldPosition ?? new Vector2(GameMain.SoundManager.ListenerPosition.X, GameMain.SoundManager.ListenerPosition.Y);
         }
@@ -95,8 +96,8 @@ namespace SoundproofWalls
         {
             Character character = Character.Controlled;
 
-            if (!SoundproofWalls.Config.EavesdroppingEnabled ||
-                !SoundproofWalls.Config.EavesdroppingKeyOrMouse.IsDown() ||
+            if (!ConfigManager.Config.EavesdroppingEnabled ||
+                !ConfigManager.Config.EavesdroppingKeyOrMouse.IsDown() ||
                 character == null ||
                 character.CurrentHull == null ||
                 character.CurrentSpeed > 0.05 ||
@@ -106,8 +107,8 @@ namespace SoundproofWalls
                 return null;
             }
 
-            int expansionAmount = SoundproofWalls.Config.EavesdroppingMaxDistance;
-            Limb limb = SoundproofWalls.GetCharacterHead(character);
+            int expansionAmount = ConfigManager.Config.EavesdroppingMaxDistance;
+            Limb limb = Util.GetCharacterHead(character);
             Vector2 headPos = limb.WorldPosition;
             headPos.Y = -headPos.Y;
 

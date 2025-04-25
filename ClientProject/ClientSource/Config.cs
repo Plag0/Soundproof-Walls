@@ -50,8 +50,11 @@ namespace SoundproofWalls
         public double LightLowpassFrequency { get; set; } = 1200; // Used for wearing suits, propagating sounds, and path ignored sounds.
         public float SoundRangeMultiplier { get; set; } = 2.0f;
         public float SoundPropagationRange { get; set; } = 500; // Area^2 that a sound in WallPropagatingSounds can search for a hull to propagate to.
+        public float ComponentMuffleUpdateInterval { get; set; } = 0.2f;
+        public float StatusEffectMuffleUpdateInterval { get; set; } = 0.2f;
 
         // Voice
+        public bool RadioCustomFilterEnabled { get; set; } = true;
         public double VoiceHeavyLowpassFrequency { get; set; } = 150f; // Used when a player's voice is muffled heavily. Otherwise, uses medium or light.
         public double RadioBandpassFrequency { get; set; } = 2010;
         public float RadioBandpassQualityFactor { get; set; } = 2.5f;
@@ -72,15 +75,15 @@ namespace SoundproofWalls
         public bool MuffleFireSounds { get; set; } = true;
 
         // Volume
-        public bool Sidechaining { get; set; } = true;
+        public bool SidechainingEnabled { get; set; } = true;
         public bool SidechainingDucksMusic { get; set; } = false;
         public float SidechainIntensityMaster { get; set; } = 1f;
         public float SidechainReleaseMaster { get; set; } = 0;
         public float SidechainReleaseCurve { get; set; } = 0.4f;
         public float MuffledSoundVolumeMultiplier { get; set; } = 0.8f;
         public float MuffledVoiceVolumeMultiplier { get; set; } = 0.8f;
-        public float MuffledComponentVolumeMultiplier { get; set; } = 0.75f;
-        public float UnmuffledComponentVolumeMultiplier { get; set; } = 1f;
+        public float MuffledLoopingVolumeMultiplier { get; set; } = 0.75f;
+        public float UnmuffledLoopingVolumeMultiplier { get; set; } = 1f;
         public float SubmergedVolumeMultiplier { get; set; } = 2.5f;
         public float FlowSoundVolumeMultiplier { get; set; } = 0.9f;
         public float FireSoundVolumeMultiplier { get; set; } = 1f;
@@ -110,11 +113,12 @@ namespace SoundproofWalls
         public float WaterAmbienceTransitionSpeedMultiplier { get; set; } = 3.5f;
 
         // Pitch settings
+        public bool PitchSoundsByDistance { get; set; } = true;
         public float DivingSuitPitchMultiplier { get; set; } = 1f;
         public float SubmergedPitchMultiplier { get; set; } = 1f;
         public float MuffledSoundPitchMultiplier { get; set; } = 1f; // Strength of the distance-based pitch effect on muffled non-looping sounds.
-        public float MuffledComponentPitchMultiplier { get; set; } = 1f;
-        public float UnmuffledComponentPitchMultiplier { get; set; } = 1f;
+        public float MuffledLoopingPitchMultiplier { get; set; } = 1f;
+        public float UnmuffledSoundPitchMultiplier { get; set; } = 1f;
         public float MuffledVoicePitchMultiplier { get; set; } = 1f;
         public float UnmuffledVoicePitchMultiplier { get; set; } = 1f;
 
@@ -177,7 +181,8 @@ namespace SoundproofWalls
             "sonar"
         };
 
-        public HashSet<string> WallPropagatingSounds { get; set; } = new HashSet<string>
+        // Propagating sounds pierce through one layer of walls/water.
+        public HashSet<string> PropagatingSounds { get; set; } = new HashSet<string>
         {
             "damage/structure",
             "damage/creak",
@@ -196,8 +201,16 @@ namespace SoundproofWalls
             "lasergunshot",
         };
 
-        // Alarms/sirens should be able to be heard across the ship regardless of walls.
-        public HashSet<string> PathIgnoredSounds { get; set; } = new HashSet<string>
+        // Piercing sounds pierce through all obstructions better.
+        public HashSet<string> PiercingSounds { get; set; } = new HashSet<string>
+        {
+            "items/alarmdivingloop.ogg",
+            "items/alarmbuzzerloop.ogg",
+            "items/warningsiren.ogg"
+        };
+
+        // Alarms/sirens should be able to be heard across the ship regardless of walls (still affected by water).
+        public HashSet<string> WallIgnoredSounds { get; set; } = new HashSet<string>
         {
             "items/alarmdivingloop.ogg",
             "items/alarmbuzzerloop.ogg",

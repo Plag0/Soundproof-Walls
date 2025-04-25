@@ -8,7 +8,7 @@ namespace SoundproofWalls
 {
     public static class HydrophoneManager
     {
-        public static Dictionary<SoundChannel, Character> HydrophoneSoundChannels = new Dictionary<SoundChannel, Character>();
+        private static Dictionary<SoundChannel, Character> hydrophoneSoundChannels = new Dictionary<SoundChannel, Character>();
         public static Dictionary<Sonar, HydrophoneSwitch> HydrophoneSwitches = new Dictionary<Sonar, HydrophoneSwitch>();
 
         static List<Sound> HydrophoneMovementSounds = new List<Sound>();
@@ -76,20 +76,37 @@ namespace SoundproofWalls
             HydrophoneSwitches.Clear();
         }
 
-        public static void DisposeAllHydrophoneChannels()
+        public static void StopAllHydrophoneChannels()
         {
-            foreach (var kvp in HydrophoneSoundChannels)
+            foreach (var kvp in hydrophoneSoundChannels)
             {
                 kvp.Key.FadeOutAndDispose();
             }
-            HydrophoneSoundChannels.Clear();
+            hydrophoneSoundChannels.Clear();
+        }
+
+        private static void StopHydrophoneChannel(SoundChannel channel)
+        {
+            if (channel != null)
+            {
+                SoundInfoManager.RemovePitchedChannel(channel);
+                channel.Looping = false;
+                channel.Gain = 0;
+                channel.Dispose();
+                RemoveHydrophoneChannel(channel);
+            }
+        }
+
+        public static bool RemoveHydrophoneChannel(SoundChannel channel)
+        {
+            return hydrophoneSoundChannels.Remove(channel);
         }
 
         public static void SetupHydrophoneSwitches(bool firstStartup = false)
         {
             DisposeAllHydrophoneSwitches();
 
-            if (!SoundproofWalls.Config.Enabled || !SoundproofWalls.Config.HydrophoneSwitchEnabled || !SoundproofWalls.RoundStarted) { return; }
+            if (!ConfigManager.Config.Enabled || !ConfigManager.Config.HydrophoneSwitchEnabled || !Util.RoundStarted) { return; }
 
             foreach (Item item in Item.RepairableItems)
             {
@@ -120,7 +137,7 @@ namespace SoundproofWalls
             // Don't update if spectating.
             if (Character.Controlled == null || LightManager.ViewTarget == null) return;
 
-            if (SoundproofWalls.Config.HydrophoneLegacySwitch)
+            if (ConfigManager.Config.HydrophoneLegacySwitch)
             {
                 UpdateHydrophoneSwitchesLegacy();
             }
@@ -355,14 +372,14 @@ namespace SoundproofWalls
 
         public static void PlayHydrophoneSounds()
         {
-            if (!SoundproofWalls.Config.Enabled || !Listener.IsUsingHydrophones) { return; }
+            if (!ConfigManager.Config.Enabled || !Listener.IsUsingHydrophones) { return; }
 
-            float range = SoundproofWalls.Config.HydrophoneSoundRange;
+            float range = ConfigManager.Config.HydrophoneSoundRange;
 
             foreach (Character character in Character.CharacterList)
             {
                 if (Vector2.DistanceSquared(new Vector2(GameMain.SoundManager.ListenerPosition.X, GameMain.SoundManager.ListenerPosition.Y), character.WorldPosition) > range * range ||
-                    HydrophoneSoundChannels.Any(kvp => kvp.Value == character) ||
+                    hydrophoneSoundChannels.Any(kvp => kvp.Value == character) ||
                     character.CurrentHull != null ||
                     character.CurrentSpeed < 0.05 ||
                     character.isDead)
@@ -383,21 +400,20 @@ namespace SoundproofWalls
                 if (channel != null)
                 {
                     channel.Looping = true;
-                    HydrophoneSoundChannels[channel] = character;
+                    hydrophoneSoundChannels[channel] = character;
                 }
             }
         }
 
         public static void UpdateHydrophoneSounds()
         {
-            if (!SoundproofWalls.Config.Enabled || !Listener.IsUsingHydrophones)
+            if (!ConfigManager.Config.Enabled || !Listener.IsUsingHydrophones)
             {
-                DisposeAllHydrophoneChannels();
-                HydrophoneSoundChannels.Clear();
+                StopAllHydrophoneChannels();
                 return;
             }
 
-            foreach (var kvp in HydrophoneSoundChannels)
+            foreach (var kvp in hydrophoneSoundChannels)
             {
                 Character character = kvp.Value;
                 SoundChannel channel = kvp.Key;
@@ -410,9 +426,8 @@ namespace SoundproofWalls
 
                 if (distanceSquared > channel.far * channel.far || channel.Gain < 0.001f || character.CurrentHull != null || character.isDead)
                 {
-                    HydrophoneSoundChannels.Remove(channel);
-                    SoundproofWalls.SourceInfoMap.TryRemove(sourceId, out SoundInfo? _);
-                    channel.FadeOutAndDispose();
+                    SoundInfoManager.RemoveSoundInfo(channel);
+                    StopHydrophoneChannel(channel);
                 }
                 else
                 {

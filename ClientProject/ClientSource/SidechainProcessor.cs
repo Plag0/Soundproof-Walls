@@ -38,14 +38,14 @@
             isReleasing = true;
         }
 
-        public float Process()
+        public float Update()
         {
             if (!isReleasing || sidechainRelease <= 0f)
             {
                 return 0;
             }
 
-            if (!SoundproofWalls.Config.Sidechaining)
+            if (!ConfigManager.Config.SidechainingEnabled || !ConfigManager.Config.Enabled || !Util.RoundStarted)
             {
                 SidechainMultiplier = 0;
                 return 0;
@@ -61,7 +61,7 @@
                 return 0f;
             }
 
-            float exponent = SoundproofWalls.Config.SidechainReleaseCurve;
+            float exponent = ConfigManager.Config.SidechainReleaseCurve;
             float multiplierRatio = (float)Math.Pow(1 - progress, exponent);
 
             // Max out at 0.98 to prevent auto-disposing of SoundChannels unnecessarily.

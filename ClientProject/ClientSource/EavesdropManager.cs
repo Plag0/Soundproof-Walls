@@ -18,7 +18,7 @@ namespace SoundproofWalls
 
         public static void Update()
         {
-            bool shouldFadeOut = Listener.EavesdroppedHull == null || !SoundproofWalls.Config.Enabled;
+            bool shouldFadeOut = Listener.EavesdroppedHull == null || !ConfigManager.Config.Enabled;
 
             UpdateEavesdroppingSounds();
 
@@ -33,7 +33,7 @@ namespace SoundproofWalls
             {
                 PlayEavesdroppingActivationSound();
                 EavesdroppingTextAlpha = Math.Clamp(EavesdroppingTextAlpha + 15, 0, 255);
-                Efficiency = Math.Clamp(Efficiency + 1 / (SoundproofWalls.Config.EavesdroppingFadeDuration * 60), 0, 1);
+                Efficiency = Math.Clamp(Efficiency + 1 / (ConfigManager.Config.EavesdroppingFadeDuration * 60), 0, 1);
             }
         }
 
@@ -54,7 +54,7 @@ namespace SoundproofWalls
 
         public static void Setup()
         {
-            string? modPath = SoundproofWalls.GetModDirectory();
+            string? modPath = Util.GetModDirectory();
 
             try
             {
@@ -92,7 +92,7 @@ namespace SoundproofWalls
             SoundChannel? channel = EavesdroppingAmbienceSoundChannel;
 
             Hull? eavesdroppedHull = Listener.EavesdroppedHull;
-            bool isPlaying = channel != null && channel.Sound != null && channel.IsPlaying;
+            bool isPlaying = channel != null && channel.IsPlaying;
             bool isDry = eavesdroppedHull?.WaterPercentage < 50;
             Sound? correctSound = isDry ? drySound : wetSound;
             bool matchesEnvironment = isPlaying ? channel!.Sound == correctSound : true;

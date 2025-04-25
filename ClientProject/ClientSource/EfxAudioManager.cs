@@ -128,6 +128,17 @@ namespace SoundproofWalls {
             DebugConsole.NewMessage("[SoundproofWalls] Initialization Complete.");
         }
 
+        public void Update()
+        {
+            if (ConfigManager.Config.DynamicFx != false)
+            {
+                // TODO calculate these
+                float roomHeight = 30;
+                float roomWidth = 30;
+                UpdatePrimaryEnvironment(roomWidth, roomHeight);
+            }
+        }
+
         /// <summary>
         /// Updates the primary reverb effect based on new room dimensions.
         /// </summary>

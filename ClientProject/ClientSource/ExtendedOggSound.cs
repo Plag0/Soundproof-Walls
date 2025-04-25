@@ -170,19 +170,19 @@ namespace SoundproofWalls
 
         static void MuffleBufferHeavy(float[] buffer, int sampleRate)
         {
-            var filter = new LowpassFilter(sampleRate, SoundproofWalls.Config.HeavyLowpassFrequency);
+            var filter = new LowpassFilter(sampleRate, ConfigManager.Config.HeavyLowpassFrequency);
             filter.Process(buffer);
         }
 
         static void MuffleBufferLight(float[] buffer, int sampleRate)
         {
-            var filter = new LowpassFilter(sampleRate, SoundproofWalls.Config.LightLowpassFrequency);
+            var filter = new LowpassFilter(sampleRate, ConfigManager.Config.LightLowpassFrequency);
             filter.Process(buffer);
         }
 
         static void MuffleBufferMedium(float[] buffer, int sampleRate)
         {
-            var filter = new LowpassFilter(sampleRate, SoundproofWalls.Config.MediumLowpassFrequency);
+            var filter = new LowpassFilter(sampleRate, ConfigManager.Config.MediumLowpassFrequency);
             filter.Process(buffer);
         }
 

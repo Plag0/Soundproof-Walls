@@ -6,14 +6,13 @@ using System.Text.Json;
 
 namespace SoundproofWalls
 {
-    public static class SoundproofWallsSettings
+    public static class Menu
     {
         static Config defaultConfig = new Config();
         public static JsonSerializerOptions jsonOptions = new JsonSerializerOptions { WriteIndented = true };
 
-        public static SoundproofWalls? SPW;
         private static bool ShouldUpdateConfig = false;
-        public static Config NewLocalConfig = ConfigManager.CloneConfig(SoundproofWalls.LocalConfig);
+        public static Config NewLocalConfig = ConfigManager.CloneConfig(ConfigManager.LocalConfig);
         public static GUIFrame? currentMenuFrame = null; // To hold the reference to the created menu
         public static GUIScrollBar? EffectsModeSlider = null;
         private static GUIButton? settingsButton = null; // To store the button added to the pause menu
@@ -145,27 +144,20 @@ namespace SoundproofWalls
             if (!ShouldUpdateConfig) { return; }
 
             ShouldUpdateConfig = false;
-            Config oldConfig = SoundproofWalls.Config;
+            Config oldConfig = ConfigManager.Config;
 
-            SoundproofWalls.LocalConfig = ConfigManager.CloneConfig(NewLocalConfig);
+            ConfigManager.LocalConfig = ConfigManager.CloneConfig(NewLocalConfig);
 
             // Multiplayer config update
             if (GameMain.IsMultiplayer && (GameMain.Client.IsServerOwner || GameMain.Client.HasPermission(ClientPermissions.Ban)))
             {
-                SoundproofWalls.UploadServerConfig(manualUpdate: true);
+                ConfigManager.UploadServerConfig(manualUpdate: true);
             }
 
             // Singleplayer/nosync config update
-            if (!GameMain.IsMultiplayer || SoundproofWalls.ServerConfig == null)
+            if (!GameMain.IsMultiplayer || ConfigManager.ServerConfig == null)
             {
-                if (SPW != null)
-                {
-                    SPW.UpdateConfig(NewLocalConfig, oldConfig);
-                }
-                else
-                {
-                    LuaCsLogger.LogError("Instance of Soundproof Walls not found in SoundproofWallsSettings. Cannot apply config updates.");
-                }
+                ConfigManager.UpdateConfig(NewLocalConfig, oldConfig);
             }
         }
 
@@ -184,7 +176,7 @@ namespace SoundproofWalls
             string slider_text = string.Empty;
             list.Enabled = false;
 
-            if (SoundproofWalls.ServerConfig != null)
+            if (ConfigManager.ServerConfig != null)
             {
                 TextBlock(list, TextManager.Get("spw_syncsettingsalert").Value, y: 0.1f, color: Color.Orange);
             }
@@ -328,7 +320,7 @@ namespace SoundproofWalls
             TextBlock(list, TextManager.Get("spw_voicesettings").Value, y: 0.1f, size: 1.3f, color: Color.LightYellow);
 
             GUITextBlock textBlockVLF = TextBlock(list, string.Empty);
-            slider = LogSlider(list.Content, 10, SoundproofWalls.VANILLA_VOIP_LOWPASS_FREQUENCY * 1.5f, (float)config.VoiceHeavyLowpassFrequency, value =>
+            slider = LogSlider(list.Content, 10, Util.VANILLA_VOIP_LOWPASS_FREQUENCY * 1.5f, (float)config.VoiceHeavyLowpassFrequency, value =>
             {
                 value = RoundToNearestMultiple(value, 10);
                 if (value == SoundPlayer.MuffleFilterFrequency) { value += 10; }
@@ -337,23 +329,23 @@ namespace SoundproofWalls
                 ShouldUpdateConfig = true;
                 slider_text = string.Empty;
                 if (config.VoiceHeavyLowpassFrequency == defaultConfig.VoiceHeavyLowpassFrequency) { slider_text = default_preset; }
-                else if (config.VoiceHeavyLowpassFrequency == SoundproofWalls.VANILLA_VOIP_LOWPASS_FREQUENCY) { slider_text = vanilla_preset; }
+                else if (config.VoiceHeavyLowpassFrequency == Util.VANILLA_VOIP_LOWPASS_FREQUENCY) { slider_text = vanilla_preset; }
                 textBlockVLF.Text = $"{TextManager.Get("spw_voicelowpassfrequency").Value}: {value}Hz {slider_text}";
             }, 10);
             textBlockVLF.Text = $"{TextManager.Get("spw_voicelowpassfrequency").Value}: {RoundToNearestMultiple(slider.GetConvertedValue(), 10)}Hz{GetServerValueString(nameof(config.VoiceHeavyLowpassFrequency), "Hz")}";
             slider.ToolTip = TextManager.Get("spw_voicelowpassfrequencytooltip");
 
             GUITextBlock textBlockRCF = TextBlock(list, string.Empty);
-            slider = LogSlider(list.Content, 300, SoundproofWalls.VANILLA_VOIP_BANDPASS_FREQUENCY * 1.5f, (float)config.RadioBandpassFrequency, value =>
+            slider = LogSlider(list.Content, 300, Util.VANILLA_VOIP_BANDPASS_FREQUENCY * 1.5f, (float)config.RadioBandpassFrequency, value =>
             {
                 value = (float)RoundToNearestMultiple(value, 10);
-                if (value == SoundproofWalls.VANILLA_VOIP_BANDPASS_FREQUENCY) { value += 10; }
+                if (value == Util.VANILLA_VOIP_BANDPASS_FREQUENCY) { value += 10; }
                 config.RadioBandpassFrequency = value;
                 ConfigManager.SaveConfig(config);
                 ShouldUpdateConfig = true;
                 slider_text = string.Empty;
                 if (config.RadioBandpassFrequency == defaultConfig.RadioBandpassQualityFactor) { slider_text = default_preset; }
-                else if (config.RadioBandpassFrequency == SoundproofWalls.VANILLA_VOIP_BANDPASS_FREQUENCY) { slider_text = vanilla_preset; }
+                else if (config.RadioBandpassFrequency == Util.VANILLA_VOIP_BANDPASS_FREQUENCY) { slider_text = vanilla_preset; }
                 textBlockRCF.Text = $"{TextManager.Get("spw_radiobandpassfrequency").Value}: {value}Hz {slider_text}";
             }, 0.01f);
             textBlockRCF.Text = $"{TextManager.Get("spw_radiobandpassfrequency").Value}: {RoundToNearestMultiple(slider.GetConvertedValue(), 10)}Hz{GetServerValueString(nameof(config.RadioBandpassFrequency), "")}";
@@ -494,8 +486,8 @@ namespace SoundproofWalls
 
             TextBlock(list, TextManager.Get("spw_volumesettings").Value, y: 0.1f, size: 1.3f, color: Color.LightYellow);
 
-            tick = TickBox(list.Content, string.Empty, config.Sidechaining, state => { config.Sidechaining = state; ConfigManager.SaveConfig(config); ShouldUpdateConfig = true; });
-            tick.Text = $"{TextManager.Get("spw_sidechaining").Value}{GetServerValueString(nameof(config.Sidechaining))}";
+            tick = TickBox(list.Content, string.Empty, config.SidechainingEnabled, state => { config.SidechainingEnabled = state; ConfigManager.SaveConfig(config); ShouldUpdateConfig = true; });
+            tick.Text = $"{TextManager.Get("spw_sidechaining").Value}{GetServerValueString(nameof(config.SidechainingEnabled))}";
             tick.ToolTip = TextManager.Get("spw_sidechainingtooltip").Value;
 
             GUITextBlock textBlockSIM = TextBlock(list, string.Empty);
@@ -554,25 +546,25 @@ namespace SoundproofWalls
             slider.ToolTip = TextManager.Get("spw_muffledvoicevolumetooltip");
 
             GUITextBlock textBlockMCV = TextBlock(list, string.Empty);
-            slider = Slider(list.Content, 0, 3, config.MuffledComponentVolumeMultiplier, value =>
+            slider = Slider(list.Content, 0, 3, config.MuffledLoopingVolumeMultiplier, value =>
             {
                 float realvalue = RoundToNearestMultiple(value, 0.01f); float displayValue = RoundToNearestMultiple(value * 100, 1);
-                config.MuffledComponentVolumeMultiplier = realvalue; ConfigManager.SaveConfig(config); ShouldUpdateConfig = true;
-                slider_text = string.Empty; if (config.MuffledComponentVolumeMultiplier == defaultConfig.MuffledComponentVolumeMultiplier) { slider_text = default_preset; }
+                config.MuffledLoopingVolumeMultiplier = realvalue; ConfigManager.SaveConfig(config); ShouldUpdateConfig = true;
+                slider_text = string.Empty; if (config.MuffledLoopingVolumeMultiplier == defaultConfig.MuffledLoopingVolumeMultiplier) { slider_text = default_preset; }
                 textBlockMCV.Text = $"{TextManager.Get("spw_muffledcomponentvolume").Value}: {displayValue}% {slider_text}";
             });
-            textBlockMCV.Text = $"{TextManager.Get("spw_muffledcomponentvolume").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.MuffledComponentVolumeMultiplier))}";
+            textBlockMCV.Text = $"{TextManager.Get("spw_muffledcomponentvolume").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.MuffledLoopingVolumeMultiplier))}";
             slider.ToolTip = TextManager.Get("spw_muffledcomponentvolumetooltip");
 
             GUITextBlock textBlockUCV = TextBlock(list, string.Empty);
-            slider = Slider(list.Content, 0, 1, config.UnmuffledComponentVolumeMultiplier, value =>
+            slider = Slider(list.Content, 0, 1, config.UnmuffledLoopingVolumeMultiplier, value =>
             {
                 float realvalue = RoundToNearestMultiple(value, 0.01f); float displayValue = RoundToNearestMultiple(value * 100, 1);
-                config.UnmuffledComponentVolumeMultiplier = realvalue; ConfigManager.SaveConfig(config); ShouldUpdateConfig = true;
-                slider_text = string.Empty; if (config.UnmuffledComponentVolumeMultiplier == defaultConfig.UnmuffledComponentVolumeMultiplier) { slider_text = default_preset; }
+                config.UnmuffledLoopingVolumeMultiplier = realvalue; ConfigManager.SaveConfig(config); ShouldUpdateConfig = true;
+                slider_text = string.Empty; if (config.UnmuffledLoopingVolumeMultiplier == defaultConfig.UnmuffledLoopingVolumeMultiplier) { slider_text = default_preset; }
                 textBlockUCV.Text = $"{TextManager.Get("spw_unmuffledcomponentvolume").Value}: {displayValue}% {slider_text}";
             });
-            textBlockUCV.Text = $"{TextManager.Get("spw_unmuffledcomponentvolume").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.UnmuffledComponentVolumeMultiplier))}";
+            textBlockUCV.Text = $"{TextManager.Get("spw_unmuffledcomponentvolume").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.UnmuffledLoopingVolumeMultiplier))}";
             slider.ToolTip = TextManager.Get("spw_unmuffledcomponentvolumetooltip");
 
             GUITextBlock textBlockSV = TextBlock(list, string.Empty);
@@ -803,25 +795,25 @@ namespace SoundproofWalls
             slider.ToolTip = TextManager.Get("spw_muffledsoundpitchtooltip");
 
             GUITextBlock textBlockMCPM = TextBlock(list, string.Empty);
-            slider = Slider(list.Content, 0.25f, 4, config.MuffledComponentPitchMultiplier, value =>
+            slider = Slider(list.Content, 0.25f, 4, config.MuffledLoopingPitchMultiplier, value =>
             {
                 float realvalue = RoundToNearestMultiple(value, 0.01f); float displayValue = RoundToNearestMultiple(value * 100, 1);
-                config.MuffledComponentPitchMultiplier = realvalue; ConfigManager.SaveConfig(config); ShouldUpdateConfig = true;
-                slider_text = string.Empty; if (config.MuffledComponentPitchMultiplier == defaultConfig.MuffledComponentPitchMultiplier) { slider_text = default_preset; }
+                config.MuffledLoopingPitchMultiplier = realvalue; ConfigManager.SaveConfig(config); ShouldUpdateConfig = true;
+                slider_text = string.Empty; if (config.MuffledLoopingPitchMultiplier == defaultConfig.MuffledLoopingPitchMultiplier) { slider_text = default_preset; }
                 textBlockMCPM.Text = $"{TextManager.Get("spw_muffledcomponentpitch").Value}: {displayValue}% {slider_text}";
             });
-            textBlockMCPM.Text = $"{TextManager.Get("spw_muffledcomponentpitch").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.MuffledComponentPitchMultiplier))}";
+            textBlockMCPM.Text = $"{TextManager.Get("spw_muffledcomponentpitch").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.MuffledLoopingPitchMultiplier))}";
             slider.ToolTip = TextManager.Get("spw_muffledcomponentpitchtooltip");
 
             GUITextBlock textBlockUCPM = TextBlock(list, string.Empty);
-            slider = Slider(list.Content, 0.25f, 4, config.UnmuffledComponentPitchMultiplier, value =>
+            slider = Slider(list.Content, 0.25f, 4, config.UnmuffledSoundPitchMultiplier, value =>
             {
                 float realvalue = RoundToNearestMultiple(value, 0.01f); float displayValue = RoundToNearestMultiple(value * 100, 1);
-                config.UnmuffledComponentPitchMultiplier = realvalue; ConfigManager.SaveConfig(config); ShouldUpdateConfig = true;
-                slider_text = string.Empty; if (config.UnmuffledComponentPitchMultiplier == defaultConfig.UnmuffledComponentPitchMultiplier) { slider_text = default_preset; }
+                config.UnmuffledSoundPitchMultiplier = realvalue; ConfigManager.SaveConfig(config); ShouldUpdateConfig = true;
+                slider_text = string.Empty; if (config.UnmuffledSoundPitchMultiplier == defaultConfig.UnmuffledSoundPitchMultiplier) { slider_text = default_preset; }
                 textBlockUCPM.Text = $"{TextManager.Get("spw_unmuffledcomponentpitch").Value}: {displayValue}% {slider_text}";
             });
-            textBlockUCPM.Text = $"{TextManager.Get("spw_unmuffledcomponentpitch").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.UnmuffledComponentPitchMultiplier))}";
+            textBlockUCPM.Text = $"{TextManager.Get("spw_unmuffledcomponentpitch").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.UnmuffledSoundPitchMultiplier))}";
             slider.ToolTip = TextManager.Get("spw_unmuffledcomponentpitchtooltip");
 
             GUITextBlock textBlockMVP = TextBlock(list, string.Empty);
@@ -900,31 +892,31 @@ namespace SoundproofWalls
             GUIButton buttonSIS = new GUIButton(new RectTransform(new Vector2(1, 0.2f), list.Content.RectTransform), TextManager.Get("spw_reset").Value, Alignment.Center, "GUIButtonSmall");
             buttonSIS.OnClicked = (sender, args) => { config.SubmersionIgnoredSounds = defaultConfig.SubmersionIgnoredSounds; ConfigManager.SaveConfig(config); ShouldUpdateConfig = true; soundListSIS.Text = JsonSerializer.Serialize(config.SubmersionIgnoredSounds, jsonOptions); return true; };
 
-            GUITextBlock textBlockWPS = TextBlock(list, $"{TextManager.Get("spw_wallpropagatingsounds").Value}{GetServerHashSetString(nameof(config.WallPropagatingSounds))}");
-            GUITextBox soundListWPS = MultiLineTextBox(list.Content.RectTransform, JsonSerializer.Serialize(config.WallPropagatingSounds, jsonOptions), 0.15f);
+            GUITextBlock textBlockWPS = TextBlock(list, $"{TextManager.Get("spw_wallpropagatingsounds").Value}{GetServerHashSetString(nameof(config.PropagatingSounds))}");
+            GUITextBox soundListWPS = MultiLineTextBox(list.Content.RectTransform, JsonSerializer.Serialize(config.PropagatingSounds, jsonOptions), 0.15f);
             soundListWPS.OnTextChangedDelegate = (textBox, text) =>
             {
-                try { config.WallPropagatingSounds = JsonSerializer.Deserialize<HashSet<string>>(textBox.Text) ?? new HashSet<string>(); ConfigManager.SaveConfig(config); ShouldUpdateConfig = true; textBlockWPS.Text = TextManager.Get("spw_wallpropagatingsounds").Value; }
+                try { config.PropagatingSounds = JsonSerializer.Deserialize<HashSet<string>>(textBox.Text) ?? new HashSet<string>(); ConfigManager.SaveConfig(config); ShouldUpdateConfig = true; textBlockWPS.Text = TextManager.Get("spw_wallpropagatingsounds").Value; }
                 catch (JsonException) { textBlockWPS.Text = $"{TextManager.Get("spw_wallpropagatingsounds").Value} ({TextManager.Get("spw_invalidinput").Value})"; }
                 Vector2 textSize = textBox.Font.MeasureString(textBox.WrappedText); GUIListBox? parentListBox = textBox.Parent?.Parent as GUIListBox; if (parentListBox != null) { parentListBox.RectTransform.NonScaledSize = new Point(parentListBox.RectTransform.NonScaledSize.X, (int)parentListBox.Font.MeasureString(textBox.WrappedText).Y + 30); textBox.RectTransform.NonScaledSize = new Point(textBox.RectTransform.NonScaledSize.X, Math.Max(parentListBox.Content.Rect.Height, (int)textSize.Y + 15)); }
                 textBox.SetText(textBox.Text, store: false); return true;
             };
             soundListWPS.ToolTip = TextManager.Get("spw_wallpropagatingsoundstooltip");
             GUIButton buttonWPS = new GUIButton(new RectTransform(new Vector2(1, 0.2f), list.Content.RectTransform), TextManager.Get("spw_reset").Value, Alignment.Center, "GUIButtonSmall");
-            buttonWPS.OnClicked = (sender, args) => { config.WallPropagatingSounds = defaultConfig.WallPropagatingSounds; ConfigManager.SaveConfig(config); ShouldUpdateConfig = true; soundListWPS.Text = JsonSerializer.Serialize(config.WallPropagatingSounds, jsonOptions); return true; };
+            buttonWPS.OnClicked = (sender, args) => { config.PropagatingSounds = defaultConfig.PropagatingSounds; ConfigManager.SaveConfig(config); ShouldUpdateConfig = true; soundListWPS.Text = JsonSerializer.Serialize(config.PropagatingSounds, jsonOptions); return true; };
 
-            GUITextBlock textBlockPathIS = TextBlock(list, $"{TextManager.Get("spw_pathignoredsounds").Value}{GetServerHashSetString(nameof(config.PathIgnoredSounds))}");
-            GUITextBox soundListPathIS = MultiLineTextBox(list.Content.RectTransform, JsonSerializer.Serialize(config.PathIgnoredSounds, jsonOptions), 0.15f);
+            GUITextBlock textBlockPathIS = TextBlock(list, $"{TextManager.Get("spw_pathignoredsounds").Value}{GetServerHashSetString(nameof(config.WallIgnoredSounds))}");
+            GUITextBox soundListPathIS = MultiLineTextBox(list.Content.RectTransform, JsonSerializer.Serialize(config.WallIgnoredSounds, jsonOptions), 0.15f);
             soundListPathIS.OnTextChangedDelegate = (textBox, text) =>
             {
-                try { config.PathIgnoredSounds = JsonSerializer.Deserialize<HashSet<string>>(textBox.Text) ?? new HashSet<string>(); ConfigManager.SaveConfig(config); ShouldUpdateConfig = true; textBlockPathIS.Text = TextManager.Get("spw_pathignoredsounds").Value; }
+                try { config.WallIgnoredSounds = JsonSerializer.Deserialize<HashSet<string>>(textBox.Text) ?? new HashSet<string>(); ConfigManager.SaveConfig(config); ShouldUpdateConfig = true; textBlockPathIS.Text = TextManager.Get("spw_pathignoredsounds").Value; }
                 catch (JsonException) { textBlockPathIS.Text = $"{TextManager.Get("spw_pathignoredsounds").Value} ({TextManager.Get("spw_invalidinput").Value})"; }
                 Vector2 textSize = textBox.Font.MeasureString(textBox.WrappedText); GUIListBox? parentListBox = textBox.Parent?.Parent as GUIListBox; if (parentListBox != null) { parentListBox.RectTransform.NonScaledSize = new Point(parentListBox.RectTransform.NonScaledSize.X, (int)parentListBox.Font.MeasureString(textBox.WrappedText).Y + 30); textBox.RectTransform.NonScaledSize = new Point(textBox.RectTransform.NonScaledSize.X, Math.Max(parentListBox.Content.Rect.Height, (int)textSize.Y + 15)); }
                 textBox.SetText(textBox.Text, store: false); return true;
             };
             soundListPathIS.ToolTip = TextManager.Get("spw_pathignoredsoundstooltip");
             GUIButton buttonPathIS = new GUIButton(new RectTransform(new Vector2(1, 0.2f), list.Content.RectTransform), TextManager.Get("spw_reset").Value, Alignment.Center, "GUIButtonSmall");
-            buttonPathIS.OnClicked = (sender, args) => { config.PathIgnoredSounds = defaultConfig.PathIgnoredSounds; ConfigManager.SaveConfig(config); ShouldUpdateConfig = true; soundListPathIS.Text = JsonSerializer.Serialize(config.PathIgnoredSounds, jsonOptions); return true; };
+            buttonPathIS.OnClicked = (sender, args) => { config.WallIgnoredSounds = defaultConfig.WallIgnoredSounds; ConfigManager.SaveConfig(config); ShouldUpdateConfig = true; soundListPathIS.Text = JsonSerializer.Serialize(config.WallIgnoredSounds, jsonOptions); return true; };
 
             GUITextBlock textBlockPIS = TextBlock(list, $"{TextManager.Get("spw_pitchignoredsounds").Value}{GetServerHashSetString(nameof(config.PitchIgnoredSounds))}");
             GUITextBox soundListPIS = MultiLineTextBox(list.Content.RectTransform, JsonSerializer.Serialize(config.PitchIgnoredSounds, jsonOptions), 0.15f);
@@ -1141,7 +1133,7 @@ namespace SoundproofWalls
 
         public static string GetServerValueString(string propertyName, string suffix = "", float divideBy = 1)
         {
-            Config? config = SoundproofWalls.ServerConfig; if (config == null) { return string.Empty; }
+            Config? config = ConfigManager.ServerConfig; if (config == null) { return string.Empty; }
             PropertyInfo? propertyInfo = config.GetType().GetProperty(propertyName); if (propertyInfo == null) { return string.Empty; }
 
             if (propertyName == nameof(Config.EffectProcessingMode))
@@ -1163,7 +1155,7 @@ namespace SoundproofWalls
 
         public static string GetServerPercentString(string propertyName)
         {
-            Config? config = SoundproofWalls.ServerConfig; if (config == null) { return string.Empty; }
+            Config? config = ConfigManager.ServerConfig; if (config == null) { return string.Empty; }
             PropertyInfo? propertyInfo = config.GetType().GetProperty(propertyName); if (propertyInfo == null) { return string.Empty; }
             object? value = propertyInfo.GetValue(config); if (value is float floatValue) { return $" ({RoundToNearestMultiple(floatValue * 100, 1)}%)"; }
             return string.Empty;
@@ -1171,7 +1163,7 @@ namespace SoundproofWalls
 
         public static string GetServerDictString(string propertyName)
         {
-            Config? config = SoundproofWalls.ServerConfig; if (config == null) { return string.Empty; }
+            Config? config = ConfigManager.ServerConfig; if (config == null) { return string.Empty; }
             PropertyInfo? propertyInfo = config.GetType().GetProperty(propertyName); if (propertyInfo == null) { return string.Empty; }
             object? value = propertyInfo.GetValue(config); if (value == null) { return string.Empty; }
             if (value is System.Collections.IDictionary dict)
@@ -1192,7 +1184,7 @@ namespace SoundproofWalls
 
         public static string GetServerHashSetString(string propertyName)
         {
-            Config? config = SoundproofWalls.ServerConfig; if (config == null) { return string.Empty; }
+            Config? config = ConfigManager.ServerConfig; if (config == null) { return string.Empty; }
             PropertyInfo? propertyInfo = config.GetType().GetProperty(propertyName); if (propertyInfo == null) { return string.Empty; }
             object? value = propertyInfo.GetValue(config); if (value == null) { return string.Empty; }
             if (value is HashSet<string> hashSet)

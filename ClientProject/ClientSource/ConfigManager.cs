@@ -1,6 +1,8 @@
 ﻿using Barotrauma;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using Microsoft.Xna.Framework;
+using Barotrauma.Networking;
 
 namespace SoundproofWalls
 {
@@ -12,6 +14,81 @@ namespace SoundproofWalls
         public static Config LocalConfig = LoadConfig();
         public static Config? ServerConfig = null;
         public static Config Config { get { return ServerConfig ?? LocalConfig; } }
+
+        static double LastConfigUploadTime = 5f;
+
+        public static void Update()
+        {
+            if (Timing.TotalTime > LastConfigUploadTime + 5)
+            {
+                LastConfigUploadTime = (float)Timing.TotalTime;
+                UploadServerConfig(manualUpdate: false);
+            }
+        }
+
+        public static void UpdateConfig(Config newConfig, Config oldConfig, bool isServerConfigEnabled = false, bool manualUpdate = false, byte configSenderId = 0)
+        {
+            bool shouldStop = oldConfig.Enabled && !newConfig.Enabled;
+            bool shouldStart = !oldConfig.Enabled && newConfig.Enabled;
+            bool shouldReloadSounds = Util.ShouldReloadSounds(newConfig: newConfig, oldConfig: oldConfig);
+            bool shouldClearMuffleInfo = Util.ShouldClearMuffleInfo(newConfig, oldConfig: oldConfig);
+            bool shouldStartAlEffects = !shouldStart && !oldConfig.DynamicFx && newConfig.DynamicFx;
+            bool shouldStopAlEffects = !shouldStop && oldConfig.DynamicFx && !newConfig.DynamicFx;
+
+            ServerConfig = isServerConfigEnabled ? newConfig : null;
+
+            if (shouldStartAlEffects) { Plugin.InitDynamicFx(); }
+            else if (shouldStopAlEffects) { Plugin.DisposeDynamicFx(); }
+
+            if (shouldStop) { Plugin.Instance?.Dispose(); }
+            else if (shouldStart) { Plugin.Instance?.Initialize(); }
+            else if (shouldReloadSounds) { Util.ReloadSounds(); }
+            else if (shouldClearMuffleInfo) { SoundInfoManager.ClearSoundInfo(); }
+
+            if (manualUpdate && configSenderId != 0)
+            {
+                string updaterName = GameMain.Client.ConnectedClients.FirstOrDefault(client => client.SessionId == configSenderId)?.Name ?? "unknown";
+                if (isServerConfigEnabled)
+                {
+                    LuaCsLogger.Log($"Soundproof Walls: \"{updaterName}\" {TextManager.Get("spw_updateserverconfig").Value}", Color.LimeGreen);
+                }
+                else
+                {
+                    LuaCsLogger.Log($"Soundproof Walls: \"{updaterName}\" {TextManager.Get("spw_disableserverconfig").Value}", Color.MonoGameOrange);
+                }
+            }
+        }
+
+        // Called every 5 seconds or when the client changes a setting.
+        public static void UploadServerConfig(bool manualUpdate = false)
+        {
+            if (!GameMain.IsMultiplayer) { return; }
+
+            foreach (Client client in GameMain.Client.ConnectedClients)
+            {
+                if (client.IsOwner || client.HasPermission(ClientPermissions.Ban))
+                {
+                    // TODO I could merge both of these signals into one. I could search the string server-side for the state of the SyncSettings to discern what to do.
+                    if (LocalConfig.SyncSettings)
+                    {
+                        string data = DataAppender.AppendData(JsonSerializer.Serialize(LocalConfig), manualUpdate, GameMain.Client.SessionId);
+                        IWriteMessage message = GameMain.LuaCs.Networking.Start("SPW_UpdateConfigServer");
+                        message.WriteString(data);
+                        GameMain.LuaCs.Networking.Send(message);
+                    }
+                    // Remove the server config for all users.
+                    else if (!LocalConfig.SyncSettings && ServerConfig != null)
+                    {
+                        string data = DataAppender.AppendData("_", manualUpdate, GameMain.Client.SessionId);
+                        IWriteMessage message = GameMain.LuaCs.Networking.Start("SPW_DisableConfigServer");
+                        message.WriteString(data);
+                        GameMain.LuaCs.Networking.Send(message);
+                    }
+
+                    return;
+                }
+            }
+        }
 
         public static Config LoadConfig()
         {

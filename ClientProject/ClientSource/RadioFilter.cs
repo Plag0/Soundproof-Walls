@@ -1,5 +1,4 @@
-﻿
-using Barotrauma.Sounds;
+﻿using Barotrauma.Sounds;
 
 namespace SoundproofWalls
 {

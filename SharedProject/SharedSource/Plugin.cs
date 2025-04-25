@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 
 namespace SoundproofWalls
 {
-    public partial class SoundproofWalls : IAssemblyPlugin
+    public partial class Plugin : IAssemblyPlugin
     {
         readonly Harmony harmony = new Harmony("plag.barotrauma.soundproofwalls");
         public void Initialize()
@@ -30,7 +30,7 @@ namespace SoundproofWalls
             // SpeechImpediment property prefix and replacement patch
             harmony.Patch(
                 typeof(Character).GetProperty(nameof(Character.SpeechImpediment)).GetGetMethod(),
-                new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_Character_SpeechImpediment))));
+                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_Character_SpeechImpediment))));
         }
 
 

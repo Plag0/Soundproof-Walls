@@ -9,52 +9,26 @@ using HarmonyLib;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using OpenAL;
-using System.Collections.Concurrent;
 using Barotrauma.Extensions;
+using System.Threading.Channels;
 
 namespace SoundproofWalls
 {
-    public partial class SoundproofWalls : IAssemblyPlugin
+    public partial class Plugin : IAssemblyPlugin
     {
-        // The origin of these magic numbers can be found in the vanilla VoipSound class under the initialization of the muffleFilters and radioFilters arrays.
-        public const short VANILLA_VOIP_LOWPASS_FREQUENCY = 800;
-        public const short VANILLA_VOIP_BANDPASS_FREQUENCY = 2000;
+        public static Plugin Instance;
 
-        public static Config LocalConfig = ConfigManager.LoadConfig();
-        public static Config? ServerConfig = null;
-        public static Config Config { get { return ServerConfig ?? LocalConfig; } }
-
-        static BiQuad VoipLightMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, Config.LightLowpassFrequency);
-        static BiQuad VoipMediumMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, Config.MediumLowpassFrequency);
-        static BiQuad VoipHeavyMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, Config.VoiceHeavyLowpassFrequency);
-        static RadioFilter VoipRadioFilter = new RadioFilter(VoipConfig.FREQUENCY, Config.RadioBandpassFrequency, Config.RadioBandpassQualityFactor, Config.RadioDistortion, Config.RadioStatic, Config.RadioCompressionThreshold, Config.RadioCompressionRatio);
+        // Pointers for convenience.
+        public static Config LocalConfig = ConfigManager.LocalConfig;
+        public static Config? ServerConfig = ConfigManager.ServerConfig;
+        public static Config Config { get { return ConfigManager.Config; } }
 
         public static SidechainProcessor Sidechain = new SidechainProcessor();
         public static EfxAudioManager? EffectsManager;
-        public static bool RoundStarted { get { return GameMain.gameSession?.IsRunning ?? false; } }
-
-        static double LastConfigUploadTime = 5f;
-
-        public static ConcurrentDictionary<uint, SoundInfo> SourceInfoMap = new ConcurrentDictionary<uint, SoundInfo>();
-        static ConcurrentDictionary<SoundChannel, bool> PitchedSounds = new ConcurrentDictionary<SoundChannel, bool>();
         
-        // Expensive or unnecessary sounds that are unlikely to be muffled and so are ignored when reloading sounds as a loading time optimisation.
-        static readonly HashSet<string> IgnoredPrefabs = new HashSet<string>
-        {
-            "Barotrauma/Content/Sounds/Music/",
-            "Barotrauma/Content/Sounds/UI/",
-            "Barotrauma/Content/Sounds/Ambient/",
-            "Barotrauma/Content/Sounds/Hull/",
-            "Barotrauma/Content/Sounds/Water/WaterAmbience",
-            "Barotrauma/Content/Sounds/RadioStatic",
-            "Barotrauma/Content/Sounds/MONSTER_farLayer.ogg",
-            "Barotrauma/Content/Sounds/Tinnitus",
-            "Barotrauma/Content/Sounds/Heartbeat",
-        };
-
         public void InitClient()
         {
-            SoundproofWallsSettings.SPW = this;
+            Instance = this;
 
             GameMain.LuaCs.Hook.Add("think", "spw_clientupdate", (object[] args) =>
             {
@@ -64,7 +38,7 @@ namespace SoundproofWalls
 
             GameMain.LuaCs.Game.AddCommand("spw", TextManager.Get("spw_openmenuhelp").Value, args =>
             {
-                SoundproofWallsSettings.ForceOpenMenu();
+                Menu.ForceOpenMenu();
             });
 
             // StartRound postfix patch.
@@ -72,150 +46,150 @@ namespace SoundproofWalls
             harmony.Patch(
                 typeof(GameSession).GetMethod(nameof(GameSession.StartRound), new Type[] { typeof(LevelData), typeof(bool), typeof(SubmarineInfo), typeof(SubmarineInfo) }),
                 null,
-                new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_StartRound))));
+                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_StartRound))));
 
             // SoundManager_ReleaseResources postfix.
             // For releasing and clearing the pool of ExtendedOggSound buffers.
             harmony.Patch(
                 typeof(SoundManager).GetMethod(nameof(SoundManager.ReleaseResources), BindingFlags.NonPublic | BindingFlags.Instance),
                 null,
-                new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_SoundManager_ReleaseResources_Postfix))));
+                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_SoundManager_ReleaseResources_Postfix))));
 
             // LoadSounds 1 prefix REPLACEMENT.
             // Replaces OggSound with ExtendedOggSound.
             harmony.Patch(
                 typeof(SoundManager).GetMethod(nameof(SoundManager.LoadSound), BindingFlags.Instance | BindingFlags.Public, new Type[] { typeof(string), typeof(bool) }),
-                new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_LoadCustomOggSound), BindingFlags.Static | BindingFlags.Public, new Type[] { typeof(SoundManager), typeof(string), typeof(bool), typeof(Sound).MakeByRefType() })));
+                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_LoadCustomOggSound), BindingFlags.Static | BindingFlags.Public, new Type[] { typeof(SoundManager), typeof(string), typeof(bool), typeof(Sound).MakeByRefType() })));
 
             // LoadSounds 2 prefix REPLACEMENT.
             // Replaces OggSound with ExtendedOggSound.
             harmony.Patch(
                 typeof(SoundManager).GetMethod(nameof(SoundManager.LoadSound), BindingFlags.Instance | BindingFlags.Public, new Type[] { typeof(ContentXElement), typeof(bool), typeof(string) }),
-                new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_LoadCustomOggSound), BindingFlags.Static | BindingFlags.Public, new Type[] { typeof(SoundManager), typeof(ContentXElement), typeof(bool), typeof(string), typeof(Sound).MakeByRefType() })));
+                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_LoadCustomOggSound), BindingFlags.Static | BindingFlags.Public, new Type[] { typeof(SoundManager), typeof(ContentXElement), typeof(bool), typeof(string), typeof(Sound).MakeByRefType() })));
 
             // SoundBuffer_RequestAlBuffers prefix.
             // Crash-preventative patch for missing vanilla check.
             harmony.Patch(
                 typeof(SoundBuffers).GetMethod(nameof(SoundBuffers.RequestAlBuffers), BindingFlags.Public | BindingFlags.Instance),
-                new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_SoundBuffers_RequestAlBuffers_Prefix))));
+                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_SoundBuffers_RequestAlBuffers_Prefix))));
 
             // SoundPlayer_PlaySound prefix.
             // Needed to set the new custom range of sounds.
             harmony.Patch(
                 typeof(SoundPlayer).GetMethod(nameof(SoundPlayer.PlaySound), new Type[] { typeof(Sound), typeof(Vector2), typeof(float), typeof(float), typeof(float), typeof(Hull), typeof(bool), typeof(bool) }),
-                new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_SoundPlayer_PlaySound))));
+                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_SoundPlayer_PlaySound))));
 
             // SoundPlayer_UpdateMusic prefix REPLACEMENT.
             // Ducks music when sidechaining.
             harmony.Patch(
                 typeof(SoundPlayer).GetMethod(nameof(SoundPlayer.UpdateMusic), BindingFlags.NonPublic | BindingFlags.Static),
-                new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_SoundPlayer_UpdateMusic))));
+                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_SoundPlayer_UpdateMusic))));
 
             // SoundPlayer_UpdateWaterFlowSounds postfix.
             // For modifying volume based on eavesdropping fade and sidechaining.
             harmony.Patch(
                 typeof(SoundPlayer).GetMethod(nameof(SoundPlayer.UpdateWaterFlowSounds), BindingFlags.NonPublic | BindingFlags.Static),
                 null,
-                new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_SoundPlayer_UpdateWaterFlowSounds))));
+                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_SoundPlayer_UpdateWaterFlowSounds))));
             // For modifying volume based on eavesdropping fade and sidechaining.
             harmony.Patch(
                 typeof(SoundPlayer).GetMethod(nameof(SoundPlayer.UpdateFireSounds), BindingFlags.NonPublic | BindingFlags.Static),
                 null,
-                new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_SoundPlayer_UpdateFireSounds))));
+                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_SoundPlayer_UpdateFireSounds))));
 
             // ItemComponent_PlaySound prefix.
             // Crash-preventative patch for when manually setting sound range below 100%.
             harmony.Patch(
                 typeof(ItemComponent).GetMethod(nameof(ItemComponent.PlaySound), BindingFlags.NonPublic | BindingFlags.Instance, new Type[] { typeof(ItemSound), typeof(Vector2) }),
-                new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_ItemComponent_PlaySound))));
+                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_ItemComponent_PlaySound))));
 
             // BiQuad prefix.
             // Used for modifying the muffle frequency of standard OggSounds.
             harmony.Patch(
                 typeof(BiQuad).GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, new Type[] { typeof(int), typeof(double), typeof(double), typeof(double) }),
-                new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_BiQuad))));
+                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_BiQuad))));
 
             // SoundChannel ctor postfix REPLACEMENT.
             // Implements the custom ExtendedSoundBuffers for SoundChannels made with ExtendedOggSounds.
             harmony.Patch(
                 typeof(SoundChannel).GetConstructor(new Type[] { typeof(Sound), typeof(float), typeof(Vector3), typeof(float), typeof(float), typeof(float), typeof(Identifier), typeof(bool) }),
-                new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_SoundChannel_Prefix)))) ;
+                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_SoundChannel_Prefix)))) ;
 
             // Soundchannel Muffle property prefix REPLACEMENT.
             // Switches between the three (when using ExtendedOggSounds) types of muffle buffers.
             harmony.Patch(
                 typeof(SoundChannel).GetProperty(nameof(SoundChannel.Muffled)).GetSetMethod(),
-                new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_SoundChannel_SetMuffled_Prefix))));
+                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_SoundChannel_SetMuffled_Prefix))));
 
             // VoipSound ApplyFilters prefix REPLACEMENT.
             // Assigns muffle filters and processes gain & pitch for voice.
             harmony.Patch(
                 typeof(VoipSound).GetMethod(nameof(VoipSound.ApplyFilters), BindingFlags.Public | BindingFlags.Instance, new Type[] { typeof(short[]), typeof(int) }),
-                new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_VoipSound_ApplyFilters_Prefix))));
+                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_VoipSound_ApplyFilters_Prefix))));
 
             // ItemComponent UpdateSounds prefix REPLACEMENT.
             // Updates muffle and other attributes of ItemComponent sounds. Maintainability note: has high contrast with vanilla implementation.
             harmony.Patch(
                 typeof(ItemComponent).GetMethod(nameof(ItemComponent.UpdateSounds), BindingFlags.Instance | BindingFlags.Public),
-                new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_ItemComponent_UpdateSounds))));
+                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_ItemComponent_UpdateSounds))));
 
             // StatusEffect UpdateAllProjSpecific prefix REPLACEMENT.
             // Updates muffle and other attributes of StatusEffect sounds.
             harmony.Patch(
                 typeof(StatusEffect).GetMethod(nameof(StatusEffect.UpdateAllProjSpecific), BindingFlags.Static | BindingFlags.NonPublic),
-                new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_StatusEffect_UpdateAllProjSpecific))));
+                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_StatusEffect_UpdateAllProjSpecific))));
 
             // VoipClient SendToServer prefix REPLACEMENT.
             // Plays bubbles on the client's character when they speak underwater.
             // TODO Surely this is better done in an update loop just checking if the client is speaking?
             harmony.Patch(
                 typeof(VoipClient).GetMethod(nameof(VoipClient.SendToServer), BindingFlags.Instance | BindingFlags.Public),
-                new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_VoipClient_SendToServer))));
+                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_VoipClient_SendToServer))));
 
             // VoipClient Read prefix REPLACEMENT.
             // Manages the range, muffle flagging, and spectating changes for voice chat. Maintainability note: has VERY high contrast with vanilla implementation.
             harmony.Patch(
                 typeof(VoipClient).GetMethod(nameof(VoipClient.Read), BindingFlags.Instance | BindingFlags.Public),
-                new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_VoipClient_Read))));
+                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_VoipClient_Read))));
 
             // UpdateTransform postfix.
             // Essential to the FocusViewTarget setting. Sets SoundManager.ListenerPosition to the position of the viewed target.
             harmony.Patch(
                 typeof(Camera).GetMethod(nameof(Camera.UpdateTransform)),
                 null,
-                new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_UpdateTransform))));
+                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_UpdateTransform))));
 
             // UpdateWaterAmbience prefix REPLACEMENT.
             // Modifies the volume of the water ambience. Maintainability note: a lot of vanilla code being mirrored in this replacement.
             harmony.Patch(
                 typeof(SoundPlayer).GetMethod(nameof(SoundPlayer.UpdateWaterAmbience), BindingFlags.Static | BindingFlags.NonPublic),
-                new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_UpdateWaterAmbience))));
+                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_UpdateWaterAmbience))));
 
             // Dispose prefix.
             // Auto remove entries in SourceInfoMap, as the keys in this dict are SoundChannels.
             harmony.Patch(
                 typeof(SoundChannel).GetMethod(nameof(SoundChannel.Dispose)),
-                new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_SoundChannel_Dispose))));
+                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_SoundChannel_Dispose))));
 #if !LINUX
             // Draw prefix.
             // Displays the eavesdropping text.
             // Bug note: a line in this method causes MonoMod to crash on Linux due to an unmanaged PAL_SEHException https://github.com/dotnet/runtime/issues/78271
             harmony.Patch(
                 typeof(GUI).GetMethod(nameof(GUI.Draw)),
-                new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_Draw))));
+                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_Draw))));
 #endif
             // TogglePauseMenu postfix.
             // Displays menu button and updates the config when the menu is closed.
             harmony.Patch(
                 typeof(GUI).GetMethod(nameof(GUI.TogglePauseMenu)),
                 null,
-                new HarmonyMethod(typeof(SoundproofWallsSettings).GetMethod(nameof(SoundproofWallsSettings.HandlePauseMenuToggle))));
+                new HarmonyMethod(typeof(Menu).GetMethod(nameof(Menu.HandlePauseMenuToggle))));
 
             // ShouldMuffleSounds prefix REPLACEMENT (blank).
             // Just returns true. Workaround for ignoring muffling on sounds with "dontmuffle" in their XML. 
             harmony.Patch(
                 typeof(SoundPlayer).GetMethod(nameof(SoundPlayer.ShouldMuffleSound)),
-                new HarmonyMethod(typeof(SoundproofWalls).GetMethod(nameof(SPW_ShouldMuffleSound))));
+                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_ShouldMuffleSound))));
 
             // Clients receiving the admin's config.
             GameMain.LuaCs.Networking.Receive("SPW_UpdateConfigClient", (object[] args) =>
@@ -235,7 +209,7 @@ namespace SoundproofWalls
                     return;
                 }
 
-                UpdateConfig(newConfig: newServerConfig, oldConfig: Config, isServerConfigEnabled: true, manualUpdate: manualUpdate, configSenderId: configSenderId);
+                ConfigManager.UpdateConfig(newConfig: newServerConfig, oldConfig: Config, isServerConfigEnabled: true, manualUpdate: manualUpdate, configSenderId: configSenderId);
             });
 
             // Clients receiving word that the admin has disabled syncing.
@@ -247,40 +221,25 @@ namespace SoundproofWalls
                 bool manualUpdate = false;
                 byte configSenderId = 1;
                 DataAppender.RemoveData(data, out manualUpdate, out configSenderId);
-                UpdateConfig(newConfig: LocalConfig, oldConfig: Config, isServerConfigEnabled: false, manualUpdate: manualUpdate, configSenderId: configSenderId);
+                ConfigManager.UpdateConfig(newConfig: LocalConfig, oldConfig: Config, isServerConfigEnabled: false, manualUpdate: manualUpdate, configSenderId: configSenderId);
             });
 
-            EnableAlEffects();
-            UploadServerConfig();
+            InitDynamicFx();
+            ConfigManager.UploadServerConfig();
 
             HydrophoneManager.Setup();
             EavesdropManager.Setup();
             BubbleManager.Setup();
 
             // Ensure all sounds have been loaded with the correct muffle buffer.
-            if (Config.Enabled) { ReloadSounds(starting: true); }
+            if (Config.Enabled) { Util.ReloadSounds(starting: true); }
         }
 
-        // Dispose all soundchannels.
-        private static void StopPlayingChannels()
-        {
-            for (int i = 0; i < GameMain.SoundManager.playingChannels.Length; i++)
-            {
-                lock (GameMain.SoundManager.playingChannels[i])
-                {
-                    for (int j = 0; j < GameMain.SoundManager.playingChannels[i].Length; j++)
-                    {
-                        GameMain.SoundManager.playingChannels[i][j]?.Dispose();
-                    }
-                }
-            }
-        }
-
-        private static void EnableAlEffects()
+        public static void InitDynamicFx()
         {
             if (!Config.Enabled || !Config.DynamicFx) { return; }
 
-            StopPlayingChannels();
+            Util.StopPlayingChannels();
 
             EffectsManager?.Dispose();
             EffectsManager = null;
@@ -298,50 +257,12 @@ namespace SoundproofWalls
             }
         }
 
-        private static void DisableAlEffects()
+        public static void DisposeDynamicFx()
         {
-            StopPlayingChannels();
+            Util.StopPlayingChannels();
 
             EffectsManager?.Dispose();
             AlEffects.Cleanup();
-        }
-
-        public void UpdateConfig(Config newConfig, Config oldConfig, bool isServerConfigEnabled = false, bool manualUpdate = false, byte configSenderId = 0)
-        {
-            bool shouldStop = oldConfig.Enabled && !newConfig.Enabled;
-            bool shouldStart = !oldConfig.Enabled && newConfig.Enabled;
-            bool shouldReloadSounds = ShouldReloadSounds(newConfig: newConfig, oldConfig: oldConfig);
-            bool shouldClearMuffleInfo = ShouldClearMuffleInfo(newConfig, oldConfig: oldConfig);
-            bool shouldStartAlEffects = !shouldStart && !oldConfig.DynamicFx && newConfig.DynamicFx;
-            bool shouldStopAlEffects = !shouldStop && oldConfig.DynamicFx && !newConfig.DynamicFx;
-
-            ServerConfig = isServerConfigEnabled ? newConfig : null;
-
-            if (shouldStartAlEffects) { EnableAlEffects(); }
-            else if (shouldStopAlEffects) { DisableAlEffects(); }
-
-            if (shouldStop) { Dispose(); }
-            else if (shouldStart) { Initialize(); }
-            else if (shouldReloadSounds) { ReloadSounds(); }
-            else if (shouldClearMuffleInfo) { SourceInfoMap.Clear(); }
-
-            if (manualUpdate && configSenderId != 0)
-            {
-                string updaterName = GameMain.Client.ConnectedClients.FirstOrDefault(client => client.SessionId == configSenderId)?.Name ?? "unknown";
-                if (isServerConfigEnabled)
-                {
-                    LuaCsLogger.Log($"Soundproof Walls: \"{updaterName}\" {TextManager.Get("spw_updateserverconfig").Value}", Color.LimeGreen);
-                }  
-                else
-                {
-                    LuaCsLogger.Log($"Soundproof Walls: \"{updaterName}\" {TextManager.Get("spw_disableserverconfig").Value}", Color.MonoGameOrange);
-                }
-            }
-        }
-
-        public static void SPW_StartRound()
-        {
-            HydrophoneManager.SetupHydrophoneSwitches(firstStartup: true);
         }
 
         public void DisposeClient()
@@ -351,16 +272,21 @@ namespace SoundproofWalls
             harmony.Unpatch(typeof(SoundManager).GetMethod(nameof(SoundManager.LoadSound), BindingFlags.Instance | BindingFlags.Public, new Type[] { typeof(string), typeof(bool) }), HarmonyPatchType.Prefix);
             harmony.Unpatch(typeof(SoundManager).GetMethod(nameof(SoundManager.LoadSound), BindingFlags.Instance | BindingFlags.Public, new Type[] { typeof(ContentXElement), typeof(bool), typeof(string) }), HarmonyPatchType.Prefix);
 
-            ResetAllPitchedSounds();
+            SoundInfoManager.ResetAllPitchedChannels();
 
             HydrophoneManager.Dispose();
             EavesdropManager.Dispose();
             BubbleManager.Dispose();
 
             // Cleans up any ExtendedOggSounds.
-            ReloadSounds(stopping: true);
+            Util.ReloadSounds(stopping: true);
 
-            DisableAlEffects();
+            DisposeDynamicFx();
+        }
+
+        public static void SPW_StartRound()
+        {
+            HydrophoneManager.SetupHydrophoneSwitches(firstStartup: true);
         }
 
         // This patch might not exist when the base method is called, but it's here in principal to prevent memory leaks.
@@ -381,34 +307,20 @@ namespace SoundproofWalls
 
         public static void SPW_Update()
         {
-            if (Timing.TotalTime > LastConfigUploadTime + 5)
-            {
-                LastConfigUploadTime = (float)Timing.TotalTime;
-                UploadServerConfig(manualUpdate: false);
-            }
-
             if (GameMain.Instance.Paused) return;
 
+            ConfigManager.Update();
             Listener.Update();
             HydrophoneManager.Update();
             EavesdropManager.Update();
             BubbleManager.Update();
-            Sidechain.Process();
-            if (!Config.Enabled || !RoundStarted) { return; } // TODO implement these into the above classes so they are self disposing.
-
-
-            if (Config.DynamicFx && EffectsManager != null)
-            {
-                // TODO calculate these
-                float roomHeight = 30;
-                float roomWidth = 30;
-                EffectsManager.UpdatePrimaryEnvironment(roomWidth, roomHeight);
-            }
+            Sidechain.Update();
+            EffectsManager?.Update();
         }
 
         public static bool SPW_LoadCustomOggSound(SoundManager __instance, string filename, bool stream, ref Sound __result)
         {
-            if (!Config.Enabled || Config.VanillaFx || (Config.StaticFx && !filename.IsNullOrEmpty() && StringHasKeyword(filename, IgnoredPrefabs))) 
+            if (!Config.Enabled || Config.VanillaFx || (Config.StaticFx && !filename.IsNullOrEmpty() && Util.StringHasKeyword(filename, SoundInfoManager.IgnoredPrefabs))) 
             { return true; }
 
             if (__instance.Disabled) { return false; }
@@ -455,7 +367,7 @@ namespace SoundproofWalls
 
             string filePath = overrideFilePath ?? element.GetAttributeContentPath("file")?.Value ?? "";
 
-            if (Config.StaticFx && !filePath.IsNullOrEmpty() && StringHasKeyword(filePath, IgnoredPrefabs)) { return true; }
+            if (Config.StaticFx && !filePath.IsNullOrEmpty() && Util.StringHasKeyword(filePath, SoundInfoManager.IgnoredPrefabs)) { return true; }
 
             if (!File.Exists(filePath))
             {
@@ -495,400 +407,26 @@ namespace SoundproofWalls
             return false;
         }
 
-        public static Vector2 LocalizePosition(Vector2 worldPos, Hull? posHull)
-        {
-            Vector2 localPos = worldPos;
-            if (posHull?.Submarine != null)
-            {
-                localPos += -posHull.Submarine.WorldPosition + posHull.Submarine.HiddenSubPosition;
-            }
-
-            return localPos;
-        }
-
-        static void ResetAllPitchedSounds()
-        {
-            foreach (var kvp in PitchedSounds)
-            {
-                kvp.Key.FrequencyMultiplier = 1.0f;
-            }
-            PitchedSounds.Clear();
-        }
-
-        public static string? GetModDirectory()
-        {
-            string? path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-            while (!path.EndsWith("3153737715") && !path.EndsWith("Soundproof Walls"))
-            {
-                path = Directory.GetParent(path)?.FullName;
-                if (path == null) break;
-            }
-
-            return path;
-        }
-
-        // Called every 5 seconds or when the client changes a setting.
-        public static void UploadServerConfig(bool manualUpdate = false)
-        {
-            if (!GameMain.IsMultiplayer) { return; }
-
-            foreach (Client client in GameMain.Client.ConnectedClients)
-            {
-                if (client.IsOwner || client.HasPermission(ClientPermissions.Ban))
-                {
-                    // TODO I could merge both of these signals into one. I could search the string server-side for the state of the SyncSettings to discern what to do.
-                    if (LocalConfig.SyncSettings)
-                    {
-                        string data = DataAppender.AppendData(JsonSerializer.Serialize(LocalConfig), manualUpdate, GameMain.Client.SessionId);
-                        IWriteMessage message = GameMain.LuaCs.Networking.Start("SPW_UpdateConfigServer");
-                        message.WriteString(data);
-                        GameMain.LuaCs.Networking.Send(message);
-                    }
-                    // Remove the server config for all users.
-                    else if (!LocalConfig.SyncSettings && ServerConfig != null)
-                    {
-                        string data = DataAppender.AppendData("_", manualUpdate, GameMain.Client.SessionId);
-                        IWriteMessage message = GameMain.LuaCs.Networking.Start("SPW_DisableConfigServer");
-                        message.WriteString(data);
-                        GameMain.LuaCs.Networking.Send(message);
-                    }
-
-                    return;
-                }
-            }
-        }
-
-        // Returns true if there's a mismatch in any of the lowpass frequencies or the effect mode is changed.
-        public static bool ShouldReloadSounds(Config newConfig, Config? oldConfig = null)
-        {
-            if (oldConfig == null) { oldConfig = Config; }
-
-            bool changedEffectModes = oldConfig.EffectProcessingMode != newConfig.EffectProcessingMode;
-
-            double vanillaFreq = SoundPlayer.MuffleFilterFrequency;
-
-            bool oldStaticFx = oldConfig.Enabled && oldConfig.StaticFx;
-            bool newStaticFx = newConfig.Enabled && newConfig.StaticFx;
-
-            bool oldUsingMuffleBuffer = oldConfig.Enabled && !oldConfig.DynamicFx;
-            bool newUsingMuffleBuffer = newConfig.Enabled && !newConfig.DynamicFx;
-
-            double oldHeavyFreq = oldUsingMuffleBuffer ? oldConfig.HeavyLowpassFrequency : vanillaFreq;
-            double oldMediumFreq = oldStaticFx ? oldConfig.MediumLowpassFrequency : vanillaFreq;
-            double oldLightFreq = oldStaticFx ? oldConfig.LightLowpassFrequency : vanillaFreq;
-
-            double newHeavyFreq = newUsingMuffleBuffer ? newConfig.HeavyLowpassFrequency : vanillaFreq;
-            double newMediumFreq = newStaticFx ? newConfig.MediumLowpassFrequency : vanillaFreq;
-            double newLightFreq = newStaticFx ? newConfig.LightLowpassFrequency : vanillaFreq;
-
-            return changedEffectModes || 
-                   oldHeavyFreq != newHeavyFreq || 
-                   oldMediumFreq != newMediumFreq || 
-                   oldLightFreq != newLightFreq;
-        }
-
-        public static bool ShouldClearMuffleInfo(Config newConfig, Config? oldConfig = null)
-        {
-            if (oldConfig == null) { oldConfig = Config; }
-
-            return !oldConfig.CustomSounds.SetEquals(newConfig.CustomSounds) ||
-                    !oldConfig.IgnoredSounds.SetEquals(newConfig.IgnoredSounds) ||
-                    !oldConfig.PitchIgnoredSounds.SetEquals(newConfig.PitchIgnoredSounds) ||
-                    !oldConfig.LowpassIgnoredSounds.SetEquals(newConfig.LowpassIgnoredSounds) ||
-                    !oldConfig.LowpassForcedSounds.SetEquals(newConfig.LowpassForcedSounds) ||
-                    !oldConfig.ContainerIgnoredSounds.SetEquals(newConfig.ContainerIgnoredSounds) ||
-                    !oldConfig.PathIgnoredSounds.SetEquals(newConfig.PathIgnoredSounds) ||
-                    !oldConfig.WallPropagatingSounds.SetEquals(newConfig.WallPropagatingSounds) ||
-                    !oldConfig.SurfaceIgnoredSounds.SetEquals(newConfig.SurfaceIgnoredSounds) ||
-                    !oldConfig.SubmersionIgnoredSounds.SetEquals(newConfig.SubmersionIgnoredSounds);
-        }
-
-        private static Sound GetNewSound(Sound oldSound)
-        {
-            if (oldSound.XElement != null)
-            {
-                return GameMain.SoundManager.LoadSound(oldSound.XElement, oldSound.Stream, oldSound.Filename);
-            }
-            else
-            {
-                return GameMain.SoundManager.LoadSound(oldSound.Filename, oldSound.Stream);
-            }
-        }
-
-        private static bool ShouldSkipSound(Sound? sound, bool starting, bool stopping)
-        {
-            if (sound == null)
-                return true;
-
-            bool isReduced = sound is ReducedOggSound;
-            bool isExtended = sound is ExtendedOggSound;
-
-            if ((starting && Config.DynamicFx && isReduced) ||
-                (starting && Config.StaticFx && isExtended) ||
-                (stopping && Config.DynamicFx && !isReduced) ||
-                (stopping && Config.StaticFx && !isExtended))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        private static void ReloadRoundSounds(Dictionary<string, Sound> updatedSounds, bool starting = false, bool stopping = false)
-        {
-            int t = 0;
-            int i = 0;
-            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-            sw.Start();
-
-            foreach (RoundSound roundSound in RoundSound.roundSounds)
-            {
-                i++;
-                Sound? oldSound = roundSound.Sound;
-
-                if (ShouldSkipSound(oldSound, starting, stopping))
-                    continue;
-
-                if (!updatedSounds.TryGetValue(oldSound.Filename, out Sound? newSound))
-                {
-                    newSound = GetNewSound(oldSound);
-                    updatedSounds.Add(oldSound.Filename, newSound);
-                    t++;
-                }
-
-                roundSound.Sound = newSound;
-                oldSound.Dispose();
-            }
-
-            sw.Stop();
-            LuaCsLogger.Log($"Created {t} new round sounds. Scanned {i} ({sw.ElapsedMilliseconds} ms)");
-        }
-        private static void AllocateCharacterSounds(Dictionary<string, Sound> updatedSounds, bool starting = false, bool stopping = false)
-        {
-            int t = 0;
-            int i = 0;
-
-            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-            sw.Start();
-
-            foreach (Character character in Character.CharacterList)
-            {
-                if (character.IsDead) { continue; }
-                foreach (CharacterSound characterSound in character.sounds)
-                {
-                    i++;
-                    Sound? oldSound = characterSound.roundSound.Sound;
-
-                    if (ShouldSkipSound(oldSound, starting, stopping))
-                        continue;
-
-                    if (!updatedSounds.TryGetValue(oldSound.Filename, out Sound? newSound))
-                    {
-                        newSound = GetNewSound(oldSound);
-                        updatedSounds.Add(oldSound.Filename, newSound);
-                        t++;
-                    }
-
-                    characterSound.roundSound.Sound = newSound;
-                    oldSound.Dispose();
-                }
-            }
-            sw.Stop();
-            LuaCsLogger.Log($"Created {t} new character sounds. Scanned {i} ({sw.ElapsedMilliseconds} ms)");
-        }
-
-        private static void AllocateComponentSounds(Dictionary<string, Sound> updatedSounds, bool starting = false, bool stopping = false)
-        {
-            int t = 0;
-            int i = 0;
-
-            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-            sw.Start();
-
-            foreach (Item item in Item.ItemList)
-            {
-                foreach (ItemComponent itemComponent in item.Components)
-                {
-                    foreach (var kvp in itemComponent.sounds)
-                    {
-                        itemComponent.StopSounds(kvp.Key);
-                        foreach (ItemSound itemSound in kvp.Value)
-                        {
-                            i++;
-                            Sound? oldSound = itemSound.RoundSound.Sound;
-
-                            if (ShouldSkipSound(oldSound, starting, stopping))
-                                continue;
-
-                            if (!updatedSounds.TryGetValue(oldSound.Filename, out Sound? newSound))
-                            {
-                                newSound = GetNewSound(oldSound);
-                                updatedSounds.Add(oldSound.Filename, newSound);
-                                t++;
-                            }
-
-                            itemSound.RoundSound.Sound = newSound;
-                            oldSound.Dispose();
-                        }
-                    }
-                }
-            }
-            sw.Stop();
-            LuaCsLogger.Log($"Created {t} new comp sounds. Scanned {i} ({sw.ElapsedMilliseconds} ms)");
-        }
-
-        private static void AllocateStatusEffectSounds(Dictionary<string, Sound> updatedSounds, bool starting = false, bool stopping = false)
-        {
-            int t = 0;
-            int i = 0;
-
-            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-            sw.Start();
-
-            foreach (StatusEffect statusEffect in StatusEffect.ActiveLoopingSounds)
-            {
-                foreach (RoundSound roundSound in statusEffect.Sounds)
-                {
-                    i++;
-                    Sound? oldSound = roundSound.Sound;
-
-                    if (ShouldSkipSound(oldSound, starting, stopping))
-                        continue;
-
-                    if (!updatedSounds.TryGetValue(oldSound.Filename, out Sound? newSound))
-                    {
-                        newSound = GetNewSound(oldSound);
-                        updatedSounds.Add(oldSound.Filename, newSound);
-                        t++;
-                    }
-
-                    roundSound.Sound = newSound;
-                    oldSound.Dispose();
-                }
-            }
-            sw.Stop();
-            LuaCsLogger.Log($"Created {t} new status effect sounds. Scanned {i} ({sw.ElapsedMilliseconds} ms)");
-        }
-
-        private static void ReloadPrefabSounds(Dictionary<string, Sound> updatedSounds, bool starting = false, bool stopping = false)
-        {
-            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-            sw.Start();
-
-            int t = 0;
-            foreach (SoundPrefab soundPrefab in SoundPrefab.Prefabs)
-            {
-                Sound oldSound = soundPrefab.Sound;
-
-                if (ShouldSkipSound(oldSound, starting, stopping))
-                    continue;
-
-                if (!updatedSounds.TryGetValue(oldSound.Filename, out Sound? newSound))
-                {
-                    newSound = GetNewSound(oldSound);
-                    updatedSounds.Add(oldSound.Filename, newSound);
-                    t++;
-                }
-
-                soundPrefab.Sound = newSound;
-                oldSound.Dispose();
-                t++;
-            }
-
-            sw.Stop();
-            LuaCsLogger.Log($"Created {t} new Sound prefab sounds ({sw.ElapsedMilliseconds} ms)");
-        }
-
-        // Compatibility with ReSound.
-        private static void StopResound(MoonSharp.Interpreter.DynValue Resound)
-        {
-            if (Resound.Type == MoonSharp.Interpreter.DataType.Table)
-            {
-                MoonSharp.Interpreter.Table resoundTable = Resound.Table;
-                MoonSharp.Interpreter.DynValue stopFunction = resoundTable.Get("StopMod");
-                if (stopFunction.Type == MoonSharp.Interpreter.DataType.Function)
-                {
-                GameMain.LuaCs.Lua.Call(stopFunction);
-                }
-            }
-        }
-
-        private static void StartResound(MoonSharp.Interpreter.DynValue Resound)
-        {
-            if (Resound.Type == MoonSharp.Interpreter.DataType.Table)
-            {
-                MoonSharp.Interpreter.Table resoundTable = Resound.Table;
-                MoonSharp.Interpreter.DynValue startFunction = resoundTable.Get("StartMod");
-                if (startFunction.Type == MoonSharp.Interpreter.DataType.Function)
-                {
-                    GameMain.LuaCs.Lua.Call(startFunction);
-                }
-            }
-        }
-
-        static void StopAllPlayingChannels()
-        {
-            foreach (SoundChannel[] channelGroup in GameMain.SoundManager.playingChannels)
-            {
-                foreach (SoundChannel channel in channelGroup)
-                {
-                    if (channel != null) { channel.Dispose(); }
-                }
-            }
-        }
-
-        public static void ReloadSounds(bool starting = false, bool stopping = false)
-        {
-            LuaCsLogger.Log("Soundproof Walls: ReloadSounds() started running.");
-
-            MoonSharp.Interpreter.DynValue Resound = GameMain.LuaCs.Lua.Globals.Get("Resound");
-            // ReSound has its own code to stop at the end of the round but it needs to happen here and now before SPW.
-            StopResound(Resound);
-
-            SourceInfoMap.Clear();
-            StopPlayingChannels();
-
-            // Cache sounds that have already been updated.
-            Dictionary<string, Sound> updatedSounds = new Dictionary<string, Sound>();
-
-            ReloadRoundSounds(updatedSounds, starting, stopping);
-            ReloadPrefabSounds(updatedSounds, starting, stopping);
-            AllocateStatusEffectSounds(updatedSounds, starting, stopping);
-            AllocateCharacterSounds(updatedSounds, starting, stopping);
-            AllocateComponentSounds(updatedSounds, starting, stopping);
-
-            StartResound(Resound);
-
-            LuaCsLogger.Log("Soundproof Walls: ReloadSounds() stopped running.");
-        }
-
-        public static Limb GetCharacterHead(Character character)
-        {
-            // It's weird defaulting to the body but who knows what people might mod into the game.
-            return character.AnimController.GetLimb(LimbType.Head) ?? character.AnimController.MainLimb;
-        }
-
         public static bool SPW_Draw(ref Camera cam, ref SpriteBatch spriteBatch)
         {
             //GUIButton frameHolder = new GUIButton(new RectTransform(Vector2.One, GUI.Canvas, Anchor.Center), style: null);
             //new GUIFrame(new RectTransform(GUI.Canvas.RelativeSize, frameHolder.RectTransform, Anchor.Center), style: "GUIBackgroundBlocker");
 
-            GUIFrame? frame = SoundproofWallsSettings.currentMenuFrame;
+            GUIFrame? frame = Menu.currentMenuFrame;
             if (frame != null && GUIComponent.toolTipBlock != null && GUIComponent.toolTipBlock.Text == TextManager.Get("spw_effectprocessingmodetooltip"))
             {
                 float padding = 30;
                 RichString menuText = "";
-                if (SoundproofWallsSettings.NewLocalConfig.VanillaFx) { menuText = TextManager.Get("spw_vanillafxtooltip"); }
-                else if (SoundproofWallsSettings.NewLocalConfig.StaticFx) { menuText = TextManager.Get("spw_staticfxtooltip"); }
-                else if (SoundproofWallsSettings.NewLocalConfig.DynamicFx) { menuText = TextManager.Get("spw_dynamicfxtooltip"); }
+                if (Menu.NewLocalConfig.VanillaFx) { menuText = TextManager.Get("spw_vanillafxtooltip"); }
+                else if (Menu.NewLocalConfig.StaticFx) { menuText = TextManager.Get("spw_staticfxtooltip"); }
+                else if (Menu.NewLocalConfig.DynamicFx) { menuText = TextManager.Get("spw_dynamicfxtooltip"); }
                 GUIComponent.DrawToolTip(spriteBatch, menuText, new Vector2(frame.Rect.X + frame.Rect.Width + padding, frame.Rect.Y));
             }
 
             Character character = Character.Controlled;
             if (character == null || cam == null) { return true; }
 
-            Limb limb = GetCharacterHead(character);
+            Limb limb = Util.GetCharacterHead(character);
             Vector2 position = cam.WorldToScreen(limb.body.DrawPosition + new Vector2(0, 42));
             LocalizedString text = TextManager.Get("spw_listening");
             float size = 1.4f;
@@ -946,12 +484,12 @@ namespace SoundproofWalls
                 Character character = __instance.gameClient.Character;
                 if (character != null)
                 {
-                    Limb playerHead = GetCharacterHead(character);
+                    Limb playerHead = Util.GetCharacterHead(character);
                     Hull limbHull = playerHead.Hull;
-                    bool wearingDivingGear = IsCharacterWearingDivingGear(character);
+                    bool wearingDivingGear = Util.IsCharacterWearingDivingGear(character);
                     bool oxygenReqMet = wearingDivingGear && character.Oxygen < 11 || !wearingDivingGear && character.OxygenAvailable < 96;
-                    bool ignoreBubbles = StringHasKeyword(character.Name, Config.BubbleIgnoredNames);
-                    if (oxygenReqMet && SoundInWater(playerHead.Position, limbHull) && character.SpeechImpediment < 100 && !ignoreBubbles)
+                    bool ignoreBubbles = Util.StringHasKeyword(character.Name, Config.BubbleIgnoredNames);
+                    if (oxygenReqMet && Util.SoundInWater(playerHead.Position, limbHull) && character.SpeechImpediment < 100 && !ignoreBubbles)
                     {
                         GameMain.ParticleManager.CreateParticle(
                             "bubbles",
@@ -1084,63 +622,20 @@ namespace SoundproofWalls
 
             // Muffle Info stuff.
             SoundChannel channel = client.VoipSound.soundChannel;
-            if (channel == null) { return true; }
+            Hull? clientHull = client.Character.CurrentHull;
+            SoundInfo soundInfo = SoundInfoManager.UpdateSoundInfo(channel, clientHull, speakingClient: client, messageType: messageType);
 
-            bool needsUpdate = true;
-            uint sourceId = channel.Sound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
-            if (!SourceInfoMap.TryGetValue(sourceId, out SoundInfo muffleInfo))
-            {
-                muffleInfo = new SoundInfo(channel, client.Character.CurrentHull, voiceOwner: client, messageType: messageType);
-                SourceInfoMap[sourceId] = muffleInfo;
-                needsUpdate = false;
-            }
-
-            if (needsUpdate)
-            {
-                muffleInfo.Update(client.Character.CurrentHull, messageType: messageType);
-            }
-
-            client.VoipSound.UseMuffleFilter = muffleInfo.Muffle;
+            client.VoipSound.UseMuffleFilter = soundInfo.Muffled;
             client.VoipSound.UseRadioFilter = messageType == ChatMessageType.Radio && !GameSettings.CurrentConfig.Audio.DisableVoiceChatFilters;
 
             return false;
         }
 
-        // Get a client's messageType (same implementation seen in VoipClient_Read method).
-        public static ChatMessageType GetMessageType(Client client)
-        {
-            bool spectating = Character.Controlled == null;
-            WifiComponent senderRadio = null;
-            var messageType = ChatMessageType.Default;
-            if (!spectating)
-            {
-                messageType =
-                    !client.VoipQueue.ForceLocal &&
-                    ChatMessage.CanUseRadio(client.Character, out senderRadio) &&
-                    ChatMessage.CanUseRadio(Character.Controlled, out var recipientRadio) &&
-                    senderRadio.CanReceive(recipientRadio) ?
-                        ChatMessageType.Radio : ChatMessageType.Default;
-            }
-            else
-            {
-                messageType =
-                    !client.VoipQueue.ForceLocal &&
-                    ChatMessage.CanUseRadio(client.Character, out senderRadio) ?
-                        ChatMessageType.Radio : ChatMessageType.Default;
-            }
-
-            return messageType;
-        }
-
-        public static bool IsCharacterWearingDivingGear(Character character)
-        {
-            Identifier id = new Identifier("diving");
-            Item outerItem = character.Inventory.GetItemInLimbSlot(InvSlotType.OuterClothes);
-            Item headItem = character.Inventory.GetItemInLimbSlot(InvSlotType.Head);
-
-            return (outerItem != null && outerItem.HasTag(id)) || (headItem != null && headItem.HasTag(id));
-        }
-
+        private static BiQuad voipLightMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, Config.LightLowpassFrequency);
+        private static BiQuad voipMediumMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, Config.MediumLowpassFrequency);
+        private static BiQuad voipHeavyMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, Config.VoiceHeavyLowpassFrequency);
+        private static RadioFilter voipCustomRadioFilter = new RadioFilter(VoipConfig.FREQUENCY, Config.RadioBandpassFrequency, Config.RadioBandpassQualityFactor, Config.RadioDistortion, Config.RadioStatic, Config.RadioCompressionThreshold, Config.RadioCompressionRatio);
+        private static BiQuad voipVanillaRadioFilter = new BandpassFilter(VoipConfig.FREQUENCY, Util.VANILLA_VOIP_BANDPASS_FREQUENCY);
         public static bool SPW_VoipSound_ApplyFilters_Prefix(VoipSound __instance, ref short[] buffer, ref int readSamples)
         {
             VoipSound voipSound = __instance;
@@ -1149,72 +644,68 @@ namespace SoundproofWalls
 
             SoundChannel channel = voipSound.soundChannel;
             Client client = voipSound.client;
-            uint sourceId = voipSound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
-            if (!SourceInfoMap.TryGetValue(sourceId, out SoundInfo muffleInfo))
-            {
-                muffleInfo = new SoundInfo(channel, client.Character.CurrentHull, voiceOwner: client, messageType: GetMessageType(client)) ;
-                SourceInfoMap[sourceId] = muffleInfo;
-            }
+            Hull? clientHull = client.Character.CurrentHull;
+            SoundInfo soundInfo = SoundInfoManager.UpdateSoundInfo(channel, soundHull: clientHull, speakingClient: client);
 
+            // Update muffle filters if needed.
             if (voipSound.UseMuffleFilter)
             {
-                // UpdateMuffle muffle filters if they have been changed.
-                if (VoipHeavyMuffleFilter._frequency != Config.VoiceHeavyLowpassFrequency)
+                if (voipHeavyMuffleFilter._frequency != Config.VoiceHeavyLowpassFrequency)
                 {
-                    VoipHeavyMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, Config.VoiceHeavyLowpassFrequency);
+                    voipHeavyMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, Config.VoiceHeavyLowpassFrequency);
                 }
-                if (VoipLightMuffleFilter._frequency != Config.LightLowpassFrequency)
+                if (voipLightMuffleFilter._frequency != Config.LightLowpassFrequency)
                 {
-                    VoipLightMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, Config.LightLowpassFrequency);
+                    voipLightMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, Config.LightLowpassFrequency);
                 }
-                if (VoipMediumMuffleFilter._frequency != Config.MediumLowpassFrequency)
+                if (voipMediumMuffleFilter._frequency != Config.MediumLowpassFrequency)
                 {
-                    VoipMediumMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, Config.MediumLowpassFrequency);
+                    voipMediumMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, Config.MediumLowpassFrequency);
                 }
             }
 
-            BiQuad muffleFilter = VoipHeavyMuffleFilter;
-            if (muffleInfo.Reason == MuffleReason.LightObstruction)
-            {
-                muffleFilter = VoipLightMuffleFilter;
-            }
-            else if (muffleInfo.Reason == MuffleReason.MediumObstruction)
-            {
-                muffleFilter = VoipMediumMuffleFilter;
-            }
+            // Select the muffle filter to use.
+            BiQuad muffleFilter = voipHeavyMuffleFilter;
+            if (soundInfo.LightMuffle) muffleFilter = voipLightMuffleFilter;
+            else if (soundInfo.MediumMuffle)muffleFilter = voipMediumMuffleFilter;
 
-            // UpdateMuffle radio filter if it has been changed.
+            // Update custom radio filter if any settings for it have been changed.
             if (voipSound.UseRadioFilter &&
-                (VoipRadioFilter.frequency != Config.RadioBandpassFrequency ||
-                VoipRadioFilter.q != Config.RadioBandpassQualityFactor ||
-                VoipRadioFilter.distortionAmount != Config.RadioDistortion ||
-                VoipRadioFilter.staticAmount != Config.RadioStatic ||
-                VoipRadioFilter.compressionThreshold != Config.RadioCompressionThreshold ||
-                VoipRadioFilter.compressionRatio != Config.RadioCompressionRatio))
+                Config.RadioCustomFilterEnabled &&
+                (voipCustomRadioFilter.frequency != Config.RadioBandpassFrequency ||
+                voipCustomRadioFilter.q != Config.RadioBandpassQualityFactor ||
+                voipCustomRadioFilter.distortionAmount != Config.RadioDistortion ||
+                voipCustomRadioFilter.staticAmount != Config.RadioStatic ||
+                voipCustomRadioFilter.compressionThreshold != Config.RadioCompressionThreshold ||
+                voipCustomRadioFilter.compressionRatio != Config.RadioCompressionRatio))
             {
-                VoipRadioFilter = new RadioFilter(VoipConfig.FREQUENCY, Config.RadioBandpassFrequency, Config.RadioBandpassQualityFactor, Config.RadioDistortion, Config.RadioStatic, Config.RadioCompressionThreshold, Config.RadioCompressionRatio);
+                voipCustomRadioFilter = new RadioFilter(VoipConfig.FREQUENCY, Config.RadioBandpassFrequency, Config.RadioBandpassQualityFactor, Config.RadioDistortion, Config.RadioStatic, Config.RadioCompressionThreshold, Config.RadioCompressionRatio);
             }
 
             // Vanilla method & changes.
-            float gainMult = ProcessVoipSound(voipSound, muffleInfo);
-            float finalGain = voipSound.gain * GameSettings.CurrentConfig.Audio.VoiceChatVolume * voipSound.client.VoiceVolume * gainMult;
+
+            // Sets voipSound.gain to the raw volume without voice config settings applied (seems to be what it's for in vanilla)
+            // and updates the soundchannel gain with the voice config settings applied.
+            voipSound.Gain = soundInfo.Gain;
+
             for (int i = 0; i < readSamples; i++)
             {
                 float fVal = ToolBox.ShortAudioSampleToFloat(buffer[i]);
 
-                if (finalGain > 1.0f) //TODO: take distance into account?
-                {
-                    fVal = Math.Clamp(fVal * finalGain, -1f, 1f);
-                }
-
-                if (voipSound.UseMuffleFilter)
+                if (voipSound.UseMuffleFilter && !Config.DynamicFx) // DynamicFx processes muffle differently.
                 {
                     fVal = muffleFilter.Process(fVal);
                 }
                 if (voipSound.UseRadioFilter)
                 {
-                    fVal = Math.Clamp(VoipRadioFilter.Process(fVal) * VoipSound.PostRadioFilterBoost, -1f, 1f);
-                    //fVal = VoipRadioFilter.Process(fVal);
+                    if (Config.RadioCustomFilterEnabled)
+                    {
+                        fVal = Math.Clamp(voipCustomRadioFilter.Process(fVal), -1f, 1f);
+                    }
+                    else
+                    {
+                        fVal = Math.Clamp(voipVanillaRadioFilter.Process(fVal) * VoipSound.PostRadioFilterBoost, -1f, 1f);
+                    }
                 }
                 buffer[i] = ToolBox.FloatToShortAudioSample(fVal);
             }
@@ -1234,15 +725,16 @@ namespace SoundproofWalls
 
             channel.Looping = false; // This isn't actually needed, it is more of a superstitious line of code...
 
-            SourceInfoMap.TryRemove(sourceId, out SoundInfo? _);
-            PitchedSounds.TryRemove(channel, out bool _);
-            HydrophoneManager.HydrophoneSoundChannels.Remove(channel);
+            SoundInfoManager.RemoveSoundInfo(channel);
+            SoundInfoManager.RemovePitchedChannel(channel);
+            HydrophoneManager.RemoveHydrophoneChannel(channel);
+            BubbleManager.RemoveBubbleSound(channel);
         }
 
         // Stop the ItemComp PlaySound method from running if the itemSound.Range is too short, meaning the loopingSoundChannel is null.
         public static bool SPW_ItemComponent_PlaySound(ref ItemSound itemSound, ref Vector2 position)
         {
-            if (!Config.Enabled || Config.SoundRangeMultiplier >= 1 || !RoundStarted) { return true; }
+            if (!Config.Enabled || Config.SoundRangeMultiplier >= 1 || !Util.RoundStarted) { return true; }
 
             float range = itemSound.Range;
 
@@ -1275,7 +767,7 @@ namespace SoundproofWalls
         // Had to replace the whole thing because otherwise the gain would transition too slowly.
         public static bool SPW_SoundPlayer_UpdateMusic(float deltaTime)
         {
-            if (!Config.Enabled || !Config.Sidechaining || !Config.SidechainingDucksMusic) { return true; }
+            if (!Config.Enabled || !Config.SidechainingEnabled || !Config.SidechainingDucksMusic) { return true; }
 
             if (SoundPlayer.musicClips == null || (GameMain.SoundManager?.Disabled ?? true)) { return false; }
 
@@ -1494,7 +986,7 @@ namespace SoundproofWalls
 
         public static void SPW_SoundPlayer_PlaySound(ref Sound sound, ref float? range, ref Vector2 position, ref Hull hullGuess)
         {
-            if (!Config.Enabled || !RoundStarted || sound == null) { return; }
+            if (!Config.Enabled || !Util.RoundStarted || sound == null) { return; }
 
             range = range ?? sound.BaseFar;
 
@@ -1532,7 +1024,7 @@ namespace SoundproofWalls
             }
 
             // We don't want to modify anything if the vanilla game is constructing a filter.
-            else if (__instance.GetType() == typeof(BandpassFilter) && frequency != VANILLA_VOIP_BANDPASS_FREQUENCY)
+            else if (__instance.GetType() == typeof(BandpassFilter) && frequency != Util.VANILLA_VOIP_BANDPASS_FREQUENCY)
             {
                 q = Config.RadioBandpassQualityFactor;
             }
@@ -1540,33 +1032,16 @@ namespace SoundproofWalls
             return;
         }
 
-        private static bool isMuffleTypeEqual(MuffleReason reasonOne, MuffleReason reasonTwo)
-        {
-            int muffleTypeOne;
-            int muffleTypeTwo;
-
-            if (reasonOne == MuffleReason.None) { muffleTypeOne = 1; }
-            else if (reasonOne == MuffleReason.LightObstruction) { muffleTypeOne = 2; }
-            else if (reasonOne == MuffleReason.MediumObstruction) { muffleTypeOne = 3; }
-            else { muffleTypeOne = 4; }
-
-            if (reasonTwo == MuffleReason.None) { muffleTypeTwo = 1; }
-            else if (reasonTwo == MuffleReason.LightObstruction) { muffleTypeTwo = 2; }
-            else if (reasonTwo == MuffleReason.MediumObstruction) { muffleTypeTwo = 3; }
-            else { muffleTypeTwo = 4; }
-
-            return muffleTypeOne == muffleTypeTwo;
-        }
-
         public static bool SPW_SoundChannel_SetMuffled_Prefix(SoundChannel __instance, bool value)
         {
             SoundChannel instance = __instance;
 
-            // Hand over control to default setter if sound is not extended or has no muffle info.
+            // Hand over control to default setter if sound is not extended or has no sound info.
             uint sourceId = instance.Sound.Owner.GetSourceFromIndex(instance.Sound.SourcePoolIndex, instance.ALSourceIndex);
-            if (!Config.Enabled || 
-                instance.Sound is not ExtendedOggSound extendedSound || 
-                !SourceInfoMap.TryGetValue(sourceId, out SoundInfo? muffleInfo))
+            if (!Config.Enabled ||
+                instance.Sound is not ExtendedOggSound extendedSound ||
+                !SoundInfoManager.TryGetSoundInfo(instance, out SoundInfo? soundInfo) ||
+                soundInfo == null)
             { 
                 return true; 
             }
@@ -1575,12 +1050,6 @@ namespace SoundproofWalls
             if (Config.DynamicFx || instance.Sound is ReducedOggSound)
             {
                 return false;
-            }
-
-            // Early return for extended sounds if the type of muffling is the same (none/heavy/medium/light).
-            if (muffleInfo.Muffle == instance.muffled && isMuffleTypeEqual(muffleInfo.Reason, muffleInfo.PreviousReason))
-            { 
-                return false; 
             }
             
             instance.muffled = value;
@@ -1592,6 +1061,7 @@ namespace SoundproofWalls
             if (instance.IsStream) { return false; }
 
             uint alSource = instance.Sound.Owner.GetSourceFromIndex(instance.Sound.SourcePoolIndex, instance.ALSourceIndex);
+            
             Al.GetSourcei(alSource, Al.SampleOffset, out int playbackPos);
             int alError = Al.GetError();
             if (alError != Al.NoError)
@@ -1601,7 +1071,6 @@ namespace SoundproofWalls
             }
 
             Al.SourceStop(alSource);
-
             alError = Al.GetError();
             if (alError != Al.NoError)
             {
@@ -1613,14 +1082,15 @@ namespace SoundproofWalls
             if (extendedSound.Buffers is not { AlBuffer: not 0, AlReverbBuffer: not 0, AlHeavyMuffledBuffer: not 0, AlLightMuffledBuffer: not 0, AlMediumMuffledBuffer: not 0 }) { return false; }
 
             uint alBuffer = extendedSound.Buffers.AlBuffer;
+            // TODO implement reverb conditon for extended sounds in soundInfo telegraphed via soundInfo.reverbed
             //uint alBuffer = muffleInfo.Reverb ? extendedSound.Buffers.AlReverbBuffer : extendedSound.Buffers.AlBuffer;
-            if (muffleInfo.Muffle || extendedSound.Owner.GetCategoryMuffle(instance.Category))
+            if (soundInfo.Muffled || extendedSound.Owner.GetCategoryMuffle(instance.Category))
             {
-                if (muffleInfo.Reason == MuffleReason.LightObstruction)
+                if (soundInfo.LightMuffle)
                 {
                     alBuffer = extendedSound.Buffers.AlLightMuffledBuffer;
                 }
-                else if (muffleInfo.Reason == MuffleReason.MediumObstruction)
+                else if (soundInfo.MediumMuffle)
                 {
                     alBuffer = extendedSound.Buffers.AlMediumMuffledBuffer;
                 }
@@ -1654,7 +1124,7 @@ namespace SoundproofWalls
                 return false;
             }
 
-            muffleInfo.PreviousReason = muffleInfo.Reason;
+            // Replace method.
             return false;
         }
 
@@ -1663,10 +1133,7 @@ namespace SoundproofWalls
             reducedSound.FillAlBuffers();
             if (reducedSound.Buffers is not { AlBuffer: not 0 }) { return false; }
 
-            SoundInfo muffleInfo = new SoundInfo(instance, dontMuffle: !muffle);
-            SourceInfoMap[sourceId] = muffleInfo;
-
-            instance.muffled = false;
+            SoundInfoManager.UpdateSoundInfo(instance, dontMuffle: !muffle);
 
             uint alBuffer = reducedSound.Buffers.AlBuffer;
 
@@ -1678,8 +1145,6 @@ namespace SoundproofWalls
                 throw new Exception("Failed to bind buffer to source (" + instance.ALSourceIndex.ToString() + ":" + reducedSound.Owner.GetSourceFromIndex(reducedSound.SourcePoolIndex, instance.ALSourceIndex) + "," + alBuffer.ToString() + "): " + instance.debugName + ", " + Al.GetErrorString(alError));
             }
 
-            ProcessSingleSound(instance, muffleInfo);
-
             return true;
         }
 
@@ -1688,21 +1153,18 @@ namespace SoundproofWalls
             extendedSound.FillAlBuffers();
             if (extendedSound.Buffers is not { AlBuffer: not 0, AlReverbBuffer: not 0, AlHeavyMuffledBuffer: not 0, AlLightMuffledBuffer: not 0, AlMediumMuffledBuffer: not 0 }) { return false; }
 
-            SoundInfo muffleInfo = new SoundInfo(instance, dontMuffle: !muffle);
-            SourceInfoMap[sourceId] = muffleInfo;
+            SoundInfo soundInfo = SoundInfoManager.UpdateSoundInfo(instance, dontMuffle: !muffle);
 
-            instance.muffled = muffleInfo.Muffle;
-
-            //uint alBuffer = muffleInfo.Reverb ? extendedSound.Buffers.AlReverbBuffer : extendedSound.Buffers.AlBuffer;
             uint alBuffer = extendedSound.Buffers.AlBuffer;
-
-            if (muffleInfo.Muffle || extendedSound.Owner.GetCategoryMuffle(instance.Category))
+            // TODO implement reverb conditon for extended sounds in soundInfo telegraphed via soundInfo.reverbed
+            //uint alBuffer = muffleInfo.Reverb ? extendedSound.Buffers.AlReverbBuffer : extendedSound.Buffers.AlBuffer;
+            if (soundInfo.Muffled || extendedSound.Owner.GetCategoryMuffle(instance.Category))
             {
-                if (muffleInfo.Reason == MuffleReason.LightObstruction)
+                if (soundInfo.LightMuffle)
                 {
                     alBuffer = extendedSound.Buffers.AlLightMuffledBuffer;
                 }
-                else if (muffleInfo.Reason == MuffleReason.MediumObstruction)
+                else if (soundInfo.MediumMuffle)
                 {
                     alBuffer = extendedSound.Buffers.AlMediumMuffledBuffer;
                 }
@@ -1711,7 +1173,6 @@ namespace SoundproofWalls
                     alBuffer = extendedSound.Buffers.AlHeavyMuffledBuffer;
                 }
             }
-
             Al.Sourcei(sourceId, Al.Buffer, (int)alBuffer);
 
             int alError = Al.GetError();
@@ -1720,8 +1181,6 @@ namespace SoundproofWalls
                 throw new Exception("Failed to bind buffer to source (" + instance.ALSourceIndex.ToString() + ":" + extendedSound.Owner.GetSourceFromIndex(extendedSound.SourcePoolIndex, instance.ALSourceIndex) + "," + alBuffer.ToString() + "): " + instance.debugName + ", " + Al.GetErrorString(alError));
             }
 
-            ProcessSingleSound(instance, muffleInfo);
-
             return true;
         }
 
@@ -1729,13 +1188,10 @@ namespace SoundproofWalls
         {
             sound.FillAlBuffers();
             if (sound.Buffers is not { AlBuffer: not 0, AlMuffledBuffer: not 0}) { return false; }
-            
-            SoundInfo muffleInfo = new SoundInfo(instance, dontMuffle: !muffle);
-            SourceInfoMap[sourceId] = muffleInfo;
 
-            instance.muffled = muffleInfo.Muffle;
+            SoundInfo soundInfo = SoundInfoManager.UpdateSoundInfo(instance, dontMuffle: !muffle);
 
-            uint alBuffer = muffleInfo.Muffle || sound.Owner.GetCategoryMuffle(instance.Category) ? sound.Buffers.AlMuffledBuffer : sound.Buffers.AlBuffer;
+            uint alBuffer = soundInfo.Muffled || sound.Owner.GetCategoryMuffle(instance.Category) ? sound.Buffers.AlMuffledBuffer : sound.Buffers.AlBuffer;
 
             Al.Sourcei(sourceId, Al.Buffer, (int)alBuffer);
 
@@ -1744,8 +1200,6 @@ namespace SoundproofWalls
             {
                 throw new Exception("Failed to bind buffer to source (" + instance.ALSourceIndex.ToString() + ":" + sound.Owner.GetSourceFromIndex(sound.SourcePoolIndex, instance.ALSourceIndex) + "," + alBuffer.ToString() + "): " + instance.debugName + ", " + Al.GetErrorString(alError));
             }
-
-            ProcessSingleSound(instance, muffleInfo);
 
             return true;
         }
@@ -1818,6 +1272,11 @@ namespace SoundproofWalls
                     }
 
                     SetProperties();
+
+                    if (instance.Sound.Filename.ToLower().Contains("ambient"))
+                    {
+                        LuaCsLogger.Log($"{Path.GetFileName(instance.Sound.Filename)} pos: {instance.Position} listener pos: {Character.Controlled.WorldPosition} vector zero: {Vector3.Zero}");
+                    }
 
                     bool success = false;
                     if (instance.Sound is ReducedOggSound reducedSound)
@@ -1936,27 +1395,9 @@ namespace SoundproofWalls
 
             if (loopingSound == null || channel == null || !channel.IsPlaying) { return false; }
 
-            uint sourceId = channel.Sound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
-            bool needsUpdate = true;
-            if (!SourceInfoMap.TryGetValue(sourceId, out SoundInfo muffleInfo))
-            {
-                muffleInfo = new SoundInfo(channel, item.CurrentHull, instance);
-                SourceInfoMap[sourceId] = muffleInfo;
-                needsUpdate = false;
-            }
+            SoundInfoManager.UpdateSoundInfo(channel, itemComp: instance);
 
-            muffleInfo.ItemComp = instance;
-
-            if (needsUpdate && Timing.TotalTime > instance.lastMuffleCheckTime + 0.2f)
-            {
-                muffleInfo.Update(item.CurrentHull);
-                instance.lastMuffleCheckTime = (float)Timing.TotalTime;
-            }
-
-            channel.Muffled = muffleInfo.Muffle;
             channel.Position = new Vector3(item.WorldPosition, 0.0f);
-
-            ProcessLoopingSound(channel, muffleInfo);
 
             return false;
         }
@@ -1965,11 +1406,8 @@ namespace SoundproofWalls
         {
             if (!Config.Enabled) { return true; }
 
-            double LastMuffleCheckTime = StatusEffect.LastMuffleCheckTime;
             HashSet<StatusEffect> ActiveLoopingSounds = StatusEffect.ActiveLoopingSounds;
 
-            bool doMuffleCheck = Timing.TotalTime > LastMuffleCheckTime + 0.2;
-            if (doMuffleCheck) { LastMuffleCheckTime = Timing.TotalTime; }
             foreach (StatusEffect statusEffect in ActiveLoopingSounds)
             {
                 if (statusEffect.soundChannel == null) { continue; }
@@ -1985,26 +1423,8 @@ namespace SoundproofWalls
                 {
                     // Changes
                     SoundChannel channel = statusEffect.soundChannel;
-                    uint sourceId = channel.Sound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
-
-                    bool needsUpdate = true;
-                    if (!SourceInfoMap.TryGetValue(sourceId, out SoundInfo muffleInfo))
-                    {
-                        muffleInfo = new SoundInfo(channel, emitter: statusEffect.soundEmitter as Item, dontMuffle: statusEffect.ignoreMuffling, dontPitch: true);
-                        SourceInfoMap[sourceId] = muffleInfo;
-                        channel.Muffled = muffleInfo.Muffle;
-                        needsUpdate = false;
-                    }
-
-                    if (needsUpdate && doMuffleCheck && !statusEffect.ignoreMuffling)
-                    {
-                        muffleInfo.Update(emitter: statusEffect.soundEmitter as Item);
-                        channel.Muffled = muffleInfo.Muffle;
-                    }
-
+                    SoundInfoManager.UpdateSoundInfo(channel, statusEffect: statusEffect, dontMuffle: statusEffect.ignoreMuffling, dontPitch: true);
                     statusEffect.soundChannel.Position = new Vector3(statusEffect.soundEmitter.WorldPosition, 0.0f);
-
-                    ProcessLoopingSound(channel, muffleInfo);
                 }
             }
             ActiveLoopingSounds.RemoveWhere(s => s.soundChannel == null);
@@ -2012,7 +1432,7 @@ namespace SoundproofWalls
             return false;
         }
 
-        public static void UpdateComponentOneshotSoundChannels(ItemComponent itemComponent)
+        private static void UpdateComponentOneshotSoundChannels(ItemComponent itemComponent)
         {
             List<SoundChannel> playingOneshotSoundChannels = itemComponent.playingOneshotSoundChannels;
             Item item = itemComponent.item;
@@ -2032,189 +1452,9 @@ namespace SoundproofWalls
             }
         }
 
-        public static void ProcessSingleSound(SoundChannel channel, SoundInfo muffleInfo)
-        {
-            if (muffleInfo.IgnoreAll) { return; }
-
-            bool eavesdropped = muffleInfo.Eavesdropped;
-            bool hydrophoned = Listener.IsUsingHydrophonesNow && muffleInfo.SoundHull?.Submarine != LightManager.ViewTarget?.Submarine;
-
-            if (!muffleInfo.IgnorePitch)
-            {
-                float freqMult = 1;
-
-                if (muffleInfo.Reason != MuffleReason.None && muffleInfo.Reason != MuffleReason.BothInWater && muffleInfo.Reason != MuffleReason.LightObstruction && muffleInfo.Reason != MuffleReason.MediumObstruction) { freqMult -= (1 - GetPitchFromDistance(channel, 0.5f)); }
-                else if (muffleInfo.Reason == MuffleReason.BothInWater) { freqMult -= (1 - GetPitchFromDistance(channel)); }
-                else if (eavesdropped) { freqMult -= (1 - Config.EavesdroppingPitchMultiplier); }
-                else if (hydrophoned) { freqMult -= (1 - Config.HydrophonePitchMultiplier); }
-
-                if (Listener.IsSubmerged && muffleInfo.Reason != MuffleReason.None) { freqMult -= (1 - Config.SubmergedPitchMultiplier); }
-                if (Listener.IsWearingDivingSuit) { freqMult -= (1 - Config.DivingSuitPitchMultiplier); }
-
-                // Multiply self in case sound has built-in pitch. Doesn't multiply into oblivion because we only do this once.
-                float originalFreq = channel.FrequencyMultiplier;
-                float newFreq = Math.Clamp(originalFreq * freqMult, 0.25f, 4);
-                if (newFreq != originalFreq)
-                { 
-                    channel.FrequencyMultiplier = newFreq;
-                    PitchedSounds[channel] = true;
-                }
-            }
-
-            float gainMult = 1;
-            gainMult -= (1 - muffleInfo.GainMult);
-            if (muffleInfo.Reason == MuffleReason.HeavyObstruction || muffleInfo.Reason == MuffleReason.SoundInWater) { gainMult -= (1 - Config.MuffledSoundVolumeMultiplier); }
-            else if (muffleInfo.Reason == MuffleReason.BothInWater) { gainMult -= (1 - Config.SubmergedVolumeMultiplier); }
-            else if (eavesdropped) { gainMult -= (1 - Config.EavesdroppingSoundVolumeMultiplier); }
-            else if (hydrophoned) { gainMult -= (1 - Config.HydrophoneVolumeMultiplier); gainMult *= HydrophoneManager.HydrophoneEfficiency; }
-
-            // Transitions audio between hulls via attenuation.
-            float eDropEfficiency = EavesdropManager.Efficiency;
-            if (Config.EavesdroppingFadeEnabled && eDropEfficiency > 0)
-            {
-                if (!eavesdropped) { gainMult *= Math.Clamp(1 - eDropEfficiency * (1 / Config.EavesdroppingThreshold), 0.1f, 1); }
-                else if (eavesdropped) { gainMult *= Math.Clamp(eDropEfficiency * (1 / Config.EavesdroppingThreshold) - 1, 0.1f, 1); }
-            }
-
-            float ducking = 1;
-            if (!muffleInfo.IsLoud) { ducking -= Sidechain.SidechainMultiplier; }
-
-            float currentGain = muffleInfo.ItemComp?.GetSoundVolume(muffleInfo.ItemComp?.loopingSound) ?? channel.Gain;
-            channel.Gain = currentGain * gainMult * ducking;
-
-            //LuaCsLogger.Log($"{Path.GetFileName(channel.Sound.Filename)}: Hull {muffleInfo.SoundHull} eavesdropped: {eavesdropped} Muffle Reason: {muffleInfo.Reason} currentGain: {currentGain} GainMult: {gainMult} ducking {ducking}");
-        }
-        public static void ProcessLoopingSound(SoundChannel channel, SoundInfo muffleInfo)
-        {
-            float currentGain = muffleInfo.ItemComp?.GetSoundVolume(muffleInfo.ItemComp?.loopingSound) ?? 1;
-            float currentFreq = channel.FrequencyMultiplier;
-
-            if (muffleInfo.IgnorePitch && currentFreq != 1)
-            {
-                channel.FrequencyMultiplier = 1;
-            }
-            if (muffleInfo.IgnoreAll) 
-            {
-                if (currentFreq != 1)
-                {
-                    channel.FrequencyMultiplier = 1;
-                }
-                channel.Gain = currentGain;
-                return; 
-            }
-
-            bool eavesdropped = muffleInfo.Eavesdropped;
-            bool hydrophoned = Listener.IsUsingHydrophones && muffleInfo.SoundHull?.Submarine != LightManager.ViewTarget?.Submarine;
-
-            if (!muffleInfo.IgnorePitch)
-            {
-                float freqMult = 1;
-                if (muffleInfo.Reason != MuffleReason.None && muffleInfo.Reason != MuffleReason.LightObstruction) { freqMult -= (1 - Config.MuffledComponentPitchMultiplier); }
-                else if (eavesdropped) { freqMult -= (1 - Config.EavesdroppingPitchMultiplier); }
-                else if (hydrophoned) { freqMult -= (1 - Config.HydrophonePitchMultiplier); }
-                else { freqMult -= (1 - Config.UnmuffledComponentPitchMultiplier); }
-
-                if (Listener.IsSubmerged && muffleInfo.Reason != MuffleReason.None) { freqMult -= (1 - Config.SubmergedPitchMultiplier); }
-                if (Listener.IsWearingDivingSuit) { freqMult -= (1 - Config.DivingSuitPitchMultiplier); }
-
-                // Multiply by 1 instead of self so we don't multiply into oblivion with repeated calls.
-                float newFreq = Math.Clamp(1 * freqMult, 0.25f, 4);
-                if (newFreq != currentFreq)
-                {
-                    channel.FrequencyMultiplier = newFreq;
-                    PitchedSounds[channel] = true;
-                }
-            }
-
-            float gainMult = 1;
-            gainMult -= (1 - muffleInfo.GainMult);
-            if (muffleInfo.Reason == MuffleReason.HeavyObstruction) { gainMult -= (1 - Config.MuffledComponentVolumeMultiplier); }
-            else if (muffleInfo.Reason == MuffleReason.BothInWater) { gainMult -= (1 - Config.SubmergedVolumeMultiplier); }
-            else if (eavesdropped) { gainMult -= (1 - Config.EavesdroppingSoundVolumeMultiplier); }
-            else if (hydrophoned) { gainMult -= (1 - Config.HydrophoneVolumeMultiplier); gainMult *= HydrophoneManager.HydrophoneEfficiency; }
-            else { gainMult -= (1 - Config.UnmuffledComponentVolumeMultiplier); }
-
-            // Transitions audio between hulls via attenuation.
-            float eDropEfficiency = EavesdropManager.Efficiency;
-            if (Config.EavesdroppingFadeEnabled && eDropEfficiency > 0)
-            {
-                if (!eavesdropped) { gainMult *= Math.Clamp(1 - (eDropEfficiency / Config.EavesdroppingThreshold), 0.1f, 1); }
-                else if (eavesdropped) { gainMult *= Math.Clamp((eDropEfficiency - Config.EavesdroppingThreshold) / (1 - Config.EavesdroppingThreshold), 0.1f, 1); }
-            }
-
-            float ducking = 1;
-            if (!muffleInfo.IsLoud) { ducking -= Sidechain.SidechainMultiplier; }
-
-            float distFalloffMult = (muffleInfo.Reason == MuffleReason.HeavyObstruction) ? 0.7f : 1 - MathUtils.InverseLerp(channel.Near, channel.Far, muffleInfo.Distance);
-            float targetGain = currentGain * gainMult * distFalloffMult * ducking;
-            
-            channel.Gain = targetGain;
-            //LuaCsLogger.Log($"{Path.GetFileName(channel.Sound.Filename)}: Target gain: {targetGain} Muffle Reason: {muffleInfo.Reason} currentGain: {currentGain} GainMult: {gainMult} DistFallOffMult {distFalloffMult} Distance: {muffleInfo.Distance} ducking {ducking}");
-        }
-
-        public static float ProcessVoipSound(VoipSound voipSound, SoundInfo muffleInfo)
-        {
-            SoundChannel channel = voipSound.soundChannel;
-            float currentFreq = channel.FrequencyMultiplier;
-
-            // Early return and restore pitch if needed.
-            if (muffleInfo.IgnorePitch && currentFreq != 1)
-            {
-                channel.FrequencyMultiplier = 1;
-            }
-            if (muffleInfo.IgnoreAll)
-            {
-                if (currentFreq != 1) 
-                { 
-                    channel.FrequencyMultiplier = 1;
-                }
-                return 1; 
-            }
-
-            bool eavesdropped = muffleInfo.Eavesdropped;
-            bool hydrophoned = Listener.IsUsingHydrophones && muffleInfo.SoundHull?.Submarine != LightManager.ViewTarget?.Submarine;
-
-            if (!muffleInfo.IgnorePitch)
-            {
-                float freqMult = 1;
-                // Voice channels are only muffled by these joke settings.
-                if (muffleInfo.Reason != MuffleReason.None) { freqMult -= (1 - Config.MuffledVoicePitchMultiplier); }
-                else { freqMult -= (1 - Config.UnmuffledVoicePitchMultiplier); }
-
-                // Multiply by 1 instead of self so we don't multiply into oblivion with repeated calls.
-                float newFreq = Math.Clamp(1 * freqMult, 0.25f, 4);
-                if (newFreq != currentFreq)
-                {
-                    channel.FrequencyMultiplier = newFreq;
-                    PitchedSounds[channel] = true;
-                }
-            }
-
-            float gainMult = 1;
-            gainMult -= (1 - muffleInfo.GainMult);
-            if (muffleInfo.Reason == MuffleReason.HeavyObstruction) { gainMult -= (1 - Config.MuffledVoiceVolumeMultiplier); }
-            else if (muffleInfo.Reason == MuffleReason.BothInWater) { gainMult -= (1 - Config.SubmergedVolumeMultiplier); }
-            else if (eavesdropped) { gainMult -= (1 - Config.EavesdroppingVoiceVolumeMultiplier); }
-            else if (hydrophoned) { gainMult -= (1 - Config.HydrophoneVolumeMultiplier); gainMult *= HydrophoneManager.HydrophoneEfficiency; }
-
-            // Transitions audio between hulls via attenuation.
-            float eDropEfficiency = EavesdropManager.Efficiency;
-            if (Config.EavesdroppingFadeEnabled && eDropEfficiency > 0)
-            {
-                if (!eavesdropped) { gainMult *= Math.Clamp(1 - eDropEfficiency * (1 / Config.EavesdroppingThreshold), 0.1f, 1); }
-                else if (eavesdropped) { gainMult *= Math.Clamp(eDropEfficiency * (1 / Config.EavesdroppingThreshold) - 1, 0.1f, 1); }
-            }
-
-            float ducking = 1;
-            if (!muffleInfo.IsLoud) { ducking -= Sidechain.SidechainMultiplier; }
-
-            float targetGain = 1 * gainMult * ducking;
-            return targetGain;
-        }
-
         public static void SPW_UpdateTransform(Camera __instance)
         {
-            if (!Config.Enabled || !RoundStarted || Character.Controlled == null) { return; }
+            if (!Config.Enabled || !Util.RoundStarted || Character.Controlled == null) { return; }
 
             if (Config.FocusTargetAudio && LightManager.ViewTarget != null && LightManager.ViewTarget.Position != Character.Controlled.Position)
             {
@@ -2224,7 +1464,7 @@ namespace SoundproofWalls
 
         public static bool SPW_UpdateWaterAmbience(ref float ambienceVolume, ref float deltaTime)
         {
-            if (!Config.Enabled || !RoundStarted || Character.Controlled == null) { return true; }
+            if (!Config.Enabled || !Util.RoundStarted || Character.Controlled == null) { return true; }
 
             if (Character.Controlled.AnimController.HeadInWater)
             {
@@ -2377,80 +1617,11 @@ namespace SoundproofWalls
                 }
             }
 
-            bool isUsingHydrophones = Listener.IsUsingHydrophones;
-            bool isWearingsuit = Listener.IsWearingDivingSuit;
-            bool earsInWater = Listener.IsSubmerged;
-
             for (int i = 0; i < SoundPlayer.flowSoundChannels.Count(); i++)
             {
                 SoundChannel channel = SoundPlayer.flowSoundChannels[i];
                 if (channel == null) { continue; }
-
-
-                // -- Muffle control --
-                uint sourceId = channel.Sound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
-                bool needsUpdate = true;
-                if (!SourceInfoMap.TryGetValue(sourceId, out SoundInfo? muffleInfo))
-                {
-                    muffleInfo = new SoundInfo(channel);
-                    SourceInfoMap[sourceId] = muffleInfo;
-                    needsUpdate = false;
-                }
-                if (needsUpdate) { muffleInfo.Update(); }
-
-                // Reset and skip channel if ignored.
-                if (muffleInfo.IgnoreAll)
-                {
-                    if (channel.Muffled) { channel.Muffled = false; }
-                    if (channel.FrequencyMultiplier != 1) { channel.FrequencyMultiplier = 1; }
-                    continue;
-                }
-
-                channel.Muffled = muffleInfo.Muffle;
-
-
-                // -- Pitch control --
-
-                float freqMult = 1;
-                if (!muffleInfo.IgnorePitch)
-                {
-                    if (earsInWater) { freqMult -= (1 - Config.SubmergedPitchMultiplier); }
-                    if (isWearingsuit) { freqMult -= (1 - Config.DivingSuitPitchMultiplier); }
-                    if (isUsingHydrophones) { freqMult -= (1 - Config.HydrophonePitchMultiplier); }
-                }
-                float targetFreq = Math.Clamp(1 * freqMult, 0.25f, 4);
-                if (targetFreq != channel.FrequencyMultiplier)
-                {
-                    channel.FrequencyMultiplier = targetFreq;
-                    PitchedSounds[channel] = true;
-                }
-
-
-                // -- Volume control --
-
-                float gainMult = 1;
-                gainMult -= (1 - muffleInfo.GainMult);
-                gainMult -= (1 - Config.FlowSoundVolumeMultiplier);
-
-                // Fades out when eavesdropping. 0.3 is the arbitrarily set minimum volume.
-                float eDropEfficiency = EavesdropManager.Efficiency;
-                if (Config.EavesdroppingFadeEnabled && eDropEfficiency > 0) {
-                    gainMult *= Math.Clamp(1 - eDropEfficiency, 0.3f, 1);
-                }
-                else if (eDropEfficiency > 0)
-                {
-                    gainMult *= 0.3f;
-                }
-
-                float sidechainMult = 1;
-                if (!muffleInfo.IsLoud) { sidechainMult -= Sidechain.SidechainMultiplier; }
-
-                float currentGain = Math.Max(SoundPlayer.flowVolumeRight[i], SoundPlayer.flowVolumeLeft[i]);
-                float targetGain = currentGain * gainMult * sidechainMult;
-                if (targetGain != channel.Gain)
-                {
-                    channel.Gain = targetGain;
-                }
+                SoundInfoManager.UpdateSoundInfo(channel);
             }
         }
 
@@ -2481,169 +1652,12 @@ namespace SoundproofWalls
                 }
             }
 
-            bool isUsingHydrophones = Listener.IsUsingHydrophones;
-            bool isWearingsuit = Listener.IsWearingDivingSuit;
-            bool earsInWater = Listener.IsSubmerged;
-
             for (int i = 0; i < SoundPlayer.fireSoundChannels.Count(); i++)
             {
                 SoundChannel channel = SoundPlayer.fireSoundChannels[i];
                 if (channel == null) { continue; }
-
-
-                // -- Muffle control --
-                uint sourceId = channel.Sound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
-                bool needsUpdate = true;
-                if (!SourceInfoMap.TryGetValue(sourceId, out SoundInfo? muffleInfo))
-                {
-                    muffleInfo = new SoundInfo(channel);
-                    SourceInfoMap[sourceId] = muffleInfo;
-                    needsUpdate = false;
-                }
-                if (needsUpdate) { muffleInfo.Update(); }
-
-                // Reset and skip channel if ignored.
-                if (muffleInfo.IgnoreAll)
-                {
-                    if (channel.Muffled) { channel.Muffled = false; }
-                    if (channel.FrequencyMultiplier != 1) { channel.FrequencyMultiplier = 1; }
-                    continue;
-                }
-
-                channel.Muffled = muffleInfo.Muffle;
-
-
-                // -- Pitch control --
-
-                float freqMult = 1;
-                if (!muffleInfo.IgnorePitch)
-                {
-                    if (earsInWater) { freqMult -= (1 - Config.SubmergedPitchMultiplier); }
-                    if (isWearingsuit) { freqMult -= (1 - Config.DivingSuitPitchMultiplier); }
-                    if (isUsingHydrophones) { freqMult -= (1 - Config.HydrophonePitchMultiplier); }
-                }
-                float targetFreq = Math.Clamp(1 * freqMult, 0.25f, 4);
-                if (targetFreq != channel.FrequencyMultiplier)
-                {
-                    channel.FrequencyMultiplier = targetFreq;
-                    PitchedSounds[channel] = true;
-                }
-
-
-                // -- Volume control --
-
-                float gainMult = 1;
-                gainMult -= (1 - muffleInfo.GainMult);
-                gainMult -= (1 - Config.FireSoundVolumeMultiplier);
-
-                // Fades out when eavesdropping. 0.3 is the arbitrarily set minimum volume.
-                float eDropEfficiency = EavesdropManager.Efficiency;
-                if (Config.EavesdroppingFadeEnabled && eDropEfficiency > 0)
-                {
-                    gainMult *= Math.Clamp(1 - eDropEfficiency, 0.3f, 1);
-                }
-                else if (eDropEfficiency > 0)
-                {
-                    gainMult *= 0.3f;
-                }
-
-                float sidechainMult = 1;
-                if (!muffleInfo.IsLoud) { sidechainMult -= Sidechain.SidechainMultiplier; }
-
-                float currentGain = Math.Max(SoundPlayer.fireVolumeRight[i], SoundPlayer.fireVolumeLeft[i]);
-                float targetGain = currentGain * gainMult * sidechainMult;
-                if (targetGain != channel.Gain)
-                {
-                    channel.Gain = targetGain;
-                }
+                SoundInfoManager.UpdateSoundInfo(channel);
             }
-        }
-
-        // TODO Pretty bad. Redo this?
-        public static bool IsPathToFlow()
-        {
-            Character character = Character.Controlled;
-            if (character == null || character.CurrentHull == null) { return true; }
-
-            return GetPathToFlow(character.CurrentHull, new HashSet<Hull>());
-        }
-        public static bool GetPathToFlow(Hull startHull, HashSet<Hull> connectedHulls)
-        {
-            Vector2 listenerPos = Character.Controlled.WorldPosition;
-
-            foreach (Gap gap in startHull.ConnectedGaps)
-            {
-                Vector2 diff = gap.WorldPosition - listenerPos;
-
-                if (Math.Abs(diff.X) >= SoundPlayer.FlowSoundRange && Math.Abs(diff.Y) >= SoundPlayer.FlowSoundRange) { continue; }
-                if (gap.Open < 0.01f || gap.LerpedFlowForce.LengthSquared() < 100.0f) { continue; }
-                float gapFlow = Math.Abs(gap.LerpedFlowForce.X) + Math.Abs(gap.LerpedFlowForce.Y) * 2.5f;
-                if (!gap.IsRoomToRoom) { gapFlow *= 2.0f; }
-                if (gapFlow >= 10.0f) { return true; }
-
-                for (int i = 0; i < 2 && i < gap.linkedTo.Count; i++)
-                {
-                    if (gap.linkedTo[i] is Hull newStartHull && !connectedHulls.Contains(newStartHull))
-                    {
-                        bool path = GetPathToFlow(newStartHull, connectedHulls);
-                        if (path)
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        public static bool StringHasKeyword(string inputString, HashSet<string> set, string? exclude = null, string? include = null)
-        {
-            string s = inputString.ToLower();
-
-            if (exclude != null && s.Contains(exclude.ToLower()))
-                return false;
-
-            if (include != null && s.Contains(include.ToLower()))
-                return true;
-
-            foreach (string keyword in set)
-            {
-                if (s.Contains(keyword.ToLower()))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        // The maximum return value of this function is 0.25 + startingFreq.
-        public static float GetPitchFromDistance(SoundChannel channel, float startingFreq = 0.75f)
-        {
-            if (Config.MuffledSoundPitchMultiplier == 0) { return 1; }
-
-            // Distance from the sound.
-            float distance = Vector3.Distance(GameMain.SoundManager.ListenerPosition, new Vector3(GetSoundChannelPos(channel), 0.0f));
-            
-            // Ratio is higher the closer the listener is to the sound source.
-            float proximityMult = Math.Clamp(1 - distance / channel.Far, 0, 1);
-
-            // Ranges from 0.25 to startingFreq + 0.25
-            float targetPitch = 0.25f + startingFreq * proximityMult;
-
-            // Based on config multiplier, return a pitch beteween 1.0 (no effect) and targetPitch
-            return MathHelper.Lerp(1.0f, targetPitch, Config.MuffledSoundPitchMultiplier);
-        }
-
-        public static Vector2 GetSoundChannelPos(SoundChannel channel)
-        {
-            return channel.Position.HasValue ? new Vector2(channel.Position.Value.X, channel.Position.Value.Y) : Character.Controlled?.Position ?? Vector2.Zero;
-        }
-
-        // Returns true if the given localised position is in water (not accurate when using WorldPositions).
-        public static bool SoundInWater(Vector2 soundPos, Hull? soundHull)
-        {
-            return soundHull == null || soundHull.WaterVolume > 0 && soundPos.Y < soundHull.Surface;
         }
     }
 }

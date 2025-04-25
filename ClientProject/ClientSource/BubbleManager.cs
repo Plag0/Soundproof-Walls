@@ -21,7 +21,7 @@ namespace SoundproofWalls
         static Sound? BubbleSound;
         static Sound? RadioBubbleSound;
 
-        static ConcurrentDictionary<Client, SoundChannel> ClientBubbleSoundChannels = new ConcurrentDictionary<Client, SoundChannel>();
+        private static ConcurrentDictionary<Client, SoundChannel> clientBubbleChannels = new ConcurrentDictionary<Client, SoundChannel>();
 
         public static void Update()
         {
@@ -31,7 +31,7 @@ namespace SoundproofWalls
                 LastBubbleUpdateTime = (float)Timing.TotalTime;
 
                 // In case a client disconnects while their bubble channel is playing.
-                foreach (var kvp in ClientBubbleSoundChannels)
+                foreach (var kvp in clientBubbleChannels)
                 {
                     Client client = kvp.Key;
 
@@ -50,11 +50,11 @@ namespace SoundproofWalls
         }
         public static void Dispose()
         {
-            foreach (var kvp in ClientBubbleSoundChannels)
+            foreach (var kvp in clientBubbleChannels)
             {
                 StopBubbleSound(kvp.Key);
             }
-            ClientBubbleSoundChannels.Clear();
+            clientBubbleChannels.Clear();
 
             BubbleSound?.Dispose();
             RadioBubbleSound?.Dispose();
@@ -62,7 +62,7 @@ namespace SoundproofWalls
 
         public static void Setup()
         {
-            string? modPath = SoundproofWalls.GetModDirectory();
+            string? modPath = Util.GetModDirectory();
             try
             {
                 BubbleSound = GameMain.SoundManager.LoadSound(Path.Combine(modPath, "Content/Sounds/SPW_BubblesLoopMono.ogg"));
@@ -76,15 +76,27 @@ namespace SoundproofWalls
 
         private static void StopBubbleSound(Client client)
         {
-            if (ClientBubbleSoundChannels.TryGetValue(client, out SoundChannel? bubbleChannel) && bubbleChannel != null)
+            if (clientBubbleChannels.TryGetValue(client, out SoundChannel? bubbleChannel) && bubbleChannel != null)
             {
                 // The redundancy of these operations is an echo of the infinite bubble bug of old.
-                bubbleChannel.FrequencyMultiplier = 1.0f;
+                SoundInfoManager.RemovePitchedChannel(bubbleChannel);
                 bubbleChannel.Looping = false;
                 bubbleChannel.Gain = 0;
                 bubbleChannel.Dispose();
-                ClientBubbleSoundChannels.TryRemove(client, out SoundChannel? _);
+                clientBubbleChannels.TryRemove(client, out _);
             }
+        }
+
+        public static bool RemoveBubbleSound(SoundChannel channel)
+        {
+            foreach(var kvp in clientBubbleChannels)
+            {
+                if (kvp.Value == channel)
+                { 
+                    return clientBubbleChannels.TryRemove(kvp.Key, out _); 
+                }
+            }
+            return false;
         }
 
         private static void UpdateClientBubbleSounds(Client client)
@@ -95,7 +107,7 @@ namespace SoundproofWalls
             Limb? playerHead = player?.AnimController?.GetLimb(LimbType.Head);
             SoundChannel? voiceChannel = client.VoipSound?.soundChannel;
 
-            bool shouldStop = !SoundproofWalls.Config.Enabled || !SoundproofWalls.RoundStarted;
+            bool shouldStop = !ConfigManager.Config.Enabled || !Util.RoundStarted;
 
             if (shouldStop || voiceChannel == null || player == null || playerHead == null)
             {
@@ -105,15 +117,15 @@ namespace SoundproofWalls
 
             Vector2 soundWorldPos = playerHead.WorldPosition;
             Hull soundHull = Hull.FindHull(soundWorldPos, player.CurrentHull);
-            Vector2 soundPos = SoundproofWalls.LocalizePosition(soundWorldPos, soundHull);
+            Vector2 soundPos = Util.LocalizePosition(soundWorldPos, soundHull);
 
-            bool soundInWater = SoundproofWalls.SoundInWater(soundPos, soundHull);
-            var messageType = SoundproofWalls.GetMessageType(client);
+            bool soundInWater = Util.SoundInWater(soundPos, soundHull);
+            var messageType = Util.GetMessageType(client);
 
-            bool wearingDivingGear = SoundproofWalls.IsCharacterWearingDivingGear(player);
+            bool wearingDivingGear = Util.IsCharacterWearingDivingGear(player);
             bool oxygenReqMet = wearingDivingGear && player.Oxygen < 11 || !wearingDivingGear && player.OxygenAvailable < 96;
-            bool ignoreBubbles = SoundproofWalls.StringHasKeyword(player.Name, SoundproofWalls.Config.BubbleIgnoredNames);
-            bool isPlaying = ClientBubbleSoundChannels.TryGetValue(client, out SoundChannel? currentBubbleChannel) && currentBubbleChannel != null;
+            bool ignoreBubbles = Util.StringHasKeyword(player.Name, ConfigManager.Config.BubbleIgnoredNames);
+            bool isPlaying = clientBubbleChannels.TryGetValue(client, out SoundChannel? currentBubbleChannel) && currentBubbleChannel != null;
             bool soundMatches = true;
 
             if (isPlaying)
@@ -169,7 +181,7 @@ namespace SoundproofWalls
                 if (newBubbleChannel != null)
                 {
                     newBubbleChannel.Looping = true;
-                    ClientBubbleSoundChannels[client] = newBubbleChannel;
+                    clientBubbleChannels[client] = newBubbleChannel;
                 }
             }
         }

@@ -3,7 +3,7 @@ using Barotrauma.Networking;
 
 namespace SoundproofWalls
 {
-    public partial class SoundproofWalls : IAssemblyPlugin
+    public partial class Plugin : IAssemblyPlugin
     {
         static float LastSyncReceiveTime = 0;
         static String LastConfig = "";
