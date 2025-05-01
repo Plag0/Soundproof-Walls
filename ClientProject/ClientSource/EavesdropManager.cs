@@ -54,14 +54,12 @@ namespace SoundproofWalls
 
         public static void Setup()
         {
-            string? modPath = Util.GetModDirectory();
-
             try
             {
-                EavesdroppingAmbienceDryRoomSound = GameMain.SoundManager.LoadSound(Path.Combine(modPath, "Content/Sounds/SPW_EavesdroppingAmbienceDryRoom.ogg"));
-                EavesdroppingAmbienceWetRoomSound = GameMain.SoundManager.LoadSound(Path.Combine(modPath, "Content/Sounds/SPW_EavesdroppingAmbienceWetRoom.ogg"));
-                EavesdroppingActivationSounds.Add(GameMain.SoundManager.LoadSound(Path.Combine(modPath, "Content/Sounds/SPW_EavesdroppingActivation1.ogg")));
-                EavesdroppingActivationSounds.Add(GameMain.SoundManager.LoadSound(Path.Combine(modPath, "Content/Sounds/SPW_EavesdroppingActivation2.ogg")));
+                EavesdroppingAmbienceDryRoomSound = GameMain.SoundManager.LoadSound(Plugin.CustomSoundPaths[Plugin.SoundPath.EavesdroppingAmbienceDry]);
+                EavesdroppingAmbienceWetRoomSound = GameMain.SoundManager.LoadSound(Plugin.CustomSoundPaths[Plugin.SoundPath.EavesdroppingAmbienceWet]);
+                EavesdroppingActivationSounds.Add(GameMain.SoundManager.LoadSound(Plugin.CustomSoundPaths[Plugin.SoundPath.EavesdroppingActivation1]));
+                EavesdroppingActivationSounds.Add(GameMain.SoundManager.LoadSound(Plugin.CustomSoundPaths[Plugin.SoundPath.EavesdroppingActivation2]));
             }
             catch (Exception ex)
             {
@@ -71,13 +69,13 @@ namespace SoundproofWalls
 
         private static void PlayEavesdroppingActivationSound()
         {
-            if (Efficiency < 0.01 && EavesdroppingActivationSounds.All(sound => sound != null && !sound.IsPlaying()))
+            if (Efficiency < 0.01 && EavesdroppingActivationSounds.Count > 0 && EavesdroppingActivationSounds.All(sound => sound != null && !sound.IsPlaying()))
             {
                 Random random = new Random();
                 int randomIndex = random.Next(EavesdroppingActivationSounds.Count);
                 Sound eavesdropSound = EavesdroppingActivationSounds[randomIndex];
                 SoundChannel channel = eavesdropSound.Play(null, 1, muffle: false); //SoundPlayer.PlaySound(eavesdropSound, Character.Controlled.Position, volume: 10, ignoreMuffling: true);
-                if (channel != null)
+                if (channel != null && channel.Sound != null)
                 {
                     channel.Gain = 1;
                     channel.FrequencyMultiplier = random.Range(0.8f, 1.2f);
@@ -92,7 +90,7 @@ namespace SoundproofWalls
             SoundChannel? channel = EavesdroppingAmbienceSoundChannel;
 
             Hull? eavesdroppedHull = Listener.EavesdroppedHull;
-            bool isPlaying = channel != null && channel.IsPlaying;
+            bool isPlaying = channel != null && channel.Sound != null && channel.IsPlaying;
             bool isDry = eavesdroppedHull?.WaterPercentage < 50;
             Sound? correctSound = isDry ? drySound : wetSound;
             bool matchesEnvironment = isPlaying ? channel!.Sound == correctSound : true;

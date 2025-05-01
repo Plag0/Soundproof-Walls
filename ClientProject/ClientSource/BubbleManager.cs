@@ -62,11 +62,10 @@ namespace SoundproofWalls
 
         public static void Setup()
         {
-            string? modPath = Util.GetModDirectory();
             try
             {
-                BubbleSound = GameMain.SoundManager.LoadSound(Path.Combine(modPath, "Content/Sounds/SPW_BubblesLoopMono.ogg"));
-                RadioBubbleSound = GameMain.SoundManager.LoadSound(Path.Combine(modPath, "Content/Sounds/SPW_RadioBubblesLoopStereo.ogg"));
+                BubbleSound = GameMain.SoundManager.LoadSound(Plugin.CustomSoundPaths[Plugin.SoundPath.BubbleLocal]);
+                RadioBubbleSound = GameMain.SoundManager.LoadSound(Plugin.CustomSoundPaths[Plugin.SoundPath.BubbleRadio]);
             }
             catch (Exception ex)
             {

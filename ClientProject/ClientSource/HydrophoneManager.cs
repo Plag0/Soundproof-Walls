@@ -26,7 +26,7 @@ namespace SoundproofWalls
         {
             try
             {
-                HydrophoneMovementSounds.Add(GameMain.SoundManager.LoadSound("Content/Sounds/Water/SplashLoop.ogg"));
+                HydrophoneMovementSounds.Add(GameMain.SoundManager.LoadSound(Plugin.CustomSoundPaths[Plugin.SoundPath.HydrophoneMovement1]));
                 // Add more here.
             }
             catch (Exception ex)

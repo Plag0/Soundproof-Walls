@@ -25,16 +25,26 @@ namespace SoundproofWalls
             "Barotrauma/Content/Sounds/Heartbeat",
         };
 
-        public static readonly Dictionary<Obstruction, float> ObstructionStrength = new Dictionary<Obstruction, float>
+        // "Thin" versions are used when the Thick version is penetrated or eavesdropped.
+        public static Dictionary<Obstruction, float> ObstructionStrength = new Dictionary<Obstruction, float>
         {
-            { Obstruction.WaterSurface, 0.6f },
-            { Obstruction.WaterBody, 0.25f },
-            { Obstruction.WallThick, 0.4f },
-            { Obstruction.WallThin, 0.2f },
-            { Obstruction.DoorThick, 0.3f },
-            { Obstruction.DoorThin, 0.15f },
-            { Obstruction.Suit, 0.1f },
+            { Obstruction.WaterSurface, 0.9f }, // 7
+            { Obstruction.WaterBody, 0.75f }, // 4
+            { Obstruction.WallThick, 0.85f }, // 6
+            { Obstruction.WallThin, 0.7f }, // 3
+            { Obstruction.DoorThick, 0.8f }, // 5
+            { Obstruction.DoorThin, 0.65f }, // 2
+            { Obstruction.Suit, 0.6f }, // 1
         };
+
+        public static float GetStrength(this Obstruction obstruction)
+        {
+            if (ObstructionStrength.TryGetValue(obstruction, out float value))
+            {
+                return value;
+            }
+            return 0f;
+        }
 
         /// <summary>
         /// Applies updated information to the SoundChannel directly.
@@ -79,6 +89,8 @@ namespace SoundproofWalls
             if (channel == null) { return false; }
 
             uint sourceId = channel.Sound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
+            soundInfoMap.TryGetValue(sourceId, out SoundInfo? info);
+            if (info != null) { info.DisposeClones(); }
             bool success = soundInfoMap.TryRemove(sourceId, out _);
 
             return success;

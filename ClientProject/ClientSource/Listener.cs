@@ -19,8 +19,11 @@ namespace SoundproofWalls
         public static Hull? CurrentHull;
         public static Hull? FocusedHull;
         public static Hull? EavesdroppedHull;
+        public static HashSet<Hull> ConnectedHulls = new HashSet<Hull>();
+        public static float ConnectedArea;
         public static Vector2 WorldPos;
         public static Vector2 LocalPos;
+        public static Vector2 SimPos;
 
         public static void Update()
         {
@@ -43,6 +46,7 @@ namespace SoundproofWalls
 
                 LocalPos = Vector2.Zero;
                 WorldPos = new Vector2(GameMain.SoundManager.ListenerPosition.X, GameMain.SoundManager.ListenerPosition.Y);
+                SimPos = WorldPos;
 
                 return;
             }
@@ -52,6 +56,13 @@ namespace SoundproofWalls
             EavesdroppedHull = GetListenerEavesdroppedHull();
             CurrentHull = GetListenerHull();
             FocusedHull = IsEavesdropping ? EavesdroppedHull : CurrentHull;
+            ConnectedHulls = Util.GetConnectedHulls(FocusedHull, includingThis: true, ignoreClosedGaps: true);
+
+            ConnectedArea = 0;
+            foreach (Hull hull in ConnectedHulls)
+            {
+                ConnectedArea += hull.RectHeight * hull.RectWidth;
+            }
 
             IsCharacter = !ConfigManager.Config.FocusTargetAudio || LightManager.ViewTarget as Character == Character.Controlled;
             IsSubmerged = IsCharacter ? Character.Controlled?.AnimController?.HeadInWater == true : LightManager.ViewTarget != null && Util.SoundInWater(LightManager.ViewTarget.Position, CurrentHull);
@@ -62,6 +73,7 @@ namespace SoundproofWalls
             Limb head = Util.GetCharacterHead(character!);
             LocalPos = IsCharacter ? head.Position : LightManager.ViewTarget?.Position ?? Vector2.Zero;
             WorldPos = IsCharacter ? head.WorldPosition : LightManager.ViewTarget?.WorldPosition ?? new Vector2(GameMain.SoundManager.ListenerPosition.X, GameMain.SoundManager.ListenerPosition.Y);
+            SimPos = IsCharacter ? head.SimPosition : LightManager.ViewTarget?.SimPosition ?? new Vector2(GameMain.SoundManager.ListenerPosition.X, GameMain.SoundManager.ListenerPosition.Y);
         }
 
         private static Hull? GetListenerHull()

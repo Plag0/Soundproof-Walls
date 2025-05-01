@@ -4,6 +4,7 @@ using Barotrauma;
 using System.Reflection;
 using Microsoft.Xna.Framework;
 using Barotrauma.Networking;
+using System.ComponentModel;
 
 namespace SoundproofWalls
 {
@@ -376,6 +377,75 @@ namespace SoundproofWalls
             return (outerItem != null && outerItem.HasTag(id)) || (headItem != null && headItem.HasTag(id));
         }
 
+        // Copy of the vanilla GetConnectedHulls with minor adjustments to align with Soundproof Walls searching algorithms.
+        public static HashSet<Hull> GetConnectedHulls(Hull? startHull, bool includingThis, int? searchDepth = null, bool ignoreClosedGaps = false)
+        {
+            if (startHull == null) { return new HashSet<Hull>(); }
+
+            startHull.adjacentHulls.Clear();
+            int step = 0;
+            int valueOrDefault = searchDepth.GetValueOrDefault();
+            if (!searchDepth.HasValue)
+            {
+                valueOrDefault = 100;
+                searchDepth = valueOrDefault;
+            }
+
+            GetAdjacentHulls(startHull, startHull.adjacentHulls, ref step, searchDepth.Value, ignoreClosedGaps);
+            if (!includingThis)
+            {
+                startHull.adjacentHulls.Remove(startHull);
+            }
+
+            return startHull.adjacentHulls;
+        }
+
+        public static bool IsDoorClosed(Door door)
+        {
+            if (door != null && !door.IsBroken) 
+            {
+                if (!ConfigManager.Config.TraverseWaterDucts && door.Item.HasTag("ductblock")) { return true; }
+
+                bool isClosingOrClosed = (door.PredictedState.HasValue) ? !door.PredictedState.Value : door.IsClosed;
+                return isClosingOrClosed && door.OpenState < ConfigManager.Config.OpenDoorThreshold; 
+            }
+            return false;
+        }
+
+        public static void GetAdjacentHulls(Hull currentHull, HashSet<Hull> connectedHulls, ref int step, int searchDepth, bool ignoreClosedGaps = false)
+        {
+            connectedHulls.Add(currentHull);
+            if (step > searchDepth)
+            {
+                return;
+            }
+
+            foreach (Gap gap in currentHull.ConnectedGaps)
+            {
+                if (gap == null) { continue; }
+
+                // For doors.
+                if (gap.ConnectedDoor != null)
+                {
+                    if (IsDoorClosed(gap.ConnectedDoor)) { continue; }
+                }
+                // For holes in hulls.
+                else if (ignoreClosedGaps && gap.Open < Config.OpenWallThreshold)
+                {
+                    continue;
+                }
+
+                for (int i = 0; i < 2 && i < gap.linkedTo.Count; i++)
+                {
+                    if (gap.linkedTo[i] is Hull hull && !connectedHulls.Contains(hull))
+                    {
+                        step++;
+                        GetAdjacentHulls(hull, connectedHulls, ref step, searchDepth, ignoreClosedGaps);
+                    }
+                }
+            }
+        }
+
         // TODO Pretty bad. Redo this?
         public static bool IsPathToFlow()
         {
@@ -434,9 +504,10 @@ namespace SoundproofWalls
             return false;
         }
 
-        public static Vector2 GetSoundChannelPos(SoundChannel channel)
+        public static Vector2 GetSoundChannelWorldPos(SoundChannel channel)
         {
-            return channel.Position.HasValue ? new Vector2(channel.Position.Value.X, channel.Position.Value.Y) : Character.Controlled?.Position ?? Vector2.Zero;
+            if (channel == null) { return Vector2.Zero; }
+            return channel.Position.HasValue ? new Vector2(channel.Position.Value.X, channel.Position.Value.Y) : Listener.WorldPos;
         }
 
         // Returns true if the given localised position is in water (not accurate when using WorldPositions).
@@ -445,14 +516,14 @@ namespace SoundproofWalls
             return soundHull == null || soundHull.WaterVolume > 0 && soundPos.Y < soundHull.Surface;
         }
 
-        public static string? GetModDirectory()
+        public static string GetModDirectory()
         {
-            string? path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "";
 
             while (!path.EndsWith("3153737715") && !path.EndsWith("Soundproof Walls"))
             {
-                path = Directory.GetParent(path)?.FullName;
-                if (path == null) break;
+                path = Directory.GetParent(path)?.FullName ?? "";
+                if (path == "") break;
             }
 
             return path;

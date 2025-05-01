@@ -41,13 +41,17 @@ namespace SoundproofWalls
         // The sound being played.
         private SoundChannel channel;
 
-        private float muffleStrength;
+        private float gainMultHF;
+        private float gainMultLF;
         private List<Obstruction> obstructions = new List<Obstruction>();
-        private float worldDistance;
-        private float? localDistance;
-        private float distance => localDistance ?? worldDistance;
+        private List<SoundInfo> clones = new List<SoundInfo>();
+        private float euclideanDistance;
+        private float? approximateDistance;
+        private float distance => approximateDistance ?? euclideanDistance;
         private Vector2 worldPos;
         private Vector2 localPos;
+        private Vector2 simPos;
+        private bool isClone;
         private bool inWater;
         private bool bothInWater;
         private bool inContainer;
@@ -133,6 +137,7 @@ namespace SoundproofWalls
         private bool propagateWalls = false;
 
         private bool reverbed = false;
+        private bool propagated = false;
         private bool eavesdropped = false;
         private bool hydrophoned = false;
 
@@ -149,6 +154,59 @@ namespace SoundproofWalls
         private ChatMessageType? messageType = null;
 
         private static Config config { get { return ConfigManager.Config; } }
+
+        // Copy constructor for directional sounds (disaster of a feature)
+        public SoundInfo(SoundInfo original)
+        {
+            isClone = true;
+            channel = original.channel;
+            obstructions = new List<Obstruction>(original.obstructions);
+            Muffled = false;
+
+            gainMult = original.gainMult;
+            gainMultLF = original.gainMultLF;
+            gainMultHF = original.gainMultHF;
+
+            worldPos = original.worldPos;
+            localPos = original.localPos;
+            simPos = original.simPos;
+            inWater = original.inWater;
+            bothInWater = original.bothInWater;
+            inContainer = original.inContainer;
+            noPath = original.noPath;
+            type = original.type;
+
+            euclideanDistance = original.euclideanDistance;
+            approximateDistance = original.approximateDistance;
+
+            ignorePath = original.ignorePath;
+            ignoreSurface = original.ignoreSurface;
+            ignoreSubmersion = original.ignoreSubmersion;
+            ignorePitch = original.ignorePitch;
+            ignoreLowpass = original.ignoreLowpass;
+            ignoreContainer = original.ignoreContainer;
+            ignoreAll = original.ignoreAll;
+            propagateWalls = original.propagateWalls;
+
+            reverbed = original.reverbed;
+            eavesdropped = original.eavesdropped;
+            hydrophoned = original.hydrophoned;
+
+            isLoud = original.isLoud;
+            sidechainMult = original.sidechainMult;
+            release = original.release;
+
+            soundHull = original.soundHull;
+            statusEffect = original.statusEffect;
+            itemComp = original.itemComp;
+            item = original.item;
+            speakingClient = original.speakingClient;
+            messageType = original.messageType;
+    }
+        public SoundInfo CreateIndependentCopy()
+        {
+            return new SoundInfo(this);
+        }
 
         public SoundInfo(SoundChannel channel, Hull? soundHull = null, StatusEffect? statusEffect = null, ItemComponent? itemComp = null, Client? speakingClient = null, ChatMessageType? messageType = null, bool dontMuffle = false, bool dontPitch = false)
         {
@@ -198,6 +256,20 @@ namespace SoundproofWalls
         // TODO This method takes arguments because sometimes the constructor is called without any of this info available (created from soundchannel ctor with no contex, should I even do this or allow the different types to make themselves later? pretty sure it caused popping previously.)
         public void Update(Hull? soundHull = null, StatusEffect? statusEffect = null, ItemComponent? itemComp = null, Client? speakingClient = null, ChatMessageType? messageType = null)
         {
+            if (channel == null) { return; }
+
+            if (!isClone)
+            {
+                foreach(SoundInfo copy in clones) { copy.Update(); }
+            }
+            else if (isClone)
+            {
+                UpdateMuffle();
+                UpdateGain();
+                UpdatePitch();
+                return;
+            }
+
             if (speakingClient != null && messageType == null) { messageType = Util.GetMessageType(speakingClient); }
             else if (itemComp != null && item == null) { item = itemComp.Item; }
             else if (statusEffect != null && item == null) { item = statusEffect.soundEmitter as Item; }
@@ -211,7 +283,7 @@ namespace SoundproofWalls
 
             if (ignoreAll)
             {
-                worldDistance = Vector2.Distance(Listener.WorldPos, worldPos);
+                euclideanDistance = Vector2.Distance(Listener.WorldPos, worldPos);
                 Muffled = false;
                 Pitch = 1;
                 return;
@@ -259,13 +331,13 @@ namespace SoundproofWalls
             Character? speaker = speakingClient?.Character;
             Limb? speakerHead = speaker?.AnimController?.GetLimb(LimbType.Head);
 
-            worldPos = speakerHead?.WorldPosition ?? Util.GetSoundChannelPos(channel);
+            worldPos = speakerHead?.WorldPosition ?? Util.GetSoundChannelWorldPos(channel);
             soundHull = soundHull ?? Hull.FindHull(worldPos, speaker?.CurrentHull ?? listener?.CurrentHull);
             localPos = Util.LocalizePosition(worldPos, soundHull);
+            simPos = localPos / 100;
             inWater = Util.SoundInWater(localPos, soundHull);
             inContainer = item != null && !ignoreContainer && IsContainedWithinContainer(item);
-            localDistance = null;
-            worldDistance = Vector2.Distance(Listener.WorldPos, worldPos); // euclidean distance
+            euclideanDistance = Vector2.Distance(Listener.WorldPos, worldPos); // euclidean distance
 
             // Determine the audio type.
             // Note: For now, this is done every update because many SoundInfos are made before necessary info about their type is known.
@@ -294,15 +366,31 @@ namespace SoundproofWalls
                 return; 
             };
 
-            UpdateObstructions();
+            if (!isClone) { UpdateObstructions(); }
 
-            float strength = 0;
-            foreach (Obstruction obstruction in obstructions)
+            List<float> obstructionStrengths = obstructions
+                .OrderByDescending(obs => obs.GetStrength())
+                .Select(obs => obs.GetStrength())
+                .ToList();
+
+            float multHf = 0;
+            float multLf = 0;
+            float r;
+            float strength;
+            for (int i = 0; i < obstructionStrengths.Count; i++)
             {
-                strength += SoundInfoManager.ObstructionStrength[obstruction];
-                if (strength >= 1) break;
+                float mult = config.DynamicFx ? 1 : config.DynamicMuffleStrengthMultiplier;
+                strength = obstructionStrengths[i] * mult;
+                r = 1 - multHf;
+                multHf += r * strength; // The strength multiplier of each obstruction is applied to the remainder only.
+                if (config.AutoAttenuateMuffledSounds)
+                {
+                    multLf += strength / 3; // Volume of low frequencies reaches 0 when the combined obstruction strength hits 3 (arbitrary limit)
+                }
+                if (config.AutoAttenuateMuffledSounds && multLf >= 1 && multHf >= 0.99 || !config.AutoAttenuateMuffledSounds && multHf >= 0.99) { break; } // No point continuing.
             }
-            muffleStrength = Math.Clamp(strength, 0, 1);
+            gainMultHF = Math.Clamp(multHf, 0, 1);
+            gainMultLF = Math.Clamp(multLf, 0, 1);
 
             if (config.DynamicFx && Plugin.EffectsManager != null)
             {
@@ -311,19 +399,19 @@ namespace SoundproofWalls
                 return;
             }
 
-            if (config.VanillaFx && muffleStrength >= 0.25f)
+            if (config.VanillaFx && gainMultHF >= SoundInfoManager.ObstructionStrength[Obstruction.WaterBody])
             {
                 muffleType = MuffleType.Heavy;
                 Muffled = true;
             }
-            else if (config.StaticFx && muffleStrength >= 0.1f)
+            else if (config.StaticFx && gainMultHF >= SoundInfoManager.ObstructionStrength[Obstruction.Suit])
             {
                 muffleType = MuffleType.Heavy;
-                if (muffleStrength <= SoundInfoManager.ObstructionStrength[Obstruction.Suit])
+                if (gainMultHF <= SoundInfoManager.ObstructionStrength[Obstruction.Suit])
                 {
                     muffleType = MuffleType.Light;
                 }
-                else if (muffleStrength < SoundInfoManager.ObstructionStrength[Obstruction.DoorThick])
+                else if (gainMultHF < SoundInfoManager.ObstructionStrength[Obstruction.DoorThick])
                 {
                     muffleType = MuffleType.Medium;
                 }
@@ -332,151 +420,34 @@ namespace SoundproofWalls
             else { Muffled = false; }
         }
 
-        private void UpdateGain() //TODO (all types use same distance falloff as looping, unless that is done inside openAL alrady? in which case maybe just disable it and do my own...)
-        {
-            // Flow/fire sounds are handled differently.
-            if (audioIsFlow || audioIsFire)
-            {
-                UpdateFlowFireGain();
-                return;
-            }
-
-            float mult = 1;
-            float currentGain = itemComp?.GetSoundVolume(itemComp.loopingSound) ?? channel.Gain;
-
-            mult += gainMult - 1;
-
-            // Radio can only be muffled when the sender is drowning.
-            if (audioIsRadio)
-            {
-                mult += MathHelper.Lerp(1, config.MuffledVoiceVolumeMultiplier, muffleStrength) - 1;
-            }
-            else if (audioIsVoice)
-            {
-                mult += MathHelper.Lerp(1, config.MuffledVoiceVolumeMultiplier, muffleStrength) - 1;
-                if (bothInWater) mult += config.SubmergedVolumeMultiplier - 1;
-                else if (eavesdropped) mult += config.EavesdroppingVoiceVolumeMultiplier - 1;
-                else if (hydrophoned) { mult += config.HydrophoneVolumeMultiplier - 1; mult *= HydrophoneManager.HydrophoneEfficiency; }
-            }
-            // Either a component or status effect sound.
-            else if (channel.Looping)
-            {
-                mult += MathHelper.Lerp(config.UnmuffledLoopingVolumeMultiplier, config.MuffledLoopingVolumeMultiplier, muffleStrength) - 1;
-                if (bothInWater) mult += config.SubmergedVolumeMultiplier - 1;
-                else if (eavesdropped) mult += config.EavesdroppingSoundVolumeMultiplier - 1;
-                else if (hydrophoned) { mult += config.HydrophoneVolumeMultiplier - 1; mult *= HydrophoneManager.HydrophoneEfficiency; }
-                // Distance falloff. TODO 0.7f is fairly arbitrary and was chosen to avoid audio pops. Retest this.
-                mult *= noPath ? 1f : 1 - MathUtils.InverseLerp(channel.Near, channel.Far, distance);
-            }
-            // Single (non-looping sound).
-            else
-            {
-                mult += MathHelper.Lerp(1, config.MuffledSoundVolumeMultiplier, muffleStrength) - 1;
-                if (bothInWater) mult += config.SubmergedVolumeMultiplier - 1;
-                else if (eavesdropped) mult += config.EavesdroppingSoundVolumeMultiplier - 1;
-                else if (hydrophoned) { mult += config.HydrophoneVolumeMultiplier - 1; mult *= HydrophoneManager.HydrophoneEfficiency; }
-            }
-            // Note that the following multipliers also apply to radio channels this way.
-            // 1. Fade transition between two hull soundscapes when eavesdropping.
-            float eavesdropEfficiency = EavesdropManager.Efficiency;
-            if (config.EavesdroppingFadeEnabled && eavesdropEfficiency > 0)
-            {
-                if (!eavesdropped) { mult *= Math.Clamp(1 - eavesdropEfficiency * (1 / config.EavesdroppingThreshold), 0.1f, 1); }
-                else if (eavesdropped) { mult *= Math.Clamp(eavesdropEfficiency * (1 / config.EavesdroppingThreshold) - 1, 0.1f, 1); }
-            }
-            // 2. The strength of the sidechaining decreases the more muffled the loud sound is.
-            if (isLoud) Plugin.Sidechain.StartRelease(sidechainMult * (1 - muffleStrength), release * (1 - muffleStrength));
-            else if (!isLoud) mult *= 1 - Plugin.Sidechain.SidechainMultiplier;
-            
-            Gain = currentGain * mult;
-        }
-
-        private void UpdatePitch()
-        {
-            if (ignorePitch)
-            {
-                Pitch = 1;
-                return;
-            };
-
-            // Flow/fire sounds are handled differently.
-            if (audioIsFlow || audioIsFire)
-            {
-                UpdateFlowFirePitch();
-                return;
-            }
-
-            float mult = 1;
-            bool single = false;
-
-            // Voice.
-            if (!audioIsSound)
-            {
-                mult = MathHelper.Lerp(config.UnmuffledVoicePitchMultiplier, config.MuffledLoopingPitchMultiplier, muffleStrength);
-            }
-            // Either a component or status effect sound.
-            else if (channel.Looping)
-            {
-                mult = MathHelper.Lerp(config.UnmuffledSoundPitchMultiplier, config.MuffledLoopingPitchMultiplier, muffleStrength);
-
-                if (eavesdropped) mult += config.EavesdroppingPitchMultiplier - 1;
-                else if (hydrophoned) mult += config.HydrophonePitchMultiplier - 1;
-
-                if (Listener.IsSubmerged) mult += config.SubmergedPitchMultiplier - 1;
-                if (Listener.IsWearingDivingSuit) mult += config.DivingSuitPitchMultiplier - 1; 
-            }
-            // Single (non-looping sound).
-            else
-            {
-                single = true;
-                mult = MathHelper.Lerp(config.UnmuffledSoundPitchMultiplier, config.MuffledSoundPitchMultiplier, muffleStrength);
-
-                if (config.PitchSoundsByDistance) // Additional pitching based on distance and muffle strength.
-                {
-                    float distanceRatio = Math.Clamp(1 - worldDistance / channel.Far, 0, 1);
-                    mult += MathHelper.Lerp(1, distanceRatio, muffleStrength) - 1;
-                }
-
-                if (eavesdropped) mult += config.EavesdroppingPitchMultiplier - 1;
-                else if (hydrophoned) mult += config.HydrophonePitchMultiplier - 1;
-
-                if (Listener.IsSubmerged) mult += config.SubmergedPitchMultiplier - 1;
-                if (Listener.IsWearingDivingSuit) mult += config.DivingSuitPitchMultiplier - 1;
-            }
-
-            //TODO can I make single sounds be processed multiple times?
-            if (single) Pitch *= mult; // Maintain any pre-existing pitch adjustments to a non-looping sound.
-            else Pitch = 1 * mult; // Sounds that are processed multiple times are multiplied by 1.
-        }
-
         private void UpdateDynamicFx()
         {
             if (Plugin.EffectsManager == null) return;
 
-            // TODO Calculate these values here.
-            float gainHf = 1;
-            bool isInListenerEnvironment = true;
-
+            float gainHf = 1 - gainMultHF;
+            float gainLf = 1 - gainMultLF;
+            
             uint sourceId = channel.Sound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
-            Plugin.EffectsManager.UpdateSourceLowpass(sourceId, gainHf);
-            Plugin.EffectsManager.RouteSourceToEnvironment(sourceId, isInListenerEnvironment);
+            Plugin.EffectsManager.UpdateSourceLowpass(sourceId, gainHf, gainLf);
+            Plugin.EffectsManager.RouteSourceToEnvironment(sourceId, Listener.CurrentHull != null);
         }
 
-        //TODO HEAPS of issues in here...
         private void UpdateObstructions()
         {
             // Reset obstruction properties.
             eavesdropped = false;
             hydrophoned = false;
+            propagated = false;
+            reverbed = false;
             obstructions.Clear();
             noPath = false;
-            localDistance = null;
+            approximateDistance = null;
 
             // Flow/fire sounds are handled differently.
             if (audioIsFlow || audioIsFire)
-            { 
-                UpdateFlowFireObstructions(); 
-                return; 
+            {
+                UpdateFlowFireObstructions();
+                return;
             }
 
             // Muffle radio comms underwater to make room for bubble sounds.
@@ -540,15 +511,234 @@ namespace SoundproofWalls
                 }
             }
 
-            // If soundHull and focusedHull are not null (and therefore might be connected to each other),
-            // use a more approximate distance because it considers pathing around corners.
-            // If the sound can't find a path to the focused hull, localDistance will be equal to float.MaxValue.
-            bool propagated = false;
-            if (Listener.FocusedHull != null && Listener.FocusedHull != soundHull)
+            if (config.DynamicFx) { UpdatePathObstructionsAdvanced(); }
+            else { UpdatePathObstructionsBasic(); }
+        }
+
+        private void UpdateWaterObstructions()
+        {
+            bool earsInWater = Listener.IsSubmerged;
+            bool ignoreSubmersion = this.ignoreSubmersion || (Listener.IsCharacter ? !config.MuffleSubmergedPlayer : !config.MuffleSubmergedViewTarget);
+            bool ignoreSurface = this.ignoreSurface || propagateWalls;
+
+            // Neither in water.
+            if (!earsInWater && !inWater)
+            {
+                return;
+            }
+
+            // Both in water, but submersion is ignored.
+            else if (earsInWater && inWater && ignoreSubmersion)
+            {
+                bothInWater = true;
+                obstructions.Add(Obstruction.Suit);
+            }
+            // Both in water.
+            else if (inWater && earsInWater)
+            {
+                bothInWater = true;
+                obstructions.Add(Obstruction.WaterBody);
+            }
+            // Sound is under, ears are above, but water surface is ignored.
+            else if (ignoreSurface && inWater && !earsInWater)
+            {
+                if (propagateWalls && !propagated) // Add some muffle if the surface was only ignored because the sound propagates walls.
+                {
+                    obstructions.Add(Obstruction.WallThin);
+                }
+            }
+            // Sound is above, ears are below, but water surface and submersion is ignored.
+            else if (ignoreSurface && !inWater && earsInWater && ignoreSubmersion)
+            {
+                if (propagateWalls && !propagated)
+                {
+                    obstructions.Add(Obstruction.WallThin);
+                }
+                else
+                {
+                    obstructions.Add(Obstruction.Suit);
+                }
+            }
+            // Separated by the water surface.
+            else
+            {
+                obstructions.Add(Obstruction.WaterSurface);
+            }
+        }
+
+        public void DisposeClones()
+        {
+            foreach (SoundInfo clone in clones)
+            {
+                clone.channel?.Dispose();
+            }
+            clones.Clear();
+        }
+
+        private void UpdatePathObstructionsAdvanced()
+        {
+            Hull? listenerHull = Listener.FocusedHull;
+            HashSet<Hull> listenerConnectedHulls = Listener.ConnectedHulls;
+            
+            // Eavesdropped obstruction.
+            if (Listener.IsEavesdropping && !ignorePath && soundHull != null && listenerConnectedHulls.Contains(soundHull))
+            {
+                eavesdropped = true;
+                obstructions.Add(Obstruction.DoorThin);
+            }
+
+            noPath = listenerHull != soundHull && (listenerHull == null || soundHull == null) || listenerHull != null && !listenerConnectedHulls.Contains(soundHull);
+
+            // Ray check how many walls are between the sound and the listener using a direct line.
+            IEnumerable<FarseerPhysics.Dynamics.Body> bodies = Submarine.PickBodies(Listener.SimPos, simPos, collisionCategory: Physics.CollisionWall);
+
+            // Only count collisions for unique wall orientations.
+            int numWallsInRay = 0;
+            List<float> yWalls = new List<float>();
+            List<float> xWalls = new List<float>();
+            float epsilon = 5.0f;
+            foreach (var body in bodies)
+            {
+                if (body.UserData is Structure structure)
+                {
+                    bool closeX = xWalls.Any(x => Math.Abs(x - structure.Position.X) < epsilon);
+                    bool closeY = yWalls.Any(y => Math.Abs(y - structure.Position.Y) < epsilon);
+
+                    if (!closeX && !closeY)
+                    {
+                        xWalls.Add(structure.Position.X);
+                        yWalls.Add(structure.Position.Y);
+                        numWallsInRay++;
+                    }
+                }
+            }
+
+            // Allow certain sounds near a wall to propagate to the opposite side.
+            if (noPath && propagateWalls)
+            {
+                foreach (Hull hull in listenerConnectedHulls)
+                {
+                    if (ShouldSoundPropagateToHull(hull, worldPos))
+                    {
+                        obstructions.Add(Obstruction.WallThin);
+                        soundHull = hull;
+                        propagated = true;
+                        numWallsInRay--;
+                        break;
+                    }
+                }
+            }
+
+            UpdateWaterObstructions();
+
+            if (!noPath && numWallsInRay <= 0 && soundHull == listenerHull)
+            {
+                DisposeClones();
+                return;
+            }
+
+            // Saves the current obstructions to be applied to any clones.
+            List<Obstruction> clonedObstructions = new List<Obstruction>(obstructions);
+
+            if (config.OccludeSounds)
+            {
+                for (int i = 0; i < numWallsInRay; i++) { obstructions.Add(Obstruction.WallThick); }
+            }
+
+            bool simulateSoundDirection = config.MaxSimulatedSoundDirections > 0;
+            int targetNumResults = simulateSoundDirection ? config.MaxSimulatedSoundDirections : 1;
+            List<SoundPathfinder.PathfindingResult> topResults = SoundPathfinder.FindShortestPaths(
+                worldPos, soundHull,
+                Listener.WorldPos, listenerHull,
+                listenerHull?.Submarine,
+                targetNumResults);
+
+            // Failed to find any paths.
+            if (topResults.Count <= 0) { DisposeClones(); return; }
+
+            SoundPathfinder.PathfindingResult bestResult = topResults[0];
+
+            for (int i = 0; i < bestResult.ClosedDoorCount; i++) { obstructions.Add(Obstruction.DoorThick); }
+            for (int j = 0; j < bestResult.WaterSurfaceCrossings; j++) { obstructions.Add(Obstruction.WaterSurface); }
+
+            if (channel.Sound.Filename.ToLower().Contains("coil")) //TEMP DEBUGGING
+            {
+                foreach (Obstruction obs in obstructions)
+                {
+                    LuaCsLogger.Log($"{obs}");
+                }
+            }
+
+            // For multiple sounds playing at different positions to simulate the sounds pathing.
+            if (simulateSoundDirection)
+            {
+                approximateDistance = null; // The "parent" sound does not have an approximate distance.
+                for (int i = 0; i < topResults.Count; i++)
+                {
+                    Vector2 intersectionPos = topResults[i].LastIntersectionPos;
+                    float distance = topResults[i].RawDistance;
+                    float originalRange = channel.Far;
+                    float newRange = originalRange;
+                    float distanceToListener = Vector2.Distance(intersectionPos, Listener.WorldPos);
+                    if (distance > 0) { newRange = (distanceToListener * originalRange) / distance; }
+
+                    SoundInfo clone;
+                    if (clones.Count > i) 
+                    {
+                        clone = clones[i];
+                        if (clone.channel == null || !clone.channel.IsPlaying) 
+                        {
+                            clone.channel = SoundPlayer.PlaySound(channel.Sound, intersectionPos, range: originalRange);
+                            if (clone.channel != null)
+                            {
+                                clone.channel.Looping = channel.Looping;
+                                uint sourceId = clone.channel.Sound.Owner.GetSourceFromIndex(clone.channel.Sound.SourcePoolIndex, clone.channel.ALSourceIndex);
+                                Plugin.EffectsManager?.RegisterSource(sourceId);
+                            }
+                        }
+                    }
+                    else 
+                    {
+                        clone = CreateIndependentCopy();
+                        // Play the duplicate sound at the intersection with a range that attenuates the sound based on how far the original would have to travel.
+                        clone.channel = SoundPlayer.PlaySound(channel.Sound, intersectionPos, range: originalRange);
+                        if (clone.channel != null)
+                        {
+                            clone.channel.Looping = channel.Looping;
+                            uint sourceId = clone.channel.Sound.Owner.GetSourceFromIndex(clone.channel.Sound.SourcePoolIndex, clone.channel.ALSourceIndex);
+                            Plugin.EffectsManager?.RegisterSource(sourceId);
+                        }
+                        if (clone != null)
+                        {
+                            clones.Add(clone);
+                        }
+                    }
+                    
+                    if (clone == null || clone.channel == null) { continue; }
+
+                    //LuaCsLogger.Log($"og sound pos{channel.Position} gain:{channel.Gain}\nclone channel pos: {clone.channel.Position} gain: {clone.channel.Gain} obstruction count: {clone.obstructions.Count}\nListener pos {Listener.LocalPos} character controlled: {Character.Controlled.Position}");
+
+                    // Update the clone's properties.
+                    clone.obstructions = new List<Obstruction>(clonedObstructions);
+                    for (int j = 0; j < topResults[i].ClosedDoorCount; j++) { clone.obstructions.Add(Obstruction.DoorThick); }
+                    for (int j = 0; j < topResults[i].WaterSurfaceCrossings; j++) { clone.obstructions.Add(Obstruction.WaterSurface); }
+                    clone.approximateDistance = distance;
+                    clone.channel.Position = new Vector3(topResults[i].LastIntersectionPos, 0.0f);
+                }
+            }
+        }
+
+        private void UpdatePathObstructionsBasic()
+        {
+
+            // Path and realDistance check
+            Hull? listenerHull = Listener.FocusedHull;
+            if (listenerHull != null && listenerHull != soundHull)
             {
                 HashSet<Hull> listenerConnectedHulls = new HashSet<Hull>();
+
                 // Run this even if SoundHull might be null for the sake of collecting listenerConnectedHulls for later.
-                float distance = GetApproximateDistance(Listener.LocalPos, localPos, Listener.FocusedHull, soundHull, channel.Far, listenerConnectedHulls);
+                float distance = GetApproximateDistance(Listener.LocalPos, localPos, listenerHull, soundHull, channel.Far, listenerConnectedHulls);
 
                 if (distance >= float.MaxValue)
                 {
@@ -558,7 +748,7 @@ namespace SoundproofWalls
                 // Only switch to this distance if both the listenHull and soundHull are not null.
                 if (soundHull != null)
                 {
-                    localDistance = distance;
+                    approximateDistance = distance;
                 }
 
                 // Allow certain sounds near a wall to be faintly heard on the opposite side.
@@ -566,6 +756,10 @@ namespace SoundproofWalls
                 {
                     foreach (Hull hull in listenerConnectedHulls)
                     {
+                        if (channel.Sound.Filename.ToLower().Contains("coil"))
+                        {
+                            LuaCsLogger.Log($"hull: {hull} shouldprop: {ShouldSoundPropagateToHull(hull, worldPos)} worldPos: {worldPos}");
+                        }
                         if (ShouldSoundPropagateToHull(hull, worldPos))
                         {
                             LuaCsLogger.Log($"{Path.GetFileName(channel.Sound.Filename)} SOUND HAS PROPAGATED TO {hull}");
@@ -586,7 +780,7 @@ namespace SoundproofWalls
                 if (ignorePath)
                 {
                     // Switch back to euclidean distance if the sound ignores paths.
-                    localDistance = null;
+                    approximateDistance = null;
                     // Add a slight muffle to these sounds.
                     obstructions.Add(Obstruction.Suit);
                 }
@@ -606,63 +800,149 @@ namespace SoundproofWalls
             if (!config.StaticFx &&
                 !config.MuffleDivingSuits &&
                 Listener.IsWearingExoSuit &&
-                worldDistance <= 1 && // Only muffle player's own exosuit.
+                euclideanDistance <= 1 && // Only muffle player's own exosuit.
                 channel.Sound.Filename.EndsWith("WEAPONS_chargeUp.ogg")) // Exosuit sound file name.
             {
                 obstructions.Add(Obstruction.WallThick);
             }
 
-            bool earsInWater = Listener.IsSubmerged;
-            bool ignoreSubmersion = this.ignoreSubmersion || (Listener.IsCharacter ? !config.MuffleSubmergedPlayer : !config.MuffleSubmergedViewTarget);
-            bool ignoreSurface = this.ignoreSurface || propagateWalls;
+            UpdateWaterObstructions();
 
-            // Neither in water.
-            if (!earsInWater && !inWater)
+            //  temp debugging
+            if (channel.Sound.Filename.ToLower().Contains("coil"))
             {
+                LuaCsLogger.Log($"sound: {Path.GetFileName(channel.Sound.Filename)} count: {obstructions.Count} focusedHull: {Listener.FocusedHull} noPath: {noPath} prop:{propagateWalls}");
+                foreach (Obstruction o in obstructions)
+                {
+                    LuaCsLogger.LogMessage($"{o}");
+                }
+                LuaCsLogger.LogMessage($"----");
+            }
+        }
+
+        private void UpdateGain() //TODO (all types use same distance falloff as looping, unless that is done inside openAL alrady? in which case maybe just disable it and do my own...)
+        {
+            // Flow/fire sounds are handled differently.
+            if (audioIsFlow || audioIsFire)
+            {
+                UpdateFlowFireGain();
                 return;
             }
 
-            if (channel.Sound.Filename.ToLower().Contains(""))
-            {
-                LuaCsLogger.Log($"sound: {Path.GetFileName(channel.Sound.Filename)} count: {obstructions.Count}");
-            }
+            float mult = 1;
+            float currentGain = itemComp?.GetSoundVolume(itemComp.loopingSound) ?? channel.Gain;
 
-            // Both in water, but submersion is ignored.
-            else if (earsInWater && inWater && ignoreSubmersion)
+            mult += gainMult - 1;
+
+            // Radio can only be muffled when the sender is drowning.
+            if (audioIsRadio)
             {
-                obstructions.Add(Obstruction.Suit);
+                mult += MathHelper.Lerp(1, config.MuffledVoiceVolumeMultiplier, gainMultHF) - 1;
             }
-            // Both in water.
-            else if (inWater && earsInWater)
+            else if (audioIsVoice)
             {
-                bothInWater = true;
-                obstructions.Add(Obstruction.WaterBody);
+                mult += MathHelper.Lerp(1, config.MuffledVoiceVolumeMultiplier, gainMultHF) - 1;
+                if (bothInWater) mult += config.SubmergedVolumeMultiplier - 1;
+                else if (eavesdropped) mult += config.EavesdroppingVoiceVolumeMultiplier - 1;
+                else if (hydrophoned) { mult += config.HydrophoneVolumeMultiplier - 1; mult *= HydrophoneManager.HydrophoneEfficiency; }
             }
-            // Sound is under, ears are above, but water surface is ignored.
-            else if (ignoreSurface && inWater && !earsInWater)
+            // Either a component or status effect sound.
+            else if (channel.Looping)
             {
-                if (propagateWalls) // Add some muffle if the surface was only ignored because the sound propagates walls.
-                {
-                    obstructions.Add(Obstruction.WallThin);
-                }
+                mult += MathHelper.Lerp(config.UnmuffledLoopingVolumeMultiplier, config.MuffledLoopingVolumeMultiplier, gainMultHF) - 1;
+                if (bothInWater) mult += config.SubmergedVolumeMultiplier - 1;
+                else if (eavesdropped) mult += config.EavesdroppingSoundVolumeMultiplier - 1;
+                else if (hydrophoned) { mult += config.HydrophoneVolumeMultiplier - 1; mult *= HydrophoneManager.HydrophoneEfficiency; }
             }
-            // Sound is above, ears are below, but water surface and submersion is ignored.
-            else if (ignoreSurface && !inWater && earsInWater && ignoreSubmersion)
-            {
-                if (propagateWalls)
-                {
-                    obstructions.Add(Obstruction.WallThin);
-                }
-                else
-                {
-                    obstructions.Add(Obstruction.Suit);
-                }
-            }
-            // Separated by the water surface.
+            // Single (non-looping sound).
             else
             {
-                obstructions.Add(Obstruction.WaterSurface);
+                mult += MathHelper.Lerp(1, config.MuffledSoundVolumeMultiplier, gainMultHF) - 1;
+                if (bothInWater) mult += config.SubmergedVolumeMultiplier - 1;
+                else if (eavesdropped) mult += config.EavesdroppingSoundVolumeMultiplier - 1;
+                else if (hydrophoned) { mult += config.HydrophoneVolumeMultiplier - 1; mult *= HydrophoneManager.HydrophoneEfficiency; }
             }
+            // Note that the following multipliers also apply to radio channels this way.
+            // 1. Fade transition between two hull soundscapes when eavesdropping.
+            float eavesdropEfficiency = EavesdropManager.Efficiency;
+            if (config.EavesdroppingFadeEnabled && eavesdropEfficiency > 0)
+            {
+                if (!eavesdropped) { mult *= Math.Clamp(1 - eavesdropEfficiency * (1 / config.EavesdroppingThreshold), 0.1f, 1); }
+                else if (eavesdropped) { mult *= Math.Clamp(eavesdropEfficiency * (1 / config.EavesdroppingThreshold) - 1, 0.1f, 1); }
+            }
+            // 2. The strength of the sidechaining decreases the more muffled the loud sound is.
+            if (isLoud) Plugin.Sidechain.StartRelease(sidechainMult * (1 - gainMultLF), release * (1 - gainMultLF));
+            else if (!isLoud) mult *= 1 - Plugin.Sidechain.SidechainMultiplier;
+
+            float targetGain = currentGain * mult;
+
+            if (channel.Looping && Plugin.Sidechain.SidechainMultiplier <= 0)
+            {
+                float gainDiff = targetGain - channel.Gain;
+                Gain += Math.Abs(gainDiff) < 0.1f ? gainDiff : Math.Sign(gainDiff) * 0.1f;
+            }
+            else
+            {
+                Gain = targetGain;
+            }
+        }
+
+        private void UpdatePitch()
+        {
+            if (ignorePitch)
+            {
+                Pitch = 1;
+                return;
+            };
+
+            // Flow/fire sounds are handled differently.
+            if (audioIsFlow || audioIsFire)
+            {
+                UpdateFlowFirePitch();
+                return;
+            }
+
+            float mult = 1;
+            bool single = false;
+
+            // Voice.
+            if (!audioIsSound)
+            {
+                mult = MathHelper.Lerp(config.UnmuffledVoicePitchMultiplier, config.MuffledLoopingPitchMultiplier, gainMultHF);
+            }
+            // Either a component or status effect sound.
+            else if (channel.Looping)
+            {
+                mult = MathHelper.Lerp(config.UnmuffledSoundPitchMultiplier, config.MuffledLoopingPitchMultiplier, gainMultHF);
+
+                if (eavesdropped) mult += config.EavesdroppingPitchMultiplier - 1;
+                else if (hydrophoned) mult += config.HydrophonePitchMultiplier - 1;
+
+                if (Listener.IsSubmerged) mult += config.SubmergedPitchMultiplier - 1;
+                if (Listener.IsWearingDivingSuit) mult += config.DivingSuitPitchMultiplier - 1; 
+            }
+            // Single (non-looping sound).
+            else
+            {
+                single = true;
+                mult = MathHelper.Lerp(config.UnmuffledSoundPitchMultiplier, config.MuffledSoundPitchMultiplier, gainMultHF);
+
+                if (config.PitchSoundsByDistance) // Additional pitching based on distance and muffle strength.
+                {
+                    float distanceRatio = Math.Clamp(1 - euclideanDistance / channel.Far, 0, 1);
+                    mult += MathHelper.Lerp(1, distanceRatio, gainMultHF) - 1;
+                }
+
+                if (eavesdropped) mult += config.EavesdroppingPitchMultiplier - 1;
+                else if (hydrophoned) mult += config.HydrophonePitchMultiplier - 1;
+
+                if (Listener.IsSubmerged) mult += config.SubmergedPitchMultiplier - 1;
+                if (Listener.IsWearingDivingSuit) mult += config.DivingSuitPitchMultiplier - 1;
+            }
+
+            //TODO can I make single sounds be processed multiple times?
+            if (single) Pitch *= mult; // Maintain any pre-existing pitch adjustments to a non-looping sound.
+            else Pitch = 1 * mult; // Sounds that are processed multiple times are multiplied by 1.
         }
 
         private void UpdateFlowFireObstructions()
@@ -679,7 +959,7 @@ namespace SoundproofWalls
         {
             float mult = 1;
             mult += gainMult - 1;
-            mult += MathHelper.Lerp(config.UnmuffledLoopingVolumeMultiplier, config.MuffledLoopingVolumeMultiplier, muffleStrength) - 1;
+            mult += MathHelper.Lerp(config.UnmuffledLoopingVolumeMultiplier, config.MuffledLoopingVolumeMultiplier, gainMultHF) - 1;
 
             // Dip audio when eavesdropping.
             float eavesdropEfficiency = EavesdropManager.Efficiency;
@@ -694,7 +974,7 @@ namespace SoundproofWalls
             }
 
             // The strength of the sidechaining decreases the more muffled the loud sound is.
-            if (isLoud) Plugin.Sidechain.StartRelease(sidechainMult * (1 - muffleStrength), release * (1 - muffleStrength));
+            if (isLoud) Plugin.Sidechain.StartRelease(sidechainMult * (1 - gainMultHF), release * (1 - gainMultHF));
             else if (!isLoud) mult *= 1 - Plugin.Sidechain.SidechainMultiplier;
 
             // Master volume multiplier.
@@ -743,7 +1023,7 @@ namespace SoundproofWalls
 
         private static float GetApproximateHullDistance(Vector2 startPos, Vector2 endPos, Hull startHull, Hull? endHull, HashSet<Hull> connectedHulls, float distance, float maxDistance, float distanceMultiplierFromDoors = 0)
         {
-            if (distance >= maxDistance || endHull == null) { return float.MaxValue; }
+            if (distance >= maxDistance) { return float.MaxValue; }
             if (startHull == endHull)
             {
                 return distance + Vector2.Distance(startPos, endPos);
@@ -754,17 +1034,16 @@ namespace SoundproofWalls
             {
                 float distanceMultiplier = 1;
                 // For doors.
-                if (g.ConnectedDoor != null && !g.ConnectedDoor.IsBroken)
+                if (g.ConnectedDoor != null)
                 {
-                    // Gap blocked if the door is closed or is curently closing and 90% closed.
-                    if ((!g.ConnectedDoor.PredictedState.HasValue && g.ConnectedDoor.IsClosed || g.ConnectedDoor.PredictedState.HasValue && !g.ConnectedDoor.PredictedState.Value) && g.ConnectedDoor.OpenState < 0.1f)
+                    if (Util.IsDoorClosed(g.ConnectedDoor))
                     {
                         if (distanceMultiplierFromDoors <= 0) { continue; }
                         distanceMultiplier *= distanceMultiplierFromDoors;
                     }
                 }
                 // For holes in hulls.
-                else if (g.Open <= 0.33f)
+                else if (g.Open < config.OpenWallThreshold)
                 {
                     continue;
                 }

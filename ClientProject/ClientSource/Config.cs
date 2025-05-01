@@ -52,6 +52,18 @@ namespace SoundproofWalls
         public float SoundPropagationRange { get; set; } = 500; // Area^2 that a sound in WallPropagatingSounds can search for a hull to propagate to.
         public float ComponentMuffleUpdateInterval { get; set; } = 0.2f;
         public float StatusEffectMuffleUpdateInterval { get; set; } = 0.2f;
+        public float OpenDoorThreshold { get; set; } = 0.1f;
+        public float OpenWallThreshold { get; set; } = 0.33f;
+
+        // DynamicFx
+        public bool ReverbEnabled { get; set; } = true;
+        public float ReverbAirTargetGain { get; set; } = 0.6f;
+        public float ReverbWaterTargetGain { get; set; } = 0.4f;
+        public bool OccludeSounds { get; set; } = true; // Enable muffle strength from wall occlusion.
+        public bool AutoAttenuateMuffledSounds { get; set; } = true; // Should the volume of the lower frequencies (not just the high freqs) be attenuated with muffle strength.
+        public bool TraverseWaterDucts { get; set; } = false; // Should the search algorithm pass through water ducts?
+        public float DynamicMuffleStrengthMultiplier { get; set; } = 1.0f;
+        public int MaxSimulatedSoundDirections { get; set; } = 0; // How many additional versions of the same sound can be playing simultaneously from different directions.
 
         // Voice
         public bool RadioCustomFilterEnabled { get; set; } = true;
@@ -107,15 +119,16 @@ namespace SoundproofWalls
         public float HydrophonePitchMultiplier { get; set; } = 0.8f;
 
         // Ambience
-        public float UnsubmergedWaterAmbienceVolumeMultiplier { get; set; } = 0.2f;
-        public float SubmergedWaterAmbienceVolumeMultiplier { get; set; } = 0.9f;
+        public bool DisableWhiteNoise { get; set; } = true;
+        public float UnsubmergedWaterAmbienceVolumeMultiplier { get; set; } = 0.15f;
+        public float SubmergedWaterAmbienceVolumeMultiplier { get; set; } = 0.6f;
         public float HydrophoneWaterAmbienceVolumeMultiplier { get; set; } = 2.0f;
         public float WaterAmbienceTransitionSpeedMultiplier { get; set; } = 3.5f;
 
         // Pitch settings
         public bool PitchSoundsByDistance { get; set; } = true;
         public float DivingSuitPitchMultiplier { get; set; } = 1f;
-        public float SubmergedPitchMultiplier { get; set; } = 1f;
+        public float SubmergedPitchMultiplier { get; set; } = 0.9f;
         public float MuffledSoundPitchMultiplier { get; set; } = 1f; // Strength of the distance-based pitch effect on muffled non-looping sounds.
         public float MuffledLoopingPitchMultiplier { get; set; } = 1f;
         public float UnmuffledSoundPitchMultiplier { get; set; } = 1f;
@@ -194,7 +207,9 @@ namespace SoundproofWalls
             "explosion",
 
             // Allow turrets to be heard from the hull directly below/above them.
-            "railgun", // Includes the turret moving sounds.
+            "railgun1",
+            "railgun2",
+            "railgun3",
             "chaingunshot",
             "flakgun",
             "coilgun",

@@ -64,7 +64,7 @@ namespace SoundproofWalls {
                 return;
             }
 
-            UpdateReverbEffectForRoom(_primaryReverbEffectId, 10f, 3f, true); // Arbitrary default values.
+            UpdateReverbEffectForRoom(_primaryReverbEffectId); // Arbitrary default values.
 
             AlEffects.AuxiliaryEffectSloti(_primaryReverbSlotId, AlEffects.AL_EFFECTSLOT_EFFECT, _primaryReverbEffectId);
             if ((alError = Al.GetError()) != Al.NoError)
@@ -113,7 +113,7 @@ namespace SoundproofWalls {
                     AlEffects.Effecti(_secondaryReverbEffectId, AlEffects.AL_EFFECT_TYPE, AlEffects.AL_EFFECT_REVERB);
                     if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to set effect {_secondaryReverbEffectId} type to reverb for secondary slot ID: {_secondaryReverbSlotId}, {Al.GetErrorString(alError)}");
 
-                    UpdateReverbEffectForRoom(_secondaryReverbEffectId, 10f, 3f, true); // Arbitrary default values.
+                    UpdateReverbEffectForWater(_secondaryReverbEffectId); // Arbitrary default values.
 
                     AlEffects.AuxiliaryEffectSloti(_secondaryReverbSlotId, AlEffects.AL_EFFECTSLOT_EFFECT, _secondaryReverbEffectId);
                     if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to attach initial reverb effect {_secondaryReverbEffectId} to secondary slot ID: {_secondaryReverbSlotId}, {Al.GetErrorString(alError)}");
@@ -132,33 +132,45 @@ namespace SoundproofWalls {
         {
             if (ConfigManager.Config.DynamicFx != false)
             {
-                // TODO calculate these
-                float roomHeight = 30;
-                float roomWidth = 30;
-                UpdatePrimaryEnvironment(roomWidth, roomHeight);
+                if (Timing.TotalTime < LastReverbUpdateTime + ReverbUpdateInterval) { return; }
+
+                LastReverbUpdateTime = Timing.TotalTime;
+
+                UpdatePrimaryEnvironment();
+                UpdateSecondaryEnvironment();
             }
         }
 
-        /// <summary>
-        /// Updates the primary reverb effect based on new room dimensions.
-        /// </summary>
-        public void UpdatePrimaryEnvironment(float roomWidth, float roomHeight)
+        public void UpdatePrimaryEnvironment()
         {
-            if (Timing.TotalTime < LastReverbUpdateTime + ReverbUpdateInterval || 
-                !IsInitialized || 
+            if ( !IsInitialized || 
                 _primaryReverbEffectId == INVALID_ID || 
                 _primaryReverbSlotId == INVALID_ID)
                 return;
 
-            LastReverbUpdateTime = Timing.TotalTime;
-
-            UpdateReverbEffectForRoom(_primaryReverbEffectId, roomWidth, roomHeight, true);
+            UpdateReverbEffectForRoom(_primaryReverbEffectId);
 
             int alError;
             Al.GetError();
 
             AlEffects.AuxiliaryEffectSloti(_primaryReverbSlotId, AlEffects.AL_EFFECTSLOT_EFFECT, _primaryReverbEffectId);
             if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to attach reverb effect {_primaryReverbEffectId} to main slot ID: {_primaryReverbSlotId}, {Al.GetErrorString(alError)}");
+        }
+
+        public void UpdateSecondaryEnvironment()
+        {
+            if (!IsInitialized ||
+                _secondaryReverbEffectId == INVALID_ID ||
+                _secondaryReverbSlotId == INVALID_ID)
+                return;
+
+            UpdateReverbEffectForWater(_secondaryReverbEffectId);
+
+            int alError;
+            Al.GetError();
+
+            AlEffects.AuxiliaryEffectSloti(_secondaryReverbSlotId, AlEffects.AL_EFFECTSLOT_EFFECT, _secondaryReverbEffectId);
+            if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to attach reverb effect {_secondaryReverbEffectId} to secondary slot ID: {_secondaryReverbSlotId}, {Al.GetErrorString(alError)}");
         }
 
         /// <summary>
@@ -251,14 +263,14 @@ namespace SoundproofWalls {
             _sourceFilters.Remove(sourceId);
         }
 
-        public void UpdateSourceLowpass(uint sourceId, float gainHf)
+        public void UpdateSourceLowpass(uint sourceId, float gainHf, float gainLf = 1)
         {
             if (!IsInitialized || _sourceFilters.Count == 0 || !_sourceFilters.TryGetValue(sourceId, out uint filterId)) return;
 
             int alError;
             Al.GetError();
 
-            AlEffects.Filterf(filterId, AlEffects.AL_LOWPASS_GAIN, 1);
+            AlEffects.Filterf(filterId, AlEffects.AL_LOWPASS_GAIN, gainLf);
             if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to update filter {filterId} param AL_LOWPASS_GAIN for source {sourceId}, {Al.GetErrorString(alError)}");
             AlEffects.Filterf(filterId, AlEffects.AL_LOWPASS_GAINHF, gainHf);
             if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to update filter {filterId} param AL_LOWPASS_GAINHF for source {sourceId}, {Al.GetErrorString(alError)}");
@@ -272,16 +284,16 @@ namespace SoundproofWalls {
         /// <summary>
         /// Routes a source's auxiliary send 0 to the appropriate reverb slot.
         /// </summary>
-        public void RouteSourceToEnvironment(uint sourceId, bool isInListenerEnvironment)
+        public void RouteSourceToEnvironment(uint sourceId, bool routePrimary, bool routeNull = false)
         {
             if (!IsInitialized) return;
 
-            uint targetSlot = isInListenerEnvironment ? _primaryReverbSlotId : (_secondaryReverbSlotId != INVALID_ID ? _secondaryReverbSlotId : INVALID_ID);
+            uint targetSlot = routePrimary ? _primaryReverbSlotId : (_secondaryReverbSlotId != INVALID_ID ? _secondaryReverbSlotId : INVALID_ID);
 
             Al.GetError();
             int alError;
 
-            if (targetSlot != INVALID_ID)
+            if (targetSlot != INVALID_ID && ConfigManager.Config.ReverbEnabled && !routeNull)
             {
                 Al.Source3i(sourceId, AlEffects.AL_AUXILIARY_SEND_FILTER, (int)targetSlot, 0, AlEffects.AL_FILTER_NULL);
                 if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to route source to target slot ID: {targetSlot}, {Al.GetErrorString(alError)}");
@@ -347,65 +359,58 @@ namespace SoundproofWalls {
             DebugConsole.NewMessage($"[SoundproofWalls] EfxAudioManager disposed successfully");
         }
 
-        /// <summary>
-        /// Updates an existing Reverb Effect object's parameters based on room properties.
-        /// </summary>
-        /// <param name="reverbEffectId">The ID of the AL_EFFECT_REVERB object to modify.</param>
-        /// <param name="roomWidthMeters">Approximate room width in meters.</param>
-        /// <param name="roomHeightMeters">Approximate room height in meters.</param>
-        /// <param name="isMetal">Set to true for metal rooms (affects reflections/decay).</param>
-        public static void UpdateReverbEffectForRoom(uint reverbEffectId, float roomWidthMeters, float roomHeightMeters, bool isMetal = true)
+        public static void UpdateReverbEffectForRoom(uint reverbEffectId)
         {
             if (!AlEffects.IsInitialized) return;
 
-            //TODO all of these values suck, it sounds terrible lol
+            float roomSizeFactor = Listener.ConnectedArea / 180000;
+            float reverbGainMult = Listener.IsSubmerged ? 1.3f : 1.0f;
 
-            float roomLengthMeters = 3;
-            float volume = roomWidthMeters * roomLengthMeters * roomHeightMeters;
-            volume = Math.Max(1.0f, volume);
-            float surfaceArea = 2 * (roomWidthMeters * roomLengthMeters + roomWidthMeters * roomHeightMeters + roomLengthMeters * roomHeightMeters);
-            surfaceArea = Math.Max(1.0f, surfaceArea); // Avoid division by zero
-            float meanFreePath = (4 * volume / surfaceArea);
+            float targetReverbGain = ConfigManager.Config.ReverbAirTargetGain * reverbGainMult;
+            targetReverbGain = Math.Clamp(targetReverbGain, 0.0f, 1.0f);
 
-            // 1. Delay Times (based on size / mean free path in METERS)
-            float reflectionsDelay = Math.Clamp(meanFreePath / 343.0f * 0.7f, 0.001f, 0.3f); // Slightly longer delay based on MFP
-            float lateReverbDelay = Math.Clamp(reflectionsDelay * 0.6f, 0.001f, 0.1f);
+            // Decay Time
+            float decayTime = 3.5f + (roomSizeFactor * 1.0f);
+            decayTime = Math.Clamp(decayTime, 0.1f, 20.0f); 
 
-            // 2. Decay Time (longer in bigger rooms, longer with reflective surfaces)
-            float decayTimeBase = Math.Clamp(meanFreePath * 0.05f, 0.1f, 20.0f); // Simpler scaling based on MFP
-            float decayTime = isMetal ? decayTimeBase * 1.8f : decayTimeBase * 0.8f; // Metal increases decay significantly
-            decayTime = Math.Clamp(decayTime, 0.1f, 20.0f);
+            // Decay HF Ratio
+            float decayHfRatio = 0.2f;
+            decayHfRatio = Math.Clamp(decayHfRatio, 0.1f, 2.0f);
 
-            // 3. Decay HF Ratio (Metal reflects HF well)
-            float decayHfRatio = isMetal ? Math.Clamp(0.9f, 0.1f, 2.0f) : Math.Clamp(0.5f, 0.1f, 2.0f);
-
-            // 4. Gain levels
-            float targetBaseGain = 0.8f;
-            // Reduce gain slightly if volume is very large (e.g., > 500 m^3)
-            if (volume > 500) targetBaseGain *= (500.0f / volume); // Simple inverse scaling for large volumes
-            targetBaseGain = Math.Clamp(targetBaseGain, 0.1f, 1.0f);
-
-            float reflectionsGain = isMetal ? targetBaseGain * 1.5f : targetBaseGain * 0.8f; // Metal has stronger reflections
+            // Reflections Gain: Strong initial pings off metal walls.
+            float reflectionsGain = 0.9f;
             reflectionsGain = Math.Clamp(reflectionsGain, 0.0f, 3.16f);
 
-            float reverbGain = targetBaseGain;
-            reverbGain = Math.Clamp(reverbGain, 0.0f, 1.0f);
+            // Reflections Delay
+            float reflectionsDelay = 0.025f + (roomSizeFactor * 0.010f); // Base 25ms + up to 20ms more
+            reflectionsDelay = Math.Clamp(reflectionsDelay, 0.005f, 0.1f); // Sensible bounds
 
-            float lateReverbGain = isMetal ? targetBaseGain * 1.2f : targetBaseGain; // Also based on target, metal boosts slightly
+            // Late Reverb Gain: Tail of the reverb
+            float lateReverbGain = targetReverbGain * 1.8f; // Make tail prominent relative to overall gain
             lateReverbGain = Math.Clamp(lateReverbGain, 0.0f, 10.0f);
 
-            // Master Gain HF (Metal reflects HF well)
-            float gainHf = isMetal ? Math.Clamp(0.95f, 0.0f, 1.0f) : Math.Clamp(0.7f, 0.0f, 1.0f);
+            // Late Reverb Delay
+            float lateReverbDelay = 0.040f + (roomSizeFactor * 0.015f); // Base 40ms + up to 30ms more
+            lateReverbDelay = Math.Clamp(lateReverbDelay, 0.01f, 0.1f);
 
-            // 5. Diffusion & Density (Metal rooms less diffuse, maybe more coloration if small)
-            float diffusion = isMetal ? Math.Clamp(0.7f, 0.0f, 1.0f) : Math.Clamp(1.0f, 0.0f, 1.0f);
-            float density = (volume < 50.0f && isMetal) ? Math.Clamp(0.8f, 0.0f, 1.0f) : Math.Clamp(1.0f, 0.0f, 1.0f);
+            // Diffusion: Lower value for metallic, distinct reflections, less "smooth wash".
+            float diffusion = 0.9f;
+            diffusion = Math.Clamp(diffusion, 0.0f, 1.0f);
 
-            // --- Apply Parameters to the Effect Object ---
+            // Density: Standard density
+            float density = 1.0f;
+            density = Math.Clamp(density, 0.0f, 1.0f);
+
+            // Gain HF: Metal is bright, minimal HF damping in the effect itself.
+            float gainHf = 0.3f;
+            gainHf = Math.Clamp(gainHf, 0.0f, 1.0f);
+
             Al.GetError();
+            int error;
+
             AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_DENSITY, density);
             AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_DIFFUSION, diffusion);
-            AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_GAIN, reverbGain);
+            AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_GAIN, targetReverbGain);
             AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_GAINHF, gainHf);
             AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_DECAY_TIME, decayTime);
             AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_DECAY_HFRATIO, decayHfRatio);
@@ -413,9 +418,75 @@ namespace SoundproofWalls {
             AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_REFLECTIONS_DELAY, reflectionsDelay);
             AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_LATE_REVERB_GAIN, lateReverbGain);
             AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_LATE_REVERB_DELAY, lateReverbDelay);
-            AlEffects.Effecti(reverbEffectId, AlEffects.AL_REVERB_DECAY_HFLIMIT, Al.True);
-            int alError;
-            if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to apply parameters for reverb effect ID: {reverbEffectId}, {Al.GetErrorString(alError)}");
+            AlEffects.Effecti(reverbEffectId, AlEffects.AL_REVERB_DECAY_HFLIMIT, Al.True); // Keep HF limit ON
+
+            if ((error = Al.GetError()) != Al.NoError)
+            {
+                DebugConsole.NewMessage($"[SoundproofWalls] Error applying room reverb params for effect ID: {reverbEffectId}, {Al.GetErrorString(error)}");
+            }
+        }
+
+        public static void UpdateReverbEffectForWater(uint reverbEffectId)
+        {
+            if (!AlEffects.IsInitialized) return;
+
+            float targetReverbGain = ConfigManager.Config.ReverbWaterTargetGain;
+
+            // Decay Time
+            float decayTime = 20.0f;
+            decayTime = Math.Clamp(decayTime, 0.1f, 20.0f);
+
+            // Decay HF Ratio
+            float decayHfRatio = 0.1f; // Make high frequencies die out very quickly
+            decayHfRatio = Math.Clamp(decayHfRatio, 0.1f, 1.0f);
+
+            // Reflections Gain: Strong reflection from the ice ceiling or seabed.
+            float reflectionsGain = 0.42f;
+            reflectionsGain = Math.Clamp(reflectionsGain, 0.0f, 3.16f);
+
+            // Reflections Delay: Represents distance to the nearest large reflector (ice/seabed).
+            float reflectionsDelay = 0.3f;
+            reflectionsDelay = Math.Clamp(reflectionsDelay, 0.05f, 0.3f);
+
+            // Late Reverb Gain: Must be strong enough to support the very long decay time.
+            float lateReverbGain = targetReverbGain * 1.5f; // Boost relative to main gain
+            lateReverbGain = Math.Clamp(lateReverbGain, 0.0f, 10.0f);
+
+            // Late Reverb Delay: Long delay after initial reflection = vastness.
+            float lateReverbDelay = 0.1f; 
+            lateReverbDelay = Math.Clamp(lateReverbDelay, 0.05f, 0.1f);
+
+            // Diffusion: Very low for open water, less "smooth", more echo-like.
+            float diffusion = 0.25f;
+            diffusion = Math.Clamp(diffusion, 0.0f, 1.0f);
+
+            // Density: Below 1 for potential resonant "booming" or "hollowness" of deep water.
+            float density = 0.9f;
+            density = Math.Clamp(density, 0.0f, 1.0f);
+
+            // Gain HF: Overall reduction in high frequencies due to water absorption effect.
+            float gainHf = 0.04f; // Cut highs significantly
+            gainHf = Math.Clamp(gainHf, 0.0f, 1.0f);
+
+            Al.GetError();
+            int error;
+
+            AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_DENSITY, density);
+            AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_DIFFUSION, diffusion);
+            AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_GAIN, targetReverbGain); // Wet/Dry
+            AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_GAINHF, gainHf);
+            AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_DECAY_TIME, decayTime);
+            AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_DECAY_HFRATIO, decayHfRatio);
+            AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_REFLECTIONS_GAIN, reflectionsGain);
+            AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_REFLECTIONS_DELAY, reflectionsDelay);
+            AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_LATE_REVERB_GAIN, lateReverbGain);
+            AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_LATE_REVERB_DELAY, lateReverbDelay);
+            AlEffects.Effecti(reverbEffectId, AlEffects.AL_REVERB_DECAY_HFLIMIT, Al.True); // Keep HF limit ON
+
+            if ((error = Al.GetError()) != Al.NoError)
+            {
+                DebugConsole.NewMessage($"[SoundproofWalls] Error applying water reverb params for effect ID: {reverbEffectId}, {Al.GetErrorString(error)}");
+            }
         }
     }
 }
