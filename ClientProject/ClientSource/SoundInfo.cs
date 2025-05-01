@@ -41,8 +41,12 @@ namespace SoundproofWalls
         // The sound being played.
         private SoundChannel channel;
 
+        public float MuffleStrength { get { return gainMultHF; } }
+        public bool Ignored { get { return ignoreAll; } }
         private float gainMultHF;
+        private float trailingGainMultHF;
         private float gainMultLF;
+        private float trailingGainMultLF;
         private List<Obstruction> obstructions = new List<Obstruction>();
         private List<SoundInfo> clones = new List<SoundInfo>();
         private float euclideanDistance;
@@ -383,12 +387,10 @@ namespace SoundproofWalls
                 strength = obstructionStrengths[i] * mult;
                 r = 1 - multHf;
                 multHf += r * strength; // The strength multiplier of each obstruction is applied to the remainder only.
-                if (config.AutoAttenuateMuffledSounds)
-                {
-                    multLf += strength / 3; // Volume of low frequencies reaches 0 when the combined obstruction strength hits 3 (arbitrary limit)
-                }
-                if (config.AutoAttenuateMuffledSounds && multLf >= 1 && multHf >= 0.99 || !config.AutoAttenuateMuffledSounds && multHf >= 0.99) { break; } // No point continuing.
+                multLf += strength / 3; // Volume of low frequencies reaches 0 when the combined obstruction strength hits 3 (arbitrary limit)
+                if (multLf >= 1 && multHf >= 0.99) { break; } // No point continuing.
             }
+            if (!config.AutoAttenuateMuffledSounds) { multLf = 0; }
             gainMultHF = Math.Clamp(multHf, 0, 1);
             gainMultLF = Math.Clamp(multLf, 0, 1);
 
@@ -424,12 +426,27 @@ namespace SoundproofWalls
         {
             if (Plugin.EffectsManager == null) return;
 
-            float gainHf = 1 - gainMultHF;
-            float gainLf = 1 - gainMultLF;
-            
+            float targetGainHf = 1 - gainMultHF;
+            float targetGainLf = 1 - gainMultLF;
+
+            if (channel.Looping)
+            {
+                float rate = 0.1f;
+                float gainDiff = targetGainHf - trailingGainMultHF;
+                trailingGainMultHF += Math.Abs(gainDiff) < rate ? gainDiff : Math.Sign(gainDiff) * rate;
+
+                gainDiff = targetGainLf - trailingGainMultLF;
+                trailingGainMultLF += Math.Abs(gainDiff) < rate ? gainDiff : Math.Sign(gainDiff) * rate;
+            }
+            else
+            {
+                trailingGainMultHF = targetGainHf;
+                trailingGainMultLF = targetGainLf;
+            }
+
             uint sourceId = channel.Sound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
-            Plugin.EffectsManager.UpdateSourceLowpass(sourceId, gainHf, gainLf);
-            Plugin.EffectsManager.RouteSourceToEnvironment(sourceId, Listener.CurrentHull != null);
+            Plugin.EffectsManager.UpdateSourceLowpass(sourceId, trailingGainMultHF, trailingGainMultLF);
+            Plugin.EffectsManager.RouteSourceToEnvironment(sourceId, Listener.CurrentHull != null && soundHull != null);
         }
 
         private void UpdateObstructions()
@@ -831,6 +848,7 @@ namespace SoundproofWalls
 
             float mult = 1;
             float currentGain = itemComp?.GetSoundVolume(itemComp.loopingSound) ?? channel.Gain;
+            bool looping = true;
 
             mult += gainMult - 1;
 
@@ -857,6 +875,7 @@ namespace SoundproofWalls
             // Single (non-looping sound).
             else
             {
+                looping = false;
                 mult += MathHelper.Lerp(1, config.MuffledSoundVolumeMultiplier, gainMultHF) - 1;
                 if (bothInWater) mult += config.SubmergedVolumeMultiplier - 1;
                 else if (eavesdropped) mult += config.EavesdroppingSoundVolumeMultiplier - 1;
@@ -876,10 +895,11 @@ namespace SoundproofWalls
 
             float targetGain = currentGain * mult;
 
-            if (channel.Looping && Plugin.Sidechain.SidechainMultiplier <= 0)
+            if (looping && Plugin.Sidechain.SidechainMultiplier <= 0)
             {
-                float gainDiff = targetGain - channel.Gain;
+                float gainDiff = targetGain - Gain;
                 Gain += Math.Abs(gainDiff) < 0.1f ? gainDiff : Math.Sign(gainDiff) * 0.1f;
+                LuaCsLogger.Log($"targetGain {targetGain} Gain {Gain}");
             }
             else
             {
@@ -903,7 +923,7 @@ namespace SoundproofWalls
             }
 
             float mult = 1;
-            bool single = false;
+            bool looping = true;
 
             // Voice.
             if (!audioIsSound)
@@ -924,7 +944,7 @@ namespace SoundproofWalls
             // Single (non-looping sound).
             else
             {
-                single = true;
+                looping = false;
                 mult = MathHelper.Lerp(config.UnmuffledSoundPitchMultiplier, config.MuffledSoundPitchMultiplier, gainMultHF);
 
                 if (config.PitchSoundsByDistance) // Additional pitching based on distance and muffle strength.
@@ -940,9 +960,17 @@ namespace SoundproofWalls
                 if (Listener.IsWearingDivingSuit) mult += config.DivingSuitPitchMultiplier - 1;
             }
 
-            //TODO can I make single sounds be processed multiple times?
-            if (single) Pitch *= mult; // Maintain any pre-existing pitch adjustments to a non-looping sound.
-            else Pitch = 1 * mult; // Sounds that are processed multiple times are multiplied by 1.
+            float targetPitch = !looping ? Pitch * mult : 1 * mult;
+
+            if (looping)
+            {
+                float pitchDiff = targetPitch - Pitch;
+                Pitch += Math.Abs(pitchDiff) < 0.1f ? pitchDiff : Math.Sign(pitchDiff) * 0.1f;
+            }
+            else
+            {
+                Pitch = targetPitch;
+            }
         }
 
         private void UpdateFlowFireObstructions()

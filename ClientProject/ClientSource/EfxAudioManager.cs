@@ -1,4 +1,5 @@
 ﻿using Barotrauma;
+using Barotrauma.Sounds;
 using OpenAL;
 
 namespace SoundproofWalls {
@@ -19,6 +20,8 @@ namespace SoundproofWalls {
 
         private double LastReverbUpdateTime = 0;
         private double ReverbUpdateInterval = 0.2f;
+
+        private float AirReverbGain = ConfigManager.Config.ReverbAirTargetGain;
 
         /// <summary>
         /// Initializes auxiliary effect slots, reverb effects, and the source filter dictionary.
@@ -359,18 +362,52 @@ namespace SoundproofWalls {
             DebugConsole.NewMessage($"[SoundproofWalls] EfxAudioManager disposed successfully");
         }
 
-        public static void UpdateReverbEffectForRoom(uint reverbEffectId)
+        public void UpdateReverbEffectForRoom(uint reverbEffectId)
         {
             if (!AlEffects.IsInitialized) return;
 
-            float roomSizeFactor = Listener.ConnectedArea / 180000;
-            float reverbGainMult = Listener.IsSubmerged ? 1.3f : 1.0f;
+            // Calculate the strength of the reverb effect based on aggregated looping sound amplitude, gain, and player submersion.
+            SoundChannel[] playingChannels = GameMain.SoundManager.playingChannels[0]; // Index 0 is sounds while 1 is voice (cite SourcePoolIndex enum) yeah I guess I'm citing stuff in code comments now...
+            float totalAudioAmplitude = 0;
+            for (int i = 0; i < playingChannels.Length; i++)
+            {
+                if (playingChannels[i] != null && playingChannels[i].IsPlaying)
+                {
+                    if (playingChannels[i].Looping && SoundInfoManager.TryGetSoundInfo(playingChannels[i], out SoundInfo? info) && info != null && !info.Ignored)
+                    {
+                        float sidechainMult = Plugin.Sidechain.SidechainMultiplier;
+                        if (sidechainMult >= 1) { sidechainMult = 0.99f; }
 
-            float targetReverbGain = ConfigManager.Config.ReverbAirTargetGain * reverbGainMult;
+                        float gain = playingChannels[i].Gain;
+                        if (gain <= 0) { gain = 0.01f; }
+
+                        gain /= 1 - sidechainMult; // Undo gain adjustments from sidechain multiplier for audio amplitude calculation.
+
+                        float amplitude = playingChannels[i].CurrentAmplitude;
+
+                        float muffleMult = 1 - info.MuffleStrength;
+
+                        //LuaCsLogger.Log($"{Path.GetFileName(playingChannels[i].Sound.Filename)} gain: {gain} * amplitude {amplitude} * muffleMult {muffleMult} = totalAudioAmplitude {totalAudioAmplitude}");
+                        totalAudioAmplitude += amplitude * gain * muffleMult;
+                    }
+                }
+            }
+            float amplitudeMult = 1f - MathUtils.InverseLerp(0.0f, 1.4f, totalAudioAmplitude);
+            float submersionMult = Listener.IsSubmerged ? 1.3f : 1.0f;
+            float targetReverbGain = ConfigManager.Config.ReverbAirTargetGain * amplitudeMult * submersionMult;
+            
             targetReverbGain = Math.Clamp(targetReverbGain, 0.0f, 1.0f);
 
+            float gainDiff = targetReverbGain - AirReverbGain;
+            AirReverbGain += Math.Abs(gainDiff) < 0.01f ? gainDiff : Math.Sign(gainDiff) * 0.01f;
+
+            // Influences decay and delay times.
+            float roomSizeFactor = Listener.ConnectedArea / 180000; // Arbitrary magic number that seems to work well.
+
+            //LuaCsLogger.Log($" targetReverbGain: {targetReverbGain} actualReverbGain: {ReverbGain} playingChannelMult: {playingChannelMult} totalAudioAmplitude: {totalAudioAmplitude}");
+
             // Decay Time
-            float decayTime = 3.5f + (roomSizeFactor * 1.0f);
+            float decayTime = 3.1f + (roomSizeFactor * 1.0f);
             decayTime = Math.Clamp(decayTime, 0.1f, 20.0f); 
 
             // Decay HF Ratio
@@ -386,7 +423,7 @@ namespace SoundproofWalls {
             reflectionsDelay = Math.Clamp(reflectionsDelay, 0.005f, 0.1f); // Sensible bounds
 
             // Late Reverb Gain: Tail of the reverb
-            float lateReverbGain = targetReverbGain * 1.8f; // Make tail prominent relative to overall gain
+            float lateReverbGain = AirReverbGain * 1.8f; // Make tail prominent relative to overall gain
             lateReverbGain = Math.Clamp(lateReverbGain, 0.0f, 10.0f);
 
             // Late Reverb Delay
@@ -410,7 +447,7 @@ namespace SoundproofWalls {
 
             AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_DENSITY, density);
             AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_DIFFUSION, diffusion);
-            AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_GAIN, targetReverbGain);
+            AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_GAIN, AirReverbGain);
             AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_GAINHF, gainHf);
             AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_DECAY_TIME, decayTime);
             AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_DECAY_HFRATIO, decayHfRatio);
@@ -426,7 +463,7 @@ namespace SoundproofWalls {
             }
         }
 
-        public static void UpdateReverbEffectForWater(uint reverbEffectId)
+        public void UpdateReverbEffectForWater(uint reverbEffectId)
         {
             if (!AlEffects.IsInitialized) return;
 

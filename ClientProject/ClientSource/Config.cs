@@ -57,7 +57,7 @@ namespace SoundproofWalls
 
         // DynamicFx
         public bool ReverbEnabled { get; set; } = true;
-        public float ReverbAirTargetGain { get; set; } = 0.6f;
+        public float ReverbAirTargetGain { get; set; } = 0.45f;
         public float ReverbWaterTargetGain { get; set; } = 0.4f;
         public bool OccludeSounds { get; set; } = true; // Enable muffle strength from wall occlusion.
         public bool AutoAttenuateMuffledSounds { get; set; } = true; // Should the volume of the lower frequencies (not just the high freqs) be attenuated with muffle strength.
@@ -128,7 +128,7 @@ namespace SoundproofWalls
         // Pitch settings
         public bool PitchSoundsByDistance { get; set; } = true;
         public float DivingSuitPitchMultiplier { get; set; } = 1f;
-        public float SubmergedPitchMultiplier { get; set; } = 0.9f;
+        public float SubmergedPitchMultiplier { get; set; } = 0.5f;
         public float MuffledSoundPitchMultiplier { get; set; } = 1f; // Strength of the distance-based pitch effect on muffled non-looping sounds.
         public float MuffledLoopingPitchMultiplier { get; set; } = 1f;
         public float UnmuffledSoundPitchMultiplier { get; set; } = 1f;
