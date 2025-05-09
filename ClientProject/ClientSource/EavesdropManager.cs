@@ -13,7 +13,8 @@ namespace SoundproofWalls
 
         static Sound? EavesdroppingAmbienceDryRoomSound;
         static Sound? EavesdroppingAmbienceWetRoomSound;
-        static SoundChannel? EavesdroppingAmbienceSoundChannel;
+        static SoundChannel? EavesdroppingAmbienceDryRoomChannel;
+        static SoundChannel? EavesdroppingAmbienceWetRoomChannel;
         static List<Sound> EavesdroppingActivationSounds = new List<Sound>();
 
         public static void Update()
@@ -26,19 +27,22 @@ namespace SoundproofWalls
 
             else if (shouldFadeOut)
             {
-                EavesdroppingTextAlpha = Math.Clamp(EavesdroppingTextAlpha - 15, 0, 255);
-                Efficiency = Math.Clamp(Efficiency - 0.04f, 0, 1);
+                float textChange = 255 / (ConfigManager.Config.EavesdroppingTransitionDuration * 60);
+                EavesdroppingTextAlpha = Math.Clamp(EavesdroppingTextAlpha - textChange * 6, 0, 255);
+                Efficiency = Math.Clamp(Efficiency - (1 / (ConfigManager.Config.EavesdroppingTransitionDuration * 60) * 3), 0, 1);
             }
             else if (!shouldFadeOut)
             {
                 PlayEavesdroppingActivationSound();
-                EavesdroppingTextAlpha = Math.Clamp(EavesdroppingTextAlpha + 15, 0, 255);
-                Efficiency = Math.Clamp(Efficiency + 1 / (ConfigManager.Config.EavesdroppingFadeDuration * 60), 0, 1);
+                float textChange = 255 / (ConfigManager.Config.EavesdroppingTransitionDuration * 60);
+                EavesdroppingTextAlpha = Math.Clamp(EavesdroppingTextAlpha + textChange * 6, 0, 255);
+                Efficiency = Math.Clamp(Efficiency + 1 / (ConfigManager.Config.EavesdroppingTransitionDuration * 60), 0, 1);
             }
         }
 
         public static void Dispose()
         {
+            // Disposing the sounds also kills the channels.
             EavesdroppingAmbienceDryRoomSound?.Dispose();
             EavesdroppingAmbienceWetRoomSound?.Dispose();
             EavesdroppingAmbienceDryRoomSound = null;
@@ -77,7 +81,7 @@ namespace SoundproofWalls
                 SoundChannel channel = eavesdropSound.Play(null, 1, muffle: false); //SoundPlayer.PlaySound(eavesdropSound, Character.Controlled.Position, volume: 10, ignoreMuffling: true);
                 if (channel != null && channel.Sound != null)
                 {
-                    channel.Gain = 1;
+                    channel.Gain = 1.0f;
                     channel.FrequencyMultiplier = random.Range(0.8f, 1.2f);
                 }
             }
@@ -87,40 +91,67 @@ namespace SoundproofWalls
         {
             Sound? drySound = EavesdroppingAmbienceDryRoomSound;
             Sound? wetSound = EavesdroppingAmbienceWetRoomSound;
-            SoundChannel? channel = EavesdroppingAmbienceSoundChannel;
+            SoundChannel? dryChannel = EavesdroppingAmbienceDryRoomChannel;
+            SoundChannel? wetChannel = EavesdroppingAmbienceWetRoomChannel;
+
+            float maxPitch = 0.75f;
 
             Hull? eavesdroppedHull = Listener.EavesdroppedHull;
-            bool isPlaying = channel != null && channel.Sound != null && channel.IsPlaying;
-            bool isDry = eavesdroppedHull?.WaterPercentage < 50;
-            Sound? correctSound = isDry ? drySound : wetSound;
-            bool matchesEnvironment = isPlaying ? channel!.Sound == correctSound : true;
+            float waterRatio = eavesdroppedHull?.WaterPercentage / 100 ?? 1;
 
-            bool shouldPlay = matchesEnvironment && Efficiency > 0;
+            bool isPlayingDry = dryChannel != null && dryChannel.Sound != null && dryChannel.IsPlaying;
+            bool isPlayingWet = wetChannel != null && wetChannel.Sound != null && wetChannel.IsPlaying;
 
-            if (correctSound == null || !shouldPlay && !isPlaying)
+            bool shouldPlayDry = drySound != null && Efficiency > 0 && waterRatio < 1;
+            bool shouldPlayWet = wetSound != null && Efficiency > 0 && waterRatio > 0;
+
+            // Do nothing.
+            if (!shouldPlayDry && !isPlayingDry && !shouldPlayWet && !isPlayingWet) { return; }
+
+            // Start playing.
+            if (shouldPlayDry && !isPlayingDry)
             {
-                return;
+                dryChannel = SoundPlayer.PlaySound(drySound, new Vector2(GameMain.SoundManager.ListenerPosition.X, GameMain.SoundManager.ListenerPosition.Y), volume: 0.01f, freqMult: MathHelper.Lerp(0.25f, maxPitch, Efficiency), ignoreMuffling: true);
+                if (dryChannel != null && dryChannel.Sound != null) { dryChannel.Looping = true; }
             }
-            if (shouldPlay && !isPlaying)
+            if (shouldPlayWet && !isPlayingWet)
             {
-                channel = SoundPlayer.PlaySound(correctSound, new Vector2(GameMain.SoundManager.ListenerPosition.X, GameMain.SoundManager.ListenerPosition.Y), volume: 0.1f, freqMult: MathHelper.Lerp(0.25f, 0.75f, Efficiency), ignoreMuffling: true);
-                if (channel != null && channel.Sound != null) { channel.Looping = true; }
-            }
-            else if (shouldPlay && isPlaying)
-            {
-                channel.FrequencyMultiplier = MathHelper.Lerp(0.25f, 0.75f, Math.Clamp(Efficiency * 1, 0, 1));
-                channel.Gain = MathHelper.Lerp(0.1f, 1, Math.Clamp(Efficiency * 3, 0, 1));
-            }
-            else if (!shouldPlay && isPlaying)
-            {
-                channel.Looping = false;
-                channel.FrequencyMultiplier = 1;
-                channel.Gain = 0;
-                channel.Dispose();
-                channel = null;
+                wetChannel = SoundPlayer.PlaySound(wetSound, new Vector2(GameMain.SoundManager.ListenerPosition.X, GameMain.SoundManager.ListenerPosition.Y), volume: 0.01f, freqMult: MathHelper.Lerp(0.25f, maxPitch, Efficiency), ignoreMuffling: true);
+                if (wetChannel != null && wetChannel.Sound != null) { wetChannel.Looping = true; }
             }
 
-            EavesdroppingAmbienceSoundChannel = channel;
+            // Update playing.
+            if (shouldPlayDry && isPlayingDry)
+            {
+                dryChannel!.FrequencyMultiplier = MathHelper.Lerp(0.25f, maxPitch, Efficiency);
+                dryChannel.Gain = MathHelper.Lerp(0.1f, 1 - waterRatio, Math.Clamp(Efficiency * 3, 0, 1));
+            }
+            if (shouldPlayWet && isPlayingWet)
+            {
+                wetChannel!.FrequencyMultiplier = MathHelper.Lerp(0.25f, maxPitch, Efficiency);
+                wetChannel.Gain = MathHelper.Lerp(0.1f, waterRatio, Math.Clamp(Efficiency * 3, 0, 1));
+            }
+
+            // Stop playing.
+            if (!shouldPlayDry && isPlayingDry)
+            {
+                dryChannel!.Looping = false;
+                dryChannel.FrequencyMultiplier = 1;
+                dryChannel.Gain = 0;
+                dryChannel.Dispose();
+                dryChannel = null;
+            }
+            if (!shouldPlayWet && isPlayingWet)
+            {
+                wetChannel!.Looping = false;
+                wetChannel.FrequencyMultiplier = 1;
+                wetChannel.Gain = 0;
+                wetChannel.Dispose();
+                wetChannel = null;
+            }
+
+            EavesdroppingAmbienceDryRoomChannel = dryChannel;
+            EavesdroppingAmbienceWetRoomChannel = wetChannel;
         }
     }
 }

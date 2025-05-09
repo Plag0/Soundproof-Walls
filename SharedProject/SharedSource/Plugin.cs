@@ -1,4 +1,5 @@
 ﻿using Barotrauma;
+using Barotrauma.Networking;
 using HarmonyLib;
 using System.Runtime.CompilerServices;
 
@@ -60,10 +61,10 @@ namespace SoundproofWalls
         }
 
         public void PreInitPatching() 
-        { 
-
+        {
+            // TODO when this works, load extended/reduced sounds early.
         }
-        
+
         public void Dispose()
         {
             LuaCsLogger.Log("Soundproof Walls: Stop hook started running.");

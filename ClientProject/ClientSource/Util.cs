@@ -4,16 +4,11 @@ using Barotrauma;
 using System.Reflection;
 using Microsoft.Xna.Framework;
 using Barotrauma.Networking;
-using System.ComponentModel;
 
 namespace SoundproofWalls
 {
     public static class Util
     {
-        // The origin of these magic numbers can be found in the vanilla VoipSound class under the initialization of the muffleFilters and radioFilters arrays.
-        public const short VANILLA_VOIP_LOWPASS_FREQUENCY = 800;
-        public const short VANILLA_VOIP_BANDPASS_FREQUENCY = 2000;
-
         public static Config Config { get { return ConfigManager.Config; } }
         public static bool RoundStarted { get { return GameMain.gameSession?.IsRunning ?? false; } }
 
@@ -22,15 +17,22 @@ namespace SoundproofWalls
         {
             if (oldConfig == null) { oldConfig = Config; }
 
-            bool changedEffectModes = oldConfig.EffectProcessingMode != newConfig.EffectProcessingMode;
+            // For adding/removing reduced buffers with the RemoveUnusedBuffers setting.
+            bool oldReducedBuffersEnabled = oldConfig.DynamicFx && oldConfig.RemoveUnusedBuffers;
+            bool newReducedBuffersEnabled = newConfig.DynamicFx && newConfig.RemoveUnusedBuffers;
+            bool shouldReloadReducedBuffers = oldReducedBuffersEnabled && !newReducedBuffersEnabled || !oldReducedBuffersEnabled && newReducedBuffersEnabled;
 
+            // For adding/removing extended buffers.
+            bool shouldReloadExtendedBuffers = oldConfig.StaticFx && !newConfig.StaticFx || !oldConfig.StaticFx && newConfig.StaticFx;
+
+            // For frequency changes in static/classic mode.
             double vanillaFreq = SoundPlayer.MuffleFilterFrequency;
 
             bool oldStaticFx = oldConfig.Enabled && oldConfig.StaticFx;
             bool newStaticFx = newConfig.Enabled && newConfig.StaticFx;
 
-            bool oldUsingMuffleBuffer = oldConfig.Enabled && !oldConfig.DynamicFx;
-            bool newUsingMuffleBuffer = newConfig.Enabled && !newConfig.DynamicFx;
+            bool oldUsingMuffleBuffer = oldConfig.Enabled && (!oldConfig.DynamicFx || oldConfig.DynamicFx && !oldConfig.RemoveUnusedBuffers);
+            bool newUsingMuffleBuffer = newConfig.Enabled && (!newConfig.DynamicFx || newConfig.DynamicFx && !newConfig.RemoveUnusedBuffers);
 
             double oldHeavyFreq = oldUsingMuffleBuffer ? oldConfig.HeavyLowpassFrequency : vanillaFreq;
             double oldMediumFreq = oldStaticFx ? oldConfig.MediumLowpassFrequency : vanillaFreq;
@@ -40,7 +42,7 @@ namespace SoundproofWalls
             double newMediumFreq = newStaticFx ? newConfig.MediumLowpassFrequency : vanillaFreq;
             double newLightFreq = newStaticFx ? newConfig.LightLowpassFrequency : vanillaFreq;
 
-            return changedEffectModes ||
+            return shouldReloadExtendedBuffers || shouldReloadReducedBuffers ||
                    oldHeavyFreq != newHeavyFreq ||
                    oldMediumFreq != newMediumFreq ||
                    oldLightFreq != newLightFreq;
@@ -56,7 +58,7 @@ namespace SoundproofWalls
                     !oldConfig.LowpassIgnoredSounds.SetEquals(newConfig.LowpassIgnoredSounds) ||
                     !oldConfig.LowpassForcedSounds.SetEquals(newConfig.LowpassForcedSounds) ||
                     !oldConfig.ContainerIgnoredSounds.SetEquals(newConfig.ContainerIgnoredSounds) ||
-                    !oldConfig.WallIgnoredSounds.SetEquals(newConfig.WallIgnoredSounds) ||
+                    !oldConfig.PathIgnoredSounds.SetEquals(newConfig.PathIgnoredSounds) ||
                     !oldConfig.PropagatingSounds.SetEquals(newConfig.PropagatingSounds) ||
                     !oldConfig.SurfaceIgnoredSounds.SetEquals(newConfig.SurfaceIgnoredSounds) ||
                     !oldConfig.SubmersionIgnoredSounds.SetEquals(newConfig.SubmersionIgnoredSounds);
@@ -337,6 +339,22 @@ namespace SoundproofWalls
             if (posHull?.Submarine != null)
             {
                 localPos += -posHull.Submarine.WorldPosition + posHull.Submarine.HiddenSubPosition;
+            }
+            else
+            {
+                Submarine closestSub = Submarine.MainSub;
+                if (closestSub == null) { return localPos; }
+
+                float shortestDistToSub = Vector2.Distance(Listener.WorldPos, closestSub.WorldPosition);
+                foreach (Submarine sub in Submarine.MainSubs)
+                {
+                    if (sub != null && 
+                        sub != closestSub && 
+                        Vector2.Distance(Listener.WorldPos, sub.WorldPosition) < shortestDistToSub)
+                    { closestSub = sub; }
+                }
+
+                localPos += -closestSub.WorldPosition + closestSub.HiddenSubPosition;
             }
 
             return localPos;

@@ -10,7 +10,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using OpenAL;
 using Barotrauma.Extensions;
-using System.Threading.Channels;
 
 namespace SoundproofWalls
 {
@@ -196,14 +195,21 @@ namespace SoundproofWalls
             harmony.Patch(
                 typeof(SoundChannel).GetMethod(nameof(SoundChannel.Dispose)),
                 new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_SoundChannel_Dispose))));
-#if !LINUX
+
+            // MoveCamera postfix.
+            // Zooms in slightly when eavesdropping.
+            harmony.Patch(
+                typeof(Camera).GetMethod(nameof(Camera.MoveCamera)),
+                null,
+                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_MoveCamera))));
+
             // Draw prefix.
-            // Displays the eavesdropping text.
+            // Displays the eavesdropping text, eavesdropping vignette, and processing mode tooltip.
             // Bug note: a line in this method causes MonoMod to crash on Linux due to an unmanaged PAL_SEHException https://github.com/dotnet/runtime/issues/78271
             harmony.Patch(
                 typeof(GUI).GetMethod(nameof(GUI.Draw)),
                 new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_Draw))));
-#endif
+
             // TogglePauseMenu postfix.
             // Displays menu button and updates the config when the menu is closed.
             harmony.Patch(
@@ -347,12 +353,12 @@ namespace SoundproofWalls
 
         public static bool SPW_LoadCustomOggSound(SoundManager __instance, string filename, bool stream, ref Sound __result)
         {
-            if (!Config.Enabled ||
-                Config.VanillaFx ||
-                (!filename.IsNullOrEmpty() &&
-                (Config.StaticFx && Util.StringHasKeyword(filename, SoundInfoManager.IgnoredPrefabs) ||
-                Util.StringHasKeyword(filename, CustomSoundPaths.Values.ToHashSet()))))
-            { return true; }
+            bool badFilename = !filename.IsNullOrEmpty() && (Config.StaticFx && Util.StringHasKeyword(filename, SoundInfoManager.IgnoredPrefabs) || Util.StringHasKeyword(filename, CustomSoundPaths.Values.ToHashSet()));
+            if (badFilename ||
+                !Config.Enabled ||
+                Config.ClassicFx ||
+                Config.DynamicFx && !Config.RemoveUnusedBuffers)
+            { return true; } // Run original method.
 
             if (__instance.Disabled) { return false; }
 
@@ -393,7 +399,7 @@ namespace SoundproofWalls
 
         public static bool SPW_LoadCustomOggSound(SoundManager __instance, ContentXElement element, bool stream, string overrideFilePath, ref Sound __result)
         {
-            if (!Config.Enabled || Config.VanillaFx) { return true; }
+            if (!Config.Enabled || Config.ClassicFx || Config.DynamicFx && !Config.RemoveUnusedBuffers) { return true; }
             if (__instance.Disabled) { return false; }
 
             string filePath = overrideFilePath ?? element.GetAttributeContentPath("file")?.Value ?? "";
@@ -441,17 +447,34 @@ namespace SoundproofWalls
             return false;
         }
 
+        public static void SPW_MoveCamera(Camera __instance, float deltaTime, bool allowMove = true, bool allowZoom = true, bool allowInput = true, bool? followSub = null)
+        {
+            if (!Config.Enabled || !Config.EavesdroppingEnabled || !allowZoom) { return; }
+
+            // Sync with the text for simplicity.
+            float activationMult = EavesdropManager.EavesdroppingTextAlpha / 255;
+
+            float zoomAmount = __instance.DefaultZoom - ((1 - Config.EavesdroppingZoomMultiplier) * activationMult);
+
+            __instance.globalZoomScale = zoomAmount;
+        }
+
         public static bool SPW_Draw(ref Camera cam, ref SpriteBatch spriteBatch)
         {
-            //GUIButton frameHolder = new GUIButton(new RectTransform(Vector2.One, GUI.Canvas, Anchor.Center), style: null);
-            //new GUIFrame(new RectTransform(GUI.Canvas.RelativeSize, frameHolder.RectTransform, Anchor.Center), style: "GUIBackgroundBlocker");
+            // Eavesdropping vignette.
+            GUIButton vignetteHolder = new GUIButton(new RectTransform(Vector2.One, GUI.Canvas, Anchor.Center), style: null);
+            GUIFrame vignette = new GUIFrame(new RectTransform(GUI.Canvas.RelativeSize, vignetteHolder.RectTransform, Anchor.Center), style: "GUIBackgroundBlocker");
+            int vignetteOpacity = (int)(EavesdropManager.EavesdroppingTextAlpha * Config.EavesdroppingVignetteOpacityMultiplier);
+            vignette.Color = new Color(0, 0, 0, vignetteOpacity);
+            vignette.Draw(spriteBatch);
 
+            // Processing mode tooltip.
             GUIFrame? frame = Menu.currentMenuFrame;
             if (frame != null && GUIComponent.toolTipBlock != null && GUIComponent.toolTipBlock.Text == TextManager.Get("spw_effectprocessingmodetooltip"))
             {
                 float padding = 30;
                 RichString menuText = "";
-                if (Menu.NewLocalConfig.VanillaFx) { menuText = TextManager.Get("spw_vanillafxtooltip"); }
+                if (Menu.NewLocalConfig.ClassicFx) { menuText = TextManager.Get("spw_vanillafxtooltip"); }
                 else if (Menu.NewLocalConfig.StaticFx) { menuText = TextManager.Get("spw_staticfxtooltip"); }
                 else if (Menu.NewLocalConfig.DynamicFx) { menuText = TextManager.Get("spw_dynamicfxtooltip"); }
                 GUIComponent.DrawToolTip(spriteBatch, menuText, new Vector2(frame.Rect.X + frame.Rect.Width + padding, frame.Rect.Y));
@@ -460,13 +483,13 @@ namespace SoundproofWalls
             Character character = Character.Controlled;
             if (character == null || cam == null) { return true; }
 
+            // Eavesdropping text.
             Limb limb = Util.GetCharacterHead(character);
-            Vector2 position = cam.WorldToScreen(limb.body.DrawPosition + new Vector2(0, 42));
+            Vector2 position = cam.WorldToScreen(limb.body.DrawPosition + new Vector2(0, 40));
             LocalizedString text = TextManager.Get("spw_listening");
-            float size = 1.4f;
+            float size = 1.6f;
             Color color = new Color(224, 214, 164, (int)EavesdropManager.EavesdroppingTextAlpha);
             GUIFont font = GUIStyle.Font;
-
             font.DrawString(spriteBatch, text, position, color, 0, Vector2.Zero,
                 cam.Zoom / size, 0, 0.001f, Alignment.Center);
 
@@ -669,7 +692,7 @@ namespace SoundproofWalls
         private static BiQuad voipMediumMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, Config.MediumLowpassFrequency);
         private static BiQuad voipHeavyMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, Config.VoiceHeavyLowpassFrequency);
         private static RadioFilter voipCustomRadioFilter = new RadioFilter(VoipConfig.FREQUENCY, Config.RadioBandpassFrequency, Config.RadioBandpassQualityFactor, Config.RadioDistortion, Config.RadioStatic, Config.RadioCompressionThreshold, Config.RadioCompressionRatio);
-        private static BiQuad voipVanillaRadioFilter = new BandpassFilter(VoipConfig.FREQUENCY, Util.VANILLA_VOIP_BANDPASS_FREQUENCY);
+        private static BiQuad voipVanillaRadioFilter = new BandpassFilter(VoipConfig.FREQUENCY, SoundInfoManager.VANILLA_VOIP_BANDPASS_FREQUENCY);
         public static bool SPW_VoipSound_ApplyFilters_Prefix(VoipSound __instance, ref short[] buffer, ref int readSamples)
         {
             VoipSound voipSound = __instance;
@@ -1069,7 +1092,7 @@ namespace SoundproofWalls
             }
 
             // We don't want to modify anything if the vanilla game is constructing a filter.
-            else if (__instance.GetType() == typeof(BandpassFilter) && frequency != Util.VANILLA_VOIP_BANDPASS_FREQUENCY)
+            else if (__instance.GetType() == typeof(BandpassFilter) && frequency != SoundInfoManager.VANILLA_VOIP_BANDPASS_FREQUENCY)
             {
                 q = Config.RadioBandpassQualityFactor;
             }
@@ -1114,6 +1137,12 @@ namespace SoundproofWalls
                 DebugConsole.ThrowError("Failed to get source's playback position: " + instance.debugName + ", " + Al.GetErrorString(alError), appendStackTrace: true);
                 return false;
             }
+            
+            // Reset playback pos for looping sounds that have had statixFx reverb applied. Prevents an invalid playback position error.
+            if (soundInfo.StaticIsUsingReverbBuffer && instance.Looping)
+            {
+                playbackPos = 0; 
+            }
 
             Al.SourceStop(alSource);
             alError = Al.GetError();
@@ -1144,6 +1173,16 @@ namespace SoundproofWalls
                     alBuffer = extendedSound.Buffers.AlHeavyMuffledBuffer;
                 }
             }
+            else if (soundInfo.StaticShouldUseReverbBuffer)
+            {
+                alBuffer = extendedSound.Buffers.AlReverbBuffer;
+                soundInfo.StaticIsUsingReverbBuffer = true;
+            }
+            else
+            {
+                soundInfo.StaticIsUsingReverbBuffer = false;
+            }
+
             Al.Sourcei(alSource, Al.Buffer, (int)alBuffer);
 
             alError = Al.GetError();
@@ -1219,6 +1258,16 @@ namespace SoundproofWalls
                     alBuffer = extendedSound.Buffers.AlHeavyMuffledBuffer;
                 }
             }
+            else if (soundInfo.StaticShouldUseReverbBuffer)
+            {
+                alBuffer = extendedSound.Buffers.AlReverbBuffer;
+                soundInfo.StaticIsUsingReverbBuffer = true;
+            }
+            else
+            {
+                soundInfo.StaticIsUsingReverbBuffer = false;
+            }
+
             Al.Sourcei(sourceId, Al.Buffer, (int)alBuffer);
 
             int alError = Al.GetError();
@@ -1621,32 +1670,9 @@ namespace SoundproofWalls
             return false;
         }
 
-        // Mirrors the fire update method. Any changes made to this method should be reflected there.
         public static void SPW_SoundPlayer_UpdateWaterFlowSounds()
         {
-            SoundChannel[] channels = SoundPlayer.flowSoundChannels;
-            bool enableMuffling = Config.MuffleFlowSounds;
-
-            if (!Config.Enabled)
-            {
-                foreach (SoundChannel channel in channels)
-                {
-                    if (channel == null) { continue; }
-                    if (channel.Muffled) { channel.Muffled = false; }
-                    if (channel.FrequencyMultiplier != 1) { channel.FrequencyMultiplier = 1; }
-                }
-
-                return;
-            }
-
-            if (!enableMuffling)
-            {
-                foreach (SoundChannel channel in channels)
-                {
-                    if (channel == null) { continue; }
-                    if (channel.Muffled) { channel.Muffled = false; }
-                }
-            }
+            if (!Config.Enabled) { return; }
 
             for (int i = 0; i < SoundPlayer.flowSoundChannels.Count(); i++)
             {
@@ -1656,32 +1682,9 @@ namespace SoundproofWalls
             }
         }
 
-        // Mirrors the flow update method. Any changes made to this method should be reflected there.
         public static void SPW_SoundPlayer_UpdateFireSounds()
         {
-            SoundChannel[] channels = SoundPlayer.fireSoundChannels;
-            bool enableMuffling = Config.MuffleFireSounds;
-
-            if (!Config.Enabled)
-            {
-                foreach (SoundChannel channel in channels)
-                {
-                    if (channel == null) { continue; }
-                    if (channel.Muffled) { channel.Muffled = false; }
-                    if (channel.FrequencyMultiplier != 1) { channel.FrequencyMultiplier = 1; }
-                }
-
-                return;
-            }
-
-            if (!enableMuffling)
-            {
-                foreach (SoundChannel channel in channels)
-                {
-                    if (channel == null) { continue; }
-                    if (channel.Muffled) { channel.Muffled = false; }
-                }
-            }
+            if (!Config.Enabled) { return; }
 
             for (int i = 0; i < SoundPlayer.fireSoundChannels.Count(); i++)
             {

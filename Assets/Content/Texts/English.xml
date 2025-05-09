@@ -14,7 +14,7 @@
 	<spw_staticfx>Static</spw_staticfx>
 	<spw_staticfxtooltip>Adds two new muffle presets (light and medium) and reverb for certain sounds by creating additional buffers.\nPros:\n• Three total muffle frequencies allow for more nuanced audio\n• Reverb support for non-looping sounds\n\nCons:\n• Longer loading times (~2s) and more memory usage (~250MB)\n•Potential for instability with other sound-based Lua/C# mods (extremely unlikely)</spw_staticfxtooltip>
 	<spw_dynamicfx>Dynamic</spw_dynamicfx>
-	<spw_dynamicfxtooltip>Highly recommended. Uses the OpenAL Effects Extension to simulate advanced audio effects in real-time.\nPros:\n• Unlimited muffle frequencies for maximum variety\n• Muffle strength is determined by advanced factors such as the number of surfaces the sound travelled through\n• Sounds are heard from the direction they came from instead of just their origin point, and can appear to come from multiple directions based on the environment.\n\nCons:\n• Higher CPU load which may impact performance</spw_dynamicfxtooltip>
+	<spw_dynamicfxtooltip>Highly recommended. Uses the OpenAL Effects Extension to simulate advanced audio effects in real-time.\nPros:\n• Effectively unlimited muffle frequencies for more variety\n• Muffle strength is determined by advanced factors such as the number of surfaces the sound travelled through\n• Significantly less audio pops and crackles\n• Sounds are heard from the direction they came from instead of just their origin point, and can appear to come from multiple directions based on the environment.\n\nCons:\n• Higher CPU load which may impact performance</spw_dynamicfxtooltip>
 	<spw_syncsettings>Sync Settings</spw_syncsettings>
 	<spw_syncsettingstooltip>Requires server-side Lua to be running.\nSynchronizes the host/admin's local config file with all players connected to the server (this is achieved by creating a separate config held server-side for players' to inherit. This setting does not modify any local config files)</spw_syncsettingstooltip>
 	<spw_talkingragdolls>Talking Ragdolls</spw_talkingragdolls>
@@ -94,7 +94,7 @@
 	<spw_eavesdroppingenabled>Eavesdropping Enabled</spw_eavesdroppingenabled>
 	<spw_eavesdroppingenabledtooltip>Toggles the player's ability to eavesdrop</spw_eavesdroppingenabledtooltip>
 	<spw_eavesdroppingfade>Eavesdropping Fade</spw_eavesdroppingfade>
-	<spw_eavesdroppingfadetooltip>Play a smooth audio transition and a subtle activation sound when the player starts eavesdropping</spw_eavesdroppingfadetooltip>
+	<spw_eavesdroppingfadetooltip>Smoothly transition audio between hulls when eavesdropping</spw_eavesdroppingfadetooltip>
 	<spw_eavesdroppingfadeduration>Eavesdropping Fade Duration</spw_eavesdroppingfadeduration>
 	<spw_eavesdroppingfadedurationtooltip>The amount of seconds that the eavesdropping fade transition takes</spw_eavesdroppingfadedurationtooltip>
 	<spw_eavesdroppingthreshold>Eavesdropping Threshold</spw_eavesdroppingthreshold>
@@ -142,12 +142,14 @@
 	<spw_customsounds>Custom Sounds</spw_customsounds>
 	<spw_customsoundstooltip>Tweak the volume of any vanilla or modded sounds. Providing a sidechain multiplier above zero will mark the sound(s) for sidechaining, lowering the volume of other sounds by the amount specified (a value of 1 is equal to a 100% volume reduction). The release value controls how many seconds it takes for the sidechain multiplier to decay to back to zero after the sound plays. Sounds in the exclusion list are ignored, allowing for more selective group targeting.</spw_customsoundstooltip>
 	<spw_ignoredsounds>Ignored Sounds</spw_ignoredsounds>
-	<spw_lowpassignoredsounds>Lowpass Ignored Sounds</spw_lowpassignoredsounds>
-	<spw_pitchignoredsounds>Pitch Ignored Sounds</spw_pitchignoredsounds>
-	<spw_pathignoredsounds>Wall Ignored Sounds</spw_pathignoredsounds>
-	<spw_containerignoredsounds>Container Ignored Sounds</spw_containerignoredsounds>
 	<spw_waterignoredsounds>Water Ignored Sounds</spw_waterignoredsounds>
 	<spw_submersionignoredsounds>Submersion Ignored Sounds</spw_submersionignoredsounds>
+	<spw_wallpropagatingsounds>Wall Propagating Sounds</spw_wallpropagatingsounds>
+	<spw_pitchignoredsounds>Pitch Ignored Sounds</spw_pitchignoredsounds>
+	<spw_pathignoredsounds>Wall Ignored Sounds</spw_pathignoredsounds>
+	<spw_lowpassforcedsounds>Lowpass Forced Sounds</spw_lowpassforcedsounds>
+	<spw_lowpassignoredsounds>Lowpass Ignored Sounds</spw_lowpassignoredsounds>
+	<spw_containerignoredsounds>Container Ignored Sounds</spw_containerignoredsounds>
 	<spw_bubbleignorednames>Bubble Ignored Names</spw_bubbleignorednames>
 
 	<spw_hidesettings>Hide Menu Button</spw_hidesettings>

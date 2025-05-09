@@ -6,14 +6,14 @@ namespace SoundproofWalls
     public class Config
     {
         [JsonIgnore]
-        public const uint EFFECT_PROCESSING_VANILLA = 0;
+        public const uint EFFECT_PROCESSING_CLASSIC = 0;
         [JsonIgnore]
         public const uint EFFECT_PROCESSING_STATIC = 1;
         [JsonIgnore]
         public const uint EFFECT_PROCESSING_DYNAMIC = 2;
 
         [JsonIgnore]
-        public bool VanillaFx => EffectProcessingMode == EFFECT_PROCESSING_VANILLA;
+        public bool ClassicFx => EffectProcessingMode == EFFECT_PROCESSING_CLASSIC;
         [JsonIgnore]
         public bool StaticFx => EffectProcessingMode == EFFECT_PROCESSING_STATIC;
         [JsonIgnore]
@@ -44,26 +44,30 @@ namespace SoundproofWalls
         public uint EffectProcessingMode { get; set; } = 2;
         public bool SyncSettings { get; set; } = true;
         public bool TalkingRagdolls { get; set; } = true;
-        public bool FocusTargetAudio { get; set; } = true;
+        public bool FocusTargetAudio { get; set; } = false;
         public double HeavyLowpassFrequency { get; set; } = 200; // Used for wall and water obstructions.
-        public double MediumLowpassFrequency { get; set; } = 700; // Used for eavesdropping.
-        public double LightLowpassFrequency { get; set; } = 1200; // Used for wearing suits, propagating sounds, and path ignored sounds.
         public float SoundRangeMultiplier { get; set; } = 2.0f;
-        public float SoundPropagationRange { get; set; } = 500; // Area^2 that a sound in WallPropagatingSounds can search for a hull to propagate to.
-        public float ComponentMuffleUpdateInterval { get; set; } = 0.2f;
-        public float StatusEffectMuffleUpdateInterval { get; set; } = 0.2f;
-        public float OpenDoorThreshold { get; set; } = 0.1f;
-        public float OpenWallThreshold { get; set; } = 0.33f;
 
         // DynamicFx
-        public bool ReverbEnabled { get; set; } = true;
-        public float ReverbAirTargetGain { get; set; } = 0.45f;
-        public float ReverbWaterTargetGain { get; set; } = 0.4f;
+        public bool RemoveUnusedBuffers { get; set; } = false; // If enabled, sounds are loaded without the vanilla muffle buffer which saves roughly 200MB of memory. Downside is 1-2 seconds of extra loading times.
+        public bool HighFidelityMuffling { get; set; } = false; // Creates a new effect slot with an EQ for each pool of uniquely muffled channels. Higher performance cost over basic lowpass filters.
+        public bool DynamicReverbEnabled { get; set; } = true;
+        public bool DynamicReverbRadio { get; set; } = false;
+        public float DynamicReverbAreaSizeMultiplier { get; set; } = 1.0f;
+        public float DynamicReverbAirTargetGain { get; set; } = 0.40f;
+        public float DynamicReverbWaterTargetGain { get; set; } = 0.30f;
         public bool OccludeSounds { get; set; } = true; // Enable muffle strength from wall occlusion.
         public bool AutoAttenuateMuffledSounds { get; set; } = true; // Should the volume of the lower frequencies (not just the high freqs) be attenuated with muffle strength.
-        public bool TraverseWaterDucts { get; set; } = false; // Should the search algorithm pass through water ducts?
-        public float DynamicMuffleStrengthMultiplier { get; set; } = 1.0f;
+        public float DynamicMuffleStrengthMultiplier { get; set; } = 1.4f;
         public int MaxSimulatedSoundDirections { get; set; } = 0; // How many additional versions of the same sound can be playing simultaneously from different directions.
+
+        // StaticFx
+        public bool StaticReverbEnabled { get; set; } = true;
+        public bool StaticReverbAlwaysOnLoudSounds { get; set; } = true;
+        public int StaticReverbMinArea { get; set; } = 375_000; // The minimum area the listener has to be in for non-looping non-muffled sounds to use reverb buffers.
+        public double MediumLowpassFrequency { get; set; } = 700; // Used for eavesdropping.
+        public double LightLowpassFrequency { get; set; } = 1200; // Used for wearing suits, propagating sounds, and path ignored sounds.
+        
 
         // Voice
         public bool RadioCustomFilterEnabled { get; set; } = true;
@@ -78,11 +82,11 @@ namespace SoundproofWalls
         public float RadioRangeMultiplier { get; set; } = 0.75f;
 
         // Muffle
-        public bool MuffleDivingSuits { get; set; } = true; // Requires StaticEffectProcessing to be on.
-        public bool MuffleEavesdropping { get; set; } = true; // Requires StaticEffectProcessing to be on.
+        public bool MuffleDivingSuits { get; set; } = true; // Not available for Classic mode.
+        public bool MuffleEavesdropping { get; set; } = true; // Not available for Classic mode.
         public bool MuffleSubmergedPlayer { get; set; } = true; // the equivalent of adding all sounds into SubmersionIgnoredSounds
         public bool MuffleSubmergedViewTarget { get; set; } = true; // ^
-        public bool MuffleSubmergedSounds { get; set; } = true; // the equivalent of adding all sounds into SurfaceIgnoredSounds
+        public bool MuffleWaterSurface { get; set; } = true; // the equivalent of adding all sounds into SurfaceIgnoredSounds
         public bool MuffleFlowSounds { get; set; } = true;
         public bool MuffleFireSounds { get; set; } = true;
 
@@ -96,27 +100,31 @@ namespace SoundproofWalls
         public float MuffledVoiceVolumeMultiplier { get; set; } = 0.8f;
         public float MuffledLoopingVolumeMultiplier { get; set; } = 0.75f;
         public float UnmuffledLoopingVolumeMultiplier { get; set; } = 1f;
-        public float SubmergedVolumeMultiplier { get; set; } = 2.5f;
-        public float FlowSoundVolumeMultiplier { get; set; } = 0.9f;
-        public float FireSoundVolumeMultiplier { get; set; } = 1f;
+        public float SubmergedVolumeMultiplier { get; set; } = 3.0f;
+        public float FlowSoundVolumeMultiplier { get; set; } = 0.85f;
+        public float FireSoundVolumeMultiplier { get; set; } = 1.1f;
+        public float VanillaExosuitVolumeMultiplier { get; set; } = 0.0f; // Needs a unique setting instead of being added to CustomSounds because the audio file is shared. Doesn't apply to modded exosuit audio.
 
         // Eavesdropping
         public bool EavesdroppingEnabled { get; set; } = true;
-        public bool EavesdroppingFadeEnabled { get; set; } = true;
+        public bool EavesdroppingTransitionEnabled { get; set; } = true;
+        public bool EavesdroppingDucksRadio { get; set; } = true;
         public string EavesdroppingBind { get; set; } = "SecondaryMouse";
-        public float EavesdroppingSoundVolumeMultiplier { get; set; } = 1.1f;
-        public float EavesdroppingVoiceVolumeMultiplier { get; set; } = 0.9f;
+        public float EavesdroppingSoundVolumeMultiplier { get; set; } = 2.5f;
+        public float EavesdroppingVoiceVolumeMultiplier { get; set; } = 1.5f;
         public float EavesdroppingPitchMultiplier { get; set; } = 1f;
         public int EavesdroppingMaxDistance { get; set; } = 50; // Max distance in cm from gap.
-        public float EavesdroppingFadeDuration { get; set; } = 1.75f;
-        public float EavesdroppingThreshold { get; set; } = 0.3f; // How high Efficiency needs to be before your listening hull swaps.
+        public float EavesdroppingTransitionDuration { get; set; } = 1.6f;
+        public float EavesdroppingZoomMultiplier { get; set; } = 1.15f;
+        public float EavesdroppingVignetteOpacityMultiplier { get; set; } = 1.0f;
+        public float EavesdroppingThreshold { get; set; } = 0.28f; // How high Efficiency needs to be before your listening hull swaps.
 
         // Hydrophone monitoring
         public bool HydrophoneSwitchEnabled { get; set; } = true;
         public bool HydrophoneLegacySwitch { get; set; } = false;
         public float HydrophoneSoundRange { get; set; } = 7500; // In cm.
         public float HydrophoneVolumeMultiplier { get; set; } = 1.5f;
-        public float HydrophonePitchMultiplier { get; set; } = 0.8f;
+        public float HydrophonePitchMultiplier { get; set; } = 0.75f;
 
         // Ambience
         public bool DisableWhiteNoise { get; set; } = true;
@@ -128,36 +136,57 @@ namespace SoundproofWalls
         // Pitch settings
         public bool PitchSoundsByDistance { get; set; } = true;
         public float DivingSuitPitchMultiplier { get; set; } = 1f;
-        public float SubmergedPitchMultiplier { get; set; } = 0.5f;
+        public float SubmergedPitchMultiplier { get; set; } = 0.65f;
         public float MuffledSoundPitchMultiplier { get; set; } = 1f; // Strength of the distance-based pitch effect on muffled non-looping sounds.
-        public float MuffledLoopingPitchMultiplier { get; set; } = 1f;
+        public float MuffledLoopingPitchMultiplier { get; set; } = 0.98f;
         public float UnmuffledSoundPitchMultiplier { get; set; } = 1f;
         public float MuffledVoicePitchMultiplier { get; set; } = 1f;
         public float UnmuffledVoicePitchMultiplier { get; set; } = 1f;
 
         // Advanced settings
+        public float ComponentMuffleUpdateInterval { get; set; } = 0.2f;
+        public float StatusEffectMuffleUpdateInterval { get; set; } = 0.2f;
+        public float SoundPropagationRange { get; set; } = 500; // Area^2 that a sound in WallPropagatingSounds can search for a hull to propagate to.
+        public bool TraverseWaterDucts { get; set; } = false; // Should the search algorithm pass through water ducts?
+        public float OpenDoorThreshold { get; set; } = 0.1f; // How open a door/hatch/duct must be for sound to pass through unobstructed.
+        public float OpenWallThreshold { get; set; } = 0.33f; // How open a gap in a wall must be for sound to pass through unobstructed.
+
+        // How muffled each type of obstruction is. Lowpass doesn't increase on values > 1.0, but gain continues to be reduced.
+        public float ObstructionWaterSurface { get; set; } = 1.0f;
+        public float ObstructionWaterBody { get; set; } = 0.55f;
+        public float ObstructionWallThick { get; set; } = 0.90f;
+        public float ObstructionWallThin { get; set; } = 0.70f;
+        public float ObstructionDoorThick { get; set; } = 0.80f;
+        public float ObstructionDoorThin { get; set; } = 0.65f;
+        public float ObstructionSuit { get; set; } = 0.50f;
+
+        // Amount of combined obstruction strength needed to achieve different muffle levels
+        public float ClassicMinMuffleThreshold { get; set; } = 0.75f;
+        public float StaticMinLightMuffleThreshold { get; set; } = 0.01f;
+        public float StaticMinMediumMuffleThreshold { get; set; } = 0.65f;
+        public float StaticMinHeavyMuffleThreshold { get; set; } = 0.80f;
 
         // A general rule is to keep the most vague names at the bottom so when searching for a match the more specific ones can be found first.
         public HashSet<CustomSound> CustomSounds { get; set; } = new HashSet<CustomSound>(new ElementEqualityComparer())
         {
-            new CustomSound("footstep", 0.9f),
-            new CustomSound("metalimpact", 0.8f),
-            new CustomSound("revolver", 2f, 1, 1.1f),
-            new CustomSound("shotgunshot", 2.5f, 1, 1.5f),
-            new CustomSound("rifleshot", 2.5f, 1, 1.3f, "harpooncoilrifleshot"),
-            new CustomSound("shot", 2f, 1, 0.9f, "shotgunload", "tasershot", "riflegrenadeshot"),
+            new CustomSound("footstep", 0.4f, 1.0f),
+            new CustomSound("metalimpact", 0.8f, 1.5f),
+            new CustomSound("revolver", 2f, 0.8f, 1, 1.1f),
+            new CustomSound("shotgunshot", 2.5f, 0.7f, 1, 1.5f),
+            new CustomSound("rifleshot", 2.5f, 0.7f, 1, 1.3f, "harpooncoilrifleshot"),
+            new CustomSound("shot", 2f, 0.9f, 1, 0.9f, "shotgunload", "tasershot", "riflegrenadeshot"),
 
-            new CustomSound("coilgun", 2.3f, 1, 1.3f),
-            new CustomSound("flakgun", 2.5f, 1, 1.5f),
-            new CustomSound("railgun", 3f, 1, 1.9f, "railgunloop", "railgunstart", "railgunstop"),
-            new CustomSound("lasergunshot", 2.8f, 1, 1.7f),
-            new CustomSound("gravityshells_boom.ogg", 2.0f, 1, 3),
+            new CustomSound("coilgun", 2.3f, 0.6f, 1, 1.3f),
+            new CustomSound("flakgun", 2.5f, 0.6f, 1, 1.5f),
+            new CustomSound("railgun", 3f, 0.6f, 1, 1.9f, "railgunloop", "railgunstart", "railgunstop"),
+            new CustomSound("lasergunshot", 2.8f, 0.6f, 1, 1.7f),
+            new CustomSound("gravityshells_boom.ogg", 2.0f, 0.6f, 1, 3),
 
-            new CustomSound("incendiumgrenade", 2f, 1, 3),
-            new CustomSound("stungrenade", 3f, 1, 4),
-            new CustomSound("explosion", 3f, 1, 5),
-            new CustomSound("gravityshells", 1.5f, 0.6f, 1),
-            new CustomSound("tinnitus", 1, 1, 8),
+            new CustomSound("incendiumgrenade", 2f, 0.5f, 1, 3),
+            new CustomSound("stungrenade", 3f, 1, 0.5f, 4),
+            new CustomSound("explosion", 3f, 1, 0.5f, 5),
+            new CustomSound("gravityshells", 1.5f, 0.5f, 0.6f, 1),
+            new CustomSound("tinnitus", 1, 1, 1, 8),
         };
 
         public HashSet<string> IgnoredSounds { get; set; } = new HashSet<string>
@@ -216,16 +245,8 @@ namespace SoundproofWalls
             "lasergunshot",
         };
 
-        // Piercing sounds pierce through all obstructions better.
-        public HashSet<string> PiercingSounds { get; set; } = new HashSet<string>
-        {
-            "items/alarmdivingloop.ogg",
-            "items/alarmbuzzerloop.ogg",
-            "items/warningsiren.ogg"
-        };
-
         // Alarms/sirens should be able to be heard across the ship regardless of walls (still affected by water).
-        public HashSet<string> WallIgnoredSounds { get; set; } = new HashSet<string>
+        public HashSet<string> PathIgnoredSounds { get; set; } = new HashSet<string>
         {
             "items/alarmdivingloop.ogg",
             "items/alarmbuzzerloop.ogg",
@@ -257,6 +278,10 @@ namespace SoundproofWalls
         {
         };
 
+        public HashSet<string> ReverbIgnoredSounds { get; set; } = new HashSet<string> // Sounds that are not reverbed by static or dynamic processing modes.
+        {
+        };
+
         public HashSet<string> ContainerIgnoredSounds { get; set; } = new HashSet<string>
         {
         };
@@ -267,5 +292,7 @@ namespace SoundproofWalls
 
         [JsonIgnore]
         public bool HideSettings { get; set; } = false;
+        [JsonIgnore]
+        public bool RememberScroll { get; set; } = true;
     }
 }

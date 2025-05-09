@@ -8,6 +8,10 @@ namespace SoundproofWalls
 {
     public static class SoundInfoManager
     {
+        // The origin of these magic numbers can be found in the vanilla VoipSound class under the initialization of the muffleFilters and radioFilters arrays.
+        public const short VANILLA_VOIP_LOWPASS_FREQUENCY = 800;
+        public const short VANILLA_VOIP_BANDPASS_FREQUENCY = 2000;
+
         private static ConcurrentDictionary<uint, SoundInfo> soundInfoMap = new ConcurrentDictionary<uint, SoundInfo>();
         private static ConcurrentDictionary<SoundChannel, bool> pitchedChannels = new ConcurrentDictionary<SoundChannel, bool>();
 
@@ -26,29 +30,22 @@ namespace SoundproofWalls
         };
 
         // "Thin" versions are used when the Thick version is penetrated or eavesdropped.
-        public static Dictionary<Obstruction, float> ObstructionStrength = new Dictionary<Obstruction, float>
-        {
-            { Obstruction.WaterSurface, 0.9f }, // 7
-            { Obstruction.WaterBody, 0.75f }, // 4
-            { Obstruction.WallThick, 0.85f }, // 6
-            { Obstruction.WallThin, 0.7f }, // 3
-            { Obstruction.DoorThick, 0.8f }, // 5
-            { Obstruction.DoorThin, 0.65f }, // 2
-            { Obstruction.Suit, 0.6f }, // 1
-        };
-
         public static float GetStrength(this Obstruction obstruction)
         {
-            if (ObstructionStrength.TryGetValue(obstruction, out float value))
+            var config = ConfigManager.Config;
+            return obstruction switch
             {
-                return value;
-            }
-            return 0f;
+                Obstruction.WaterSurface => config.ObstructionWaterSurface,
+                Obstruction.WaterBody => config.ObstructionWaterBody,
+                Obstruction.WallThick => config.ObstructionWallThick,
+                Obstruction.WallThin => config.ObstructionWallThin,
+                Obstruction.DoorThick => config.ObstructionDoorThick,
+                Obstruction.DoorThin => config.ObstructionDoorThin,
+                Obstruction.Suit => config.ObstructionSuit,
+                _ => 0f
+            };
         }
 
-        /// <summary>
-        /// Applies updated information to the SoundChannel directly.
-        /// </summary>
         public static SoundInfo UpdateSoundInfo(SoundChannel channel, Hull? soundHull = null, ItemComponent? itemComp = null, StatusEffect? statusEffect = null, Client? speakingClient = null, ChatMessageType? messageType = null, bool dontMuffle = false, bool dontPitch = false)
         {
             if (channel == null) { return null; }

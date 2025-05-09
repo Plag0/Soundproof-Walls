@@ -47,6 +47,19 @@ namespace SoundproofWalls
         public const int AL_REVERB_ROOM_ROLLOFF_FACTOR = 0x000C;
         public const int AL_REVERB_DECAY_HFLIMIT = 0x000D; // Boolean (True/False mapped to 1/0)
 
+        // Equalizer Parameters (for AL_EFFECT_EQUALIZER)
+        public const int AL_EQUALIZER_LOW_GAIN = 0x0001; // float, 0.126 to 7.943 (~-18dB to +18dB), def 1.0
+        public const int AL_EQUALIZER_LOW_CUTOFF = 0x0002; // float, 50.0 to 800.0 Hz, def 200.0
+        public const int AL_EQUALIZER_MID1_GAIN = 0x0003; // float, 0.126 to 7.943, def 1.0
+        public const int AL_EQUALIZER_MID1_CENTER = 0x0004; // float, 200.0 to 3000.0 Hz, def 500.0
+        public const int AL_EQUALIZER_MID1_WIDTH = 0x0005; // float, 0.01 to 1.0 (Q factor related), def 1.0
+        public const int AL_EQUALIZER_MID2_GAIN = 0x0006; // float, 0.126 to 7.943, def 1.0
+        public const int AL_EQUALIZER_MID2_CENTER = 0x0007; // float, 1000.0 to 8000.0 Hz, def 3000.0
+        public const int AL_EQUALIZER_MID2_WIDTH = 0x0008; // float, 0.01 to 1.0, def 1.0
+        public const int AL_EQUALIZER_HIGH_GAIN = 0x0009; // float, 0.126 to 7.943, def 1.0
+        public const int AL_EQUALIZER_HIGH_CUTOFF = 0x000A; // float, 4000.0 to 16000.0 Hz, def 6000.0
+
+
         // Filter Types
         public const int AL_FILTER_NULL = 0x0000;
         public const int AL_FILTER_LOWPASS = 0x0001;
@@ -102,6 +115,8 @@ namespace SoundproofWalls
         private delegate void AlEffectf(uint effect, int param, float value);
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate void AlEffectfv(uint effect, int param, float[] values);
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private delegate void AlGetEffecti(uint effect, int param, out int value);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate void AlGenFilters(int n, uint[] filters);
@@ -144,6 +159,7 @@ namespace SoundproofWalls
         private static AlEffecti? _alEffecti;
         private static AlEffectf? _alEffectf;
         private static AlEffectfv? _alEffectfv;
+        private static AlGetEffecti? _alGetEffecti;
 
         private static AlGenFilters? _alGenFilters;
         private static AlDeleteFilters? _alDeleteFilters;
@@ -167,6 +183,11 @@ namespace SoundproofWalls
         public static void Effecti(uint effect, int param, int value) => _alEffecti?.Invoke(effect, param, value);
         public static void Effectf(uint effect, int param, float value) => _alEffectf?.Invoke(effect, param, value);
         public static void Effectfv(uint effect, int param, float[] values) => _alEffectfv?.Invoke(effect, param, values);
+        public static void GetEffecti(uint effect, int param, out int value)
+        {
+            value = 0; // Default assignment for the out parameter
+            _alGetEffecti?.Invoke(effect, param, out value);
+        }
 
         public static void GenFilters(int n, uint[] filters) => _alGenFilters?.Invoke(n, filters);
         public static void DeleteFilters(int n, uint[] filters) => _alDeleteFilters?.Invoke(n, filters);
@@ -240,6 +261,7 @@ namespace SoundproofWalls
             _alEffecti = LoadDelegate<AlEffecti>(device, "alEffecti");
             _alEffectf = LoadDelegate<AlEffectf>(device, "alEffectf");
             _alEffectfv = LoadDelegate<AlEffectfv>(device, "alEffectfv");
+            _alGetEffecti = LoadDelegate<AlGetEffecti>(device, "alGetEffecti");
 
             _alGenFilters = LoadDelegate<AlGenFilters>(device, "alGenFilters");
             _alDeleteFilters = LoadDelegate<AlDeleteFilters>(device, "alDeleteFilters");
@@ -261,6 +283,7 @@ namespace SoundproofWalls
                              _alEffecti != null &&
                              _alEffectf != null &&
                              _alEffectfv != null &&
+                             _alGetEffecti != null &&
                              _alGenFilters != null &&
                              _alDeleteFilters != null &&
                              _alIsFilter != null &&
