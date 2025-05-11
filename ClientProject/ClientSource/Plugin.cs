@@ -347,6 +347,7 @@ namespace SoundproofWalls
             HydrophoneManager.Update();
             EavesdropManager.Update();
             BubbleManager.Update();
+            SoundInfoManager.Update();
             Sidechain.Update();
             EffectsManager?.Update();
         }
@@ -677,14 +678,11 @@ namespace SoundproofWalls
                 client.VoipSound.SetRange(ChatMessage.SpeakRangeVOIP * VoipClient.RangeNear * speechImpedimentMultiplier * localRangeMultiplier, ChatMessage.SpeakRangeVOIP * speechImpedimentMultiplier * localRangeMultiplier);
             }
 
-            // Muffle Info stuff.
+            // Sound Info stuff. TODO may need to wait for the result to apply it to UseMuffleFilter and UseRadioFilter here.
             SoundChannel channel = client.VoipSound.soundChannel;
             Hull? clientHull = client.Character.CurrentHull;
-            SoundInfo soundInfo = SoundInfoManager.UpdateSoundInfo(channel, clientHull, speakingClient: client, messageType: messageType);
-
-            client.VoipSound.UseMuffleFilter = soundInfo.Muffled;
-            client.VoipSound.UseRadioFilter = messageType == ChatMessageType.Radio && !GameSettings.CurrentConfig.Audio.DisableVoiceChatFilters;
-
+            //CoroutineManager.Invoke(() => { SoundInfoManager.UpdateVoiceInfo(channel, clientHull, speakingClient: client, messageType: messageType); });
+            SoundInfoManager.UpdateVoiceInfo(channel, clientHull, speakingClient: client, messageType: messageType);
             return false;
         }
 
@@ -696,11 +694,16 @@ namespace SoundproofWalls
         public static bool SPW_VoipSound_ApplyFilters_Prefix(VoipSound __instance, ref short[] buffer, ref int readSamples)
         {
             VoipSound voipSound = __instance;
-            
-            if (!Config.Enabled || voipSound == null || !voipSound.IsPlaying) return true;
+            Client client = voipSound.client;
+
+            if (!Config.Enabled || 
+                voipSound == null || 
+                !voipSound.IsPlaying ||
+                client == null ||
+                client.Character == null) 
+            { return true; }
 
             SoundChannel channel = voipSound.soundChannel;
-            Client client = voipSound.client;
             Hull? clientHull = client.Character.CurrentHull;
             SoundInfo soundInfo = SoundInfoManager.UpdateSoundInfo(channel, soundHull: clientHull, speakingClient: client);
 

@@ -47,17 +47,24 @@ namespace SoundproofWalls
         public const int AL_REVERB_ROOM_ROLLOFF_FACTOR = 0x000C;
         public const int AL_REVERB_DECAY_HFLIMIT = 0x000D; // Boolean (True/False mapped to 1/0)
 
+        // Distortion Effect Parameters (AL_EFFECT_DISTORTION)
+        public const int AL_DISTORTION_EDGE = 0x0001;
+        public const int AL_DISTORTION_GAIN = 0x0002;
+        public const int AL_DISTORTION_LOWPASS_CUTOFF = 0x0003;
+        public const int AL_DISTORTION_EQCENTER = 0x0004;
+        public const int AL_DISTORTION_EQBANDWIDTH = 0x0005;
+
         // Equalizer Parameters (for AL_EFFECT_EQUALIZER)
-        public const int AL_EQUALIZER_LOW_GAIN = 0x0001; // float, 0.126 to 7.943 (~-18dB to +18dB), def 1.0
-        public const int AL_EQUALIZER_LOW_CUTOFF = 0x0002; // float, 50.0 to 800.0 Hz, def 200.0
-        public const int AL_EQUALIZER_MID1_GAIN = 0x0003; // float, 0.126 to 7.943, def 1.0
-        public const int AL_EQUALIZER_MID1_CENTER = 0x0004; // float, 200.0 to 3000.0 Hz, def 500.0
-        public const int AL_EQUALIZER_MID1_WIDTH = 0x0005; // float, 0.01 to 1.0 (Q factor related), def 1.0
-        public const int AL_EQUALIZER_MID2_GAIN = 0x0006; // float, 0.126 to 7.943, def 1.0
-        public const int AL_EQUALIZER_MID2_CENTER = 0x0007; // float, 1000.0 to 8000.0 Hz, def 3000.0
-        public const int AL_EQUALIZER_MID2_WIDTH = 0x0008; // float, 0.01 to 1.0, def 1.0
-        public const int AL_EQUALIZER_HIGH_GAIN = 0x0009; // float, 0.126 to 7.943, def 1.0
-        public const int AL_EQUALIZER_HIGH_CUTOFF = 0x000A; // float, 4000.0 to 16000.0 Hz, def 6000.0
+        public const int AL_EQUALIZER_LOW_GAIN = 0x2001; // float, 0.126 to 7.943 (~-18dB to +18dB), def 1.0
+        public const int AL_EQUALIZER_LOW_CUTOFF = 0x2002; // float, 50.0 to 800.0 Hz, def 200.0
+        public const int AL_EQUALIZER_MID1_GAIN = 0x2003; // float, 0.126 to 7.943, def 1.0
+        public const int AL_EQUALIZER_MID1_CENTER = 0x2004; // float, 200.0 to 3000.0 Hz, def 500.0
+        public const int AL_EQUALIZER_MID1_WIDTH = 0x2005; // float, 0.01 to 1.0 (Q factor related), def 1.0
+        public const int AL_EQUALIZER_MID2_GAIN = 0x2006; // float, 0.126 to 7.943, def 1.0
+        public const int AL_EQUALIZER_MID2_CENTER = 0x2007; // float, 1000.0 to 8000.0 Hz, def 3000.0
+        public const int AL_EQUALIZER_MID2_WIDTH = 0x2008; // float, 0.01 to 1.0, def 1.0
+        public const int AL_EQUALIZER_HIGH_GAIN = 0x2009; // float, 0.126 to 7.943, def 1.0
+        public const int AL_EQUALIZER_HIGH_CUTOFF = 0x200A; // float, 4000.0 to 16000.0 Hz, def 6000.0
 
 
         // Filter Types
@@ -72,6 +79,11 @@ namespace SoundproofWalls
         // Lowpass Parameters (AL_FILTER_LOWPASS)
         public const int AL_LOWPASS_GAIN = 0x0001;
         public const int AL_LOWPASS_GAINHF = 0x0002;
+
+        // Bandpass Parameters (AL_FILTER_BANDPASS)
+        public const int AL_BANDPASS_GAIN = 0x0001;
+        public const int AL_BANDPASS_GAINHF = 0x0002;
+        public const int AL_BANDPASS_GAINLF = 0x0003;
 
         // Source Properties for EFX
         public const int AL_DIRECT_FILTER = 0x20005;

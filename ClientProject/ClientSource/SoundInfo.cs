@@ -50,12 +50,19 @@ namespace SoundproofWalls
         private float trailingGainMultLF;
         private List<Obstruction> obstructions = new List<Obstruction>();
         private List<SoundInfo> clones = new List<SoundInfo>();
+
+        // Temporary solution to the multi-thread problem of voice and sounds. Get this information on the main thread.
+        public IEnumerable<FarseerPhysics.Dynamics.Body> VoiceOcclusions = new List<FarseerPhysics.Dynamics.Body>();
+        public readonly object VoiceOcclusionsLock = new object();
+        public List<SoundPathfinder.PathfindingResult> VoicePathResults = new List<SoundPathfinder.PathfindingResult>();
+        public readonly object VoicePathResultsLock = new object();
+
         private float euclideanDistance;
         private float? approximateDistance;
         private float distance => approximateDistance ?? euclideanDistance;
-        private Vector2 worldPos;
+        public Vector2 WorldPos;
         private Vector2 localPos;
-        private Vector2 simPos;
+        public Vector2 SimPos;
         private bool isClone;
         private bool inWater;
         private bool bothInWater;
@@ -71,8 +78,8 @@ namespace SoundproofWalls
 
         private AudioType type;
         private bool audioIsSound => type == AudioType.Sound;
-        private bool audioIsVoice => type == AudioType.LocalVoice;
-        private bool audioIsRadio => type == AudioType.RadioVoice;
+        public bool audioIsVoice => type == AudioType.LocalVoice;
+        public bool audioIsRadio => type == AudioType.RadioVoice;
         private bool audioIsFlow => type == AudioType.FlowSound;
         private bool audioIsFire => type == AudioType.FireSound;
 
@@ -82,7 +89,7 @@ namespace SoundproofWalls
 
         public float RolloffFactor
         {
-            get 
+            get
             {
                 float rolloff = 1;
                 uint sourceId = channel.Sound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
@@ -90,7 +97,7 @@ namespace SoundproofWalls
                 Al.GetError();
                 Al.GetSourcef(sourceId, Al.RolloffFactor, out rolloff);
                 if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to get rolloff factor for source ID: {sourceId}, {Al.GetErrorString(alError)}");
-                return rolloff; 
+                return rolloff;
             }
             set
             {
@@ -102,10 +109,10 @@ namespace SoundproofWalls
             }
         }
         public float Gain
-        { 
-            get { return channel.gain; } 
-            set 
-            { 
+        {
+            get { return channel.gain; }
+            set
+            {
                 float currentGain = channel.gain;
                 float targetGain = value;
 
@@ -113,10 +120,10 @@ namespace SoundproofWalls
                 {
                     channel.Gain = value;
                 }
-            } 
+            }
         }
-        public float Pitch 
-        { 
+        public float Pitch
+        {
             get { return channel.frequencyMultiplier; }
             set
             {
@@ -135,8 +142,8 @@ namespace SoundproofWalls
                     {
                         SoundInfoManager.AddPitchedChannel(channel);
                     }
-                } 
-            } 
+                }
+            }
         }
         public bool Muffled
         {
@@ -166,7 +173,7 @@ namespace SoundproofWalls
         private bool ignoreContainer = false;
         private bool ignoreAll = false;
         private bool propagateWalls = false;
-        
+
         private bool propagated = false;
         private bool eavesdropped = false;
         private bool hydrophoned = false;
@@ -176,12 +183,34 @@ namespace SoundproofWalls
         private float sidechainMult = 0;
         private float release = 60;
 
-        private Hull? soundHull = null;
+        public Hull? SoundHull = null;
         private StatusEffect? statusEffect = null;
         private ItemComponent? itemComp = null;
         private Item? item = null;
         private Client? speakingClient = null;
         private ChatMessageType? messageType = null;
+
+        private bool voiceUseMuffleFilter 
+        { 
+            set 
+            { 
+                if (speakingClient != null && speakingClient.VoipSound != null) 
+                { 
+                    speakingClient.VoipSound.UseMuffleFilter = value; 
+                } 
+            } 
+        }
+
+        private bool voiceUseRadioFilter
+        {
+            set
+            {
+                if (speakingClient != null && speakingClient.VoipSound != null)
+                {
+                    speakingClient.VoipSound.UseRadioFilter = value;
+                }
+            }
+        }
 
         private static Config config { get { return ConfigManager.Config; } }
 
@@ -197,9 +226,9 @@ namespace SoundproofWalls
             gainMultLF = original.gainMultLF;
             gainMultHF = original.gainMultHF;
 
-            worldPos = original.worldPos;
+            WorldPos = original.WorldPos;
             localPos = original.localPos;
-            simPos = original.simPos;
+            SimPos = original.SimPos;
             inWater = original.inWater;
             bothInWater = original.bothInWater;
             inContainer = original.inContainer;
@@ -226,7 +255,7 @@ namespace SoundproofWalls
             sidechainMult = original.sidechainMult;
             release = original.release;
 
-            soundHull = original.soundHull;
+            SoundHull = original.SoundHull;
             statusEffect = original.statusEffect;
             itemComp = original.itemComp;
             item = original.item;
@@ -246,7 +275,7 @@ namespace SoundproofWalls
             if (item != null && soundHull == null) { soundHull = item.CurrentHull; }
 
             this.channel = channel;
-            this.soundHull = soundHull;
+            this.SoundHull = soundHull;
             this.itemComp = itemComp;
             this.statusEffect = statusEffect;
             this.speakingClient = speakingClient;
@@ -307,7 +336,7 @@ namespace SoundproofWalls
             else if (statusEffect != null && item == null) { item = statusEffect.soundEmitter as Item; }
             if (item != null && soundHull == null) { soundHull = item.CurrentHull; }
 
-            this.soundHull = soundHull;
+            this.SoundHull = soundHull;
             this.itemComp = itemComp;
             this.statusEffect = statusEffect;
             this.speakingClient = speakingClient;
@@ -315,7 +344,7 @@ namespace SoundproofWalls
 
             if (ignoreAll)
             {
-                euclideanDistance = Vector2.Distance(Listener.WorldPos, worldPos);
+                euclideanDistance = Vector2.Distance(Listener.WorldPos, WorldPos);
                 Muffled = false;
                 Pitch = 1;
                 return;
@@ -355,6 +384,13 @@ namespace SoundproofWalls
 
             UpdateGain();
             UpdatePitch();
+            UpdateVoice();
+        }
+
+        private void UpdateVoice()
+        {
+            voiceUseMuffleFilter = Muffled; ;
+            voiceUseRadioFilter = messageType == ChatMessageType.Radio && !GameSettings.CurrentConfig.Audio.DisableVoiceChatFilters;
         }
 
         private void UpdateProperties()
@@ -363,13 +399,13 @@ namespace SoundproofWalls
             Character? speaker = speakingClient?.Character;
             Limb? speakerHead = speaker?.AnimController?.GetLimb(LimbType.Head);
 
-            worldPos = speakerHead?.WorldPosition ?? Util.GetSoundChannelWorldPos(channel);
-            soundHull = soundHull ?? Hull.FindHull(worldPos, speaker?.CurrentHull ?? listener?.CurrentHull);
-            localPos = Util.LocalizePosition(worldPos, soundHull);
-            simPos = localPos / 100;
-            inWater = Util.SoundInWater(localPos, soundHull);
+            WorldPos = speakerHead?.WorldPosition ?? Util.GetSoundChannelWorldPos(channel);
+            SoundHull = SoundHull ?? Hull.FindHull(WorldPos, speaker?.CurrentHull ?? listener?.CurrentHull);
+            localPos = Util.LocalizePosition(WorldPos, SoundHull);
+            SimPos = localPos / 100;
+            inWater = Util.SoundInWater(localPos, SoundHull);
             inContainer = item != null && !ignoreContainer && IsContainedWithinContainer(item);
-            euclideanDistance = Vector2.Distance(Listener.WorldPos, worldPos); // euclidean distance
+            euclideanDistance = Vector2.Distance(Listener.WorldPos, WorldPos); // euclidean distance
 
             // Determine the audio type.
             // Note: For now, this is done every update because many SoundInfos are made before necessary info about their type is known.
@@ -466,9 +502,9 @@ namespace SoundproofWalls
                 trailingGainMultHF = gainMultHF;
                 trailingGainMultLF = gainMultLF;
             }
-            bool useIndoorEnvironment = soundHull != null;
+            bool useIndoorEnvironment = SoundHull != null;
             uint sourceId = channel.Sound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
-            Plugin.EffectsManager.UpdateSource(sourceId, useIndoorEnvironment, ignoreReverb || Listener.IsSpectating, MuffleStrength, trailingGainMultHF, trailingGainMultLF);
+            Plugin.EffectsManager.UpdateSource(sourceId, useIndoorEnvironment, ignoreReverb || Listener.IsSpectating, hydrophoned, MuffleStrength, trailingGainMultHF, trailingGainMultLF);
         }
 
         private void UpdateObstructions()
@@ -499,7 +535,7 @@ namespace SoundproofWalls
                 bool ignoreBubbles = Util.StringHasKeyword(speaker.Name, config.BubbleIgnoredNames) || ignoreSurface;
                 if (oxygenReqMet && inWater && !ignoreBubbles)
                 {
-                    obstructions.Add(Obstruction.WaterBody);
+                    obstructions.Add(Obstruction.WaterSurface);
                 }
                 // Return because radio comms aren't muffled under any other circumstances.
                 return;
@@ -531,14 +567,14 @@ namespace SoundproofWalls
             if (Listener.IsUsingHydrophonesNow)
             {
                 // Sound can be heard clearly outside in the water.
-                if (soundHull == null)
+                if (SoundHull == null)
                 {
                     hydrophoned = true;
                     obstructions.Add(Obstruction.Suit);
                     return;
                 }
                 // Sound is in a station or other submarine.
-                else if (soundHull != null && soundHull.Submarine != LightManager.ViewTarget?.Submarine)
+                else if (SoundHull != null && SoundHull.Submarine != LightManager.ViewTarget?.Submarine)
                 {
                     hydrophoned = true;
                     obstructions.Add(Obstruction.WallThin);
@@ -621,16 +657,20 @@ namespace SoundproofWalls
             HashSet<Hull> listenerConnectedHulls = Listener.ConnectedHulls;
             
             // Eavesdropped obstruction.
-            if (Listener.IsEavesdropping && soundHull != null && listenerConnectedHulls.Contains(soundHull))
+            if (Listener.IsEavesdropping && SoundHull != null && listenerConnectedHulls.Contains(SoundHull))
             {
                 eavesdropped = true;
                 obstructions.Add(Obstruction.DoorThin);
             }
 
-            noPath = listenerHull != soundHull && (listenerHull == null || soundHull == null) || listenerHull != null && !listenerConnectedHulls.Contains(soundHull);
+            noPath = listenerHull != SoundHull && (listenerHull == null || SoundHull == null) || listenerHull != null && !listenerConnectedHulls.Contains(SoundHull);
 
             // Ray check how many walls are between the sound and the listener using a direct line.
-            IEnumerable<FarseerPhysics.Dynamics.Body> bodies = Submarine.PickBodies(Listener.SimPos, simPos, collisionCategory: Physics.CollisionWall);
+            // Voice ray casts are performed on the main thread and sent to VoiceOcclusions.
+            IEnumerable<FarseerPhysics.Dynamics.Body> bodies;
+            if (audioIsVoice || audioIsRadio) { lock (VoiceOcclusionsLock) { bodies = VoiceOcclusions; } }
+            else { bodies = Submarine.PickBodies(Listener.SimPos, SimPos, collisionCategory: Physics.CollisionWall); }
+            //IEnumerable<FarseerPhysics.Dynamics.Body> bodies = Submarine.PickBodies(Listener.SimPos, SimPos, collisionCategory: Physics.CollisionWall);
 
             // Only count collisions for unique wall orientations.
             int numWallsInRay = 0;
@@ -658,10 +698,10 @@ namespace SoundproofWalls
             {
                 foreach (Hull hull in listenerConnectedHulls)
                 {
-                    if (ShouldSoundPropagateToHull(hull, worldPos))
+                    if (ShouldSoundPropagateToHull(hull, WorldPos))
                     {
                         obstructions.Add(Obstruction.WallThin);
-                        soundHull = hull;
+                        SoundHull = hull;
                         propagated = true;
                         numWallsInRay--; // Replacing thick wall with thin.
                         break;
@@ -671,7 +711,7 @@ namespace SoundproofWalls
 
             UpdateWaterObstructions();
 
-            if (!noPath && numWallsInRay <= 0 && soundHull == listenerHull)
+            if (!noPath && numWallsInRay <= 0 && SoundHull == listenerHull)
             {
                 DisposeClones();
                 return;
@@ -684,19 +724,18 @@ namespace SoundproofWalls
             {
                 for (int i = 0; i < numWallsInRay; i++)
                 {
-                    if (channel.Sound.Filename.ToLower().Contains("shot")) { LuaCsLogger.Log($"here {channel.Sound.Filename} Listener.SimPos: {Listener.SimPos} simPos {simPos}"); }
                     if (noPath) { obstructions.Add(Obstruction.WallThick); }
                     else { obstructions.Add(Obstruction.WallThin); } // Wall occlusion isn't as strong if there's a path to the listener.
                 }
             }
 
-            bool simulateSoundDirection = config.MaxSimulatedSoundDirections > 0;
+            bool simulateSoundDirection = config.MaxSimulatedSoundDirections > 0 && !audioIsRadio && !audioIsVoice;
             int targetNumResults = simulateSoundDirection ? config.MaxSimulatedSoundDirections : 1;
-            List<SoundPathfinder.PathfindingResult> topResults = SoundPathfinder.FindShortestPaths(
-                worldPos, soundHull,
-                Listener.WorldPos, listenerHull,
-                listenerHull?.Submarine,
-                targetNumResults);
+            
+            List<SoundPathfinder.PathfindingResult> topResults;
+            if (audioIsVoice || audioIsRadio) { lock (VoicePathResultsLock) { topResults = VoicePathResults; } }
+            else { topResults = SoundPathfinder.FindShortestPaths(WorldPos, SoundHull, Listener.WorldPos, listenerHull, listenerHull?.Submarine, targetNumResults); }
+            //List<SoundPathfinder.PathfindingResult> topResults = SoundPathfinder.FindShortestPaths(WorldPos, SoundHull, Listener.WorldPos, listenerHull, listenerHull?.Submarine, targetNumResults);
 
             // Failed to find any paths.
             if (topResults.Count <= 0) { DisposeClones(); return; }
@@ -705,14 +744,6 @@ namespace SoundproofWalls
 
             for (int i = 0; i < bestResult.ClosedDoorCount; i++) { obstructions.Add(Obstruction.DoorThick); }
             for (int j = 0; j < bestResult.WaterSurfaceCrossings; j++) { obstructions.Add(Obstruction.WaterSurface); }
-
-            if (channel.Sound.Filename.ToLower().Contains("coil")) //TEMP DEBUGGING
-            {
-                foreach (Obstruction obs in obstructions)
-                {
-                    LuaCsLogger.Log($"{obs}");
-                }
-            }
 
             // For multiple sounds playing at different positions to simulate the sounds pathing.
             if (simulateSoundDirection)
@@ -778,12 +809,12 @@ namespace SoundproofWalls
 
             // Path and realDistance check
             Hull? listenerHull = Listener.FocusedHull;
-            if (listenerHull != null && listenerHull != soundHull)
+            if (listenerHull != null && listenerHull != SoundHull)
             {
                 HashSet<Hull> listenerConnectedHulls = new HashSet<Hull>();
 
                 // Run this even if SoundHull might be null for the sake of collecting listenerConnectedHulls for later.
-                float distance = GetApproximateDistance(Listener.LocalPos, localPos, listenerHull, soundHull, channel.Far, listenerConnectedHulls);
+                float distance = GetApproximateDistance(Listener.LocalPos, localPos, listenerHull, SoundHull, channel.Far, listenerConnectedHulls);
 
                 if (distance >= float.MaxValue)
                 {
@@ -791,7 +822,7 @@ namespace SoundproofWalls
                 }
 
                 // Only switch to this distance if both the listenHull and soundHull are not null.
-                if (soundHull != null)
+                if (SoundHull != null)
                 {
                     approximateDistance = distance;
                 }
@@ -803,9 +834,9 @@ namespace SoundproofWalls
                     {
                         if (channel.Sound.Filename.ToLower().Contains("coil"))
                         {
-                            LuaCsLogger.Log($"hull: {hull} shouldprop: {ShouldSoundPropagateToHull(hull, worldPos)} worldPos: {worldPos}");
+                            LuaCsLogger.Log($"hull: {hull} shouldprop: {ShouldSoundPropagateToHull(hull, WorldPos)} worldPos: {WorldPos}");
                         }
-                        if (ShouldSoundPropagateToHull(hull, worldPos))
+                        if (ShouldSoundPropagateToHull(hull, WorldPos))
                         {
                             LuaCsLogger.Log($"{Path.GetFileName(channel.Sound.Filename)} SOUND HAS PROPAGATED TO {hull}");
                             propagated = true;

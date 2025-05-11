@@ -187,7 +187,7 @@ namespace SoundproofWalls
         /// </summary>
         /// <param name="n">Maximum number of unique paths to return.</param>
         /// <returns>An ordered list of PathfindingResult, best path first. Empty if no path found.</returns>
-        public static List<PathfindingResult> FindShortestPaths(Vector2 sourcePos, Hull sourceHull, Vector2 listenerPos, Hull listenerHull, Submarine submarine, int n = 1)
+        public static List<PathfindingResult> FindShortestPaths(Vector2 sourcePos, Hull? sourceHull, Vector2 listenerPos, Hull? listenerHull, Submarine? submarine, int n = 1)
         {
             var results = new List<PathfindingResult>(); // Initialize empty results list
             if (sourceHull == null || listenerHull == null || submarine == null || n <= 0) return results; // Return empty list for invalid input

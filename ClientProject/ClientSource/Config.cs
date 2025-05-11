@@ -50,15 +50,17 @@ namespace SoundproofWalls
 
         // DynamicFx
         public bool RemoveUnusedBuffers { get; set; } = false; // If enabled, sounds are loaded without the vanilla muffle buffer which saves roughly 200MB of memory. Downside is 1-2 seconds of extra loading times.
+        public bool HydrophoneDistortionEnabled { get; set; } = true;
         public bool HighFidelityMuffling { get; set; } = false; // Creates a new effect slot with an EQ for each pool of uniquely muffled channels. Higher performance cost over basic lowpass filters.
         public bool DynamicReverbEnabled { get; set; } = true;
         public bool DynamicReverbRadio { get; set; } = false;
         public float DynamicReverbAreaSizeMultiplier { get; set; } = 1.0f;
         public float DynamicReverbAirTargetGain { get; set; } = 0.40f;
         public float DynamicReverbWaterTargetGain { get; set; } = 0.30f;
+        public float DistortionTargetGain { get; set; } = 0.35f;
         public bool OccludeSounds { get; set; } = true; // Enable muffle strength from wall occlusion.
         public bool AutoAttenuateMuffledSounds { get; set; } = true; // Should the volume of the lower frequencies (not just the high freqs) be attenuated with muffle strength.
-        public float DynamicMuffleStrengthMultiplier { get; set; } = 1.4f;
+        public float DynamicMuffleStrengthMultiplier { get; set; } = 1.3f;
         public int MaxSimulatedSoundDirections { get; set; } = 0; // How many additional versions of the same sound can be playing simultaneously from different directions.
 
         // StaticFx

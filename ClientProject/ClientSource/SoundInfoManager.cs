@@ -15,6 +15,8 @@ namespace SoundproofWalls
         private static ConcurrentDictionary<uint, SoundInfo> soundInfoMap = new ConcurrentDictionary<uint, SoundInfo>();
         private static ConcurrentDictionary<SoundChannel, bool> pitchedChannels = new ConcurrentDictionary<SoundChannel, bool>();
 
+        public static ConcurrentDictionary<SoundChannel, float> VoiceChannelsToUpdate = new ConcurrentDictionary<SoundChannel, float>();
+
         // Expensive or unnecessary sounds that are unlikely to be muffled and so are ignored when reloading sounds as a loading time optimisation.
         public static readonly HashSet<string> IgnoredPrefabs = new HashSet<string>
         {
@@ -28,6 +30,28 @@ namespace SoundproofWalls
             "Barotrauma/Content/Sounds/Tinnitus",
             "Barotrauma/Content/Sounds/Heartbeat",
         };
+
+        public static void Update()
+        {
+            //return;
+
+            foreach (SoundInfo info in soundInfoMap.Values)
+            {
+                if (info.audioIsVoice || info.audioIsRadio)
+                {
+                    IEnumerable<FarseerPhysics.Dynamics.Body> bodies = Submarine.PickBodies(Listener.SimPos, info.SimPos, collisionCategory: Physics.CollisionWall);
+                    lock (info.VoiceOcclusionsLock) { info.VoiceOcclusions = bodies.ToList(); }
+
+
+                    Hull? listenerHull = Listener.FocusedHull;
+                    List<SoundPathfinder.PathfindingResult> topResults = SoundPathfinder.FindShortestPaths(
+                        info.WorldPos, info.SoundHull,
+                        Listener.WorldPos, listenerHull,
+                        listenerHull?.Submarine, 1);
+                    lock (info.VoicePathResultsLock) { info.VoicePathResults = topResults.ToList(); }
+                }
+            }
+        }
 
         // "Thin" versions are used when the Thick version is penetrated or eavesdropped.
         public static float GetStrength(this Obstruction obstruction)
@@ -44,6 +68,22 @@ namespace SoundproofWalls
                 Obstruction.Suit => config.ObstructionSuit,
                 _ => 0f
             };
+        }
+
+        public static void UpdateVoiceInfo(SoundChannel channel, Hull? soundHull = null, Client? speakingClient = null, ChatMessageType? messageType = null)
+        {
+            if (channel == null) { return; }
+
+            uint sourceId = channel.Sound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
+            if (!soundInfoMap.TryGetValue(sourceId, out SoundInfo? info))
+            {
+                info = new SoundInfo(channel, soundHull, null, null, speakingClient, messageType, false, false);
+                soundInfoMap[sourceId] = info;
+            }
+            else
+            {
+                info.Update(soundHull, null, null, speakingClient, messageType);
+            }
         }
 
         public static SoundInfo UpdateSoundInfo(SoundChannel channel, Hull? soundHull = null, ItemComponent? itemComp = null, StatusEffect? statusEffect = null, Client? speakingClient = null, ChatMessageType? messageType = null, bool dontMuffle = false, bool dontPitch = false)
