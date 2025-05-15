@@ -11,6 +11,9 @@ namespace SoundproofWalls
         public static float Efficiency { get { return eavesdroppingEfficiency; } set { eavesdroppingEfficiency = Math.Clamp(value, 0, 1); } }
         public static float EavesdroppingTextAlpha = 0;
 
+        public static GUIButton VignetteHolder = new GUIButton(new RectTransform(Vector2.One, GUI.Canvas, Anchor.Center), style: null);
+        public static GUIFrame Vignette = new GUIFrame(new RectTransform(GUI.Canvas.RelativeSize, VignetteHolder.RectTransform, Anchor.Center), style: "GUIBackgroundBlocker");
+
         static Sound? EavesdroppingAmbienceDryRoomSound;
         static Sound? EavesdroppingAmbienceWetRoomSound;
         static SoundChannel? EavesdroppingAmbienceDryRoomChannel;

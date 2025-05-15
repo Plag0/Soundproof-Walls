@@ -1,13 +1,14 @@
 ﻿using Barotrauma;
 using Barotrauma.Sounds;
 using OpenAL;
+using static Barotrauma.Steam.MutableWorkshopMenu;
 
 namespace SoundproofWalls
 {
     public class EfxAudioManager : IDisposable
     {
         private const uint INVALID_ID = 0;
-        private const float MIN_EQ_FREQ = 50.0f;    // Min cutoff freq for EQ (Hz)
+        private const float MIN_EQ_FREQ = 80.0f;    // Min cutoff freq for EQ (Hz)
         private const float MAX_EQ_FREQ = 8000.0f;   // Max useful cutoff freq for EQ (Hz) - Tweak based on testing
         private const float MUFFLE_SHAPE = 2.0f;     // Shape parameter for frequency formula (Higher = faster drop initially)
 
@@ -35,9 +36,9 @@ namespace SoundproofWalls
 
         // Maps source IDs to their lowpass filter ID
         private Dictionary<uint, uint> _sourceFilters = new Dictionary<uint, uint>();
-        // Maps Target Cutoff Frequency (rounded int) to Slot Info
+        // Maps target cutoff frequency (rounded int) to slot info
         private Dictionary<int, MuffleSlotInfo> _eqEffectSlots = new Dictionary<int, MuffleSlotInfo>();
-        // Maps Source ID to its CURRENT Target Cutoff Frequency Key (0 = direct path active, >0 = EQ slot active)
+        // Maps Source ID to its current target cutoff frequency (0 = direct path active, >0 = EQ slot active)
         private Dictionary<uint, int> _sourceEqFrequencies = new Dictionary<uint, int>();
 
         public bool IsInitialized { get; private set; } = false;
@@ -187,18 +188,35 @@ namespace SoundproofWalls
 
             uint effectId = _hydrophoneDistortionEffectId;
 
-            // TODO make edge based on aggregate amplitude of all hydrophoned channels.
-            float edge = 0.35f;
-            float gain = Math.Clamp(ConfigManager.Config.DistortionTargetGain * HydrophoneManager.HydrophoneEfficiency, 0, 1);
-            int lowpassCutoff = 8000;
+            // Each sound playing through hydrophones linearly increases the gain/edge mult.
+            SoundChannel[] playingChannels = GameMain.SoundManager.playingChannels[0];
+            float multiSoundMult = 0;
+            float soundStrength = 0.02f;
+            for (int i = 0; i < playingChannels.Length; i++)
+            {
+                if (playingChannels[i] != null && playingChannels[i].IsPlaying && SoundInfoManager.TryGetSoundInfo(playingChannels[i], out SoundInfo? info) && info != null && !info.Ignored && info.Hydrophoned)
+                {
+                    if (info.IsLoud) { multiSoundMult += soundStrength * 2; }
+                    else             { multiSoundMult += soundStrength; }
+                }
+            }
+            float targetGain = Math.Clamp(ConfigManager.Config.HydrophoneDistortionTargetGain * HydrophoneManager.HydrophoneEfficiency * (1f + multiSoundMult), 0.01f, 1f);
+            float edge = Math.Clamp(ConfigManager.Config.HydrophoneDistortionTargetEdge * (1f + (multiSoundMult / 2f)), 0.0f, 1.0f);
+            int lowpassCutoff = 24000;
             int eqCenter = 3600;
             int eqBandwidth = 3600;
+
+            if (!Listener.IsUsingHydrophones) // Instantly cuts off the distortion when exiting the hydrophones.
+            {
+                targetGain = 0.01f;
+                edge = 0;
+            }
 
             int alError;
             Al.GetError();
 
             AlEffects.Effectf(effectId, AlEffects.AL_DISTORTION_EDGE, edge);
-            AlEffects.Effectf(effectId, AlEffects.AL_DISTORTION_GAIN, gain);
+            AlEffects.Effectf(effectId, AlEffects.AL_DISTORTION_GAIN, targetGain);
             AlEffects.Effectf(effectId, AlEffects.AL_DISTORTION_LOWPASS_CUTOFF, lowpassCutoff);
             AlEffects.Effectf(effectId, AlEffects.AL_DISTORTION_EQCENTER, eqCenter);
             AlEffects.Effectf(effectId, AlEffects.AL_DISTORTION_EQBANDWIDTH, eqBandwidth);
@@ -225,14 +243,14 @@ namespace SoundproofWalls
                 {
                     if (playingChannels[i].Looping && SoundInfoManager.TryGetSoundInfo(playingChannels[i], out SoundInfo? info) && info != null && !info.Ignored)
                     {
-                        float sidechainMult = Plugin.Sidechain.SidechainMultiplier;
-                        if (sidechainMult >= 1) { sidechainMult = 0.99f; }
-
                         float gain = playingChannels[i].Gain;
-                        if (gain <= 0) { gain = 0.01f; }
-
-                        gain /= 1 - sidechainMult; // Undo gain adjustments from sidechain multiplier for audio amplitude calculation.
-
+                        if (!info.IsLoud)
+                        {
+                            float sidechainMult = Plugin.Sidechain.SidechainMultiplier;
+                            if (sidechainMult >= 1) { sidechainMult = 0.99f; }
+                            if (gain <= 0) { gain = 0.01f; }
+                            gain /= 1 - sidechainMult; // Undo gain adjustments from sidechain multiplier for audio amplitude calculation.
+                        }
                         float amplitude = playingChannels[i].CurrentAmplitude;
 
                         float muffleMult = 1 - info.MuffleStrength;
@@ -519,15 +537,18 @@ namespace SoundproofWalls
             if (!IsInitialized || !_sourceFilters.TryGetValue(sourceId, out uint filterId)) { return; }
 
             // Select which slot to route to.
-            RouteSourceToEffectSlot(sourceId, DetermineTargetEffectSlot(inHull, ignoreReverb, hydrophoned));
+            uint targetSlot = DetermineTargetEffectSlot(inHull, ignoreReverb, hydrophoned);
+            uint sendFilterId = filterId;
 
             int targetFreq = CalculateFrequencyKey(muffleStrength);
+            bool useBandpassFilter = hydrophoned && ConfigManager.Config.HydrophoneBandpassFilterEnabled;
 
             bool useEqMuffling = targetFreq > 0;
             if (!useEqMuffling) 
             {
                 DisconnectSourceFromEqSlot(sourceId);
-                UpdateSourceLowpassFilter(sourceId, filterId, gainHf, gainLf);
+                UpdateSourceFilter(sourceId, filterId, gainHf, gainLf, bandpass: useBandpassFilter);
+                RouteSourceToEffectSlot(sourceId, targetSlot, sendFilterId);
                 return; 
             }
 
@@ -539,7 +560,7 @@ namespace SoundproofWalls
             MuffleSlotInfo? slotInfo = GetOrCreateEqSlot(targetFreq);
             if (slotInfo != null)
             {
-                UpdateSourceLowpassFilter(sourceId, filterId, 1, 0); // Silence Direct Path
+                UpdateSourceFilter(sourceId, filterId, 0, 0, bandpass: false); // Silence Direct Path
 
                 int alError;
                 Al.GetError();
@@ -547,7 +568,8 @@ namespace SoundproofWalls
                 if ((alError = Al.GetError()) != Al.NoError)
                 {
                     DebugConsole.NewMessage($"[SoundproofWalls] Failed to route source to target EQ slot ID: {slotInfo.SlotId}, {Al.GetErrorString(alError)}");
-                    UpdateSourceLowpassFilter(sourceId, filterId, gainHf, gainLf); // Restore direct path
+                    UpdateSourceFilter(sourceId, filterId, gainHf, gainLf, bandpass: useBandpassFilter); // Restore direct path
+                    RouteSourceToEffectSlot(sourceId, targetSlot, sendFilterId);
                     return;
                 }
                 slotInfo.Users.Add(sourceId);
@@ -558,11 +580,12 @@ namespace SoundproofWalls
             {
                 // Failed to get/create slot
                 DebugConsole.NewMessage($"[SoundproofWalls] Failed get/create EQ slot for freq {targetFreq}. Falling back to lowpass filters for source ID: {sourceId}");
-                UpdateSourceLowpassFilter(sourceId, filterId, gainHf, gainLf); // Restore direct path
+                UpdateSourceFilter(sourceId, filterId, gainHf, gainLf, bandpass: useBandpassFilter); // Restore direct path
             }
+            RouteSourceToEffectSlot(sourceId, targetSlot, sendFilterId);
         }
 
-        private void UpdateSourceLowpassFilter(uint sourceId, uint filterId, float gainHf, float gainLf, bool disableFilter = false)
+        private void UpdateSourceFilter(uint sourceId, uint filterId, float gainHf, float gainLf, bool disableFilter = false, bool bandpass = false)
         {
             int alError;
             Al.GetError();
@@ -574,10 +597,36 @@ namespace SoundproofWalls
                 return;
             }
 
-            AlEffects.Filterf(filterId, AlEffects.AL_LOWPASS_GAIN, gainLf);
-            if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to update filter {filterId} param AL_LOWPASS_GAIN for source {sourceId}, {Al.GetErrorString(alError)}");
-            AlEffects.Filterf(filterId, AlEffects.AL_LOWPASS_GAINHF, gainHf);
-            if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to update filter {filterId} param AL_LOWPASS_GAINHF for source {sourceId}, {Al.GetErrorString(alError)}");
+            if (bandpass)
+            {
+                AlEffects.Filteri(filterId, AlEffects.AL_FILTER_TYPE, AlEffects.AL_FILTER_BANDPASS);
+            }
+            else
+            {
+                AlEffects.Filteri(filterId, AlEffects.AL_FILTER_TYPE, AlEffects.AL_FILTER_LOWPASS);
+            }
+            if ((alError = Al.GetError()) != Al.NoError)
+            {
+                DebugConsole.NewMessage($"[SoundproofWalls] Failed to set filter ID {filterId}'s type for source ID: {sourceId}, {Al.GetErrorString(alError)}");
+                return;
+            }
+
+            if (bandpass)
+            {
+                gainHf = ConfigManager.Config.HydrophoneBandpassFilterHfGain;
+                gainLf = ConfigManager.Config.HydrophoneBandpassFilterLfGain;
+                AlEffects.Filterf(filterId, AlEffects.AL_BANDPASS_GAINHF, gainHf);
+                if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to update filter {filterId} param AL_BANDPASS_GAINHF for source {sourceId}, {Al.GetErrorString(alError)}");
+                AlEffects.Filterf(filterId, AlEffects.AL_BANDPASS_GAINLF, gainLf);
+                if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to update filter {filterId} param AL_BANDPASS_GAINLF for source {sourceId}, {Al.GetErrorString(alError)}");
+            }
+            else
+            {
+                AlEffects.Filterf(filterId, AlEffects.AL_LOWPASS_GAIN, gainLf);
+                if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to update filter {filterId} param AL_LOWPASS_GAIN for source {sourceId}, {Al.GetErrorString(alError)}");
+                AlEffects.Filterf(filterId, AlEffects.AL_LOWPASS_GAINHF, gainHf);
+                if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to update filter {filterId} param AL_LOWPASS_GAINHF for source {sourceId}, {Al.GetErrorString(alError)}");
+            }
 
             // Re-attach filter.
             Al.Sourcei(sourceId, AlEffects.AL_DIRECT_FILTER, (int)filterId);
@@ -587,14 +636,14 @@ namespace SoundproofWalls
         /// <summary>
         /// Routes a source's auxiliary send 1 to the appropriate reverb slot.
         /// </summary>
-        private void RouteSourceToEffectSlot(uint sourceId, uint targetSlot)
+        private void RouteSourceToEffectSlot(uint sourceId, uint targetSlot, uint filterId)
         {
             if (!IsInitialized) return;
 
             Al.GetError();
             int alError;
 
-            Al.Source3i(sourceId, AlEffects.AL_AUXILIARY_SEND_FILTER, (int)targetSlot, 1, AlEffects.AL_FILTER_NULL);
+            Al.Source3i(sourceId, AlEffects.AL_AUXILIARY_SEND_FILTER, (int)targetSlot, 1, (int)filterId);
             if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to route source to target slot ID: {targetSlot}, {Al.GetErrorString(alError)}");
         }
 
@@ -701,70 +750,16 @@ namespace SoundproofWalls
             if (eqEffectId == INVALID_ID || targetFrequency <= 0) return;
 
             // Make sure we're in the required range.
-            int freq = Math.Clamp(targetFrequency, 50, 8000);
+            int freq = Math.Clamp(targetFrequency, (int)MIN_EQ_FREQ, (int)MAX_EQ_FREQ);
 
-            // Constants.
-            const float minGain = 0.126f; // Minimum gain (~ -18dB) according to EFX Guide
-            const float neutralGain = 1.0f;
-
-            // Synthetic range that fits internal limts.
-            const float mid1StartFreq = 200f;
-            const float mid2StartFreq = 2000f;
-
-            // Cutoffs.
-            float targetLowCutoff = 50f;
-            float targetHighCutoff = 8000f;
-
-            // Centers.
-            float mid1CenterFreq = 500;
-            float mid1Width = 1.0f;
-            float mid2CenterFreq = 3000f;
-            float mid2Width = 1.0f;
-
-            // Determine gain for each band based on where the frequency falls.
-            float lowGain = neutralGain;
-            float mid1Gain = neutralGain;
-            float mid2Gain = neutralGain;
-            float highGain = minGain;
-            if (freq < mid1StartFreq)
-            {
-                mid1CenterFreq = 200f;
-                mid1Gain = minGain;
-                mid2Gain = minGain;
-            }
-            else if (freq < mid2StartFreq)
-            {
-                mid1CenterFreq = freq;
-                mid1Gain = minGain;
-                mid2Gain = minGain;
-            }
-            else
-            {
-                mid2CenterFreq = freq;
-                mid2Gain = minGain;
-            }
-
-            // Apply EQ parameters
+            // Apply parameters
             Al.GetError();
             int alError;
-
-            // Low Band
-            AlEffects.Effectf(eqEffectId, AlEffects.AL_EQUALIZER_LOW_GAIN, lowGain);
-            AlEffects.Effectf(eqEffectId, AlEffects.AL_EQUALIZER_LOW_CUTOFF, targetLowCutoff);
-
-            // Mid1 Band
-            AlEffects.Effectf(eqEffectId, AlEffects.AL_EQUALIZER_MID1_GAIN, mid1Gain);
-            AlEffects.Effectf(eqEffectId, AlEffects.AL_EQUALIZER_MID1_CENTER, mid1CenterFreq);
-            AlEffects.Effectf(eqEffectId, AlEffects.AL_EQUALIZER_MID1_WIDTH, mid1Width);
-
-            // Mid2 Band
-            AlEffects.Effectf(eqEffectId, AlEffects.AL_EQUALIZER_MID2_GAIN, mid2Gain);
-            AlEffects.Effectf(eqEffectId, AlEffects.AL_EQUALIZER_MID2_CENTER, mid2CenterFreq);
-            AlEffects.Effectf(eqEffectId, AlEffects.AL_EQUALIZER_MID2_WIDTH, mid2Width);
-
-            // High Band
-            AlEffects.Effectf(eqEffectId, AlEffects.AL_EQUALIZER_HIGH_GAIN, highGain);
-            AlEffects.Effectf(eqEffectId, AlEffects.AL_EQUALIZER_HIGH_CUTOFF, targetHighCutoff);
+            AlEffects.Effectf(eqEffectId, AlEffects.AL_DISTORTION_EDGE, 0);
+            AlEffects.Effectf(eqEffectId, AlEffects.AL_DISTORTION_GAIN, 1);
+            AlEffects.Effectf(eqEffectId, AlEffects.AL_DISTORTION_LOWPASS_CUTOFF, freq);
+            AlEffects.Effectf(eqEffectId, AlEffects.AL_DISTORTION_EQCENTER, 80);
+            AlEffects.Effectf(eqEffectId, AlEffects.AL_DISTORTION_EQBANDWIDTH, 80);
 
             if ((alError = Al.GetError()) != Al.NoError)
             {
@@ -808,7 +803,7 @@ namespace SoundproofWalls
             }
             uint eqEffectId = effects[0];
             
-            AlEffects.Effecti(eqEffectId, AlEffects.AL_EFFECT_TYPE, AlEffects.AL_EFFECT_EQUALIZER);
+            AlEffects.Effecti(eqEffectId, AlEffects.AL_EFFECT_TYPE, AlEffects.AL_EFFECT_DISTORTION);
             if ((alError = Al.GetError()) != Al.NoError)
             {
                 DebugConsole.NewMessage($"[SoundproofWalls] Failed to set effect ID {eqEffectId} type to EQ for slot ID: {slotId}, {Al.GetErrorString(alError)}");

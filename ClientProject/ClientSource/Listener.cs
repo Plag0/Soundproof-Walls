@@ -73,7 +73,7 @@ namespace SoundproofWalls
             Limb head = Util.GetCharacterHead(character!);
             LocalPos = IsCharacter ? head.Position : LightManager.ViewTarget?.Position ?? Vector2.Zero;
             WorldPos = IsCharacter ? head.WorldPosition : LightManager.ViewTarget?.WorldPosition ?? new Vector2(GameMain.SoundManager.ListenerPosition.X, GameMain.SoundManager.ListenerPosition.Y);
-            SimPos = IsCharacter ? head.SimPosition : LightManager.ViewTarget?.SimPosition ?? new Vector2(GameMain.SoundManager.ListenerPosition.X, GameMain.SoundManager.ListenerPosition.Y);
+            SimPos = Util.LocalizePosition(WorldPos, CurrentHull) / 100;
         }
 
         private static Hull? GetListenerHull()

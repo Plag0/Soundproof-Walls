@@ -76,6 +76,16 @@ namespace SoundproofWalls
             }
         }
 
+        public static void HardDispose(this SoundChannel channel)
+        {
+            channel.Far = channel.Sound.BaseFar;
+            channel.Near = channel.Sound.BaseNear;
+            channel.Looping = false;
+            channel.FrequencyMultiplier = 1;
+            channel.Gain = 0;
+            channel.Dispose();
+        }
+
         private static bool ShouldSkipSound(Sound? sound, bool starting, bool stopping)
         {
             if (sound == null)

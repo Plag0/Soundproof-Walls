@@ -47,20 +47,25 @@ namespace SoundproofWalls
         public bool FocusTargetAudio { get; set; } = false;
         public double HeavyLowpassFrequency { get; set; } = 200; // Used for wall and water obstructions.
         public float SoundRangeMultiplier { get; set; } = 2.0f;
+        public float LoopingSoundRangeMultiplier { get; set; } = 0.9f;
 
         // DynamicFx
         public bool RemoveUnusedBuffers { get; set; } = false; // If enabled, sounds are loaded without the vanilla muffle buffer which saves roughly 200MB of memory. Downside is 1-2 seconds of extra loading times.
         public bool HydrophoneDistortionEnabled { get; set; } = true;
+        public bool HydrophoneBandpassFilterEnabled { get; set; } = true;
+        public float HydrophoneBandpassFilterHfGain { get; set; } = 0.2f;
+        public float HydrophoneBandpassFilterLfGain { get; set; } = 0.65f;
         public bool HighFidelityMuffling { get; set; } = false; // Creates a new effect slot with an EQ for each pool of uniquely muffled channels. Higher performance cost over basic lowpass filters.
         public bool DynamicReverbEnabled { get; set; } = true;
         public bool DynamicReverbRadio { get; set; } = false;
         public float DynamicReverbAreaSizeMultiplier { get; set; } = 1.0f;
         public float DynamicReverbAirTargetGain { get; set; } = 0.40f;
-        public float DynamicReverbWaterTargetGain { get; set; } = 0.30f;
-        public float DistortionTargetGain { get; set; } = 0.35f;
+        public float DynamicReverbWaterTargetGain { get; set; } = 0.50f;
+        public float HydrophoneDistortionTargetGain { get; set; } = 0.24f;
+        public float HydrophoneDistortionTargetEdge { get; set; } = 0.22f;
         public bool OccludeSounds { get; set; } = true; // Enable muffle strength from wall occlusion.
         public bool AutoAttenuateMuffledSounds { get; set; } = true; // Should the volume of the lower frequencies (not just the high freqs) be attenuated with muffle strength.
-        public float DynamicMuffleStrengthMultiplier { get; set; } = 1.3f;
+        public float DynamicMuffleStrengthMultiplier { get; set; } = 1.0f;
         public int MaxSimulatedSoundDirections { get; set; } = 0; // How many additional versions of the same sound can be playing simultaneously from different directions.
 
         // StaticFx
@@ -171,7 +176,7 @@ namespace SoundproofWalls
         // A general rule is to keep the most vague names at the bottom so when searching for a match the more specific ones can be found first.
         public HashSet<CustomSound> CustomSounds { get; set; } = new HashSet<CustomSound>(new ElementEqualityComparer())
         {
-            new CustomSound("footstep", 0.4f, 1.0f),
+            new CustomSound("footstep", 0.6f, 1.0f),
             new CustomSound("metalimpact", 0.8f, 1.5f),
             new CustomSound("revolver", 2f, 0.8f, 1, 1.1f),
             new CustomSound("shotgunshot", 2.5f, 0.7f, 1, 1.5f),
@@ -183,6 +188,8 @@ namespace SoundproofWalls
             new CustomSound("railgun", 3f, 0.6f, 1, 1.9f, "railgunloop", "railgunstart", "railgunstop"),
             new CustomSound("lasergunshot", 2.8f, 0.6f, 1, 1.7f),
             new CustomSound("gravityshells_boom.ogg", 2.0f, 0.6f, 1, 3),
+
+            new CustomSound("sonardecoy.ogg", 1.0f, 1.0f, 0.5f, 1.5f),
 
             new CustomSound("incendiumgrenade", 2f, 0.5f, 1, 3),
             new CustomSound("stungrenade", 3f, 1, 0.5f, 4),
@@ -221,6 +228,7 @@ namespace SoundproofWalls
         {
             "barotrauma/content/characters", // Enemy creatures.
             "barotrauma/content/items/diving",
+            "barotrauma/content/items/warningbeep",
             "barotrauma/content/items/alien",
             "sonar"
         };
@@ -260,7 +268,10 @@ namespace SoundproofWalls
             "items/alarmdivingloop.ogg",
             "items/alarmbuzzerloop.ogg",
             "items/warningsiren.ogg",
+            "items/warningbeep",
             "items/fabricators",
+            "divingsuitloop",
+            "divingsuitoxygenleakloop",
             "door",
             "sonar",
             "male",

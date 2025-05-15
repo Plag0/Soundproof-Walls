@@ -1,5 +1,4 @@
 ﻿using Barotrauma;
-using Barotrauma.Networking;
 using HarmonyLib;
 using System.Runtime.CompilerServices;
 
@@ -28,12 +27,14 @@ namespace SoundproofWalls
             InitClient();
 #endif
 
-            // SpeechImpediment property prefix and replacement patch
+            // Shared patches:
+
+            // Character SpeechImpediment property prefix and REPLACEMENT.
+            // Used to allow ragdolled players to be heard.
             harmony.Patch(
                 typeof(Character).GetProperty(nameof(Character.SpeechImpediment)).GetGetMethod(),
                 new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_Character_SpeechImpediment))));
         }
-
 
         // Allow players to speak while ragdolling.
         public static bool SPW_Character_SpeechImpediment(Character __instance, ref float __result)

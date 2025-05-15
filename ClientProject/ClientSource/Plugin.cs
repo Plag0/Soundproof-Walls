@@ -103,6 +103,18 @@ namespace SoundproofWalls
             harmony.Patch(
                 typeof(SoundPlayer).GetMethod(nameof(SoundPlayer.PlaySound), new Type[] { typeof(Sound), typeof(Vector2), typeof(float), typeof(float), typeof(float), typeof(Hull), typeof(bool), typeof(bool) }),
                 new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_SoundPlayer_PlaySound))));
+            
+            // ItemComponent_PlaySound prefix REPLACEMENT.
+            // Increase range of component sounds.
+            harmony.Patch(
+                typeof(ItemComponent).GetMethod(nameof(ItemComponent.PlaySound), BindingFlags.Public | BindingFlags.Instance, new Type[] { typeof(ActionType), typeof(Character) }),
+                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_ItemComponent_PlaySound), BindingFlags.Static | BindingFlags.Public, new Type[] { typeof(ItemComponent), typeof(ActionType), typeof(Character) })));
+
+            // ItemComponent_PlaySound prefix REPLACEMENT.
+            // Increase range of component sounds.
+            harmony.Patch(
+                typeof(ItemComponent).GetMethod(nameof(ItemComponent.PlaySound), BindingFlags.NonPublic | BindingFlags.Instance, new Type[] { typeof(ItemSound), typeof(Vector2) }),
+                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_ItemComponent_PlaySound), BindingFlags.Static | BindingFlags.Public, new Type[] { typeof(ItemComponent), typeof(ItemSound), typeof(Vector2) })));
 
             // SoundPlayer_UpdateMusic prefix REPLACEMENT.
             // Ducks music when sidechaining.
@@ -122,12 +134,6 @@ namespace SoundproofWalls
                 null,
                 new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_SoundPlayer_UpdateFireSounds))));
 
-            // ItemComponent_PlaySound prefix.
-            // Crash-preventative patch for when manually setting sound range below 100%.
-            harmony.Patch(
-                typeof(ItemComponent).GetMethod(nameof(ItemComponent.PlaySound), BindingFlags.NonPublic | BindingFlags.Instance, new Type[] { typeof(ItemSound), typeof(Vector2) }),
-                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_ItemComponent_PlaySound))));
-
             // BiQuad prefix.
             // Used for modifying the muffle frequency of standard OggSounds.
             harmony.Patch(
@@ -141,16 +147,28 @@ namespace SoundproofWalls
                 new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_SoundChannel_Prefix)))) ;
 
             // Soundchannel Muffle property prefix REPLACEMENT.
-            // Switches between the three (when using ExtendedOggSounds) types of muffle buffers.
+            // Switches between the five (when using ExtendedOggSounds) types of buffers.
             harmony.Patch(
                 typeof(SoundChannel).GetProperty(nameof(SoundChannel.Muffled)).GetSetMethod(),
                 new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_SoundChannel_SetMuffled_Prefix))));
+
+            // Soundchannel FadeOutAndDispose prefix REPLACEMENT.
+            // Removes the vanilla fade out and dispose functionality and just redirects to normal Dipose() to avoid infinite looping bugs.
+            harmony.Patch(
+                typeof(SoundChannel).GetMethod(nameof(SoundChannel.FadeOutAndDispose)),
+                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_SoundChannel_FadeOutAndDispose))));
 
             // VoipSound ApplyFilters prefix REPLACEMENT.
             // Assigns muffle filters and processes gain & pitch for voice.
             harmony.Patch(
                 typeof(VoipSound).GetMethod(nameof(VoipSound.ApplyFilters), BindingFlags.Public | BindingFlags.Instance, new Type[] { typeof(short[]), typeof(int) }),
                 new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_VoipSound_ApplyFilters_Prefix))));
+
+            // Client UpdateVoipSound prefix REPLACEMENT.
+            // For adding range.
+            harmony.Patch(
+                typeof(Client).GetMethod(nameof(Client.UpdateVoipSound), BindingFlags.Public | BindingFlags.Instance),
+                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_Client_UpdateVoipSound))));
 
             // ItemComponent UpdateSounds prefix REPLACEMENT.
             // Updates muffle and other attributes of ItemComponent sounds. Maintainability note: has high contrast with vanilla implementation.
@@ -341,7 +359,6 @@ namespace SoundproofWalls
         public static void SPW_Update()
         {
             if (GameMain.Instance.Paused) return;
-
             ConfigManager.Update();
             Listener.Update();
             HydrophoneManager.Update();
@@ -462,13 +479,6 @@ namespace SoundproofWalls
 
         public static bool SPW_Draw(ref Camera cam, ref SpriteBatch spriteBatch)
         {
-            // Eavesdropping vignette.
-            GUIButton vignetteHolder = new GUIButton(new RectTransform(Vector2.One, GUI.Canvas, Anchor.Center), style: null);
-            GUIFrame vignette = new GUIFrame(new RectTransform(GUI.Canvas.RelativeSize, vignetteHolder.RectTransform, Anchor.Center), style: "GUIBackgroundBlocker");
-            int vignetteOpacity = (int)(EavesdropManager.EavesdroppingTextAlpha * Config.EavesdroppingVignetteOpacityMultiplier);
-            vignette.Color = new Color(0, 0, 0, vignetteOpacity);
-            vignette.Draw(spriteBatch);
-
             // Processing mode tooltip.
             GUIFrame? frame = Menu.currentMenuFrame;
             if (frame != null && GUIComponent.toolTipBlock != null && GUIComponent.toolTipBlock.Text == TextManager.Get("spw_effectprocessingmodetooltip"))
@@ -483,6 +493,11 @@ namespace SoundproofWalls
 
             Character character = Character.Controlled;
             if (character == null || cam == null) { return true; }
+
+            // Eavesdropping vignette.
+            int vignetteOpacity = (int)(EavesdropManager.EavesdroppingTextAlpha * Config.EavesdroppingVignetteOpacityMultiplier);
+            EavesdropManager.Vignette.Color = new Color(0, 0, 0, vignetteOpacity);
+            EavesdropManager.Vignette.Draw(spriteBatch);
 
             // Eavesdropping text.
             Limb limb = Util.GetCharacterHead(character);
@@ -635,10 +650,7 @@ namespace SoundproofWalls
                 return false; 
             }
 
-            float speechImpedimentMultiplier = 1.0f - client.Character.SpeechImpediment / 100.0f;
             bool spectating = Character.Controlled == null;
-            float localRangeMultiplier = 1 * Config.VoiceRangeMultiplier;
-            float radioRangeMultiplier = 1 * Config.RadioRangeMultiplier;
             WifiComponent senderRadio = null;
 
             var messageType = ChatMessageType.Default;
@@ -662,6 +674,9 @@ namespace SoundproofWalls
             client.Character.ShowTextlessSpeechBubble(1.25f, ChatMessage.MessageColor[(int)messageType]);
 
             // Range.
+            float localRangeMultiplier = 1 * Config.VoiceRangeMultiplier;
+            float radioRangeMultiplier = 1 * Config.RadioRangeMultiplier;
+            float speechImpedimentMultiplier = 1.0f - client.Character.SpeechImpediment / 100.0f;
             if (messageType == ChatMessageType.Radio)
             {
                 client.VoipSound.UsingRadio = true;
@@ -674,15 +689,103 @@ namespace SoundproofWalls
             }
             else
             {
+                float rangeFar = ChatMessage.SpeakRangeVOIP * Config.VoiceRangeMultiplier;
+                if (Listener.IsUsingHydrophones) { rangeFar += Config.HydrophoneSoundRange; }
                 client.VoipSound.UsingRadio = false;
-                client.VoipSound.SetRange(ChatMessage.SpeakRangeVOIP * VoipClient.RangeNear * speechImpedimentMultiplier * localRangeMultiplier, ChatMessage.SpeakRangeVOIP * speechImpedimentMultiplier * localRangeMultiplier);
+                client.VoipSound.SetRange(rangeFar * VoipClient.RangeNear * speechImpedimentMultiplier * localRangeMultiplier, rangeFar * speechImpedimentMultiplier * localRangeMultiplier);
             }
 
-            // Sound Info stuff. TODO may need to wait for the result to apply it to UseMuffleFilter and UseRadioFilter here.
+            // Sound Info stuff.
             SoundChannel channel = client.VoipSound.soundChannel;
             Hull? clientHull = client.Character.CurrentHull;
-            //CoroutineManager.Invoke(() => { SoundInfoManager.UpdateVoiceInfo(channel, clientHull, speakingClient: client, messageType: messageType); });
+            //CrossThread.RequestExecutionOnMainThread(() => SoundInfoManager.UpdateVoiceInfo(channel, clientHull, speakingClient: client, messageType: messageType));
+            client.VoipSound.UseMuffleFilter = true; // default to muffled to stop pops.
             SoundInfoManager.UpdateVoiceInfo(channel, clientHull, speakingClient: client, messageType: messageType);
+            return false;
+        }
+
+        public static bool SPW_Client_UpdateVoipSound(Client __instance)
+        {
+            Client instance = __instance;
+            if (instance.VoipSound == null || !instance.VoipSound.IsPlaying)
+            {
+                instance.radioNoiseChannel?.Dispose();
+                instance.radioNoiseChannel = null;
+                if (instance.VoipSound != null)
+                {
+                    DebugConsole.Log("Destroying voipsound");
+                    instance.VoipSound.Dispose();
+                }
+                instance.VoipSound = null;
+                return false;
+            }
+
+            if (Screen.Selected is ModDownloadScreen)
+            {
+                instance.VoipSound.Gain = 0.0f;
+            }
+
+            float rangeFar = instance.VoipSound.Far * Config.VoiceRangeMultiplier;
+            float rangeNear = instance.VoipSound.Near * Config.VoiceRangeMultiplier;
+            float maxAudibleRange = ChatMessage.SpeakRangeVOIP * Config.VoiceRangeMultiplier;
+            if (Listener.IsUsingHydrophones)
+            {
+                rangeFar += Config.HydrophoneSoundRange;
+                rangeNear += Config.HydrophoneSoundRange;
+                maxAudibleRange += Config.HydrophoneSoundRange;
+            }
+
+            float gain = 1.0f;
+            float noiseGain = 0.0f;
+            Vector3? position = null;
+            if (instance.character != null && !instance.character.IsDead)
+            {
+                if (GameSettings.CurrentConfig.Audio.UseDirectionalVoiceChat)
+                {
+                    position = new Vector3(instance.character.WorldPosition.X, instance.character.WorldPosition.Y, 0.0f);
+                }
+                else
+                {
+                    float dist = Vector3.Distance(new Vector3(instance.character.WorldPosition, 0.0f), GameMain.SoundManager.ListenerPosition);
+                    gain = 1.0f - MathUtils.InverseLerp(rangeNear, rangeFar, dist);
+                }
+                if (!instance.VoipSound.UsingRadio)
+                {
+                    //emulate the "garbling" of the text chat
+                    //this in a sense means the volume diminishes exponentially when close to the maximum range of the sound
+                    //(diminished by both the garbling and the distance attenuation)
+
+                    //which is good, because we want the voice chat to become unintelligible close to the max range,
+                    //and we need to heavily reduce the volume to do that (otherwise it's just quiet, but still intelligible)
+                    float garbleAmount = ChatMessage.GetGarbleAmount(Character.Controlled, instance.character, maxAudibleRange);
+                    gain *= 1.0f - garbleAmount;
+                }
+                if (instance.RadioNoise > 0.0f)
+                {
+                    noiseGain = gain * instance.RadioNoise;
+                    gain *= 1.0f - instance.RadioNoise;
+                }
+            }
+            instance.VoipSound.SetPosition(position);
+            instance.VoipSound.Gain = gain;
+            if (noiseGain > 0.0f)
+            {
+                if (instance.radioNoiseChannel == null || !instance.radioNoiseChannel.IsPlaying)
+                {
+                    instance.radioNoiseChannel = SoundPlayer.PlaySound("radiostatic");
+                    instance.radioNoiseChannel.Category = SoundManager.SoundCategoryVoip;
+                    instance.radioNoiseChannel.Looping = true;
+                }
+                instance.radioNoiseChannel.Near = rangeNear;
+                instance.radioNoiseChannel.Far = rangeFar;
+                instance.radioNoiseChannel.Position = position;
+                instance.radioNoiseChannel.Gain = noiseGain;
+            }
+            else if (instance.radioNoiseChannel != null)
+            {
+                instance.radioNoiseChannel.Gain = 0.0f;
+            }
+
             return false;
         }
 
@@ -791,27 +894,37 @@ namespace SoundproofWalls
             BubbleManager.RemoveBubbleSound(channel);
         }
 
-        // Stop the ItemComp PlaySound method from running if the itemSound.Range is too short, meaning the loopingSoundChannel is null.
-        public static bool SPW_ItemComponent_PlaySound(ref ItemSound itemSound, ref Vector2 position)
+        public static void SPW_SoundPlayer_PlaySound(ref Sound sound, ref float? range, ref Vector2 position, ref Hull hullGuess)
         {
-            if (!Config.Enabled || Config.SoundRangeMultiplier >= 1 || !Util.RoundStarted) { return true; }
+            if (!Config.Enabled || !Util.RoundStarted || sound == null) { return; }
+
+            range = range ?? sound.BaseFar;
+            range *= Config.SoundRangeMultiplier;
+
+            if (Listener.IsUsingHydrophones)
+            {
+                Hull targetHull = Hull.FindHull(position, hullGuess, true);
+                if (targetHull == null || targetHull.Submarine != Character.Controlled?.Submarine)
+                {
+                    range += Config.HydrophoneSoundRange;
+                }
+            }
+            return;
+        }
+
+        public static bool SPW_ItemComponent_PlaySound(ItemComponent __instance, ItemSound itemSound, Vector2 position)
+        {
+            if (!Config.Enabled) { return true; }
 
             float range = itemSound.Range;
+            range *= Config.LoopingSoundRangeMultiplier;
 
-            if (!Listener.IsUsingHydrophones)
-            {
-                range *= Config.SoundRangeMultiplier;
-            }
-            else
+            if (Listener.IsUsingHydrophones)
             {
                 Hull soundHull = Hull.FindHull(position, Character.Controlled?.CurrentHull, true);
                 if (soundHull == null || soundHull.Submarine != Character.Controlled?.Submarine)
                 {
                     range += Config.HydrophoneSoundRange;
-                }
-                else
-                {
-                    range *= Config.SoundRangeMultiplier;
                 }
             }
 
@@ -820,12 +933,158 @@ namespace SoundproofWalls
                 return false;
             }
 
-            return true;
+            if (itemSound.OnlyPlayInSameSub && __instance.item.Submarine != null && Character.Controlled != null)
+            {
+                if (Character.Controlled.Submarine == null || !Character.Controlled.Submarine.IsEntityFoundOnThisSub(__instance.item, includingConnectedSubs: true)) { return false; }
+            }
+
+            if (itemSound.Loop)
+            {
+                if (__instance.loopingSoundChannel != null && __instance.loopingSoundChannel.Sound != itemSound.RoundSound.Sound)
+                {
+                    __instance.loopingSoundChannel.FadeOutAndDispose(); __instance.loopingSoundChannel = null;
+                }
+                if (__instance.loopingSoundChannel == null || !__instance.loopingSoundChannel.IsPlaying)
+                {
+                    float volume = __instance.GetSoundVolume(itemSound);
+                    if (volume <= 0.0001f) { return false; }
+                    __instance.loopingSound = itemSound;
+                    __instance.loopingSoundChannel = SoundPlayer.PlaySound(__instance.loopingSound.RoundSound, position, volume: 0.01f, hullGuess: __instance.item.CurrentHull);
+                    if (__instance.loopingSoundChannel != null)
+                    {
+                        __instance.loopingSoundChannel.Looping = true;
+                        __instance.loopingSoundChannel.Near = range * 0.4f;
+                        __instance.loopingSoundChannel.Far = range;
+                    }
+                }
+            }
+            else
+            {
+                float volume = __instance.GetSoundVolume(itemSound);
+                if (volume <= 0.0001f) { return false; }
+                var channel = SoundPlayer.PlaySound(itemSound.RoundSound, position, volume, hullGuess: __instance.item.CurrentHull);
+                if (channel != null) { __instance.playingOneshotSoundChannels.Add(channel); }
+            }
+
+            return false;
         }
 
-        // This method is soley patched to duck the music when a loud sound plays.
-        // Had to replace the whole thing because otherwise the gain would transition too slowly.
-        public static bool SPW_SoundPlayer_UpdateMusic(float deltaTime)
+        public static bool SPW_ItemComponent_PlaySound(ItemComponent __instance, ActionType type, Character user)
+        {
+            if (!Config.Enabled) { return true; }
+
+            if (!__instance.hasSoundsOfType[(int)type]) { return false; }
+            if (GameMain.Client?.MidRoundSyncing ?? false) { return false; }
+
+            //above the top boundary of the level (in an inactive respawn shuttle?)
+            if (__instance.item.Submarine != null && __instance.item.Submarine.IsAboveLevel)
+            {
+                return false;
+            }
+
+            if (__instance.loopingSound != null)
+            {
+                float range = __instance.loopingSound.Range;
+                range *= Config.LoopingSoundRangeMultiplier;
+
+                if (Listener.IsUsingHydrophones)
+                {
+                    Hull soundHull = Hull.FindHull(__instance.item.WorldPosition, __instance.item.CurrentHull, true);
+                    if (soundHull == null || soundHull.Submarine != Character.Controlled?.Submarine)
+                    {
+                        range += Config.HydrophoneSoundRange;
+                    }
+                }
+
+                if (Vector3.DistanceSquared(GameMain.SoundManager.ListenerPosition, new Vector3(__instance.item.WorldPosition, 0.0f)) > range * range ||
+                    (__instance.GetSoundVolume(__instance.loopingSound)) <= 0.0001f)
+                {
+                    if (__instance.loopingSoundChannel != null)
+                    {
+                        __instance.loopingSoundChannel.FadeOutAndDispose();
+                        __instance.loopingSoundChannel = null;
+                        __instance.loopingSound = null;
+                    }
+                    return false;
+                }
+
+                if (__instance.loopingSoundChannel != null && __instance.loopingSoundChannel.Sound != __instance.loopingSound.RoundSound.Sound)
+                {
+                    __instance.loopingSoundChannel.FadeOutAndDispose();
+                    __instance.loopingSoundChannel = null;
+                    __instance.loopingSound = null;
+                }
+
+                if (__instance.loopingSoundChannel == null || !__instance.loopingSoundChannel.IsPlaying)
+                {
+                    __instance.loopingSoundChannel = __instance.loopingSound.RoundSound.Sound.Play(
+                        new Vector3(__instance.item.WorldPosition, 0.0f),
+                        0.01f,
+                        __instance.loopingSound.RoundSound.GetRandomFrequencyMultiplier(),
+                        SoundPlayer.ShouldMuffleSound(Character.Controlled, __instance.item.WorldPosition, __instance.loopingSound.Range, Character.Controlled?.CurrentHull));
+                    if (__instance.loopingSoundChannel != null)
+                    {
+                        __instance.loopingSoundChannel.Looping = true;
+                        __instance.item.CheckNeedsSoundUpdate(__instance);
+                        __instance.loopingSoundChannel.Near = range * 0.4f;
+                        __instance.loopingSoundChannel.Far = range;
+                    }
+                }
+
+                // Looping sound with manual selection mode should be changed if value of ManuallySelectedSound has changed
+                // Otherwise the sound won't change until the sound condition (such as being active) is disabled and re-enabled
+                if (__instance.loopingSoundChannel != null && __instance.loopingSoundChannel.IsPlaying && __instance.soundSelectionModes[type] == SoundSelectionMode.Manual)
+                {
+                    var playingIndex = __instance.sounds[type].IndexOf(__instance.loopingSound);
+                    var shouldBePlayingIndex = Math.Clamp(__instance.ManuallySelectedSound, 0, __instance.sounds[type].Count);
+                    if (playingIndex != shouldBePlayingIndex)
+                    {
+                        __instance.loopingSoundChannel.FadeOutAndDispose();
+                        __instance.loopingSoundChannel = null;
+                        __instance.loopingSound = null;
+                    }
+                }
+                return false;
+            }
+
+            var matchingSounds = __instance.sounds[type];
+            if (__instance.loopingSoundChannel == null || !__instance.loopingSoundChannel.IsPlaying)
+            {
+                SoundSelectionMode soundSelectionMode = __instance.soundSelectionModes[type];
+                int index;
+                if (soundSelectionMode == SoundSelectionMode.CharacterSpecific && user != null)
+                {
+                    index = user.ID % matchingSounds.Count;
+                }
+                else if (soundSelectionMode == SoundSelectionMode.ItemSpecific)
+                {
+                    index = __instance.item.ID % matchingSounds.Count;
+                }
+                else if (soundSelectionMode == SoundSelectionMode.All)
+                {
+                    foreach (ItemSound sound in matchingSounds)
+                    {
+                        __instance.PlaySound(sound, __instance.item.WorldPosition);
+                    }
+                    return false;
+                }
+                else if (soundSelectionMode == SoundSelectionMode.Manual)
+                {
+                    index = Math.Clamp(__instance.ManuallySelectedSound, 0, matchingSounds.Count - 1);
+                }
+                else
+                {
+                    index = Rand.Int(matchingSounds.Count);
+                }
+
+                __instance.PlaySound(matchingSounds[index], __instance.item.WorldPosition);
+                __instance.item.CheckNeedsSoundUpdate(__instance);
+            }
+            return false;
+        }
+
+            // This method replacement is unfortunately needed to remove the terrible white noise biome loops and duck music for loud sounds.
+            public static bool SPW_SoundPlayer_UpdateMusic(float deltaTime)
         {
             if (!Config.Enabled) { return true; }
 
@@ -1055,31 +1314,6 @@ namespace SoundproofWalls
             return false;
         }
 
-        public static void SPW_SoundPlayer_PlaySound(ref Sound sound, ref float? range, ref Vector2 position, ref Hull hullGuess)
-        {
-            if (!Config.Enabled || !Util.RoundStarted || sound == null) { return; }
-
-            range = range ?? sound.BaseFar;
-
-            if (!Listener.IsUsingHydrophones)
-            {
-                range *= Config.SoundRangeMultiplier;
-            }
-            else
-            {
-                Hull targetHull = Hull.FindHull(position, hullGuess, true);
-                if (targetHull == null || targetHull.Submarine != Character.Controlled?.Submarine)
-                {
-                    range += Config.HydrophoneSoundRange;
-                }
-                else
-                {
-                    range *= Config.SoundRangeMultiplier;
-                }
-            }
-            return;
-        }
-
         // Used to apply the general lowpass frequency to OggSounds when not using the custom ExtendedOggSounds.
         // Patching the OggSound.MuffleBufferHeavy doesn't seem to work, which would be the ideal alternative.
         public static void SPW_BiQuad(BiQuad __instance, ref double frequency, ref double sampleRate, ref double q, ref double gainDb)
@@ -1101,6 +1335,12 @@ namespace SoundproofWalls
             }
 
             return;
+        }
+
+        public static bool SPW_SoundChannel_FadeOutAndDispose(SoundChannel __instance)
+        {
+            __instance.Dispose();
+            return false;
         }
 
         public static bool SPW_SoundChannel_SetMuffled_Prefix(SoundChannel __instance, bool value)
@@ -1306,6 +1546,7 @@ namespace SoundproofWalls
         {
             if (!Config.StaticFx && sound is ExtendedOggSound ||
                 !Config.DynamicFx && sound is ReducedOggSound ||
+                Config.ClassicFx && (sound is ExtendedOggSound || sound is ReducedOggSound) ||
                 !Config.Enabled && (sound is ExtendedOggSound || sound is ReducedOggSound))
             {
                 sound.Dispose();

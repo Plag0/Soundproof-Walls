@@ -28,7 +28,9 @@
 	<spw_lightlowpassfrequency>Light Lowpass Frequency</spw_lightlowpassfrequency>
 	<spw_lightlowpassfrequencytooltip>Used by the "Static" effect processing mode.\nThe corner frequency used to muffle sounds/voices that are slightly obstructed by diving suits or heard in other structures via hydrophones (adjusting this setting mid-round will briefly freeze the game as new buffers are loaded)</spw_lightlowpassfrequencytooltip>
 	<spw_soundrange>Sound Range</spw_soundrange>
-	<spw_soundrangetooltip>Range of non-component sounds</spw_soundrangetooltip>
+	<spw_soundrangetooltip>Range multiplier for non-looping sounds</spw_soundrangetooltip>
+	<spw_loopingsoundrange>Looping Sound Range</spw_loopingsoundrange>
+	<spw_loopingsoundrangetooltip>Range multiplier for looping sounds</spw_loopingsoundrangetooltip>
 	<spw_soundpropagationrange>Sound Propagation Range</spw_soundpropagationrange>
 	<spw_soundpropagationrangetooltip>The maximum distance that a sound in the "Wall Propagating Sounds" list can search for a nearby hull to propagate into</spw_soundpropagationrangetooltip>
 	

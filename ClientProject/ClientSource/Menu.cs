@@ -3,7 +3,6 @@ using Barotrauma;
 using Microsoft.Xna.Framework;
 using System.Reflection;
 using System.Text.Json;
-using static Barotrauma.VideoPlayer;
 
 namespace SoundproofWalls
 {

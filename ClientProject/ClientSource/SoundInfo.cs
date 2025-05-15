@@ -3,7 +3,9 @@ using Barotrauma.Items.Components;
 using Barotrauma.Lights;
 using Barotrauma.Networking;
 using Barotrauma.Sounds;
+using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
+using MonoGame.Utilities;
 using OpenAL;
 
 namespace SoundproofWalls
@@ -176,10 +178,10 @@ namespace SoundproofWalls
 
         private bool propagated = false;
         private bool eavesdropped = false;
-        private bool hydrophoned = false;
+        public bool Hydrophoned = false;
 
         // For attenuating other sounds.
-        private bool isLoud = false;
+        public bool IsLoud = false;
         private float sidechainMult = 0;
         private float release = 60;
 
@@ -249,9 +251,9 @@ namespace SoundproofWalls
 
             ignoreReverb = original.ignoreReverb;
             eavesdropped = original.eavesdropped;
-            hydrophoned = original.hydrophoned;
+            Hydrophoned = original.Hydrophoned;
 
-            isLoud = original.isLoud;
+            IsLoud = original.IsLoud;
             sidechainMult = original.sidechainMult;
             release = original.release;
 
@@ -302,7 +304,7 @@ namespace SoundproofWalls
 
                 GetCustomSoundData(filename, out gainMult, out float rolloffFactor, out sidechainMult, out release);
                 RolloffFactor = rolloffFactor;
-                isLoud = sidechainMult > 0;
+                IsLoud = sidechainMult > 0;
 
                 if (config.DynamicFx && Plugin.EffectsManager != null)
                 {
@@ -475,7 +477,7 @@ namespace SoundproofWalls
             }
 
             // Enable reverb buffers for extended sounds. Is not relevant to the DynamicFx reverb.
-            if (config.StaticFx && config.StaticReverbEnabled && !shouldMuffle && !channel.Looping && (Listener.ConnectedArea >= config.StaticReverbMinArea || isLoud && config.StaticReverbAlwaysOnLoudSounds))
+            if (config.StaticFx && config.StaticReverbEnabled && !shouldMuffle && !channel.Looping && (Listener.ConnectedArea >= config.StaticReverbMinArea || IsLoud && config.StaticReverbAlwaysOnLoudSounds))
             {
                 shouldUseReverbBuffer = true;
             }
@@ -504,14 +506,14 @@ namespace SoundproofWalls
             }
             bool useIndoorEnvironment = SoundHull != null;
             uint sourceId = channel.Sound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
-            Plugin.EffectsManager.UpdateSource(sourceId, useIndoorEnvironment, ignoreReverb || Listener.IsSpectating, hydrophoned, MuffleStrength, trailingGainMultHF, trailingGainMultLF);
+            Plugin.EffectsManager.UpdateSource(sourceId, useIndoorEnvironment, ignoreReverb || Listener.IsSpectating, Hydrophoned, MuffleStrength, trailingGainMultHF, trailingGainMultLF);
         }
 
         private void UpdateObstructions()
         {
             // Reset obstruction properties.
             eavesdropped = false;
-            hydrophoned = false;
+            Hydrophoned = false;
             propagated = false;
             obstructions.Clear();
 
@@ -569,14 +571,14 @@ namespace SoundproofWalls
                 // Sound can be heard clearly outside in the water.
                 if (SoundHull == null)
                 {
-                    hydrophoned = true;
+                    Hydrophoned = true;
                     obstructions.Add(Obstruction.Suit);
                     return;
                 }
                 // Sound is in a station or other submarine.
                 else if (SoundHull != null && SoundHull.Submarine != LightManager.ViewTarget?.Submarine)
                 {
-                    hydrophoned = true;
+                    Hydrophoned = true;
                     obstructions.Add(Obstruction.WallThin);
                     return;
                 }
@@ -594,51 +596,38 @@ namespace SoundproofWalls
         private void UpdateWaterObstructions()
         {
             bool earsInWater = Listener.IsSubmerged;
+            bool soundInWater = inWater;
             bool ignoreSubmersion = this.ignoreSubmersion || (Listener.IsCharacter ? !config.MuffleSubmergedPlayer : !config.MuffleSubmergedViewTarget);
-            bool ignoreSurface = this.ignoreSurface || propagateWalls;
+            bool ignoreSurface = this.ignoreSurface;
 
             // Neither in water.
-            if (!earsInWater && !inWater)
-            {
+            if (!earsInWater && !soundInWater) { return; }
+            else if (noPath) // The listener and sound are in separate rooms or one of them is outside the sub.
+            {                // In this case, it feels more natural for ignoreSubmersion and ignoreSurface to be ignored.
+                if (earsInWater) { obstructions.Add(Obstruction.WaterBody); }
+                // Even if the listener's ears are in water, apply a water surface because the sound is in a different room.
+                if (soundInWater) { obstructions.Add(Obstruction.WaterSurface); }
                 return;
             }
 
-            // Both in water, but submersion is ignored.
-            else if (earsInWater && inWater && ignoreSubmersion)
+            // From here it is assumed there is a path to the sound,
+            // usually meaning the listener and the water share the same hull.
+
+            // Ears in water.
+            if (earsInWater)
             {
-                bothInWater = true;
-                obstructions.Add(Obstruction.Suit);
+                obstructions.Add(ignoreSubmersion ? Obstruction.Suit : Obstruction.WaterBody);
+                // Sound in same body of water, return because no need to apply water surface.
+                if (soundInWater) { bothInWater = true; return; }
             }
-            // Both in water.
-            else if (inWater && earsInWater)
+
+            // Separated by water surface.
+            if (soundInWater != earsInWater)
             {
-                bothInWater = true;
-                obstructions.Add(Obstruction.WaterBody);
-            }
-            // Sound is under, ears are above, but water surface is ignored.
-            else if (ignoreSurface && inWater && !earsInWater)
-            {
-                if (propagateWalls && !propagated) // Add some muffle if the surface was only ignored because the sound propagates walls.
-                {
-                    obstructions.Add(Obstruction.WallThin);
-                }
-            }
-            // Sound is above, ears are below, but water surface and submersion is ignored.
-            else if (ignoreSurface && !inWater && earsInWater && ignoreSubmersion)
-            {
-                if (propagateWalls && !propagated)
-                {
-                    obstructions.Add(Obstruction.WallThin);
-                }
-                else
-                {
-                    obstructions.Add(Obstruction.Suit);
-                }
-            }
-            // Separated by the water surface.
-            else
-            {
-                obstructions.Add(Obstruction.WaterSurface);
+                Obstruction obstruction = Obstruction.WaterSurface;
+                if (propagateWalls && !propagated) { obstruction = Obstruction.WallThin; }
+                if (ignoreSurface)                 { obstruction = Obstruction.Suit; }
+                obstructions.Add(obstruction);
             }
         }
 
@@ -667,10 +656,9 @@ namespace SoundproofWalls
 
             // Ray check how many walls are between the sound and the listener using a direct line.
             // Voice ray casts are performed on the main thread and sent to VoiceOcclusions.
-            IEnumerable<FarseerPhysics.Dynamics.Body> bodies;
+            IEnumerable<Body> bodies;
             if (audioIsVoice || audioIsRadio) { lock (VoiceOcclusionsLock) { bodies = VoiceOcclusions; } }
             else { bodies = Submarine.PickBodies(Listener.SimPos, SimPos, collisionCategory: Physics.CollisionWall); }
-            //IEnumerable<FarseerPhysics.Dynamics.Body> bodies = Submarine.PickBodies(Listener.SimPos, SimPos, collisionCategory: Physics.CollisionWall);
 
             // Only count collisions for unique wall orientations.
             int numWallsInRay = 0;
@@ -735,7 +723,6 @@ namespace SoundproofWalls
             List<SoundPathfinder.PathfindingResult> topResults;
             if (audioIsVoice || audioIsRadio) { lock (VoicePathResultsLock) { topResults = VoicePathResults; } }
             else { topResults = SoundPathfinder.FindShortestPaths(WorldPos, SoundHull, Listener.WorldPos, listenerHull, listenerHull?.Submarine, targetNumResults); }
-            //List<SoundPathfinder.PathfindingResult> topResults = SoundPathfinder.FindShortestPaths(WorldPos, SoundHull, Listener.WorldPos, listenerHull, listenerHull?.Submarine, targetNumResults);
 
             // Failed to find any paths.
             if (topResults.Count <= 0) { DisposeClones(); return; }
@@ -900,7 +887,7 @@ namespace SoundproofWalls
                 mult += MathHelper.Lerp(1, config.MuffledVoiceVolumeMultiplier, MuffleStrength) - 1;
                 if (bothInWater) mult += config.SubmergedVolumeMultiplier - 1;
                 else if (eavesdropped) mult += config.EavesdroppingVoiceVolumeMultiplier - 1;
-                else if (hydrophoned) { mult += config.HydrophoneVolumeMultiplier - 1; mult *= HydrophoneManager.HydrophoneEfficiency; }
+                else if (Hydrophoned) { mult += config.HydrophoneVolumeMultiplier - 1; mult *= HydrophoneManager.HydrophoneEfficiency; }
             }
             // Either a component or status effect sound.
             else if (channel.Looping)
@@ -908,7 +895,7 @@ namespace SoundproofWalls
                 mult += MathHelper.Lerp(config.UnmuffledLoopingVolumeMultiplier, config.MuffledLoopingVolumeMultiplier, MuffleStrength) - 1;
                 if (bothInWater) mult += config.SubmergedVolumeMultiplier - 1;
                 else if (eavesdropped) mult += config.EavesdroppingSoundVolumeMultiplier - 1;
-                else if (hydrophoned) { mult += config.HydrophoneVolumeMultiplier - 1; mult *= HydrophoneManager.HydrophoneEfficiency; }
+                else if (Hydrophoned) { mult += config.HydrophoneVolumeMultiplier - 1; mult *= HydrophoneManager.HydrophoneEfficiency; }
 
                 if (item != null && item.HasTag(new Identifier("deepdivinglarge")) && channel.Sound.Filename.EndsWith("WEAPONS_chargeUp.ogg")) { mult *= config.VanillaExosuitVolumeMultiplier; }
             }
@@ -919,7 +906,7 @@ namespace SoundproofWalls
                 mult += MathHelper.Lerp(1, config.MuffledSoundVolumeMultiplier, MuffleStrength) - 1;
                 if (bothInWater) mult += config.SubmergedVolumeMultiplier - 1;
                 else if (eavesdropped) mult += config.EavesdroppingSoundVolumeMultiplier - 1;
-                else if (hydrophoned) { mult += config.HydrophoneVolumeMultiplier - 1; mult *= HydrophoneManager.HydrophoneEfficiency; }
+                else if (Hydrophoned) { mult += config.HydrophoneVolumeMultiplier - 1; mult *= HydrophoneManager.HydrophoneEfficiency; }
             }
             // Note that the following multipliers also apply to radio channels this way.
             // 1. Fade transition between two hull soundscapes when eavesdropping.
@@ -930,8 +917,8 @@ namespace SoundproofWalls
                 else if (eavesdropped) { mult *= Math.Clamp(eavesdropEfficiency * (1 / config.EavesdroppingThreshold) - 1, 0.1f, 1); }
             }
             // 2. The strength of the sidechaining decreases the more muffled the loud sound is.
-            if (isLoud) Plugin.Sidechain.StartRelease(sidechainMult * (1 - MuffleStrength), release * (1 - MuffleStrength));
-            else if (!isLoud) mult *= 1 - Plugin.Sidechain.SidechainMultiplier;
+            if (IsLoud) Plugin.Sidechain.StartRelease(sidechainMult * (1 - MuffleStrength), release * (1 - MuffleStrength));
+            else if (!IsLoud) mult *= 1 - Plugin.Sidechain.SidechainMultiplier;
 
             float targetGain = currentGain * mult;
 
@@ -975,7 +962,7 @@ namespace SoundproofWalls
                 mult = MathHelper.Lerp(config.UnmuffledSoundPitchMultiplier, config.MuffledLoopingPitchMultiplier, MuffleStrength);
 
                 if (eavesdropped) mult += config.EavesdroppingPitchMultiplier - 1;
-                else if (hydrophoned) mult += config.HydrophonePitchMultiplier - 1;
+                else if (Hydrophoned) mult += config.HydrophonePitchMultiplier - 1;
 
                 if (Listener.IsSubmerged) mult += config.SubmergedPitchMultiplier - 1;
                 if (Listener.IsWearingDivingSuit) mult += config.DivingSuitPitchMultiplier - 1; 
@@ -993,7 +980,7 @@ namespace SoundproofWalls
                 }
 
                 if (eavesdropped) mult += config.EavesdroppingPitchMultiplier - 1;
-                else if (hydrophoned) mult += config.HydrophonePitchMultiplier - 1;
+                else if (Hydrophoned) mult += config.HydrophonePitchMultiplier - 1;
 
                 if (Listener.IsSubmerged) mult += config.SubmergedPitchMultiplier - 1;
                 if (Listener.IsWearingDivingSuit) mult += config.DivingSuitPitchMultiplier - 1;
@@ -1041,8 +1028,8 @@ namespace SoundproofWalls
             }
 
             // The strength of the sidechaining decreases the more muffled the loud sound is.
-            if (isLoud) Plugin.Sidechain.StartRelease(sidechainMult * (1 - MuffleStrength), release * (1 - MuffleStrength));
-            else if (!isLoud) mult *= 1 - Plugin.Sidechain.SidechainMultiplier;
+            if (IsLoud) Plugin.Sidechain.StartRelease(sidechainMult * (1 - MuffleStrength), release * (1 - MuffleStrength));
+            else if (!IsLoud) mult *= 1 - Plugin.Sidechain.SidechainMultiplier;
 
             // Master volume multiplier.
             if (audioIsFlow) mult *= config.FlowSoundVolumeMultiplier;

@@ -35,6 +35,10 @@ namespace SoundproofWalls
         {
             //return;
 
+            List<SoundChannel> channels = GameMain.SoundManager.playingChannels[0].ToList();
+            //foreach (var channel in channels) { if (channel == null) { continue; } LuaCsLogger.Log($"{Path.GetFileName(channel.Sound.Filename)} Is playing: {channel.IsPlaying} fading: {channel.FadingOutAndDisposing}"); }
+            
+
             foreach (SoundInfo info in soundInfoMap.Values)
             {
                 if (info.audioIsVoice || info.audioIsRadio)
