@@ -55,6 +55,12 @@ namespace SoundproofWalls
         {
             Instance = this;
 
+            // Compatibility with Lua mods that mess with with Sound objects.
+            LuaUserData.RegisterType("SoundproofWalls.ExtendedOggSound");
+            LuaUserData.RegisterType("SoundproofWalls.ExtendedSoundBuffers");
+            LuaUserData.RegisterType("SoundproofWalls.ReducedOggSound");
+            LuaUserData.RegisterType("SoundproofWalls.ReducedSoundBuffers");
+
             GameMain.LuaCs.Hook.Add("think", "spw_clientupdate", (object[] args) =>
             {
                 SPW_Update();

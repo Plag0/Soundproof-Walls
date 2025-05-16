@@ -85,7 +85,7 @@ namespace SoundproofWalls
         public float RadioStatic { get; set; } = 0.0f;
         public float RadioCompressionThreshold { get; set; } = 0.2f;
         public float RadioCompressionRatio { get; set; } = 0.2f;
-        public float VoiceRangeMultiplier { get; set; } = 0.80f;
+        public float VoiceRangeMultiplier { get; set; } = 0.90f;
         public float RadioRangeMultiplier { get; set; } = 0.75f;
 
         // Muffle

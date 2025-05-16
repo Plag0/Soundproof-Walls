@@ -15,12 +15,7 @@ namespace SoundproofWalls
 
         public void InitServer()
         {
-            // VoipServer CanReceive prefix REPLACEMENT.
-            // Used to increase the maximum range a voice can be received so it can be heard through hydrophones.
-            harmony.Patch(
-                typeof(VoipServer).GetMethod(nameof(VoipServer.CanReceive), BindingFlags.Static | BindingFlags.NonPublic),
-                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_VoipServer_CanReceive))));
-
+            LuaCsLogger.Log($"Server init started...");
             GameMain.LuaCs.Networking.Receive("SPW_UpdateConfigServer", (object[] args) => 
             {
                 LastSyncReceiveTime = 0f;
@@ -82,6 +77,16 @@ namespace SoundproofWalls
                 }
                 return null;
             });
+            try
+            {
+                // VoipServer CanReceive prefix REPLACEMENT.
+                // Used to increase the maximum range a voice can be received so it can be heard through hydrophones.
+                harmony.Patch(
+                    typeof(VoipServer).GetMethod(nameof(VoipServer.CanReceive), BindingFlags.Static | BindingFlags.NonPublic),
+                    new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_VoipServer_CanReceive))));
+            }
+            catch (Exception ex) { LuaCsLogger.Log($"[SoundproofWalls] Server failed to load CanReceive() patch, {ex}"); }
+
         }
 
         // Allows the sending of distance voices to clients so they can be picked up with hydrophones.

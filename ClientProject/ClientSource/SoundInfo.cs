@@ -5,7 +5,6 @@ using Barotrauma.Networking;
 using Barotrauma.Sounds;
 using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
-using MonoGame.Utilities;
 using OpenAL;
 
 namespace SoundproofWalls
