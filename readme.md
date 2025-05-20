@@ -16,8 +16,8 @@ Follow these steps to build the project on any platform:
 
 ### 1. Install the .NET SDK
 
-Download and install the latest .NET SDK from the official Microsoft website:  
-👉 [https://dotnet.microsoft.com/en-us/download](https://dotnet.microsoft.com/en-us/download)
+Download and install the **.NET 6 SDK or newer** from the official Microsoft website:  
+👉 [https://dotnet.microsoft.com/download/dotnet](https://dotnet.microsoft.com/download/dotnet)
 
 ---
 
