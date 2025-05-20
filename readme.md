@@ -59,17 +59,17 @@ Soundproof-Walls/
 
 ### 4. Build the Project
 
-Open a terminal/command prompt and run the following command:
+Open a terminal/command prompt and prepare to run the following command:
 
 ```bash
 dotnet build "path/to/Soundproof-Walls"
 ```
 
-Replace `"path/to/Soundproof-Walls"` with the actual path to the project folder containing the "Soundproof Walls.sln" file.
-For example:
+Replace `"path/to/Soundproof-Walls"` with the actual path to the project folder containing the "Soundproof Walls.sln" file and run the command.
+For example, on Windows:
 
 ```bash
-dotnet build "C:/Users/YourName/Downloads/Soundproof-Walls-master"
+dotnet build "C:/Users/YourName/Downloads/Soundproof-Walls"
 ```
 
 Alternatively, you could use Visual Studio to build the project but the command is much easier.
@@ -94,5 +94,5 @@ Once built, launch *Barotrauma* and navigate to your mods list:
 
 - **Missing assembly errors?** Ensure all files and folders from `luacsforbarotrauma_refs.zip` and the `NVorbis.dll` are placed inside the `Refs` folder located at `Soundproof-Walls/Refs`.
 - **Being used by another process error?** Try the command again. I tend to run the command until the project builds successfully twice in a row.
-- **Command not found?** Check your .NET SDK installation is valid by running `dotnet --info`. If there are errors, try reinstalling.
+- **Command not found?** Check your .NET SDK installation is valid by running `dotnet --info`. If there are errors, or your SDK version is less than 6.0, reinstall your .NET SDK.
 ---
