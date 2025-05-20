@@ -23,13 +23,13 @@ Download and install the **.NET 6 SDK or newer** from the official Microsoft web
 
 ### 2. Clone the Repository
 
-Clone or download the repository to your local machine:
+If you have Git installed, run this command to download the repository to your local machine:
 
 ```bash
 git clone https://github.com/Plag0/Soundproof-Walls.git
 ```
 
-Alternatively, download it as a ZIP and extract it.
+Alternatively, click the green "Code" button at the top of the GitHub page and select "Download ZIP" then extract the resulting files.
 
 ---
 
@@ -72,7 +72,7 @@ For example:
 dotnet build "C:/Users/YourName/Downloads/Soundproof-Walls-master"
 ```
 
-Alternatively, if you're on Windows, you could use Visual Studio to build the project instead of a command.
+Alternatively, you could use Visual Studio to build the project but the command is much easier.
 
 **Note:**  
 You can safely ignore any build warnings. If there are errors, refer to the troubleshooting section below.
