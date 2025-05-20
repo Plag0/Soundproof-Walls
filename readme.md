@@ -37,7 +37,17 @@ Alternatively, download it as a ZIP and extract it.
 
 To compile correctly, you'll need external references:
 
-1. Inside the root `Soundproof-Walls` directory, create a folder named `Refs`.
+1. Inside the `Soundproof-Walls` directory you just downloaded, create a folder named `Refs`. The file structure should look like:
+```
+Soundproof-Walls/
+├── Assets/
+├── ClientProject/
+├── Refs/
+├── ServerProject/
+├── SharedProject/
+├── Soundproof Walls.sln
+└── ... (other files)
+```
 
 2. Download the latest `luacsforbarotrauma_refs.zip` file from the [LuaCsForBarotrauma Releases page](https://github.com/evilfactory/LuaCsForBarotrauma/releases/download/latest/luacsforbarotrauma_refs.zip).
 
@@ -55,10 +65,11 @@ Open a terminal/command prompt and run the following command:
 dotnet build "path/to/Soundproof-Walls"
 ```
 
-Replace `"path/to/Soundproof-Walls"` with the actual path to the project folder. For example:
+Replace `"path/to/Soundproof-Walls"` with the actual path to the project folder containing the "Soundproof Walls.sln" file.
+For example:
 
 ```bash
-dotnet build "C:/Users/YourName/Downloads/Soundproof-Walls"
+dotnet build "C:/Users/YourName/Downloads/Soundproof-Walls-master"
 ```
 
 Alternatively, if you're on Windows, you could use Visual Studio to build the project instead of a command.
