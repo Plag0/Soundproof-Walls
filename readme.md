@@ -59,6 +59,8 @@ Soundproof-Walls/
 
 ### 4. Build the Project
 
+If you're on macOS or Linux, open the `Build.props` file and change the `ModDeployDir` property to point to your system’s `Barotrauma/LocalMods` folder.
+
 Open a terminal/command prompt and prepare to run the following command:
 
 ```bash
