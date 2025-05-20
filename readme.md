@@ -40,6 +40,7 @@ To compile correctly, you'll need external references:
 1. Inside the root `Soundproof-Walls` directory, create a folder named `Refs`.
 
 2. Download the latest `luacsforbarotrauma_refs.zip` file from the LuaCsForBarotrauma Releases page:
+
 👉 [https://github.com/evilfactory/LuaCsForBarotrauma/releases](https://github.com/evilfactory/LuaCsForBarotrauma/releases)
 Or
 👉 [Direct download link for convenience](https://github.com/evilfactory/LuaCsForBarotrauma/releases/download/latest/luacsforbarotrauma_refs.zip).
