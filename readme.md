@@ -1,10 +1,16 @@
 # Soundproof Walls for Barotrauma
 
-**Soundproof Walls** is a mod for *Barotrauma* that overhauls many aspects of the sound system. This project is built with .NET and is designed for cross-platform use via Visual Studio or command-line using the .NET SDK.
+**Soundproof Walls** is a mod for *Barotrauma* that overhauls many aspects of the vanilla sound system to create a more immersive and dynamic experience.
+
+The easiest way to use this mod is by subscribing on the [Steam workshop page](https://steamcommunity.com/sharedfiles/filedetails/?id=3153737715).
+
+Alternatively, if you want to try unreleased features early or prefer compiling the mod yourself, follow the build instructions below.
 
 ---
 
 ## 🛠️ Build Instructions
+
+This project is built with .NET and is designed for cross-platform use via Visual Studio or command-line using the .NET SDK.
 
 Follow these steps to build the project on any platform:
 
@@ -33,7 +39,10 @@ To compile correctly, you'll need external references:
 
 1. Inside the root `Soundproof-Walls` directory, create a folder named `Refs`.
 
-2. Download the latest `luacsforbarotrauma_refs.zip` from the [LuaCsForBarotrauma Releases](https://github.com/evilfactory/LuaCsForBarotrauma/releases/download/latest/luacsforbarotrauma_refs.zip).
+2. Download the latest `luacsforbarotrauma_refs.zip` file from the LuaCsForBarotrauma Releases page:
+👉 [https://github.com/evilfactory/LuaCsForBarotrauma/releases](https://github.com/evilfactory/LuaCsForBarotrauma/releases)
+Or
+👉 [Direct download link for convenience](https://github.com/evilfactory/LuaCsForBarotrauma/releases/download/latest/luacsforbarotrauma_refs.zip).
 
 3. Extract all contents from the ZIP into the `Refs` folder.
 
@@ -43,20 +52,22 @@ To compile correctly, you'll need external references:
 
 ### 4. Build the Project
 
-Open a terminal (or command prompt) and run the following command:
+Open a terminal/command prompt and run the following command:
 
 ```bash
-dotnet build "path\to\Soundproof-Walls"
+dotnet build "path/to/Soundproof-Walls"
 ```
 
-Replace `"path\to\Soundproof-Walls"` with the actual path to the project folder. For example:
+Replace `"path/to/Soundproof-Walls"` with the actual path to the project folder. For example:
 
 ```bash
-dotnet build "C:\Users\YourName\Downloads\Soundproof-Walls"
+dotnet build "C:/Users/YourName/Downloads/Soundproof-Walls"
 ```
+
+Alternatively, if you're on Windows, you could use Visual Studio to build the project instead of a command.
 
 **Note:**  
-If the console output shows only 1-2 errors, try running the build command again. If you encounter more, check that all references were placed correctly.
+You can safely ignore any build warnings. If there are errors, refer to the troubleshooting section below.
 
 ---
 
@@ -65,7 +76,7 @@ If the console output shows only 1-2 errors, try running the build command again
 Once built, launch *Barotrauma* and navigate to your mods list:
 
 - You should see two versions of **Soundproof Walls**.
-- **Enable the one with the grey pencil icon** — this is the local version you just built.
+- **Enable the one with the grey pencil icon** - this is the local version you just built.
 - Host your game server.
 - Any player joining will automatically download your custom version of the mod.
 
@@ -73,7 +84,7 @@ Once built, launch *Barotrauma* and navigate to your mods list:
 
 ## ❓ Troubleshooting
 
-- **Missing assembly errors?** Ensure all files and folders from `luacsforbarotrauma_refs.zip` and the `NVorbis.dll` are placed inside the `Refs` folder.
-- **Being used by another process error?** Wait a moment and try the command again. Sometimes weird stuff can happen when building this project. I tend to run the command until the project builds successfully twice in a row.
-- **Command not found?** Check your .NET SDK installation is working by running `dotnet --info`. If there are errors, try reinstalling it from step 1.
+- **Missing assembly errors?** Ensure all files and folders from `luacsforbarotrauma_refs.zip` and the `NVorbis.dll` are placed inside the `Refs` folder located at `Soundproof-Walls/Refs`.
+- **Being used by another process error?** Wait a moment then try the command again. I tend to run the command until the project builds successfully twice in a row.
+- **Command not found?** Check your .NET SDK installation is valid by running `dotnet --info`. If there are errors, try reinstalling.
 ---
