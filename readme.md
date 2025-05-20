@@ -4,13 +4,13 @@
 
 The easiest way to use this mod is by subscribing on the [Steam workshop page](https://steamcommunity.com/sharedfiles/filedetails/?id=3153737715).
 
-Alternatively, if you want to try unreleased features early or prefer compiling the mod yourself, follow the build instructions below.
+Alternatively, if you want to try unreleased features or prefer compiling the mod yourself, follow the build instructions below.
 
 ---
 
 ## 🛠️ Build Instructions
 
-This project is built with .NET and is designed for cross-platform use via Visual Studio or command-line using the .NET SDK.
+This project is built with .NET 6.0 and is designed for cross-platform use via Visual Studio or command-line using the .NET SDK.
 
 Follow these steps to build the project on any platform:
 
@@ -29,8 +29,10 @@ If you have Git installed, run this command to download the repository to your l
 git clone https://github.com/Plag0/Soundproof-Walls.git
 ```
 
-Alternatively, click the green "Code" button at the top of the GitHub page and select "Download ZIP" then extract the resulting files.
+Alternatively, click the green "Code" button at the top of the GitHub page and select "Download ZIP", then extract its contents.
 
+**Note:**
+You can put the files wherever you want.
 ---
 
 ### 3. Set Up References
