@@ -29,10 +29,8 @@ If you have Git installed, run this command to download the repository to your l
 git clone https://github.com/Plag0/Soundproof-Walls.git
 ```
 
-Alternatively, click the green "Code" button at the top of the GitHub page and select "Download ZIP", then extract its contents.
+Alternatively, click the green "Code" button at the top of the GitHub page and select "Download ZIP", then extract its contents wherever you want.
 
-**Note:**
-You can put the files wherever you want.
 ---
 
 ### 3. Set Up References
