@@ -1,6 +1,6 @@
 # Soundproof Walls for Barotrauma
 
-**Soundproof Walls** is a mod for *Barotrauma* that overhauls many aspects of the vanilla sound system to create a more immersive and dynamic experience.
+**Soundproof Walls** is a mod for *Barotrauma* that overhauls the vanilla sound system to create a more immersive and dynamic audio experience. It introduces sound occlusion, propagation, sidechain compression, simulated reverb, and realistic muffling. The mod also adds new gameplay mechanics, such as eavesdropping and hydrophone monitoring, along with numerous smaller tweaks, improvements, and fixes to the vanilla game's audio.
 
 The easiest way to use this mod is by subscribing on the [Steam workshop page](https://steamcommunity.com/sharedfiles/filedetails/?id=3153737715).
 
@@ -59,7 +59,7 @@ Soundproof-Walls/
 
 ### 4. Build the Project
 
-1. If you're on macOS or Linux, open the `Build.props` file inside the `Soundproof-Walls` directory with any text editor, and change the value between the `ModDeployDir` tags to point to your system’s `Barotrauma/LocalMods` folder.
+1. Open the `Build.props` file inside the `Soundproof-Walls` directory with any text editor, and change the value between the `ModDeployDir` tags to point to your system’s `Barotrauma/LocalMods` folder. For Windows users, this may already be set correctly if *Barotrauma* is installed on your C: drive.
 
 2. Open a terminal/command prompt and prepare to run the following command:
 
