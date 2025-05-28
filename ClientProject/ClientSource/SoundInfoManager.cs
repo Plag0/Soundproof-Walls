@@ -1,21 +1,12 @@
-﻿using Barotrauma.Items.Components;
-using Barotrauma.Networking;
+﻿using Barotrauma;
 using Barotrauma.Sounds;
-using Barotrauma;
 using System.Collections.Concurrent;
 
 namespace SoundproofWalls
 {
     public static class SoundInfoManager
     {
-        // The origin of these magic numbers can be found in the vanilla VoipSound class under the initialization of the muffleFilters and radioFilters arrays.
-        public const short VANILLA_VOIP_LOWPASS_FREQUENCY = 800;
-        public const short VANILLA_VOIP_BANDPASS_FREQUENCY = 2000;
-
-        private static ConcurrentDictionary<uint, SoundInfo> soundInfoMap = new ConcurrentDictionary<uint, SoundInfo>();
-        private static ConcurrentDictionary<SoundChannel, bool> pitchedChannels = new ConcurrentDictionary<SoundChannel, bool>();
-
-        public static ConcurrentDictionary<SoundChannel, float> VoiceChannelsToUpdate = new ConcurrentDictionary<SoundChannel, float>();
+        private static ConcurrentDictionary<string, SoundInfo> soundInfoMap = new ConcurrentDictionary<string, SoundInfo>();
 
         // Expensive or unnecessary sounds that are unlikely to be muffled and so are ignored when reloading sounds as a loading time optimisation.
         public static readonly HashSet<string> IgnoredPrefabs = new HashSet<string>
@@ -31,130 +22,41 @@ namespace SoundproofWalls
             "Barotrauma/Content/Sounds/Heartbeat",
         };
 
-        public static void Update()
+        public static void UpdateSoundInfoMap()
         {
-            //return;
+            ChannelInfoManager.ClearChannelInfo();
+            ClearSoundInfo();
 
-            List<SoundChannel> channels = GameMain.SoundManager.playingChannels[0].ToList();
-            //foreach (var channel in channels) { if (channel == null) { continue; } LuaCsLogger.Log($"{Path.GetFileName(channel.Sound.Filename)} Is playing: {channel.IsPlaying} fading: {channel.FadingOutAndDisposing}"); }
-            
-
-            foreach (SoundInfo info in soundInfoMap.Values)
+            List<Sound> loadedSounds;
+            lock (GameMain.SoundManager.loadedSounds)
             {
-                if (info.audioIsVoice || info.audioIsRadio)
-                {
-                    IEnumerable<FarseerPhysics.Dynamics.Body> bodies = Submarine.PickBodies(Listener.SimPos, info.SimPos, collisionCategory: Physics.CollisionWall);
-                    lock (info.VoiceOcclusionsLock) { info.VoiceOcclusions = bodies.ToList(); }
+                loadedSounds = GameMain.SoundManager.loadedSounds.ToList();
+            }
 
-
-                    Hull? listenerHull = Listener.FocusedHull;
-                    List<SoundPathfinder.PathfindingResult> topResults = SoundPathfinder.FindShortestPaths(
-                        info.WorldPos, info.SoundHull,
-                        Listener.WorldPos, listenerHull,
-                        listenerHull?.Submarine, 1);
-                    lock (info.VoicePathResultsLock) { info.VoicePathResults = topResults.ToList(); }
-                }
+            for (int i = 0; i < loadedSounds.Count; i++)
+            {
+                CreateSoundInfo(loadedSounds[i]);
             }
         }
 
-        // "Thin" versions are used when the Thick version is penetrated or eavesdropped.
-        public static float GetStrength(this Obstruction obstruction)
+        private static void CreateSoundInfo(Sound sound, bool onlyUnique = true)
         {
-            var config = ConfigManager.Config;
-            return obstruction switch
-            {
-                Obstruction.WaterSurface => config.ObstructionWaterSurface,
-                Obstruction.WaterBody => config.ObstructionWaterBody,
-                Obstruction.WallThick => config.ObstructionWallThick,
-                Obstruction.WallThin => config.ObstructionWallThin,
-                Obstruction.DoorThick => config.ObstructionDoorThick,
-                Obstruction.DoorThin => config.ObstructionDoorThin,
-                Obstruction.Suit => config.ObstructionSuit,
-                _ => 0f
-            };
+            string filename = sound.Filename;
+            if (onlyUnique && soundInfoMap.TryGetValue(filename, out SoundInfo? soundInfo) && soundInfo != null) { return; }
+
+            soundInfoMap[filename] = new SoundInfo(sound);
         }
 
-        public static void UpdateVoiceInfo(SoundChannel channel, Hull? soundHull = null, Client? speakingClient = null, ChatMessageType? messageType = null)
+        public static SoundInfo EnsureGetSoundInfo(Sound sound)
         {
-            if (channel == null) { return; }
-
-            uint sourceId = channel.Sound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
-            if (!soundInfoMap.TryGetValue(sourceId, out SoundInfo? info))
+            string filename = sound.Filename;
+            if (!soundInfoMap.TryGetValue(filename, out SoundInfo? soundInfo) || soundInfo == null)
             {
-                info = new SoundInfo(channel, soundHull, null, null, speakingClient, messageType, false, false);
-                soundInfoMap[sourceId] = info;
-            }
-            else
-            {
-                info.Update(soundHull, null, null, speakingClient, messageType);
-            }
-        }
-
-        public static SoundInfo UpdateSoundInfo(SoundChannel channel, Hull? soundHull = null, ItemComponent? itemComp = null, StatusEffect? statusEffect = null, Client? speakingClient = null, ChatMessageType? messageType = null, bool dontMuffle = false, bool dontPitch = false)
-        {
-            if (channel == null) { return null; }
-
-            uint sourceId = channel.Sound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
-            if (!soundInfoMap.TryGetValue(sourceId, out SoundInfo? info))
-            {
-                info = new SoundInfo(channel, soundHull, statusEffect, itemComp, speakingClient, messageType, dontMuffle, dontPitch);
-                soundInfoMap[sourceId] = info;
-            }
-            else
-            {
-                info.Update(soundHull, statusEffect, itemComp, speakingClient, messageType);
+                soundInfo = new SoundInfo(sound);
+                soundInfoMap[filename] = soundInfo;
             }
 
-            return info;
-        }
-
-        public static bool TryGetSoundInfo(SoundChannel channel, out SoundInfo? soundInfo)
-        {
-            uint sourceId = channel.Sound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
-            bool success = soundInfoMap.TryGetValue(sourceId, out SoundInfo? info);
-            soundInfo = info;
-            return success;
-        }
-
-        public static void ResetAllPitchedChannels()
-        {
-            foreach (var kvp in pitchedChannels)
-            {
-                SoundChannel channel = kvp.Key;
-                RemovePitchedChannel(channel);
-            }
-            pitchedChannels.Clear();
-        }
-        public static bool RemoveSoundInfo(SoundChannel channel)
-        {
-            if (channel == null) { return false; }
-
-            uint sourceId = channel.Sound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
-            soundInfoMap.TryGetValue(sourceId, out SoundInfo? info);
-            if (info != null) { info.DisposeClones(); }
-            bool success = soundInfoMap.TryRemove(sourceId, out _);
-
-            return success;
-        }
-
-        public static bool AddPitchedChannel(SoundChannel channel)
-        {
-            if (channel == null || channel.FrequencyMultiplier == 1) { return false; }
-
-            pitchedChannels[channel] = true;
-
-            return true;
-        }
-
-        public static bool RemovePitchedChannel(SoundChannel channel)
-        {
-            if (channel == null) { return false; }
-
-            if (channel.FrequencyMultiplier != 1)
-            {
-                channel.FrequencyMultiplier = 1;
-            }
-            return pitchedChannels.TryRemove(channel, out _);
+            return soundInfo;
         }
 
         public static void ClearSoundInfo()

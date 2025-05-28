@@ -299,19 +299,19 @@ namespace SoundproofWalls
             slider.ToolTip = TextManager.Get("spw_lightlowpassfrequencytooltip");
 
             GUITextBlock textBlockSR = TextBlock(list, string.Empty);
-            slider = Slider(list.Content, 0, 3, config.SoundRangeMultiplier, value =>
+            slider = Slider(list.Content, 0, 3, config.SoundRangeMultiplierMaster, value =>
             {
                 float realvalue = RoundToNearestMultiple(value, 0.01f);
                 float displayValue = RoundToNearestMultiple(value * 100, 1);
-                config.SoundRangeMultiplier = realvalue;
+                config.SoundRangeMultiplierMaster = realvalue;
                 ConfigManager.SaveConfig(config);
                 ShouldUpdateConfig = true;
                 slider_text = string.Empty;
-                if (config.SoundRangeMultiplier == defaultConfig.SoundRangeMultiplier) { slider_text = default_preset; }
-                else if (config.SoundRangeMultiplier == 1) { slider_text = vanilla_preset; }
+                if (config.SoundRangeMultiplierMaster == defaultConfig.SoundRangeMultiplierMaster) { slider_text = default_preset; }
+                else if (config.SoundRangeMultiplierMaster == 1) { slider_text = vanilla_preset; }
                 textBlockSR.Text = $"{TextManager.Get("spw_soundrange").Value}: {displayValue}% {slider_text}";
             });
-            textBlockSR.Text = $"{TextManager.Get("spw_soundrange").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.SoundRangeMultiplier))}";
+            textBlockSR.Text = $"{TextManager.Get("spw_soundrange").Value}: {RoundToNearestMultiple(slider.BarScrollValue * 100, 1)}%{GetServerPercentString(nameof(config.SoundRangeMultiplierMaster))}";
             slider.ToolTip = TextManager.Get("spw_soundrangetooltip");
 
             GUITextBlock textBlockSPR = TextBlock(list, string.Empty);
@@ -332,7 +332,7 @@ namespace SoundproofWalls
             TextBlock(list, TextManager.Get("spw_voicesettings").Value, y: 0.1f, size: 1.3f, color: Color.LightYellow);
 
             GUITextBlock textBlockVLF = TextBlock(list, string.Empty);
-            slider = LogSlider(list.Content, 10, SoundInfoManager.VANILLA_VOIP_LOWPASS_FREQUENCY * 1.5f, (float)config.VoiceHeavyLowpassFrequency, value =>
+            slider = LogSlider(list.Content, 10, ChannelInfoManager.VANILLA_VOIP_LOWPASS_FREQUENCY * 1.5f, (float)config.VoiceHeavyLowpassFrequency, value =>
             {
                 value = RoundToNearestMultiple(value, 10);
                 if (value == SoundPlayer.MuffleFilterFrequency) { value += 10; }
@@ -341,23 +341,23 @@ namespace SoundproofWalls
                 ShouldUpdateConfig = true;
                 slider_text = string.Empty;
                 if (config.VoiceHeavyLowpassFrequency == defaultConfig.VoiceHeavyLowpassFrequency) { slider_text = default_preset; }
-                else if (config.VoiceHeavyLowpassFrequency == SoundInfoManager.VANILLA_VOIP_LOWPASS_FREQUENCY) { slider_text = vanilla_preset; }
+                else if (config.VoiceHeavyLowpassFrequency == ChannelInfoManager.VANILLA_VOIP_LOWPASS_FREQUENCY) { slider_text = vanilla_preset; }
                 textBlockVLF.Text = $"{TextManager.Get("spw_voicelowpassfrequency").Value}: {value}Hz {slider_text}";
             }, 10);
             textBlockVLF.Text = $"{TextManager.Get("spw_voicelowpassfrequency").Value}: {RoundToNearestMultiple(slider.GetConvertedLogValue(), 10)}Hz{GetServerValueString(nameof(config.VoiceHeavyLowpassFrequency), "Hz")}";
             slider.ToolTip = TextManager.Get("spw_voicelowpassfrequencytooltip");
 
             GUITextBlock textBlockRCF = TextBlock(list, string.Empty);
-            slider = LogSlider(list.Content, 300, SoundInfoManager.VANILLA_VOIP_BANDPASS_FREQUENCY * 1.5f, (float)config.RadioBandpassFrequency, value =>
+            slider = LogSlider(list.Content, 300, ChannelInfoManager.VANILLA_VOIP_BANDPASS_FREQUENCY * 1.5f, (float)config.RadioBandpassFrequency, value =>
             {
                 value = (float)RoundToNearestMultiple(value, 10);
-                if (value == SoundInfoManager.VANILLA_VOIP_BANDPASS_FREQUENCY) { value += 10; }
+                if (value == ChannelInfoManager.VANILLA_VOIP_BANDPASS_FREQUENCY) { value += 10; }
                 config.RadioBandpassFrequency = value;
                 ConfigManager.SaveConfig(config);
                 ShouldUpdateConfig = true;
                 slider_text = string.Empty;
                 if (config.RadioBandpassFrequency == defaultConfig.RadioBandpassQualityFactor) { slider_text = default_preset; }
-                else if (config.RadioBandpassFrequency == SoundInfoManager.VANILLA_VOIP_BANDPASS_FREQUENCY) { slider_text = vanilla_preset; }
+                else if (config.RadioBandpassFrequency == ChannelInfoManager.VANILLA_VOIP_BANDPASS_FREQUENCY) { slider_text = vanilla_preset; }
                 textBlockRCF.Text = $"{TextManager.Get("spw_radiobandpassfrequency").Value}: {value}Hz {slider_text}";
             }, 0.01f);
             textBlockRCF.Text = $"{TextManager.Get("spw_radiobandpassfrequency").Value}: {RoundToNearestMultiple(slider.GetConvertedLogValue(), 10)}Hz{GetServerValueString(nameof(config.RadioBandpassFrequency), "Hz")}";

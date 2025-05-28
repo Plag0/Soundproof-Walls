@@ -113,7 +113,7 @@ namespace SoundproofWalls
         /// Calculates the penalty for traversing a gap, considering its
         /// physical state (door/wall) and whether crossing it involves an air/water interface.
         /// </summary>
-        private static float GetGapTraversalPenalty(Gap gap)
+        private static float GetGapTraversalPenalty(Gap gap, bool ignoreDoors = false)
         {
             if (gap == null) return float.MaxValue;
 
@@ -126,7 +126,7 @@ namespace SoundproofWalls
                 // Block duct block based on config.
                 if (!ConfigManager.Config.TraverseWaterDucts && gap.ConnectedDoor.Item.HasTag("ductblock")) { penalty += float.MaxValue; }
 
-                if (Util.IsDoorClosed(gap.ConnectedDoor))
+                if (!ignoreDoors && Util.IsDoorClosed(gap.ConnectedDoor))
                 {
                     penalty += PenaltyClosedDoor;
                 }
@@ -187,7 +187,7 @@ namespace SoundproofWalls
         /// </summary>
         /// <param name="n">Maximum number of unique paths to return.</param>
         /// <returns>An ordered list of PathfindingResult, best path first. Empty if no path found.</returns>
-        public static List<PathfindingResult> FindShortestPaths(Vector2 sourcePos, Hull? sourceHull, Vector2 listenerPos, Hull? listenerHull, Submarine? submarine, int n = 1)
+        public static List<PathfindingResult> FindShortestPaths(Vector2 sourcePos, Hull? sourceHull, Vector2 listenerPos, Hull? listenerHull, Submarine? submarine, int n = 1, bool ignoreDoors = false)
         {
             var results = new List<PathfindingResult>(); // Initialize empty results list
             if (sourceHull == null || listenerHull == null || submarine == null || n <= 0) return results; // Return empty list for invalid input
@@ -230,7 +230,7 @@ namespace SoundproofWalls
                 Gap currentGap = openSet.Dequeue(); if (gScore[currentGap] == float.MaxValue) continue;
 
                 // Calculate penalty for exiting/crossing currentGap
-                float penaltyForExitingCurrent = GetGapTraversalPenalty(currentGap);
+                float penaltyForExitingCurrent = GetGapTraversalPenalty(currentGap, ignoreDoors);
                 if (penaltyForExitingCurrent >= float.MaxValue - 1.0f) continue; // Impassable gap
 
                 float costBeforeSegment = gScore[currentGap] + penaltyForExitingCurrent;
@@ -278,7 +278,7 @@ namespace SoundproofWalls
                 if (actualCostToGap == float.MaxValue) continue; // Gap wasn't reached
 
                 // Get the penalty for traversing this final gap itself. I feel like I shouldn't need this but the code seems to think otherwise
-                float penaltyForFinalGap = GetGapTraversalPenalty(finalGap);
+                float penaltyForFinalGap = GetGapTraversalPenalty(finalGap, ignoreDoors);
 
                 float finalSegmentDistApprox = Vector2.Distance(finalGap.WorldPosition, listenerPos);
                 float approxTotalCost = actualCostToGap + penaltyForFinalGap + finalSegmentDistApprox;
@@ -306,7 +306,7 @@ namespace SoundproofWalls
                         foreach (Gap gapInPath in path)
                         { 
                             if (gapInPath == null) continue; 
-                            if (Util.IsDoorClosed(gapInPath.ConnectedDoor)) 
+                            if (!ignoreDoors && Util.IsDoorClosed(gapInPath.ConnectedDoor)) 
                             { 
                                 if (doorsCounted.Add(gapInPath)) { doorCount++; } 
                             } 

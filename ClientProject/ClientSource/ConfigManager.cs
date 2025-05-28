@@ -31,7 +31,7 @@ namespace SoundproofWalls
             bool shouldStop = oldConfig.Enabled && !newConfig.Enabled;
             bool shouldStart = !oldConfig.Enabled && newConfig.Enabled;
             bool shouldReloadSounds = Util.ShouldReloadSounds(newConfig: newConfig, oldConfig: oldConfig);
-            bool shouldClearMuffleInfo = Util.ShouldClearMuffleInfo(newConfig, oldConfig: oldConfig);
+            bool shouldUpdateSoundInfo = Util.ShouldUpdateSoundInfo(newConfig, oldConfig: oldConfig);
             bool shouldStartAlEffects = !shouldStart && !oldConfig.DynamicFx && newConfig.DynamicFx;
             bool shouldStopAlEffects = !shouldStop && oldConfig.DynamicFx && !newConfig.DynamicFx;
 
@@ -43,7 +43,7 @@ namespace SoundproofWalls
             if (shouldStop) { Plugin.Instance?.Dispose(); }
             else if (shouldStart) { Plugin.Instance?.Initialize(); }
             else if (shouldReloadSounds) { Util.ReloadSounds(); }
-            else if (shouldClearMuffleInfo) { SoundInfoManager.ClearSoundInfo(); }
+            else if (shouldUpdateSoundInfo) { SoundInfoManager.UpdateSoundInfoMap(); }
 
             if (manualUpdate && configSenderId != 0)
             {

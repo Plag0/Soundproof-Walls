@@ -48,11 +48,11 @@ namespace SoundproofWalls
                    oldLightFreq != newLightFreq;
         }
 
-        public static bool ShouldClearMuffleInfo(Config newConfig, Config? oldConfig = null)
+        public static bool ShouldUpdateSoundInfo(Config newConfig, Config? oldConfig = null)
         {
             if (oldConfig == null) { oldConfig = Config; }
 
-            return !oldConfig.CustomSounds.SetEquals(newConfig.CustomSounds) ||
+            return  !oldConfig.CustomSounds.SetEquals(newConfig.CustomSounds) ||
                     !oldConfig.IgnoredSounds.SetEquals(newConfig.IgnoredSounds) ||
                     !oldConfig.PitchIgnoredSounds.SetEquals(newConfig.PitchIgnoredSounds) ||
                     !oldConfig.LowpassIgnoredSounds.SetEquals(newConfig.LowpassIgnoredSounds) ||
@@ -60,6 +60,8 @@ namespace SoundproofWalls
                     !oldConfig.ContainerIgnoredSounds.SetEquals(newConfig.ContainerIgnoredSounds) ||
                     !oldConfig.PathIgnoredSounds.SetEquals(newConfig.PathIgnoredSounds) ||
                     !oldConfig.PropagatingSounds.SetEquals(newConfig.PropagatingSounds) ||
+                    !oldConfig.ReverbIgnoredSounds.SetEquals(newConfig.ReverbIgnoredSounds) ||
+                    !oldConfig.ReverbForcedSounds.SetEquals(newConfig.ReverbForcedSounds) ||
                     !oldConfig.SurfaceIgnoredSounds.SetEquals(newConfig.SurfaceIgnoredSounds) ||
                     !oldConfig.SubmersionIgnoredSounds.SetEquals(newConfig.SubmersionIgnoredSounds);
         }
@@ -320,7 +322,7 @@ namespace SoundproofWalls
             // ReSound has its own code to stop at the end of the round but it needs to happen here and now before SPW.
             StopResound(Resound);
 
-            SoundInfoManager.ClearSoundInfo();
+            ChannelInfoManager.ClearChannelInfo();
             StopPlayingChannels();
 
             // Cache sounds that have already been updated.
@@ -435,7 +437,7 @@ namespace SoundproofWalls
                 if (!ConfigManager.Config.TraverseWaterDucts && door.Item.HasTag("ductblock")) { return true; }
 
                 bool isClosingOrClosed = (door.PredictedState.HasValue) ? !door.PredictedState.Value : door.IsClosed;
-                return isClosingOrClosed && door.OpenState < ConfigManager.Config.OpenDoorThreshold; 
+                return isClosingOrClosed && door.OpenState < ConfigManager.Config.OpenDoorThreshold;
             }
             return false;
         }

@@ -44,10 +44,11 @@ namespace SoundproofWalls
         public uint EffectProcessingMode { get; set; } = 2;
         public bool SyncSettings { get; set; } = true;
         public bool TalkingRagdolls { get; set; } = true;
+        public bool DrowningBubblesEnabled { get; set; } = true;
         public bool FocusTargetAudio { get; set; } = false;
         public double HeavyLowpassFrequency { get; set; } = 200; // Used for wall and water obstructions.
-        public float SoundRangeMultiplier { get; set; } = 2.0f;
-        public float LoopingSoundRangeMultiplier { get; set; } = 0.9f;
+        public float SoundRangeMultiplierMaster { get; set; } = 1.6f;
+        public float LoopingSoundRangeMultiplierMaster { get; set; } = 0.9f;
 
         // DynamicFx
         public bool RemoveUnusedBuffers { get; set; } = false; // If enabled, sounds are loaded without the vanilla muffle buffer which saves roughly 200MB of memory. Downside is 1-2 seconds of extra loading times.
@@ -71,6 +72,8 @@ namespace SoundproofWalls
         // StaticFx
         public bool StaticReverbEnabled { get; set; } = true;
         public bool StaticReverbAlwaysOnLoudSounds { get; set; } = true;
+        public float StaticReverbDuration { get; set; } = 2.2f;
+        public float StaticReverbWetDryMix { get; set; } = 0.30f;
         public int StaticReverbMinArea { get; set; } = 375_000; // The minimum area the listener has to be in for non-looping non-muffled sounds to use reverb buffers.
         public double MediumLowpassFrequency { get; set; } = 700; // Used for eavesdropping.
         public double LightLowpassFrequency { get; set; } = 1200; // Used for wearing suits, propagating sounds, and path ignored sounds.
@@ -99,7 +102,8 @@ namespace SoundproofWalls
 
         // Volume
         public bool SidechainingEnabled { get; set; } = true;
-        public bool SidechainingDucksMusic { get; set; } = false;
+        public bool SidechainingDucksMusic { get; set; } = true;
+        public float SidechainMusicDuckMultiplier { get; set; } = 0.05f;
         public float SidechainIntensityMaster { get; set; } = 1f;
         public float SidechainReleaseMaster { get; set; } = 0;
         public float SidechainReleaseCurve { get; set; } = 0.4f;
@@ -151,8 +155,12 @@ namespace SoundproofWalls
         public float UnmuffledVoicePitchMultiplier { get; set; } = 1f;
 
         // Advanced settings
-        public float ComponentMuffleUpdateInterval { get; set; } = 0.2f;
-        public float StatusEffectMuffleUpdateInterval { get; set; } = 0.2f;
+        public bool UpdateNonLoopingSounds { get; set; } = true; // Updates the gain and pitch of non looping "single-shot" sounds every tick. Muffle is updated every NonLoopingSoundMuffleUpdateInterval.
+        public double NonLoopingSoundMuffleUpdateInterval { get; set; } = 0.2f; // Only applied if UpdateNonLoopingSounds is enabled.
+        public double ComponentMuffleUpdateInterval { get; set; } = 0.2f;
+        public double StatusEffectMuffleUpdateInterval { get; set; } = 0.2f;
+        public int MaxSimultaneousInstances = 8; // How many instances of the same sound clip can be playing at the same time. Vanilla is 5 (cite Sound.cs)
+        public float LoopingComponentSoundNearMultiplier { get; set; } = 0.3f; // near = far * thisMult - "near" is the max range before volume falloff starts.
         public float SoundPropagationRange { get; set; } = 500; // Area^2 that a sound in WallPropagatingSounds can search for a hull to propagate to.
         public bool TraverseWaterDucts { get; set; } = false; // Should the search algorithm pass through water ducts?
         public float OpenDoorThreshold { get; set; } = 0.1f; // How open a door/hatch/duct must be for sound to pass through unobstructed.
@@ -176,28 +184,30 @@ namespace SoundproofWalls
         // A general rule is to keep the most vague names at the bottom so when searching for a match the more specific ones can be found first.
         public HashSet<CustomSound> CustomSounds { get; set; } = new HashSet<CustomSound>(new ElementEqualityComparer())
         {
-            new CustomSound("footstep", 0.6f, 1.0f),
-            new CustomSound("metalimpact", 0.8f, 1.5f),
-            new CustomSound("revolver", 2f, 0.8f, 1, 1.1f),
-            new CustomSound("shotgunshot", 2.5f, 0.7f, 1, 1.5f),
-            new CustomSound("rifleshot", 2.5f, 0.7f, 1, 1.3f, "harpooncoilrifleshot"),
-            new CustomSound("shot", 2f, 0.9f, 1, 0.9f, "shotgunload", "tasershot", "riflegrenadeshot"),
+            new CustomSound("footstep", 0.75f),
+            new CustomSound("door", 1.0f, 1.5f),
+            new CustomSound("metalimpact", 0.8f, 1.2f),
+            new CustomSound("revolver", 2.0f, 1.2f, 1, 1.1f),
+            new CustomSound("shotgunshot", 2.5f, 1.3f, 1, 1.5f),
+            new CustomSound("rifleshot", 2.5f, 1.3f, 1, 1.3f, "harpooncoilrifleshot"),
+            new CustomSound("shot", 2f, 1.15f, 1, 0.9f, "shotgunload", "tasershot", "riflegrenadeshot"),
 
-            new CustomSound("coilgun", 2.3f, 0.6f, 1, 1.3f),
-            new CustomSound("flakgun", 2.5f, 0.6f, 1, 1.5f),
-            new CustomSound("railgun", 3f, 0.6f, 1, 1.9f, "railgunloop", "railgunstart", "railgunstop"),
-            new CustomSound("lasergunshot", 2.8f, 0.6f, 1, 1.7f),
-            new CustomSound("gravityshells_boom.ogg", 2.0f, 0.6f, 1, 3),
+            new CustomSound("coilgun", 2.3f, 1.35f, 1, 1.3f),
+            new CustomSound("flakgun", 2.5f, 1.4f, 1, 1.5f),
+            new CustomSound("railgun", 3f, 1.5f, 1, 1.9f, "railgunloop", "railgunstart", "railgunstop"),
+            new CustomSound("lasergunshot", 2.8f, 1.3f, 1, 1.7f),
+            new CustomSound("gravityshells_boom.ogg", 2.0f, 1.5f, 1, 3),
 
-            new CustomSound("sonardecoy.ogg", 1.0f, 1.0f, 0.5f, 1.5f),
+            new CustomSound("sonardecoy.ogg", 1, 1.1f, 0.6f, 1.5f),
 
-            new CustomSound("incendiumgrenade", 2f, 0.5f, 1, 3),
-            new CustomSound("stungrenade", 3f, 1, 0.5f, 4),
-            new CustomSound("explosion", 3f, 1, 0.5f, 5),
-            new CustomSound("gravityshells", 1.5f, 0.5f, 0.6f, 1),
+            new CustomSound("incendiumgrenade", 2, 1.2f, 1, 3),
+            new CustomSound("stungrenade", 3, 1.2f, 1, 4),
+            new CustomSound("explosion", 3, 1.6f, 1, 5),
+            new CustomSound("gravityshells", 1.5f, 1.4f, 1, 1.5f),
             new CustomSound("tinnitus", 1, 1, 1, 8),
         };
 
+        // Sounds in this list are ignored by all muffling/pitching/other processing except for gain.
         public HashSet<string> IgnoredSounds { get; set; } = new HashSet<string>
         {
             "barotrauma/content/sounds/ui",
@@ -289,6 +299,11 @@ namespace SoundproofWalls
 
         public HashSet<string> LowpassIgnoredSounds { get; set; } = new HashSet<string>
         {
+        };
+
+        public HashSet<string> ReverbForcedSounds { get; set; } = new HashSet<string> // Sounds that are always reverbed.
+        {
+            "explosion",
         };
 
         public HashSet<string> ReverbIgnoredSounds { get; set; } = new HashSet<string> // Sounds that are not reverbed by static or dynamic processing modes.

@@ -9,6 +9,7 @@ namespace SoundproofWalls
     {
         private readonly VorbisReader streamReader;
 
+        public long TotalSamples;
         public long MaxStreamSamplePos => (streamReader == null || streamReader.TotalSamples == null || streamReader.Channels == null) ? 0 : streamReader.TotalSamples * streamReader.Channels * 2;
 
         private List<float> playbackAmplitude;
@@ -31,6 +32,7 @@ namespace SoundproofWalls
             stream, true, xElement)
         {
             var reader = new VorbisReader(Filename);
+            TotalSamples = reader.TotalSamples * reader.Channels;
 
             // Allow for more simulatenous instances so rapdily repeated sounds with long reverbs on them (e.g. gunshots) don't get skipped.
             MaxSimultaneousInstances = 10;
@@ -164,7 +166,7 @@ namespace SoundproofWalls
 
         static float[] GetReverbBuffer(float[] buffer, int sampleRate)
         {
-            var filter = new ReverbFilter(sampleRate, 2);
+            var filter = new ReverbFilter(sampleRate, ConfigManager.Config.StaticReverbDuration, ConfigManager.Config.StaticReverbWetDryMix);
             return filter.ProcessBufferWithTail(buffer, sampleRate);
         }
 

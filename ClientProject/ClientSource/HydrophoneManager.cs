@@ -89,7 +89,7 @@ namespace SoundproofWalls
         {
             if (channel != null)
             {
-                SoundInfoManager.RemovePitchedChannel(channel);
+                ChannelInfoManager.RemovePitchedChannel(channel);
                 channel.Looping = false;
                 channel.Gain = 0;
                 channel.Dispose();
@@ -426,7 +426,7 @@ namespace SoundproofWalls
 
                 if (distanceSquared > channel.far * channel.far || channel.Gain < 0.001f || character.CurrentHull != null || character.isDead)
                 {
-                    SoundInfoManager.RemoveSoundInfo(channel);
+                    ChannelInfoManager.RemoveChannelInfo(channel);
                     StopHydrophoneChannel(channel);
                 }
                 else

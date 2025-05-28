@@ -194,7 +194,7 @@ namespace SoundproofWalls
             float soundStrength = 0.02f;
             for (int i = 0; i < playingChannels.Length; i++)
             {
-                if (playingChannels[i] != null && playingChannels[i].IsPlaying && SoundInfoManager.TryGetSoundInfo(playingChannels[i], out SoundInfo? info) && info != null && !info.Ignored && info.Hydrophoned)
+                if (playingChannels[i] != null && playingChannels[i].IsPlaying && ChannelInfoManager.TryGetChannelInfo(playingChannels[i], out ChannelInfo? info) && info != null && !info.Ignored && info.Hydrophoned)
                 {
                     if (info.IsLoud) { multiSoundMult += soundStrength * 2; }
                     else             { multiSoundMult += soundStrength; }
@@ -241,7 +241,7 @@ namespace SoundproofWalls
             {
                 if (playingChannels[i] != null && playingChannels[i].IsPlaying)
                 {
-                    if (playingChannels[i].Looping && SoundInfoManager.TryGetSoundInfo(playingChannels[i], out SoundInfo? info) && info != null && !info.Ignored)
+                    if (playingChannels[i].Looping && ChannelInfoManager.TryGetChannelInfo(playingChannels[i], out ChannelInfo? info) && info != null && !info.Ignored)
                     {
                         float gain = playingChannels[i].Gain;
                         if (!info.IsLoud)

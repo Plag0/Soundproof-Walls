@@ -30,7 +30,7 @@ namespace SoundproofWalls
             {
                 LastBubbleUpdateTime = (float)Timing.TotalTime;
 
-                // In case a client disconnects while their bubble channel is playing.
+                // In case a client disconnects while their bubble Channel is playing.
                 foreach (var kvp in clientBubbleChannels)
                 {
                     Client client = kvp.Key;
@@ -78,7 +78,7 @@ namespace SoundproofWalls
             if (clientBubbleChannels.TryGetValue(client, out SoundChannel? bubbleChannel) && bubbleChannel != null)
             {
                 // The redundancy of these operations is an echo of the infinite bubble bug of old.
-                SoundInfoManager.RemovePitchedChannel(bubbleChannel);
+                ChannelInfoManager.RemovePitchedChannel(bubbleChannel);
                 bubbleChannel.Looping = false;
                 bubbleChannel.Gain = 0;
                 bubbleChannel.Dispose();
@@ -98,6 +98,26 @@ namespace SoundproofWalls
             return false;
         }
 
+        public static bool ShouldPlayBubbles(Character character)
+        {
+            if (character == null) return false;
+
+            Limb playerHead = Util.GetCharacterHead(character);
+            Hull limbHull = playerHead.Hull;
+            bool wearingDivingGear = Util.IsCharacterWearingDivingGear(character);
+            bool oxygenReqMet = wearingDivingGear && character.Oxygen < 11 || !wearingDivingGear && character.OxygenAvailable < 96;
+            bool ignoreBubbles = !ConfigManager.Config.DrowningBubblesEnabled || Util.StringHasKeyword(character.Name, ConfigManager.Config.BubbleIgnoredNames);
+            bool headInWater = Util.SoundInWater(playerHead.Position, limbHull);
+            bool canSpeak = character.SpeechImpediment < 100;
+
+            if (!ignoreBubbles && oxygenReqMet && headInWater && canSpeak)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         private static void UpdateClientBubbleSounds(Client client)
         {
             PlayerBubbleSoundState state = PlayerBubbleSoundState.DoNotPlayBubbles; // Default to not playing.
@@ -106,7 +126,7 @@ namespace SoundproofWalls
             Limb? playerHead = player?.AnimController?.GetLimb(LimbType.Head);
             SoundChannel? voiceChannel = client.VoipSound?.soundChannel;
 
-            bool shouldStop = !ConfigManager.Config.Enabled || !Util.RoundStarted;
+            bool shouldStop = !ConfigManager.Config.Enabled || !ConfigManager.Config.DrowningBubblesEnabled || !Util.RoundStarted;
 
             if (shouldStop || voiceChannel == null || player == null || playerHead == null)
             {
@@ -114,19 +134,9 @@ namespace SoundproofWalls
                 return;
             }
 
-            Vector2 soundWorldPos = playerHead.WorldPosition;
-            Hull soundHull = Hull.FindHull(soundWorldPos, player.CurrentHull);
-            Vector2 soundPos = Util.LocalizePosition(soundWorldPos, soundHull);
-
-            bool soundInWater = Util.SoundInWater(soundPos, soundHull);
             var messageType = Util.GetMessageType(client);
-
-            bool wearingDivingGear = Util.IsCharacterWearingDivingGear(player);
-            bool oxygenReqMet = wearingDivingGear && player.Oxygen < 11 || !wearingDivingGear && player.OxygenAvailable < 96;
-            bool ignoreBubbles = Util.StringHasKeyword(player.Name, ConfigManager.Config.BubbleIgnoredNames);
             bool isPlaying = clientBubbleChannels.TryGetValue(client, out SoundChannel? currentBubbleChannel) && currentBubbleChannel != null;
             bool soundMatches = true;
-
             if (isPlaying)
             {
                 soundMatches = currentBubbleChannel.Sound.Filename == RadioBubbleSound?.Filename && messageType == ChatMessageType.Radio ||
@@ -134,7 +144,7 @@ namespace SoundproofWalls
             }
 
             // Check if bubbles should be playing.
-            if (soundMatches && soundInWater && oxygenReqMet && !ignoreBubbles)
+            if (soundMatches && ShouldPlayBubbles(player))
             {
                 state = messageType == ChatMessageType.Radio ? PlayerBubbleSoundState.PlayRadioBubbles : PlayerBubbleSoundState.PlayLocalBubbles;
             }
