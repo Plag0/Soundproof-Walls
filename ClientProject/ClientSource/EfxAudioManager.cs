@@ -272,7 +272,7 @@ namespace SoundproofWalls
             // Influences decay and delay times.
             float roomSizeFactor = Listener.ConnectedArea / 180000; // Arbitrary magic number that seems to work well.
 
-            //LuaCsLogger.Log($" targetReverbGain: {targetReverbGain} actualReverbGain: {ReverbGain} playingChannelMult: {playingChannelMult} totalAudioAmplitude: {totalAudioAmplitude}");
+            //LuaCsLogger.Log($" targetReverbGain: {targetReverbGain} actualReverbGain: {AirReverbGain} playingChannelMult: {amplitudeMult} totalAudioAmplitude: {totalAudioAmplitude}");
 
             // Decay Time
             float decayTime = 3.1f + (roomSizeFactor * 1.0f);

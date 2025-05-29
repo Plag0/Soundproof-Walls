@@ -56,6 +56,7 @@ namespace SoundproofWalls
         public bool HydrophoneBandpassFilterEnabled { get; set; } = true;
         public float HydrophoneBandpassFilterHfGain { get; set; } = 0.2f;
         public float HydrophoneBandpassFilterLfGain { get; set; } = 0.65f;
+        public float DynamicMufflingTransitionFactor { get; set; } = 1.2f; // The max change of high frequency gain over the span of a second. Transitions the muffle effect on and off.
         public bool HighFidelityMuffling { get; set; } = false; // Creates a new effect slot with an EQ for each pool of uniquely muffled channels. Higher performance cost over basic lowpass filters.
         public bool DynamicReverbEnabled { get; set; } = true;
         public bool DynamicReverbRadio { get; set; } = false;
@@ -185,7 +186,7 @@ namespace SoundproofWalls
         public HashSet<CustomSound> CustomSounds { get; set; } = new HashSet<CustomSound>(new ElementEqualityComparer())
         {
             new CustomSound("footstep", 0.75f),
-            new CustomSound("door", 1.0f, 1.5f),
+            new CustomSound("door", 1.0f, 2.0f),
             new CustomSound("metalimpact", 0.8f, 1.2f),
             new CustomSound("revolver", 2.0f, 1.2f, 1, 1.1f),
             new CustomSound("shotgunshot", 2.5f, 1.3f, 1, 1.5f),

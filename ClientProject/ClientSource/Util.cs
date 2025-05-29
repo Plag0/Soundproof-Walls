@@ -88,6 +88,12 @@ namespace SoundproofWalls
             channel.Dispose();
         }
 
+        public static float SmoothStep(float current, float target, float maxStep)
+        {
+            float diff = target - current;
+            return current + (MathF.Abs(diff) < maxStep ? diff : MathF.Sign(diff) * maxStep);
+        }
+
         private static bool ShouldSkipSound(Sound? sound, bool starting, bool stopping)
         {
             if (sound == null)

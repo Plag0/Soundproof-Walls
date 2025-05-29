@@ -53,6 +53,7 @@ namespace SoundproofWalls
         private float trailingGainMultHF;
         private float gainMultLF;
         private float trailingGainMultLF;
+        private bool isFirstIteration;
         private List<Obstruction> obstructions = new List<Obstruction>();
         private List<ChannelInfo> clones = new List<ChannelInfo>();
 
@@ -268,6 +269,7 @@ namespace SoundproofWalls
             ShortName = Path.GetFileName(LongName);
             startGain = channel.Gain;
             startPitch = channel.FrequencyMultiplier;
+            isFirstIteration = true;
             this.ChannelHull = channelHull;
             this.itemComp = itemComp;
             this.statusEffect = statusEffect;
@@ -291,6 +293,7 @@ namespace SoundproofWalls
             }
 
             Update(channelHull, statusEffect, itemComp, speakingClient, messageType);
+            isFirstIteration = false;
         }
 
         // TODO This method takes arguments because sometimes the constructor is called without any of this info available (created from soundchannel ctor with no contex, should I even do this or allow the different types to make themselves later? pretty sure it caused popping previously.)
@@ -449,6 +452,12 @@ namespace SoundproofWalls
             gainMultHF = Math.Clamp(gainMultHf, 0, 1);
             gainMultLF = Math.Clamp(gainMultLf, 0, 1);
 
+            if (isFirstIteration)
+            {
+                trailingGainMultHF = gainMultHF;
+                trailingGainMultLF = gainMultLF;
+            }
+
             if (config.DynamicFx)
             {
                 UpdateDynamicFx();
@@ -490,11 +499,9 @@ namespace SoundproofWalls
 
             if (IsInUpdateLoop)
             {
-                float rate = (float)(1.5f * muffleUpdateInterval);
-                float gainDiff = gainMultHF - trailingGainMultHF;
-                trailingGainMultHF += Math.Abs(gainDiff) < rate ? gainDiff : Math.Sign(gainDiff) * rate;
-                gainDiff = gainMultLF - trailingGainMultLF;
-                trailingGainMultLF += Math.Abs(gainDiff) < rate ? gainDiff : Math.Sign(gainDiff) * rate;
+                float maxStep = (float)(config.DynamicMufflingTransitionFactor * muffleUpdateInterval);
+                trailingGainMultHF = Util.SmoothStep(trailingGainMultHF, gainMultHF, maxStep);
+                trailingGainMultLF = Util.SmoothStep(trailingGainMultLF, gainMultLF, maxStep);
             }
             else
             {
