@@ -160,6 +160,9 @@ namespace SoundproofWalls
         public double NonLoopingSoundMuffleUpdateInterval { get; set; } = 0.2f; // Only applied if UpdateNonLoopingSounds is enabled.
         public double ComponentMuffleUpdateInterval { get; set; } = 0.2f;
         public double StatusEffectMuffleUpdateInterval { get; set; } = 0.2f;
+        public float PitchTransitionFactor { get; set; } = 1.1f;
+        public float GainTransitionFactor { get; set; } = 1.1f;
+
         public int MaxSimultaneousInstances = 8; // How many instances of the same sound clip can be playing at the same time. Vanilla is 5 (cite Sound.cs)
         public float LoopingComponentSoundNearMultiplier { get; set; } = 0.3f; // near = far * thisMult - "near" is the max range before volume falloff starts.
         public float SoundPropagationRange { get; set; } = 500; // Area^2 that a sound in WallPropagatingSounds can search for a hull to propagate to.

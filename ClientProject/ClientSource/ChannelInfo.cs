@@ -373,7 +373,7 @@ namespace SoundproofWalls
                 }
             }
 
-            if (!skipMuffleUpdate)
+            if (!skipMuffleUpdate || isFirstIteration)
             {
                 UpdateProperties();
                 UpdateMuffle();
@@ -452,12 +452,6 @@ namespace SoundproofWalls
             gainMultHF = Math.Clamp(gainMultHf, 0, 1);
             gainMultLF = Math.Clamp(gainMultLf, 0, 1);
 
-            if (isFirstIteration)
-            {
-                trailingGainMultHF = gainMultHF;
-                trailingGainMultLF = gainMultLF;
-            }
-
             if (config.DynamicFx)
             {
                 UpdateDynamicFx();
@@ -497,7 +491,7 @@ namespace SoundproofWalls
         {
             if (Plugin.EffectsManager == null) return;
 
-            if (IsInUpdateLoop)
+            if (IsInUpdateLoop && !isFirstIteration)
             {
                 float maxStep = (float)(config.DynamicMufflingTransitionFactor * muffleUpdateInterval);
                 trailingGainMultHF = Util.SmoothStep(trailingGainMultHF, gainMultHF, maxStep);
@@ -927,10 +921,10 @@ namespace SoundproofWalls
             float targetGain = currentGain * mult;
 
             // Only fade audio if not actively sidechaining for fast response times.
-            if (IsInUpdateLoop && Plugin.Sidechain.SidechainMultiplier <= 0)
+            if (IsInUpdateLoop && !isFirstIteration && Plugin.Sidechain.SidechainMultiplier <= 0)
             {
-                float gainDiff = targetGain - Gain;
-                Gain += Math.Abs(gainDiff) < 0.1f ? gainDiff : Math.Sign(gainDiff) * 0.1f;
+                float maxStep = (float)(config.GainTransitionFactor * Timing.Step);
+                Gain = Util.SmoothStep(Gain, targetGain, maxStep);
             }
             else
             {
@@ -991,10 +985,10 @@ namespace SoundproofWalls
 
             float targetPitch = !IsInUpdateLoop ? startPitch * mult : 1 * mult;
 
-            if (IsInUpdateLoop)
+            if (IsInUpdateLoop && !isFirstIteration)
             {
-                float pitchDiff = targetPitch - Pitch;
-                Pitch += Math.Abs(pitchDiff) < 0.1f ? pitchDiff : Math.Sign(pitchDiff) * 0.1f;
+                float maxStep = (float)(config.PitchTransitionFactor * Timing.Step);
+                Pitch = Util.SmoothStep(Pitch, targetPitch, maxStep);
             }
             else
             {
