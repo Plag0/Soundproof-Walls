@@ -4,6 +4,7 @@ using Barotrauma;
 using System.Reflection;
 using Microsoft.Xna.Framework;
 using Barotrauma.Networking;
+using FarseerPhysics.Collision;
 
 namespace SoundproofWalls
 {
@@ -414,7 +415,7 @@ namespace SoundproofWalls
         }
 
         // Copy of the vanilla GetConnectedHulls with minor adjustments to align with Soundproof Walls searching algorithms.
-        public static HashSet<Hull> GetConnectedHulls(Hull? startHull, bool includingThis, int? searchDepth = null, bool ignoreClosedGaps = false)
+        public static HashSet<Hull> GetConnectedHulls(Hull? startHull, bool includingThis, int? searchDepth = null, bool respectClosedGaps = false)
         {
             if (startHull == null) { return new HashSet<Hull>(); }
 
@@ -427,7 +428,7 @@ namespace SoundproofWalls
                 searchDepth = valueOrDefault;
             }
 
-            GetAdjacentHulls(startHull, startHull.adjacentHulls, ref step, searchDepth.Value, ignoreClosedGaps);
+            GetAdjacentHulls(startHull, startHull.adjacentHulls, ref step, searchDepth.Value, respectClosedGaps);
             if (!includingThis)
             {
                 startHull.adjacentHulls.Remove(startHull);
@@ -448,7 +449,46 @@ namespace SoundproofWalls
             return false;
         }
 
-        public static void GetAdjacentHulls(Hull currentHull, HashSet<Hull> connectedHulls, ref int step, int searchDepth, bool ignoreClosedGaps = false)
+        public static Gap? GetDoorSoundGap(bool isDoorSound, Hull? soundHull, Vector2 soundPos)
+        {
+            if (!isDoorSound || soundHull == null) { return null; }
+
+            Gap? closestGap = null; // Closest gap to the sound will be the gap with the door the sound came from.
+            float bestDistance = float.MaxValue;
+            int j = 0;
+
+            // Get gap closest to sound.
+            foreach (Gap g in soundHull.ConnectedGaps)
+            {
+                if (g.ConnectedDoor != null)
+                {
+                    float distToDoor = Vector2.Distance(soundPos, g.ConnectedDoor.Item.Position);
+                    if (distToDoor < bestDistance) { closestGap = g; bestDistance = distToDoor; }
+                }
+                j++;
+            }
+
+            return closestGap;
+        }
+
+        public static bool IsPathThroughOwnDoor(bool isDoorSound, Hull soundHull, Vector2 soundPos)
+        {
+            Gap? closestGap = GetDoorSoundGap(isDoorSound, soundHull, soundPos);
+            if (closestGap != null)
+            {
+                for (int i = 0; i < 2 && i < closestGap.linkedTo.Count; i++)
+                {
+                    if (closestGap.linkedTo[i] is Hull hull && Listener.ConnectedHulls.Contains(hull))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public static void GetAdjacentHulls(Hull currentHull, HashSet<Hull> connectedHulls, ref int step, int searchDepth, bool respectClosedGaps = false)
         {
             connectedHulls.Add(currentHull);
             if (step > searchDepth)
@@ -463,10 +503,10 @@ namespace SoundproofWalls
                 // For doors.
                 if (gap.ConnectedDoor != null)
                 {
-                    if (IsDoorClosed(gap.ConnectedDoor)) { continue; }
+                    if (respectClosedGaps && IsDoorClosed(gap.ConnectedDoor)) { continue; }
                 }
                 // For holes in hulls.
-                else if (ignoreClosedGaps && gap.Open < Config.OpenWallThreshold)
+                else if (respectClosedGaps && gap.Open < Config.OpenWallThreshold)
                 {
                     continue;
                 }
@@ -476,7 +516,7 @@ namespace SoundproofWalls
                     if (gap.linkedTo[i] is Hull hull && !connectedHulls.Contains(hull))
                     {
                         step++;
-                        GetAdjacentHulls(hull, connectedHulls, ref step, searchDepth, ignoreClosedGaps);
+                        GetAdjacentHulls(hull, connectedHulls, ref step, searchDepth, respectClosedGaps);
                     }
                 }
             }

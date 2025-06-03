@@ -61,8 +61,8 @@
 	<spw_mufflesubmergedplayertooltip>Muffle audio when your head is underwater (recommended)</spw_mufflesubmergedplayertooltip>
 	<spw_mufflesubmergedviewtarget>Muffle Submerged View Target</spw_mufflesubmergedviewtarget>
 	<spw_mufflesubmergedviewtargettooltip>Muffle audio when your viewed target is underwater (e.g., turrets, cameras, etc)</spw_mufflesubmergedviewtargettooltip>
-	<spw_mufflesubmergedsounds>Muffle Submerged Sounds</spw_mufflesubmergedsounds>
-	<spw_mufflesubmergedsoundstooltip>Muffle sounds that are positioned under the surface of the water (recommended)</spw_mufflesubmergedsoundstooltip>
+	<spw_mufflesubmergedsounds>Muffle Water Surface</spw_mufflesubmergedsounds>
+	<spw_mufflesubmergedsoundstooltip>Muffle sounds that traverse an air-water barrier (recommended)</spw_mufflesubmergedsoundstooltip>
 	<spw_muffleflowsounds>Muffle Flow Sounds</spw_muffleflowsounds>
 	<spw_muffleflowsoundstooltip>Toggle the muffling of water flow sounds from leaks when the player is submerged, eavesdropping, or using hydrophones</spw_muffleflowsoundstooltip>
 	<spw_mufflefiresounds>Muffle Fire Sounds</spw_mufflefiresounds>

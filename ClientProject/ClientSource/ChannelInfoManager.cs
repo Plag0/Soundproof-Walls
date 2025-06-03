@@ -3,6 +3,7 @@ using Barotrauma.Networking;
 using Barotrauma.Sounds;
 using Barotrauma;
 using System.Collections.Concurrent;
+using static Iced.Intel.DecoderInternal.OpCodeHandler_MandatoryPrefix3;
 
 namespace SoundproofWalls
 {
@@ -33,7 +34,7 @@ namespace SoundproofWalls
                     List<SoundPathfinder.PathfindingResult> topResults = SoundPathfinder.FindShortestPaths(
                         info.WorldPos, info.ChannelHull,
                         Listener.WorldPos, listenerHull,
-                        listenerHull?.Submarine, 1);
+                        listenerHull?.Submarine, 1, maxRawDistance: info.Channel.Far);
                     lock (info.VoicePathResultsLock) { info.VoicePathResults = topResults.ToList(); }
                 }
 
@@ -41,6 +42,22 @@ namespace SoundproofWalls
                 else if (!info.Channel.Looping && ConfigManager.Config.UpdateNonLoopingSounds && info.Channel.IsPlaying)
                 {
                     info.Update();
+                }
+            }
+
+            if (ConfigManager.Config.DebugPlayingSounds)
+            {
+                int i = 1;
+                string newLines = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+                LuaCsLogger.Log($"{newLines}[Soundproof Walls] DebugPlayingSounds enabled.\nCurrently playing channels:");
+                foreach (ChannelInfo info in channelInfoMap.Values)
+                {
+                    if (info.Channel.IsPlaying)
+                    { 
+                        // TODO could add more info like soundInfo exclusions and muffle level etc
+                        LuaCsLogger.Log($"          {i}. {info.LongName}");
+                        i++;
+                    }
                 }
             }
         }

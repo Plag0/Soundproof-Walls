@@ -45,7 +45,8 @@ namespace SoundproofWalls
         public bool SyncSettings { get; set; } = true;
         public bool TalkingRagdolls { get; set; } = true;
         public bool DrowningBubblesEnabled { get; set; } = true;
-        public bool FocusTargetAudio { get; set; } = false;
+        public bool FocusTargetAudio { get; set; } = true;
+        public bool AttenuateWithApproximateDistance = true;
         public double HeavyLowpassFrequency { get; set; } = 200; // Used for wall and water obstructions.
         public float SoundRangeMultiplierMaster { get; set; } = 1.6f;
         public float LoopingSoundRangeMultiplierMaster { get; set; } = 0.9f;
@@ -54,6 +55,7 @@ namespace SoundproofWalls
         public bool RemoveUnusedBuffers { get; set; } = false; // If enabled, sounds are loaded without the vanilla muffle buffer which saves roughly 200MB of memory. Downside is 1-2 seconds of extra loading times.
         public bool HydrophoneDistortionEnabled { get; set; } = true;
         public bool HydrophoneBandpassFilterEnabled { get; set; } = true;
+        public bool LoudSoundDistortionEnabled { get; set; } = true; // Warning: makes loud sounds extremely loud.
         public float HydrophoneBandpassFilterHfGain { get; set; } = 0.2f;
         public float HydrophoneBandpassFilterLfGain { get; set; } = 0.65f;
         public float DynamicMufflingTransitionFactor { get; set; } = 1.2f; // The max change of high frequency gain over the span of a second. Transitions the muffle effect on and off.
@@ -62,10 +64,15 @@ namespace SoundproofWalls
         public bool DynamicReverbRadio { get; set; } = false;
         public float DynamicReverbAreaSizeMultiplier { get; set; } = 1.0f;
         public float DynamicReverbAirTargetGain { get; set; } = 0.40f;
-        public float DynamicReverbWaterTargetGain { get; set; } = 0.50f;
+        public float DynamicReverbWaterTargetGain { get; set; } = 0.6f;
+        public float DyanmicReverbWaterReverbAmplitudeThreshold { get; set; } = 0.75f; // The necessary amplitude * gain needed for a non "loud" source to have reverb applied in water.
+        public float LoudSoundDistortionTargetGain { get; set; } = 0.2f;
+        public float LoudSoundDistortionTargetEdge { get; set; } = 0.34f;
+        public int LoudSoundDistortionTargetFrequency { get; set; } = 200; // The frequencies targeted by the distortion
+        public int LoudSoundDistortionLowpassFrequency { get; set; } = 24000; // The frequencies allowed through post-distortion
         public float HydrophoneDistortionTargetGain { get; set; } = 0.24f;
         public float HydrophoneDistortionTargetEdge { get; set; } = 0.22f;
-        public bool OccludeSounds { get; set; } = true; // Enable muffle strength from wall occlusion.
+        public bool OccludeSounds { get; set; } = true; // Enable muffle strength from wall occlusion. Is still disabled for classicFx
         public bool AutoAttenuateMuffledSounds { get; set; } = true; // Should the volume of the lower frequencies (not just the high freqs) be attenuated with muffle strength.
         public float DynamicMuffleStrengthMultiplier { get; set; } = 1.0f;
         public int MaxSimulatedSoundDirections { get; set; } = 0; // How many additional versions of the same sound can be playing simultaneously from different directions.
@@ -79,7 +86,6 @@ namespace SoundproofWalls
         public double MediumLowpassFrequency { get; set; } = 700; // Used for eavesdropping.
         public double LightLowpassFrequency { get; set; } = 1200; // Used for wearing suits, propagating sounds, and path ignored sounds.
         
-
         // Voice
         public bool RadioCustomFilterEnabled { get; set; } = true;
         public double VoiceHeavyLowpassFrequency { get; set; } = 150f; // Used when a player's voice is muffled heavily. Otherwise, uses medium or light.
@@ -312,6 +318,11 @@ namespace SoundproofWalls
 
         public HashSet<string> ReverbIgnoredSounds { get; set; } = new HashSet<string> // Sounds that are not reverbed by static or dynamic processing modes.
         {
+            "items/alarmdivingloop.ogg",
+            "divingsuitloop", // Remove this line for some cool new ambience sounds :)
+            "divingsuitoxygenleakloop",
+            "scooterloop",
+
         };
 
         public HashSet<string> ContainerIgnoredSounds { get; set; } = new HashSet<string>
@@ -326,5 +337,9 @@ namespace SoundproofWalls
         public bool HideSettings { get; set; } = false;
         [JsonIgnore]
         public bool RememberScroll { get; set; } = true;
+        [JsonIgnore]
+        public bool DebugObstructions { get; set; } = false; // See what is obstructing all audio with console output.
+        [JsonIgnore]
+        public bool DebugPlayingSounds { get; set; } = false; // See all playing sounds and their filenames.
     }
 }

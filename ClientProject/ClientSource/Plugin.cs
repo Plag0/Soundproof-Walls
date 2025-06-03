@@ -10,7 +10,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using OpenAL;
 using Barotrauma.Extensions;
-using System.Security.Cryptography.X509Certificates;
 
 namespace SoundproofWalls
 {
@@ -889,11 +888,6 @@ namespace SoundproofWalls
         public static void SPW_SoundChannel_Dispose(SoundChannel __instance)
         {
             if (!Config.Enabled) { return; };
-
-            if (__instance.Sound.Filename.ToLower().Contains("vent"))
-            {
-                LuaCsLogger.Log($"Disposed vent");
-            }
 
             SoundChannel channel = __instance;
 

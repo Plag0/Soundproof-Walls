@@ -56,7 +56,7 @@ namespace SoundproofWalls
             EavesdroppedHull = GetListenerEavesdroppedHull();
             CurrentHull = GetListenerHull();
             FocusedHull = IsEavesdropping ? EavesdroppedHull : CurrentHull;
-            ConnectedHulls = Util.GetConnectedHulls(FocusedHull, includingThis: true, ignoreClosedGaps: true);
+            ConnectedHulls = Util.GetConnectedHulls(FocusedHull, includingThis: true, respectClosedGaps: true);
 
             ConnectedArea = 0;
             foreach (Hull hull in ConnectedHulls)
