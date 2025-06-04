@@ -1043,7 +1043,7 @@ namespace SoundproofWalls
                 if (Listener.IsWearingDivingSuit) mult += config.DivingSuitPitchMultiplier - 1;
             }
 
-            float targetPitch = !IsInUpdateLoop ? startPitch * mult : 1 * mult;
+            float targetPitch = currentPitch * mult;
 
             if (IsInUpdateLoop && !isFirstIteration)
             {
