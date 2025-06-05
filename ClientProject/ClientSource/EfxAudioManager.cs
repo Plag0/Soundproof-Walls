@@ -324,7 +324,7 @@ namespace SoundproofWalls
             AirReverbGain += Math.Abs(gainDiff) < 0.01f ? gainDiff : Math.Sign(gainDiff) * 0.01f;
 
             // Influences decay and delay times.
-            float roomSizeFactor = Listener.ConnectedArea / 180000; // Arbitrary magic number that seems to work well.
+            float roomSizeFactor = (Listener.ConnectedArea * ConfigManager.Config.DynamicReverbAreaSizeMultiplier) / 180000; // Arbitrary magic number that seems to work well.
 
             //LuaCsLogger.Log($" targetReverbGain: {targetReverbGain} actualReverbGain: {AirReverbGain} playingChannelMult: {amplitudeMult} totalAudioAmplitude: {totalAudioAmplitude}");
 
@@ -595,7 +595,7 @@ namespace SoundproofWalls
             bool inHull = channelInfo.ChannelHull != null;
             bool hydrophoned = channelInfo.Hydrophoned;
             float amplitude = channelInfo.Channel.CurrentAmplitude * channelInfo.Gain;
-            bool shouldReverbWater = channelInfo.IsLoud || amplitude >= ConfigManager.Config.DyanmicReverbWaterReverbAmplitudeThreshold;
+            bool shouldReverbWater = channelInfo.IsLoud || amplitude >= ConfigManager.Config.DyanmicReverbWaterAmplitudeThreshold;
 
             // Select which slot to route to.
             uint send1_targetSlot = Send1_DetermineTargetEffectSlot(inHull, channelInfo.IgnoreReverb, hydrophoned, shouldReverbWater);
