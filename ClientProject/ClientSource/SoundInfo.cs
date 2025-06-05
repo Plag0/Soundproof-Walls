@@ -50,16 +50,16 @@ namespace SoundproofWalls
                 PropagateWalls = !IgnoreAll && !IgnoreLowpass && Util.StringHasKeyword(filename, config.PropagatingSounds);
 
                 Sound.MaxSimultaneousInstances = config.MaxSimultaneousInstances;
+            }
 
-                CustomSound? customSound = GetCustomSound(filename);
-                if (customSound != null)
-                {
-                    GainMult = customSound.GainMultiplier;
-                    RangeMult = customSound.RangeMultiplier;
-                    SidechainMult = customSound.SidechainMultiplier;
-                    SidechainRelease = customSound.Release;
-                    IsLoud = SidechainMult > 0;
-                }
+            CustomSound? customSound = GetCustomSound(filename);
+            if (customSound != null)
+            {
+                GainMult = customSound.GainMultiplier;
+                RangeMult = customSound.RangeMultiplier;
+                SidechainMult = customSound.SidechainMultiplier;
+                SidechainRelease = customSound.Release;
+                IsLoud = SidechainMult > 0;
             }
         }
 

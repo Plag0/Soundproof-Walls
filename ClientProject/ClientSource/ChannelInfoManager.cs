@@ -3,7 +3,6 @@ using Barotrauma.Networking;
 using Barotrauma.Sounds;
 using Barotrauma;
 using System.Collections.Concurrent;
-using static Iced.Intel.DecoderInternal.OpCodeHandler_MandatoryPrefix3;
 
 namespace SoundproofWalls
 {

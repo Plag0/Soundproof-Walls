@@ -1495,8 +1495,7 @@ namespace SoundproofWalls
             reducedSound.FillAlBuffers();
             if (reducedSound.Buffers is not { AlBuffer: not 0 }) { return false; }
 
-            // Add sounds to the SoundInfo wrapper upon creation ONLY if cloned directional sounds are off, otherwise we will likely get a stack overflow as the clones make themselves recursively.
-            if (Config.MaxSimulatedSoundDirections <= 0) { ChannelInfoManager.EnsureUpdateChannelInfo(instance, dontMuffle: !muffle); }
+            ChannelInfoManager.EnsureUpdateChannelInfo(instance, dontMuffle: !muffle);
 
             uint alBuffer = reducedSound.Buffers.AlBuffer;
 
@@ -1519,8 +1518,7 @@ namespace SoundproofWalls
             ChannelInfo soundInfo = ChannelInfoManager.EnsureUpdateChannelInfo(instance, dontMuffle: !muffle);
 
             uint alBuffer = extendedSound.Buffers.AlBuffer;
-            // TODO implement reverb conditon for extended sounds in SoundInfo telegraphed via SoundInfo.reverbed
-            //uint alBuffer = muffleInfo.Reverb ? extendedSound.Buffers.AlReverbBuffer : extendedSound.Buffers.AlBuffer;
+
             if (soundInfo.Muffled || extendedSound.Owner.GetCategoryMuffle(instance.Category))
             {
                 if (soundInfo.LightMuffle)

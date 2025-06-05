@@ -235,6 +235,8 @@ namespace SoundproofWalls
         {
             isClone = true;
             Channel = original.Channel;
+            SoundInfo = original.SoundInfo;
+            isFirstIteration = original.isFirstIteration;
             obstructions = new List<Obstruction>(original.obstructions);
             Muffled = false;
 
@@ -766,33 +768,41 @@ namespace SoundproofWalls
             for (int i = 0; i < numDoorObstructions; i++) { obstructions.Add(Obstruction.DoorThick); }
             for (int j = 0; j < numWaterSurfaceObstructions; j++) { obstructions.Add(Obstruction.WaterSurface); }
 
-            // 8. Add/remove clones.
+            // 8. Add/remove clones TODO refactor this.
+
             // Dispose clones if there's a path to the sound with no occlusion.
             if (!noPath && numWallObstructions <= 0)
             {
                 DisposeClones();
                 return;
             }
+
             // For multiple sounds playing at different positions to simulate the sounds pathing.
             if (simulateSoundDirection)
             {
-                approximateDistance = null; // The "parent" sound does not have an approximate distance.
+                // Prune clone count to the perfect amount.
+                while (clones.Count > targetNumResults)
+                {
+                    clones[0].Channel?.Dispose();
+                    clones.Remove(clones[0]);
+                }
+
+                approximateDistance = null; // The parent sound should always default to euclidean cloneDist.
+
                 for (int i = 0; i < topResults.Count; i++)
                 {
-                    Vector2 intersectionPos = topResults[i].LastIntersectionPos;
-                    float distance = topResults[i].RawDistance;
-                    float originalRange = Channel.Far;
-                    float newRange = originalRange;
-                    float distanceToListener = Vector2.Distance(intersectionPos, Listener.WorldPos);
-                    if (distance > 0) { newRange = (distanceToListener * originalRange) / distance; }
-
+                    Vector2 clonePos = topResults[i].LastIntersectionPos;
+                    float cloneDist = topResults[i].RawDistance;
                     ChannelInfo clone;
-                    if (clones.Count > i) 
+
+                    // Perfect amount of clones. Ensure they are all playing.
+                    if (clones.Count == targetNumResults) 
                     {
                         clone = clones[i];
-                        if (clone.Channel == null || !clone.Channel.IsPlaying) 
+                        if (clone.SoundInfo?.Sound == null) { clones[i].Channel.Dispose(); clones.Remove(clones[i]); clone = null; }
+                        else if (clone.Channel == null || !clone.Channel.IsPlaying) 
                         {
-                            clone.Channel = SoundPlayer.PlaySound(Channel.Sound, intersectionPos, range: originalRange);
+                            clone.Channel = SoundPlayer.PlaySound(clone.SoundInfo.Sound, clonePos);
                             if (clone.Channel != null)
                             {
                                 clone.Channel.Looping = Channel.Looping;
@@ -801,11 +811,12 @@ namespace SoundproofWalls
                             }
                         }
                     }
+                    // Too few clones. Create additional.
                     else 
                     {
                         clone = CreateIndependentCopy();
                         // Play the duplicate sound at the intersection with a range that attenuates the sound based on how far the original would have to travel.
-                        clone.Channel = SoundPlayer.PlaySound(Channel.Sound, intersectionPos, range: originalRange);
+                        clone.Channel = SoundPlayer.PlaySound(Channel.Sound, clonePos);
                         if (clone.Channel != null)
                         {
                             clone.Channel.Looping = Channel.Looping;
@@ -826,7 +837,7 @@ namespace SoundproofWalls
                     clone.obstructions = new List<Obstruction>(clonedObstructions);
                     for (int j = 0; j < topResults[i].ClosedDoorCount; j++) { clone.obstructions.Add(Obstruction.DoorThick); }
                     for (int j = 0; j < topResults[i].WaterSurfaceCrossings; j++) { clone.obstructions.Add(Obstruction.WaterSurface); }
-                    clone.approximateDistance = distance;
+                    clone.approximateDistance = cloneDist;
                     clone.Channel.Position = new Vector3(topResults[i].LastIntersectionPos, 0.0f);
                 }
             }
@@ -840,7 +851,7 @@ namespace SoundproofWalls
 
             noPath = listenerHull != soundHull && (listenerHull == null || soundHull == null || !listenerConnectedHulls.Contains(soundHull!));
 
-            // Returns float.MaxValue if there is no path between the listener and the sound. Otherwise returns the aprox distance going through gaps.
+            // Returns float.MaxValue if there is no path between the listener and the sound. Otherwise returns the aprox cloneDist going through gaps.
             float distance = GetApproximateDistance(Listener.LocalPos, localPos, listenerHull, soundHull, Channel.Far, ignoredGap: Util.GetDoorSoundGap(audioIsFromDoor, ChannelHull, localPos));
             approximateDistance = listenerHull != null && soundHull != null ? distance : null;
             bool exceedsRange = Distance >= Channel.Far;
@@ -849,7 +860,7 @@ namespace SoundproofWalls
             // Sounds outside the sub can propagate in, but sounds sounds inside cannot propagate out.
             if (SoundInfo.IgnorePath)
             {
-                approximateDistance = null; // Null this so the Distance property defaults to euclidean distance.
+                approximateDistance = null; // Null this so the Distance property defaults to euclidean cloneDist.
                 obstructions.Add(Obstruction.Suit); // Add a slight muffle to these sounds.
             }
             else if (noPath || exceedsRange) // One extra feature the simple obstruction function has is allowing sounds to propagate when out of range.
@@ -955,7 +966,7 @@ namespace SoundproofWalls
             // Only do this if there's a noticable difference between the euclideanDistance that OpenAL uses and the approximate distance,
             // because crossing the max distance threshold rapidly is noticably less smooth when applied this way, despite using the same formula.
             bool ignoreGainFade = false;
-            if (config.AttenuateWithApproximateDistance && approximateDistance != null && MathF.Abs(Distance - euclideanDistance) > 100)
+            if ((config.AttenuateWithApproximateDistance || isClone) && approximateDistance != null && MathF.Abs(Distance - euclideanDistance) > 100)
             {
                 rolloffFactor = 0; // Disable OpenAL distance attenuation.
 
@@ -1008,6 +1019,7 @@ namespace SoundproofWalls
             }
 
             float mult = 1;
+            float currentPitch = startPitch;
 
             // Voice.
             if (audioIsVoice || audioIsRadio)
@@ -1112,7 +1124,7 @@ namespace SoundproofWalls
         /// <summary>
         /// Calculates the gain multiplier based on the OpenAL Soft AL_LINEAR_DISTANCE_CLAMPED model.
         /// </summary>
-        /// <param name="distance">The current distance of the source from the listener.</param>
+        /// <param name="distance">The distance of the source from the listener.</param>
         /// <param name="near">AL_REFERENCE_DISTANCE: The distance at which the gain is 1.0.</param>
         /// <param name="far">AL_MAX_DISTANCE: The distance at which the gain is 0.0 (if rolloffFactor is 1.0) or maximally attenuated.</param>
         /// <param name="rolloffFactor">AL_ROLLOFF_FACTOR: The factor that determines how quickly the gain attenuates.</param>

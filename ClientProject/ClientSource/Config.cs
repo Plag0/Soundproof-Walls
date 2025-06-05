@@ -66,7 +66,7 @@ namespace SoundproofWalls
         public float DynamicReverbAirTargetGain { get; set; } = 0.40f;
         public float DynamicReverbWaterTargetGain { get; set; } = 0.6f;
         public float DyanmicReverbWaterReverbAmplitudeThreshold { get; set; } = 0.75f; // The necessary amplitude * gain needed for a non "loud" source to have reverb applied in water.
-        public float LoudSoundDistortionTargetGain { get; set; } = 0.2f;
+        public float LoudSoundDistortionTargetGain { get; set; } = 0.06f;
         public float LoudSoundDistortionTargetEdge { get; set; } = 0.34f;
         public int LoudSoundDistortionTargetFrequency { get; set; } = 200; // The frequencies targeted by the distortion
         public int LoudSoundDistortionLowpassFrequency { get; set; } = 24000; // The frequencies allowed through post-distortion
