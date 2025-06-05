@@ -47,35 +47,36 @@ namespace SoundproofWalls
         public bool DrowningBubblesEnabled { get; set; } = true;
         public bool FocusTargetAudio { get; set; } = true;
         public bool AttenuateWithApproximateDistance = true;
+        public bool WhisperMode { get; set; } = true;
         public double HeavyLowpassFrequency { get; set; } = 200; // Used for wall and water obstructions.
         public float SoundRangeMultiplierMaster { get; set; } = 1.6f;
         public float LoopingSoundRangeMultiplierMaster { get; set; } = 0.9f;
 
         // DynamicFx
-        public bool RemoveUnusedBuffers { get; set; } = false; // If enabled, sounds are loaded without the vanilla muffle buffer which saves roughly 200MB of memory. Downside is 1-2 seconds of extra loading times.
-        public bool HydrophoneDistortionEnabled { get; set; } = true;
-        public bool HydrophoneBandpassFilterEnabled { get; set; } = true;
-        public bool LoudSoundDistortionEnabled { get; set; } = true; // Warning: makes loud sounds extremely loud.
-        public float HydrophoneBandpassFilterHfGain { get; set; } = 0.2f;
-        public float HydrophoneBandpassFilterLfGain { get; set; } = 0.65f;
-        public float DynamicMufflingTransitionFactor { get; set; } = 1.2f; // The max change of high frequency gain over the span of a second. Transitions the muffle effect on and off.
-        public bool HighFidelityMuffling { get; set; } = false; // Creates a new effect slot with an EQ for each pool of uniquely muffled channels. Higher performance cost over basic lowpass filters.
         public bool DynamicReverbEnabled { get; set; } = true;
         public bool DynamicReverbRadio { get; set; } = false;
         public float DynamicReverbAreaSizeMultiplier { get; set; } = 1.0f;
         public float DynamicReverbAirTargetGain { get; set; } = 0.40f;
         public float DynamicReverbWaterTargetGain { get; set; } = 0.6f;
-        public float DyanmicReverbWaterReverbAmplitudeThreshold { get; set; } = 0.75f; // The necessary amplitude * gain needed for a non "loud" source to have reverb applied in water.
+        public float DyanmicReverbWaterAmplitudeThreshold { get; set; } = 0.75f; // The necessary amplitude * gain needed for a non "loud" source to have reverb applied in water.
+        public bool LoudSoundDistortionEnabled { get; set; } = true; // Warning: CAN make loud sounds extremely loud.
         public float LoudSoundDistortionTargetGain { get; set; } = 0.2f;
         public float LoudSoundDistortionTargetEdge { get; set; } = 0.34f;
         public int LoudSoundDistortionTargetFrequency { get; set; } = 200; // The frequencies targeted by the distortion
         public int LoudSoundDistortionLowpassFrequency { get; set; } = 24000; // The frequencies allowed through post-distortion
+        public bool HydrophoneDistortionEnabled { get; set; } = true;
         public float HydrophoneDistortionTargetGain { get; set; } = 0.24f;
         public float HydrophoneDistortionTargetEdge { get; set; } = 0.22f;
-        public bool OccludeSounds { get; set; } = true; // Enable muffle strength from wall occlusion. Is still disabled for classicFx
-        public bool AutoAttenuateMuffledSounds { get; set; } = true; // Should the volume of the lower frequencies (not just the high freqs) be attenuated with muffle strength.
+        public bool HydrophoneBandpassFilterEnabled { get; set; } = true;
+        public float HydrophoneBandpassFilterHfGain { get; set; } = 0.2f;
+        public float HydrophoneBandpassFilterLfGain { get; set; } = 0.65f;
+        public float DynamicMuffleTransitionFactor { get; set; } = 1.2f; // The max change of high frequency gain over the span of a second. Transitions the muffle effect on and off.
         public float DynamicMuffleStrengthMultiplier { get; set; } = 1.0f;
         public int MaxSimulatedSoundDirections { get; set; } = 0; // How many additional versions of the same sound can be playing simultaneously from different directions.
+        public bool OccludeSounds { get; set; } = true; // Enable muffle strength from wall occlusion. Is still disabled for classicFx
+        public bool AutoAttenuateMuffledSounds { get; set; } = true; // Should the volume of the lower frequencies (not just the high freqs) be attenuated with muffle strength.
+        public bool HighFidelityMuffling { get; set; } = false; // Creates a new effect slot with an EQ for each pool of uniquely muffled channels. Higher performance cost over basic lowpass filters.
+        public bool RemoveUnusedBuffers { get; set; } = false; // If enabled, sounds are loaded without the vanilla muffle buffer which saves roughly 200MB of memory. Downside is 1-2 seconds of extra loading times.
 
         // StaticFx
         public bool StaticReverbEnabled { get; set; } = true;

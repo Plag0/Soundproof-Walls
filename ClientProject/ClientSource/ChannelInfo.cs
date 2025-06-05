@@ -235,6 +235,9 @@ namespace SoundproofWalls
         {
             isClone = true;
             Channel = original.Channel;
+            SoundInfo = original.SoundInfo;
+            ShortName = original.ShortName;
+            LongName = original.LongName;
             obstructions = new List<Obstruction>(original.obstructions);
             Muffled = false;
 
@@ -470,12 +473,7 @@ namespace SoundproofWalls
             {
                 UpdateDynamicFx();
             }
-            else if (config.ClassicFx && MuffleStrength >= config.ClassicMinMuffleThreshold)
-            {
-                type = MuffleType.Heavy;
-                shouldMuffle = true;
-            }
-            else if (config.StaticFx && MuffleStrength >= config.StaticMinLightMuffleThreshold)
+            else if ((config.StaticFx || audioIsVoice || audioIsRadio) && MuffleStrength >= config.StaticMinLightMuffleThreshold)
             {
                 type = MuffleType.Light;
                 shouldMuffle = true;
@@ -488,9 +486,14 @@ namespace SoundproofWalls
                     type = MuffleType.Heavy;
                 }
             }
+            else if (config.ClassicFx && MuffleStrength >= config.ClassicMinMuffleThreshold)
+            {
+                type = MuffleType.Heavy;
+                shouldMuffle = true;
+            }
 
             // Enable reverb buffers for extended sounds. Is not relevant to the DynamicFx reverb.
-            if (config.StaticFx && config.StaticReverbEnabled && !shouldMuffle && !Channel.Looping && 
+            if (config.StaticFx && config.StaticReverbEnabled && !shouldMuffle && !Channel.Looping &&
                (Listener.ConnectedArea >= config.StaticReverbMinArea || IsLoud && config.StaticReverbAlwaysOnLoudSounds || SoundInfo.ForceReverb))
             {
                 shouldUseReverbBuffer = true;
@@ -505,9 +508,10 @@ namespace SoundproofWalls
         {
             if (Plugin.EffectsManager == null) return;
 
-            if (IsInUpdateLoop && !isFirstIteration)
+            float transitionFactor = config.DynamicMuffleTransitionFactor;
+            if (IsInUpdateLoop && !isFirstIteration && transitionFactor > 0)
             {
-                float maxStep = (float)(config.DynamicMufflingTransitionFactor * muffleUpdateInterval);
+                float maxStep = (float)(transitionFactor * muffleUpdateInterval);
                 trailingGainMultHF = Util.SmoothStep(trailingGainMultHF, gainMultHF, maxStep);
                 trailingGainMultLF = Util.SmoothStep(trailingGainMultLF, gainMultLF, maxStep);
             }
@@ -1043,7 +1047,7 @@ namespace SoundproofWalls
                 if (Listener.IsWearingDivingSuit) mult += config.DivingSuitPitchMultiplier - 1;
             }
 
-            float targetPitch = currentPitch * mult;
+            float targetPitch = startPitch * mult;
 
             if (IsInUpdateLoop && !isFirstIteration)
             {
