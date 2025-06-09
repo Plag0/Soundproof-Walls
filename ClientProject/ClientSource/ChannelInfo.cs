@@ -174,7 +174,7 @@ namespace SoundproofWalls
                 bool currentMuffle = Muffled;
                 bool targetMuffle = value && !ignoreLowpass;
 
-                if (targetMuffle != currentMuffle || muffleType != lastMuffleType)
+                if (targetMuffle != currentMuffle || muffleType != lastMuffleType || (config.StaticFx && StaticIsUsingReverbBuffer != StaticShouldUseReverbBuffer))
                 {
                     Channel.Muffled = targetMuffle;
                     lastMuffleType = muffleType;
@@ -231,13 +231,30 @@ namespace SoundproofWalls
         private static Config config { get { return ConfigManager.Config; } }
 
         // Copy constructor for directional sounds (disaster of a feature)
-        public ChannelInfo(ChannelInfo original)
+        public ChannelInfo(ChannelInfo original, Vector3 clonePosition)
         {
             isClone = true;
-            Channel = original.Channel;
             SoundInfo = original.SoundInfo;
             ShortName = original.ShortName;
             LongName = original.LongName;
+            
+            Channel = new SoundChannel(SoundInfo.Sound, 1, clonePosition, ChannelInfoManager.CLONE_FREQ_MULT_CODE, original.Channel.Near, original.Channel.Far, SoundManager.SoundCategoryDefault);
+
+            if (Channel != null)
+            {
+                Channel.Looping = original.Channel.Looping;
+                uint sid = Channel.Sound.Owner.GetSourceFromIndex(Channel.Sound.SourcePoolIndex, Channel.ALSourceIndex);
+                Plugin.EffectsManager?.RegisterSource(sid);
+            }
+            else
+            {
+                throw new Exception("Failed to create clone SoundChannel");
+            }
+
+            isFirstIteration = original.isFirstIteration;
+            startGain = original.startGain;
+            startPitch = original.startPitch;
+
             obstructions = new List<Obstruction>(original.obstructions);
             Muffled = false;
 
@@ -265,9 +282,9 @@ namespace SoundproofWalls
             speakingClient = original.speakingClient;
             messageType = original.messageType;
     }
-        public ChannelInfo CreateIndependentCopy()
+        public ChannelInfo CreateClone(Vector3 pos)
         {
-            return new ChannelInfo(this);
+            return new ChannelInfo(this, pos);
         }
 
         public ChannelInfo(SoundChannel channel, Hull? channelHull = null, StatusEffect? statusEffect = null, ItemComponent? itemComp = null, Client? speakingClient = null, ChatMessageType? messageType = null, bool dontMuffle = false, bool dontPitch = false)
@@ -461,13 +478,12 @@ namespace SoundproofWalls
                 float strength = obstructions[i].GetStrength();
                 total += strength * mult;
                 gainMultHf *= 1 - strength; // Exponential muffling
-                if (gainMultHf <= 0.01) { break; } // No point continuing.
             }
-            MuffleStrength = 1 - gainMultHf;
-            float gainMultLf = 1 - total / 3; // Arbitrary value. When total reaches 3 even low frequencies gain is 0.
+            MuffleStrength = Math.Clamp(1 - gainMultHf, 0, 1);
+            float gainMultLf = 1 - total / 4; // Arbitrary value. When total reaches 4 even low frequencies gain is 0.
             if (!config.AutoAttenuateMuffledSounds) { gainMultLf = 1; }
             gainMultHF = Math.Clamp(gainMultHf, 0, 1);
-            gainMultLF = Math.Clamp(gainMultLf, 0, 1);
+            gainMultLF = Math.Clamp(gainMultLf, 0.1f, 1);
 
             if (config.DynamicFx)
             {
@@ -606,7 +622,8 @@ namespace SoundproofWalls
 
             if (config.DebugObstructions)
             {
-                LuaCsLogger.Log($"Obstructions for {ShortName}:");
+                string firstIterText = isFirstIteration ? " (NEW)" : "";
+                LuaCsLogger.Log($"Obstructions for \"{ShortName}\"{firstIterText}:", color: isFirstIteration ? Color.LightSeaGreen : Color.LightSkyBlue);
                 for (int i = 0; i < obstructions.Count; i++)
                 {
                     LuaCsLogger.Log($"          {i+1}. {obstructions[i]} {obstructions[i].GetStrength()}");
@@ -662,6 +679,8 @@ namespace SoundproofWalls
 
         private void UpdatePathObstructionsAdvanced()
         {
+            if (Channel == null) { return; } // Just in case.
+
             Hull? soundHull = ChannelHull;
             Hull? listenerHull = Listener.FocusedHull;
             HashSet<Hull> listenerConnectedHulls = Listener.ConnectedHulls;
@@ -682,7 +701,7 @@ namespace SoundproofWalls
                 // Only count collisions for unique wall orientations.
                 List<float> yWalls = new List<float>();
                 List<float> xWalls = new List<float>();
-                float epsilon = 5.0f;
+                float epsilon = 200.0f;
                 foreach (var body in bodies)
                 {
                     if (body.UserData is Structure structure)
@@ -708,17 +727,17 @@ namespace SoundproofWalls
                     if (SoundPropagatesToHull(hull, WorldPos))
                     {
                         propagated = true;
-                        obstructions.Add(Obstruction.WallThin);
                         ChannelHull = hull; // Update the sound's hull.
-                        numWallObstructions--; // Replacing thick wall with thin.
+                        inWater = Util.SoundInWater(localPos, ChannelHull); // Update for water obstruction check later.
                         break;
                     }
                 }
             }
 
             // 3. Get path obstructions.
-            bool simulateSoundDirection = config.MaxSimulatedSoundDirections > 0 && !audioIsRadio && !audioIsVoice;
-            int targetNumResults = simulateSoundDirection ? config.MaxSimulatedSoundDirections : 1;
+            bool simulateSoundDirection = config.RealSoundDirectionsEnabled && config.RealSoundDirectionsMax > 0 && !audioIsRadio && !audioIsVoice;
+            int targetNumResults = simulateSoundDirection ? config.RealSoundDirectionsMax : 1; // Always need to get at least one result, even if sound directions are disabled
+            targetNumResults = Math.Max(targetNumResults, 3); // Cap the maximum clones to 3 for performance and practicality.
             List<SoundPathfinder.PathfindingResult> topResults;
             if (audioIsVoice || audioIsRadio) { lock (VoicePathResultsLock) { topResults = VoicePathResults; } }
             else { topResults = SoundPathfinder.FindShortestPaths(WorldPos, soundHull, Listener.WorldPos, listenerHull, listenerHull?.Submarine, targetNumResults, maxRawDistance: Channel.Far, isDoorSound: audioIsFromDoor); }
@@ -761,88 +780,99 @@ namespace SoundproofWalls
             // Saves a snapshot of the current obstructions to be applied to any clones.
             List<Obstruction> clonedObstructions = new List<Obstruction>(obstructions);
 
-            // 7. Add obstructions.
-            for (int i = 0; i < numWallObstructions; i++)
+            // 7. Add obstructions. TODO this works but is dreadful.
+            bool noDirectionalSounds = !simulateSoundDirection || Channel == null || !Channel.IsPlaying || Channel.Sound == null || (!noPath && numWallObstructions <= 0);
+
+            float totalDoorPathResistance = 0;
+            float totalWallPathResistance = 0;
+            for (int i = 0; i < numWallObstructions; i++) { totalWallPathResistance += Obstruction.WallThick.GetStrength(); }
+            for (int i = 0; i < obstructions.Count; i++) { if (obstructions[i] == Obstruction.WaterSurface) { totalWallPathResistance += Obstruction.WaterSurface.GetStrength(); } }
+            for (int i = 0; i < numDoorObstructions; i++) { totalDoorPathResistance += Obstruction.DoorThick.GetStrength(); }
+            for (int i = 0; i < numWaterSurfaceObstructions; i++) { totalDoorPathResistance += Obstruction.WaterSurface.GetStrength(); }
+
+            if (numWallObstructions <= 0) { totalWallPathResistance = float.MaxValue; }
+            if (numDoorObstructions <= 0) { totalDoorPathResistance = float.MaxValue; }
+
+            bool pathLeastResistanceIsWalls = totalWallPathResistance < totalDoorPathResistance || !noDirectionalSounds;
+
+            if (pathLeastResistanceIsWalls)
             {
-                if (noPath) { obstructions.Add(Obstruction.WallThick); }
-                else { obstructions.Add(Obstruction.WallThin); } // Wall occlusion isn't as strong if there's a path to the listener.
+                if (propagated) { numWallObstructions--; obstructions.Add(Obstruction.WallThin); } // Replacing thick wall with thin.
+
+                for (int i = 0; i < numWallObstructions; i++)
+                {
+                    if (noPath || Channel?.Far < approximateDistance || !noDirectionalSounds) { obstructions.Add(Obstruction.WallThick); }
+                    else { obstructions.Add(Obstruction.WallThin); } // Wall occlusion isn't as strong if there's a path to the listener.
+                }
             }
-            for (int i = 0; i < numDoorObstructions; i++) { obstructions.Add(Obstruction.DoorThick); }
-            for (int j = 0; j < numWaterSurfaceObstructions; j++) { obstructions.Add(Obstruction.WaterSurface); }
+            else
+            {
+                if (propagated) { numDoorObstructions--; obstructions.Add(Obstruction.DoorThin); }
+                for (int i = 0; i < numDoorObstructions; i++) { obstructions.Add(Obstruction.DoorThick); }
+                for (int j = 0; j < numWaterSurfaceObstructions; j++) { obstructions.Add(Obstruction.WaterSurface); }
+            }
 
-            // 8. Add/remove clones TODO refactor this.
+            // 8. Add/remove/update clones. For multiple sounds playing at different positions to simulate the sounds pathing.
 
-            // Dispose clones if there's a path to the sound with no occlusion.
-            if (!noPath && numWallObstructions <= 0)
+                // Dispose all clones if there's a path to the sound with no occlusion.
+            if (noDirectionalSounds)
             {
                 DisposeClones();
                 return;
             }
 
-            // For multiple sounds playing at different positions to simulate the sounds pathing.
-            if (simulateSoundDirection)
+            approximateDistance = null; // The parent sound should always default to euclidean dist.
+
+            // Prune clone count to the perfect amount.
+            while (clones.Count > targetNumResults)
             {
-                // Prune clone count to the perfect amount.
-                while (clones.Count > targetNumResults)
-                {
-                    clones[0].Channel?.Dispose();
-                    clones.Remove(clones[0]);
-                }
-
-                approximateDistance = null; // The parent sound should always default to euclidean cloneDist.
-
-                for (int i = 0; i < topResults.Count; i++)
-                {
-                    Vector2 clonePos = topResults[i].LastIntersectionPos;
-                    float cloneDist = topResults[i].RawDistance;
-                    ChannelInfo clone;
-
-                    // Perfect amount of clones. Ensure they are all playing.
-                    if (clones.Count == targetNumResults) 
-                    {
-                        clone = clones[i];
-                        if (clone.SoundInfo?.Sound == null) { clones[i].Channel.Dispose(); clones.Remove(clones[i]); clone = null; }
-                        else if (clone.Channel == null || !clone.Channel.IsPlaying) 
-                        {
-                            clone.Channel = SoundPlayer.PlaySound(clone.SoundInfo.Sound, clonePos);
-                            if (clone.Channel != null)
-                            {
-                                clone.Channel.Looping = Channel.Looping;
-                                uint sourceId = clone.Channel.Sound.Owner.GetSourceFromIndex(clone.Channel.Sound.SourcePoolIndex, clone.Channel.ALSourceIndex);
-                                Plugin.EffectsManager?.RegisterSource(sourceId);
-                            }
-                        }
-                    }
-                    // Too few clones. Create additional.
-                    else 
-                    {
-                        clone = CreateIndependentCopy();
-                        // Play the duplicate sound at the intersection with a range that attenuates the sound based on how far the original would have to travel.
-                        clone.Channel = SoundPlayer.PlaySound(Channel.Sound, clonePos);
-                        if (clone.Channel != null)
-                        {
-                            clone.Channel.Looping = Channel.Looping;
-                            uint sourceId = clone.Channel.Sound.Owner.GetSourceFromIndex(clone.Channel.Sound.SourcePoolIndex, clone.Channel.ALSourceIndex);
-                            Plugin.EffectsManager?.RegisterSource(sourceId);
-                        }
-                        if (clone != null)
-                        {
-                            clones.Add(clone);
-                        }
-                    }
-                    
-                    if (clone == null || clone.Channel == null) { continue; }
-
-                    //LuaCsLogger.Log($"og sound pos{Channel.Position} gain:{Channel.Gain}\nclone Channel pos: {clone.Channel.Position} gain: {clone.Channel.Gain} obstruction count: {clone.obstructions.Count}\nListener pos {Listener.LocalPos} character controlled: {Character.Controlled.Position}");
-
-                    // Update the clone's properties.
-                    clone.obstructions = new List<Obstruction>(clonedObstructions);
-                    for (int j = 0; j < topResults[i].ClosedDoorCount; j++) { clone.obstructions.Add(Obstruction.DoorThick); }
-                    for (int j = 0; j < topResults[i].WaterSurfaceCrossings; j++) { clone.obstructions.Add(Obstruction.WaterSurface); }
-                    clone.approximateDistance = cloneDist;
-                    clone.Channel.Position = new Vector3(topResults[i].LastIntersectionPos, 0.0f);
-                }
+                clones[0].Channel?.Dispose();
+                clones.Remove(clones[0]);
             }
+
+            for (int i = 0; i < topResults.Count; i++)
+            {
+                Vector2 direction = Util.GetRelativeDirection(Listener.WorldPos, topResults[i].LastIntersectionPos);
+                Vector3 clonePos = new Vector3(GameMain.SoundManager.ListenerPosition.X, GameMain.SoundManager.ListenerPosition.Y, 0.0f) + new Vector3(direction, 0.0f);
+                float cloneDist = topResults[i].RawDistance;
+                ChannelInfo clone;
+
+                // Too few clones. Create additional.
+                if (clones.Count < targetNumResults)
+                {
+                    clone = CreateClone(clonePos);
+                    if (clone != null)
+                    {
+                        clones.Add(clone);
+                    }
+                }
+
+                clone = clones[i];
+                
+                if (clone == null || clone.Channel == null || !clone.Channel.IsPlaying) { continue; }
+
+                //int alError;
+                //Al.GetError();
+
+                //uint sourceId = clone.Channel.Sound.Owner.GetSourceFromIndex(clone.Channel.Sound.SourcePoolIndex, clone.Channel.ALSourceIndex);
+
+                // Attach clone position to listener
+                //Al.Sourcei(sourceId, Al.SourceRelative, Al.True);
+                //if ((alError = Al.GetError()) != Al.NoError) { DebugConsole.NewMessage($"[SoundproofWalls] Failed to make clone source relative, {Al.GetErrorString(alError)}"); return; }
+
+                // Set clone direction
+                //Al.Source3f(sourceId, Al.Position, direction.X, direction.Y, 0.0f);
+                //if ((alError = Al.GetError()) != Al.NoError) { DebugConsole.NewMessage($"[SoundproofWalls] Failed to set clone direction, {Al.GetErrorString(alError)}"); return; }
+
+                clone.obstructions = new List<Obstruction>(clonedObstructions);
+                for (int j = 0; j < topResults[i].ClosedDoorCount; j++) { clone.obstructions.Add(Obstruction.DoorThick); }
+                for (int j = 0; j < topResults[i].WaterSurfaceCrossings; j++) { clone.obstructions.Add(Obstruction.WaterSurface); }
+                clone.approximateDistance = cloneDist;
+                clone.Channel.Position = clonePos;
+
+                //LuaCsLogger.Log($"CLONE {i} FOR {ShortName}: Parent Position: {Channel.Position}\nClone Pos: {clone.Channel.Position}\nCloneGain: {clone.Channel.Gain}\nClone Pitch {clone.Channel.FrequencyMultiplier}\nObstructions: {clone.obstructions.Count}\nListener pos {Listener.WorldPos}");
+            }
+
         }
 
         private void UpdatePathObstructionsSimple()
@@ -851,18 +881,32 @@ namespace SoundproofWalls
             Hull? listenerHull = Listener.FocusedHull;
             HashSet<Hull> listenerConnectedHulls = Listener.ConnectedHulls;
 
-            noPath = listenerHull != soundHull && (listenerHull == null || soundHull == null || !listenerConnectedHulls.Contains(soundHull!));
+            if (!audioIsFromDoor) // Check if there's a path to the sound.
+            {
+                noPath = listenerHull != soundHull && (listenerHull == null || soundHull == null || !listenerConnectedHulls.Contains(soundHull!));
+            }
+            else // Exception for door opening/closing sounds - must check hulls while ignorning the doorway gap.
+            {
+                float distance = GetApproximateDistance(Listener.LocalPos, localPos, listenerHull, soundHull, ignoredGap: Util.GetDoorSoundGap(audioIsFromDoor, ChannelHull, localPos));
+                noPath = distance >= float.MaxValue;
+                if (!noPath)
+                {
+                    approximateDistance = distance;
+                }
+            }
 
-            // Returns float.MaxValue if there is no path between the listener and the sound. Otherwise returns the aprox cloneDist going through gaps.
-            float distance = GetApproximateDistance(Listener.LocalPos, localPos, listenerHull, soundHull, Channel.Far, ignoredGap: Util.GetDoorSoundGap(audioIsFromDoor, ChannelHull, localPos));
-            approximateDistance = listenerHull != null && soundHull != null ? distance : null;
-            bool exceedsRange = Distance >= Channel.Far;
+            if (!noPath && approximateDistance == null) // There is a valid path - get the approx distance if not already (door sounds get earlier).
+            {
+                approximateDistance = GetApproximateDistance(Listener.LocalPos, localPos, listenerHull, soundHull, ignoredGap: Util.GetDoorSoundGap(audioIsFromDoor, ChannelHull, localPos));
+            }
+
+            bool exceedsRange = Distance >= Channel.Far; // Refers to the range being greater than the approx dist NOT the euclidean distance because then the sound wouldn't be playing.
 
             // Allow certain sounds near a wall to be faintly heard on the opposite side.
             // Sounds outside the sub can propagate in, but sounds sounds inside cannot propagate out.
             if (SoundInfo.IgnorePath)
             {
-                approximateDistance = null; // Null this so the Distance property defaults to euclidean cloneDist.
+                approximateDistance = null; // Null this so the Distance property defaults to euclidean dist.
                 obstructions.Add(Obstruction.Suit); // Add a slight muffle to these sounds.
             }
             else if (noPath || exceedsRange) // One extra feature the simple obstruction function has is allowing sounds to propagate when out of range.
@@ -875,12 +919,14 @@ namespace SoundproofWalls
                         {
                             obstructions.Add(Obstruction.WallThin);
                             ChannelHull = hull;
+                            inWater = Util.SoundInWater(localPos, ChannelHull); // Update for water obstruction check later.
                             propagated = true;
                             break;
                         }
                     }
                 }
-                else
+
+                if (!propagated)
                 {
                     obstructions.Add(Obstruction.WallThick);
                 }
@@ -950,7 +996,7 @@ namespace SoundproofWalls
 
             // Fade transition between two hull soundscapes when eavesdropping.
             float eavesdropEfficiency = EavesdropManager.Efficiency;
-            if (config.EavesdroppingTransitionEnabled && eavesdropEfficiency > 0 && (!audioIsRadio || config.EavesdroppingDucksRadio))
+            if (eavesdropEfficiency > 0 && (!audioIsRadio || config.EavesdroppingDucksRadio))
             {
                 if (!eavesdropped) { mult *= Math.Clamp(1 - eavesdropEfficiency * (1 / config.EavesdroppingThreshold), 0.1f, 1); }
                 else if (eavesdropped) { mult *= Math.Clamp(eavesdropEfficiency * (1 / config.EavesdroppingThreshold) - 1, 0.1f, 1); }
@@ -959,7 +1005,7 @@ namespace SoundproofWalls
             if (IsLoud && (Channel.Looping || audioIsVoice || audioIsRadio || !Channel.Looping && !sidechainTriggered))
             {
                 // The strength of the sidechaining slightly decreases the more muffled the loud sound is.
-                Plugin.Sidechain.StartRelease(SoundInfo.SidechainMult * (1 - MuffleStrength / 2), SoundInfo.SidechainRelease * (1 - MuffleStrength / 2));
+                Plugin.Sidechain.StartRelease(SoundInfo.SidechainMult * (1 - MuffleStrength / 1.2f), SoundInfo.SidechainRelease * (1 - MuffleStrength / 1.2f));
                 sidechainTriggered = true; // Only trigger sidechaining once for non-looping sounds in case UpdateNonLoopingSounds is enabled.
             }
             else if (!IsLoud) { mult *= 1 - Plugin.Sidechain.SidechainMultiplier; }
@@ -992,11 +1038,11 @@ namespace SoundproofWalls
             }
 
             float targetGain = currentGain * mult;
-
             // Only transition audio levels if there's no active sidechaining, the sound is consistently updated, and this isn't its first update.
-            if (!ignoreGainFade && IsInUpdateLoop && !isFirstIteration && Plugin.Sidechain.SidechainMultiplier <= 0)
+            float transitionFactor = config.GainTransitionFactor;
+            if (transitionFactor > 0 && !ignoreGainFade && IsInUpdateLoop && !isFirstIteration && Plugin.Sidechain.SidechainMultiplier <= 0)
             {
-                float maxStep = (float)(config.GainTransitionFactor * Timing.Step);
+                float maxStep = (float)(transitionFactor * Timing.Step);
                 Gain = Util.SmoothStep(Gain, targetGain, maxStep);
             }
             else
@@ -1057,16 +1103,22 @@ namespace SoundproofWalls
                 if (Listener.IsWearingDivingSuit) mult += config.DivingSuitPitchMultiplier - 1;
             }
 
-            float targetPitch = startPitch * mult;
+            float targetPitch = currentPitch * mult;
 
-            if (IsInUpdateLoop && !isFirstIteration)
+            float transitionFactor = config.PitchTransitionFactor;
+            if (transitionFactor > 0 && IsInUpdateLoop && !isFirstIteration)
             {
-                float maxStep = (float)(config.PitchTransitionFactor * Timing.Step);
+                float maxStep = (float)(transitionFactor * Timing.Step);
                 Pitch = Util.SmoothStep(Pitch, targetPitch, maxStep);
             }
             else
             {
                 Pitch = targetPitch;
+            }
+
+            if (isClone && ShortName.Contains("oxy"))
+            {
+                LuaCsLogger.Log($"Pitch {Pitch} = currentPitch {currentPitch} * mult {mult}");
             }
         }
 
@@ -1089,13 +1141,9 @@ namespace SoundproofWalls
             // Dip audio when eavesdropping.
             float eavesdropEfficiency = EavesdropManager.Efficiency;
             float eavesdropMinMult = 0.05f; // Arbitrary magic number.
-            if (config.EavesdroppingTransitionEnabled && eavesdropEfficiency > 0)
+            if (eavesdropEfficiency > 0)
             {
-                mult *= Math.Clamp(1 - eavesdropEfficiency, eavesdropMinMult, 1);
-            }
-            else if (!config.EavesdroppingTransitionEnabled && eavesdropEfficiency > 0)
-            {
-                mult *= eavesdropMinMult;
+                mult *= Math.Clamp(1 - eavesdropEfficiency * (1 / config.EavesdroppingThreshold), eavesdropMinMult, 1);
             }
 
             // The strength of the sidechaining decreases the more muffled the loud sound is.
@@ -1112,6 +1160,7 @@ namespace SoundproofWalls
             else if (audioIsFire) currentGain = Math.Max(SoundPlayer.fireVolumeRight[flowFireChannelIndex], SoundPlayer.fireVolumeLeft[flowFireChannelIndex]);
 
             Gain = currentGain * mult;
+            LuaCsLogger.Log($"{ShortName} GAIN IS {Gain}");
         }
 
         private void UpdateFlowFirePitch()
@@ -1123,14 +1172,6 @@ namespace SoundproofWalls
             Pitch = 1 * mult;
         }
 
-        /// <summary>
-        /// Calculates the gain multiplier based on the OpenAL Soft AL_LINEAR_DISTANCE_CLAMPED model.
-        /// </summary>
-        /// <param name="distance">The distance of the source from the listener.</param>
-        /// <param name="near">AL_REFERENCE_DISTANCE: The distance at which the gain is 1.0.</param>
-        /// <param name="far">AL_MAX_DISTANCE: The distance at which the gain is 0.0 (if rolloffFactor is 1.0) or maximally attenuated.</param>
-        /// <param name="rolloffFactor">AL_ROLLOFF_FACTOR: The factor that determines how quickly the gain attenuates.</param>
-        /// <returns>A float gain multiplier between 0.0f and 1.0f.</returns>
         public static float CalculateLinearDistanceClampedMult(float distance, float near, float far, float rolloffFactor = 1)
         {
             float currentDistance = Math.Max(distance, near);
@@ -1147,7 +1188,7 @@ namespace SoundproofWalls
                 gain = 1.0f - rolloffFactor * (currentDistance - near) / denominator;
             }
 
-            return Math.Max(0.0f, Math.Min(1.0f, gain));
+            return Math.Max(config.MinAttenuateWithApproximateDistanceVolume, Math.Min(1.0f, gain));
         }
 
         private static bool SoundPropagatesToListener(Vector2 soundWorldPos)
@@ -1181,13 +1222,13 @@ namespace SoundproofWalls
         }
 
         // Gets the distance between two localised positions going through gaps. Returns MaxValue if no path or out of range.
-        private static float GetApproximateDistance(Vector2 startPos, Vector2 endPos, Hull? startHull, Hull? endHull, float maxDistance, float distanceMultiplierPerClosedDoor = 0, Gap? ignoredGap = null)
+        private static float GetApproximateDistance(Vector2 startPos, Vector2 endPos, Hull? startHull, Hull? endHull, float maxDistance = float.MaxValue, float distanceMultiplierPerClosedDoor = 0, Gap? ignoredGap = null)
         {
-            if (startHull == null || endHull == null) { return float.MaxValue; }
+            if (startHull != endHull && (startHull == null || endHull == null)) { return float.MaxValue; }
             return GetApproximateHullDistance(startPos, endPos, startHull, endHull, new HashSet<Hull>(), 0.0f, maxDistance, distanceMultiplierPerClosedDoor, ignoredGap);
         }
 
-        private static float GetApproximateHullDistance(Vector2 startPos, Vector2 endPos, Hull startHull, Hull? endHull, HashSet<Hull> connectedHulls, float distance, float maxDistance, float distanceMultiplierFromDoors = 0, Gap? ignoredGap = null)
+        private static float GetApproximateHullDistance(Vector2 startPos, Vector2 endPos, Hull? startHull, Hull? endHull, HashSet<Hull> connectedHulls, float distance, float maxDistance, float distanceMultiplierFromDoors = 0, Gap? ignoredGap = null)
         {
             if (distance >= maxDistance) { return float.MaxValue; }
             if (startHull == endHull) { return distance + Vector2.Distance(startPos, endPos); }

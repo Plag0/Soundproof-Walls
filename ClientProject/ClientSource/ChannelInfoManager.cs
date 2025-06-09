@@ -12,6 +12,8 @@ namespace SoundproofWalls
         public const short VANILLA_VOIP_LOWPASS_FREQUENCY = 800;
         public const short VANILLA_VOIP_BANDPASS_FREQUENCY = 2000;
 
+        public const float CLONE_FREQ_MULT_CODE = 1.006921f;
+
         private static ConcurrentDictionary<uint, ChannelInfo> channelInfoMap = new ConcurrentDictionary<uint, ChannelInfo>();
         private static ConcurrentDictionary<SoundChannel, bool> pitchedChannels = new ConcurrentDictionary<SoundChannel, bool>();
 
@@ -33,7 +35,7 @@ namespace SoundproofWalls
                     List<SoundPathfinder.PathfindingResult> topResults = SoundPathfinder.FindShortestPaths(
                         info.WorldPos, info.ChannelHull,
                         Listener.WorldPos, listenerHull,
-                        listenerHull?.Submarine, 1, maxRawDistance: info.Channel.Far);
+                        listenerHull?.Submarine, 1);
                     lock (info.VoicePathResultsLock) { info.VoicePathResults = topResults.ToList(); }
                 }
 

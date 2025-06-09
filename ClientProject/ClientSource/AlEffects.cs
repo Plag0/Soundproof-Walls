@@ -127,6 +127,8 @@ namespace SoundproofWalls
         private delegate void AlEffectfv(uint effect, int param, float[] values);
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate void AlGetEffecti(uint effect, int param, out int value);
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private delegate void AlGetFilteri(uint effect, int param, out int value);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate void AlGenFilters(int n, uint[] filters);
@@ -169,6 +171,7 @@ namespace SoundproofWalls
         private static AlEffectf? _alEffectf;
         private static AlEffectfv? _alEffectfv;
         private static AlGetEffecti? _alGetEffecti;
+        private static AlGetFilteri? _alGetFilteri;
 
         private static AlGenFilters? _alGenFilters;
         private static AlDeleteFilters? _alDeleteFilters;
@@ -196,6 +199,11 @@ namespace SoundproofWalls
         {
             value = 0; // Default assignment for the out parameter
             _alGetEffecti?.Invoke(effect, param, out value);
+        }
+        public static void GetFilteri(uint effect, int param, out int value)
+        {
+            value = 0; // Default assignment for the out parameter
+            _alGetFilteri?.Invoke(effect, param, out value);
         }
 
         public static void GenFilters(int n, uint[] filters) => _alGenFilters?.Invoke(n, filters);
@@ -270,6 +278,7 @@ namespace SoundproofWalls
             _alEffectf = LoadDelegate<AlEffectf>(device, "alEffectf");
             _alEffectfv = LoadDelegate<AlEffectfv>(device, "alEffectfv");
             _alGetEffecti = LoadDelegate<AlGetEffecti>(device, "alGetEffecti");
+            _alGetFilteri = LoadDelegate<AlGetFilteri>(device, "alGetFilteri");
 
             _alGenFilters = LoadDelegate<AlGenFilters>(device, "alGenFilters");
             _alDeleteFilters = LoadDelegate<AlDeleteFilters>(device, "alDeleteFilters");
@@ -291,6 +300,7 @@ namespace SoundproofWalls
                              _alEffectf != null &&
                              _alEffectfv != null &&
                              _alGetEffecti != null &&
+                             _alGetFilteri != null &&
                              _alGenFilters != null &&
                              _alDeleteFilters != null &&
                              _alIsFilter != null &&

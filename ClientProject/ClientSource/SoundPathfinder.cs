@@ -78,7 +78,7 @@ namespace SoundproofWalls
          
             int xIndex = (int)MathF.Round(localX - hull.Rect.X);
             xIndex = Math.Clamp(xIndex, 0, hull.WaveY.Length - 1);
-            return hull.Surface + hull.WaveY[xIndex];
+            return hull.Surface + hull.WaveY[xIndex] - 1; // Reduce by 1 to stop rounding errors
         }
 
         /// <summary>
@@ -101,6 +101,8 @@ namespace SoundproofWalls
                 // TODO Vertical gaps can cause problems since if the water level fills up to submerge the lower hull then the gap is also below the upper hulls surface so both hulls count as submerged so no penalty is applied.
                 bool isSubmergedA = gapHeight < waterYA;
                 bool isSubmergedB = gapHeight < waterYB;
+
+                //LuaCsLogger.Log($"gapHeight {gapHeight}\nhullA {hullA} hullB {hullB}\nwaterYA {waterYA} waterYB {waterYB}\nisSubmergedA {isSubmergedA} isSubmergedB {isSubmergedB}");
 
                 // Return true if one side submerged and other is not
                 return isSubmergedA != isSubmergedB;
@@ -188,6 +190,8 @@ namespace SoundproofWalls
         {
             var results = new List<PathfindingResult>(); // Initialize empty results list
             if (sourceHull == null || listenerHull == null || submarine == null || n <= 0 || maxRawDistance <= 0) return results; // Return empty list for invalid input
+
+            if (!ConfigManager.Config.RealSoundDirectionsEnabled || ConfigManager.Config.RealSoundDirectionsMax < 1) { maxRawDistance = float.MaxValue; }
 
             // 1. Direct Path Check (Same Hull) - Only one path possible
             if (sourceHull == listenerHull)

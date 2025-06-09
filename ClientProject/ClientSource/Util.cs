@@ -4,7 +4,6 @@ using Barotrauma;
 using System.Reflection;
 using Microsoft.Xna.Framework;
 using Barotrauma.Networking;
-using FarseerPhysics.Collision;
 
 namespace SoundproofWalls
 {
@@ -379,6 +378,18 @@ namespace SoundproofWalls
             return localPos;
         }
 
+        public static Vector2 GetRelativeDirection(Vector2 listenerPosition, Vector2 sourcePosition)
+        {
+            Vector2 delta = sourcePosition - listenerPosition;
+
+            if (delta == Vector2.Zero)
+            {
+                return Vector2.Zero;
+            }
+
+            return Vector2.Normalize(delta);
+        }
+
         // Get a client's messageType (same implementation seen in VoipClient_Read method).
         public static ChatMessageType GetMessageType(Client client)
         {
@@ -589,7 +600,9 @@ namespace SoundproofWalls
         // Returns true if the given localised position is in water (not accurate when using WorldPositions).
         public static bool SoundInWater(Vector2 soundPos, Hull? soundHull)
         {
-            return soundHull == null || soundHull.WaterVolume > 0 && soundPos.Y < soundHull.Surface;
+            float epsilon = 30.0f;
+            if (soundHull?.WaterPercentage <= 0) { return false; }
+            return soundHull == null || soundHull.WaterVolume > 0 && soundPos.Y < soundHull.Surface - epsilon;
         }
 
         public static string GetModDirectory()

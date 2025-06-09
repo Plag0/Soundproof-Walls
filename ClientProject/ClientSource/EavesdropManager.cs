@@ -26,20 +26,22 @@ namespace SoundproofWalls
 
             UpdateEavesdroppingSounds();
 
-            if (shouldFadeOut && EavesdroppingTextAlpha <= 0 && Efficiency <= 0) { return; }
+            float duration = MathF.Max(ConfigManager.Config.EavesdroppingTransitionDuration * 60, 0.01f); // Instant transition if duration <= 0.01
+            if (!ConfigManager.Config.EavesdroppingTransitionEnabled) { duration = 0.01f; }
 
+            if (shouldFadeOut && EavesdroppingTextAlpha <= 0 && Efficiency <= 0) { return; }
             else if (shouldFadeOut)
             {
-                float textChange = 255 / (ConfigManager.Config.EavesdroppingTransitionDuration * 60);
+                float textChange = 255 / duration;
                 EavesdroppingTextAlpha = Math.Clamp(EavesdroppingTextAlpha - textChange * 6, 0, 255);
-                Efficiency = Math.Clamp(Efficiency - (1 / (ConfigManager.Config.EavesdroppingTransitionDuration * 60) * 3), 0, 1);
+                Efficiency = Math.Clamp(Efficiency - (1 / duration * 3), 0, 1); // More rapid fade out with *3
             }
             else if (!shouldFadeOut)
             {
                 PlayEavesdroppingActivationSound();
-                float textChange = 255 / (ConfigManager.Config.EavesdroppingTransitionDuration * 60);
+                float textChange = 255 / duration;
                 EavesdroppingTextAlpha = Math.Clamp(EavesdroppingTextAlpha + textChange * 6, 0, 255);
-                Efficiency = Math.Clamp(Efficiency + 1 / (ConfigManager.Config.EavesdroppingTransitionDuration * 60), 0, 1);
+                Efficiency = Math.Clamp(Efficiency + 1 / duration, 0, 1);
             }
         }
 

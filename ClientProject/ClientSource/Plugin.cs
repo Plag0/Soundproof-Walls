@@ -230,6 +230,7 @@ namespace SoundproofWalls
             // Draw prefix.
             // Displays the eavesdropping text, eavesdropping vignette, and processing mode tooltip.
             // Bug note: a line in this method causes MonoMod to crash on Linux due to an unmanaged PAL_SEHException https://github.com/dotnet/runtime/issues/78271
+            // Bug note update: from my testing this doesn't seem to apply anymore as of June 2025
             harmony.Patch(
                 typeof(GUI).GetMethod(nameof(GUI.Draw)),
                 new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_Draw))));
@@ -339,10 +340,10 @@ namespace SoundproofWalls
             EavesdropManager.Dispose();
             BubbleManager.Dispose();
 
+            DisposeDynamicFx();
+
             // Cleans up any ExtendedOggSounds.
             Util.ReloadSounds(stopping: true);
-
-            DisposeDynamicFx();
         }
 
         public static void SPW_StartRound()
@@ -369,7 +370,7 @@ namespace SoundproofWalls
 
         public static void SPW_Update()
         {
-            if (GameMain.Instance.Paused) return;
+            if (GameMain.Instance.Paused || !Config.Enabled) return;
             ConfigManager.Update();
             Listener.Update();
             HydrophoneManager.Update();
@@ -1412,8 +1413,6 @@ namespace SoundproofWalls
             if (extendedSound.Buffers is not { AlBuffer: not 0, AlReverbBuffer: not 0, AlHeavyMuffledBuffer: not 0, AlLightMuffledBuffer: not 0, AlMediumMuffledBuffer: not 0 }) { return false; }
 
             uint alBuffer = extendedSound.Buffers.AlBuffer;
-            // TODO implement reverb conditon for extended sounds in SoundInfo telegraphed via SoundInfo.reverbed
-            //uint alBuffer = muffleInfo.Reverb ? extendedSound.Buffers.AlReverbBuffer : extendedSound.Buffers.AlBuffer;
             if (soundInfo.Muffled || extendedSound.Owner.GetCategoryMuffle(instance.Category))
             {
                 if (soundInfo.LightMuffle)
@@ -1482,7 +1481,8 @@ namespace SoundproofWalls
             alError = Al.GetError();
             if (alError != Al.NoError)
             {
-                DebugConsole.ThrowError("Failed to reset playback position: " + instance.debugName + ", " + Al.GetErrorString(alError), appendStackTrace: true);
+                // This error still happens for StaticFx reverb buffers despite the above solutions of moving the playbackpos... I'm just turning it off because it doesn't actually matter anyway.
+                if (!Config.StaticFx) { DebugConsole.ThrowError("Failed to reset playback position: " + instance.debugName + ", " + Al.GetErrorString(alError), appendStackTrace: true); }
                 return false;
             }
 
@@ -1490,12 +1490,15 @@ namespace SoundproofWalls
             return false;
         }
 
-        static bool BindReducedSoundBuffers(ReducedOggSound reducedSound, SoundChannel instance, uint sourceId, bool muffle)
+        static bool BindReducedSoundBuffers(ReducedOggSound reducedSound, SoundChannel instance, uint sourceId, bool muffle, bool isClone)
         {
             reducedSound.FillAlBuffers();
             if (reducedSound.Buffers is not { AlBuffer: not 0 }) { return false; }
 
-            ChannelInfoManager.EnsureUpdateChannelInfo(instance, dontMuffle: !muffle);
+            if (!isClone)
+            {
+                ChannelInfoManager.EnsureUpdateChannelInfo(instance, dontMuffle: !muffle);
+            }
 
             uint alBuffer = reducedSound.Buffers.AlBuffer;
 
@@ -1510,10 +1513,10 @@ namespace SoundproofWalls
             return true;
         }
 
-        static bool BindExtendedSoundBuffers(ExtendedOggSound extendedSound, SoundChannel instance, uint sourceId, bool muffle)
+        static bool BindExtendedSoundBuffers(ExtendedOggSound extendedSound, SoundChannel instance, uint sourceId, bool muffle, bool isClone)
         {
             extendedSound.FillAlBuffers();
-            if (extendedSound.Buffers is not { AlBuffer: not 0, AlReverbBuffer: not 0, AlHeavyMuffledBuffer: not 0, AlLightMuffledBuffer: not 0, AlMediumMuffledBuffer: not 0 }) { return false; }
+            if (isClone || extendedSound.Buffers is not { AlBuffer: not 0, AlReverbBuffer: not 0, AlHeavyMuffledBuffer: not 0, AlLightMuffledBuffer: not 0, AlMediumMuffledBuffer: not 0 }) { return false; }
 
             ChannelInfo soundInfo = ChannelInfoManager.EnsureUpdateChannelInfo(instance, dontMuffle: !muffle);
 
@@ -1555,14 +1558,19 @@ namespace SoundproofWalls
             return true;
         }
 
-        static bool BindVanillaSoundBuffers(Sound sound, SoundChannel instance, uint sourceId, bool muffle)
+        static bool BindVanillaSoundBuffers(Sound sound, SoundChannel instance, uint sourceId, bool muffle, bool isClone)
         {
             sound.FillAlBuffers();
             if (sound.Buffers is not { AlBuffer: not 0, AlMuffledBuffer: not 0}) { return false; }
 
-            ChannelInfo soundInfo = ChannelInfoManager.EnsureUpdateChannelInfo(instance, dontMuffle: !muffle);
+            bool shouldMuffle = false;
+            if (!isClone) 
+            {
+                ChannelInfo soundInfo = ChannelInfoManager.EnsureUpdateChannelInfo(instance, dontMuffle: !muffle);
+                shouldMuffle = soundInfo.Muffled;
+            }
 
-            uint alBuffer = soundInfo.Muffled || sound.Owner.GetCategoryMuffle(instance.Category) ? sound.Buffers.AlMuffledBuffer : sound.Buffers.AlBuffer;
+            uint alBuffer = shouldMuffle || sound.Owner.GetCategoryMuffle(instance.Category) ? sound.Buffers.AlMuffledBuffer : sound.Buffers.AlBuffer;
 
             Al.Sourcei(sourceId, Al.Buffer, (int)alBuffer);
 
@@ -1599,6 +1607,9 @@ namespace SoundproofWalls
             instance.decayTimer = 0;
             instance.streamSeekPos = 0; instance.reachedEndSample = false;
             instance.buffersToRequeue = 4;
+
+            bool isClone = freqMult == ChannelInfoManager.CLONE_FREQ_MULT_CODE;
+            if (isClone) { freqMult = 1; }
 
             if (instance.IsStream)
             {
@@ -1638,15 +1649,15 @@ namespace SoundproofWalls
                     bool success = false;
                     if (instance.Sound is ReducedOggSound reducedSound)
                     {
-                        success = BindReducedSoundBuffers(reducedSound, instance, sourceId, muffle);
+                        success = BindReducedSoundBuffers(reducedSound, instance, sourceId, muffle, isClone);
                     }
                     else if (instance.Sound is ExtendedOggSound extendedSound)
                     {
-                        success = BindExtendedSoundBuffers(extendedSound, instance, sourceId, muffle);
+                        success = BindExtendedSoundBuffers(extendedSound, instance, sourceId, muffle, isClone);
                     }
                     else
                     {
-                        success = BindVanillaSoundBuffers(sound, instance, sourceId, muffle);
+                        success = BindVanillaSoundBuffers(sound, instance, sourceId, muffle, isClone);
                     }
                     if (!success) { return false; }
 

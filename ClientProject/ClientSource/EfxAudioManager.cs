@@ -214,8 +214,8 @@ namespace SoundproofWalls
                 }
             }
 
-            float gain = Math.Clamp(ConfigManager.Config.LoudSoundDistortionTargetGain * combinedGainMult, 0.01f, 1f);
-            float edge = Math.Clamp(ConfigManager.Config.LoudSoundDistortionTargetEdge * combinedGainMult, 0.0f, 1.0f);
+            float gain = Math.Clamp(ConfigManager.Config.LoudSoundDistortionTargetGain, 0.01f, 1f);
+            float edge = Math.Clamp(ConfigManager.Config.LoudSoundDistortionTargetEdge, 0.0f, 1.0f);
             int lowpass = Math.Clamp(ConfigManager.Config.LoudSoundDistortionLowpassFrequency, 80, 24000);
             int eqCenter = Math.Clamp(ConfigManager.Config.LoudSoundDistortionTargetFrequency, 80, 24000);
             int eqBandwidth = 1500;
@@ -291,32 +291,43 @@ namespace SoundproofWalls
             // Calculate the strength of the reverb effect based on aggregated looping sound amplitude, gain, and player submersion.
             SoundChannel[] playingChannels = GameMain.SoundManager.playingChannels[0]; // Index 0 is sounds while 1 is voice (cite SourcePoolIndex enum) yeah I guess I'm citing stuff in code comments now...
             float totalAudioAmplitude = 0;
+            float loudSoundGain = 0;
             for (int i = 0; i < playingChannels.Length; i++)
             {
                 if (playingChannels[i] != null && playingChannels[i].IsPlaying)
                 {
-                    if (playingChannels[i].Looping && ChannelInfoManager.TryGetChannelInfo(playingChannels[i], out ChannelInfo? info) && info != null && !info.Ignored)
+                    if (ChannelInfoManager.TryGetChannelInfo(playingChannels[i], out ChannelInfo? info) && info != null && !info.Ignored)
                     {
-                        float gain = playingChannels[i].Gain;
-                        if (!info.IsLoud)
+                        if (playingChannels[i].Looping)
                         {
-                            float sidechainMult = Plugin.Sidechain.SidechainMultiplier;
-                            if (sidechainMult >= 1) { sidechainMult = 0.99f; }
-                            if (gain <= 0) { gain = 0.01f; }
-                            gain /= 1 - sidechainMult; // Undo gain adjustments from sidechain multiplier for audio amplitude calculation.
+                            float gain = playingChannels[i].Gain;
+                            if (!info.IsLoud)
+                            {
+                                float sidechainMult = Plugin.Sidechain.SidechainMultiplier;
+                                if (sidechainMult >= 1) { sidechainMult = 0.99f; }
+                                if (gain <= 0) { gain = 0.01f; }
+                                gain /= 1 - sidechainMult; // Undo gain adjustments from sidechain multiplier for audio amplitude calculation.
+                            }
+                            float amplitude = playingChannels[i].CurrentAmplitude;
+
+                            float muffleMult = 1 - info.MuffleStrength;
+
+                            //LuaCsLogger.Log($"{Path.GetFileName(playingChannels[i].Sound.Filename)} gain: {gain} * amplitude {amplitude} * muffleMult {muffleMult} = totalAudioAmplitude {totalAudioAmplitude}");
+                            totalAudioAmplitude += amplitude * gain * muffleMult;
                         }
-                        float amplitude = playingChannels[i].CurrentAmplitude;
-
-                        float muffleMult = 1 - info.MuffleStrength;
-
-                        //LuaCsLogger.Log($"{Path.GetFileName(playingChannels[i].Sound.Filename)} gain: {gain} * amplitude {amplitude} * muffleMult {muffleMult} = totalAudioAmplitude {totalAudioAmplitude}");
-                        totalAudioAmplitude += amplitude * gain * muffleMult;
+                        else
+                        {
+                            if (info.IsLoud)
+                            {
+                                loudSoundGain += 0.2f;
+                            }
+                        }
                     }
                 }
             }
             float amplitudeMult = 1f - MathUtils.InverseLerp(0.0f, 1.4f, totalAudioAmplitude);
             float submersionMult = Listener.IsSubmerged ? 1.3f : 1.0f;
-            float targetReverbGain = ConfigManager.Config.DynamicReverbAirTargetGain * amplitudeMult * submersionMult;
+            float targetReverbGain = (ConfigManager.Config.DynamicReverbAirTargetGain * amplitudeMult * submersionMult)  +  (loudSoundGain * ConfigManager.Config.DynamicReverbAirTargetGain);
 
             targetReverbGain = Math.Clamp(targetReverbGain, 0.0f, 1.0f);
 
@@ -326,7 +337,7 @@ namespace SoundproofWalls
             // Influences decay and delay times.
             float roomSizeFactor = (Listener.ConnectedArea * ConfigManager.Config.DynamicReverbAreaSizeMultiplier) / 180000; // Arbitrary magic number that seems to work well.
 
-            //LuaCsLogger.Log($" targetReverbGain: {targetReverbGain} actualReverbGain: {AirReverbGain} playingChannelMult: {amplitudeMult} totalAudioAmplitude: {totalAudioAmplitude}");
+            LuaCsLogger.Log($" targetReverbGain: {targetReverbGain} actualReverbGain: {AirReverbGain} playingChannelMult: {amplitudeMult} totalAudioAmplitude: {totalAudioAmplitude} loudSoundGain {loudSoundGain}");
 
             // Decay Time
             float decayTime = 3.1f + (roomSizeFactor * 1.0f);
@@ -594,12 +605,12 @@ namespace SoundproofWalls
 
             bool inHull = channelInfo.ChannelHull != null;
             bool hydrophoned = channelInfo.Hydrophoned;
-            float amplitude = channelInfo.Channel.CurrentAmplitude * channelInfo.Gain;
+            float amplitude = channelInfo.Channel.CurrentAmplitude * channelInfo.Gain; // TODO this may be unreliable if a user changes the submerged gain mult
             bool shouldReverbWater = channelInfo.IsLoud || amplitude >= ConfigManager.Config.DyanmicReverbWaterAmplitudeThreshold;
 
             // Select which slot to route to.
             uint send1_targetSlot = Send1_DetermineTargetEffectSlot(inHull, channelInfo.IgnoreReverb, hydrophoned, shouldReverbWater);
-            uint send0_targetSlot = Send0_DetermineTargetEffectSlot(channelInfo.IsLoud);
+            uint send0_targetSlot = Send0_DetermineTargetEffectSlot(channelInfo.IsLoud && channelInfo.MuffleStrength <= 0.5f);
             uint sendFilterId = filterId;
 
             int targetFreq = CalculateFrequencyKey(channelInfo.MuffleStrength);
