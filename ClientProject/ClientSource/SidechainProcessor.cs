@@ -10,6 +10,7 @@
 
         // Current multiplier value
         public float SidechainMultiplier { get; private set; } = 0;
+        public float SidechainStartValue { get; private set; } = 0;
 
         public SidechainProcessor(float frameRate = 60f)
         {
@@ -35,6 +36,7 @@
             }
 
             SidechainMultiplier = startingValue;
+            SidechainStartValue = startingValue;
             isReleasing = true;
         }
 

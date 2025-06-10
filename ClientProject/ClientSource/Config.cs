@@ -106,6 +106,7 @@ namespace SoundproofWalls
         public bool MuffleSubmergedPlayer { get; set; } = true; // the equivalent of adding all sounds into SubmersionIgnoredSounds
         public bool MuffleSubmergedViewTarget { get; set; } = true; // ^
         public bool MuffleWaterSurface { get; set; } = true; // the equivalent of adding all sounds into SurfaceIgnoredSounds
+        public bool MuffleFlowFireSoundsWithEstimatedPath { get; set; } = true;
         public bool MuffleFlowSounds { get; set; } = true;
         public bool MuffleFireSounds { get; set; } = true;
 
@@ -174,10 +175,12 @@ namespace SoundproofWalls
         public int MaxSimultaneousInstances = 8; // How many instances of the same sound clip can be playing at the same time. Vanilla is 5 (cite Sound.cs)
         public float LoopingComponentSoundNearMultiplier { get; set; } = 0.3f; // near = far * thisMult - "near" is the max range before volume falloff starts.
         public float MinAttenuateWithApproximateDistanceVolume { get; set; } = 0.15f; // The minimum gain a sound being attenuated by approx dist can reach.
+        public float SidechainMuffleEfficiencyMultiplier { get; set; } = 0.8f;
         public float SoundPropagationRange { get; set; } = 500; // Area^2 that a sound in WallPropagatingSounds can search for a hull to propagate to.
         public bool TraverseWaterDucts { get; set; } = false; // Should the search algorithm pass through water ducts?
+        public bool FlowSoundsTraverseWaterDucts { get; set; } = true;
         public float OpenDoorThreshold { get; set; } = 0.1f; // How open a door/hatch/duct must be for sound to pass through unobstructed.
-        public float OpenWallThreshold { get; set; } = 0.33f; // How open a gap in a wall must be for sound to pass through unobstructed.
+        public float OpenWallThreshold { get; set; } = 0.35f; // How open a gap in a wall must be for sound to pass through unobstructed.
 
         // How muffled each type of obstruction is. Lowpass doesn't increase on values > 1.0, but gain continues to be reduced.
         public float ObstructionWaterSurface { get; set; } = 1.0f;
@@ -217,7 +220,7 @@ namespace SoundproofWalls
             new CustomSound("stungrenade", 3, 1.2f, 1, 4),
             new CustomSound("explosion", 3, 1.6f, 1, 5),
             new CustomSound("gravityshells", 1.5f, 1.4f, 1, 1.5f),
-            new CustomSound("tinnitus", 1, 1, 1, 8),
+            new CustomSound("tinnitus", 0.6f, 1, 1, 8),
 
             new CustomSound("firelarge.ogg", 1.4f, 1, 0.6f, 1)
         };
@@ -343,7 +346,7 @@ namespace SoundproofWalls
         [JsonIgnore]
         public bool RememberScroll { get; set; } = true;
         [JsonIgnore]
-        public bool DebugObstructions { get; set; } = true; // See what is obstructing all audio with console output.
+        public bool DebugObstructions { get; set; } = false; // See what is obstructing all audio with console output.
         [JsonIgnore]
         public bool DebugPlayingSounds { get; set; } = false; // See all playing sounds and their filenames.
     }

@@ -25,6 +25,10 @@ namespace SoundproofWalls
         public static Vector2 LocalPos;
         public static Vector2 SimPos;
 
+        public static HashSet<Hull> HullsWithSmallFlow = new HashSet<Hull>();
+        public static HashSet<Hull> HullsWithMediumFlow = new HashSet<Hull>();
+        public static HashSet<Hull> HullsWithLargeFlow = new HashSet<Hull>();
+
         public static void Update()
         {
             Character character = Character.Controlled;
@@ -56,7 +60,7 @@ namespace SoundproofWalls
             EavesdroppedHull = GetListenerEavesdroppedHull();
             CurrentHull = GetListenerHull();
             FocusedHull = IsEavesdropping ? EavesdroppedHull : CurrentHull;
-            ConnectedHulls = Util.GetConnectedHulls(FocusedHull, includingThis: true, respectClosedGaps: true);
+            ConnectedHulls = GetConnectedHulls(FocusedHull, includingThis: true, respectClosedGaps: true);
 
             ConnectedArea = 0;
             foreach (Hull hull in ConnectedHulls)
@@ -148,6 +152,73 @@ namespace SoundproofWalls
             }
 
             return null;
+        }
+
+        // Copy of the vanilla GetConnectedHulls with minor adjustments to align with Soundproof Walls searching algorithms.
+        public static HashSet<Hull> GetConnectedHulls(Hull? startHull, bool includingThis, int? searchDepth = null, bool respectClosedGaps = false)
+        {
+            HashSet<Hull> connectedHulls = new HashSet<Hull>();
+
+            if (startHull == null) { return connectedHulls; }
+
+            int step = 0;
+            int valueOrDefault = searchDepth.GetValueOrDefault();
+            if (!searchDepth.HasValue)
+            {
+                valueOrDefault = 100;
+                searchDepth = valueOrDefault;
+            }
+
+            Util.GetAdjacentHulls(startHull, connectedHulls, ref step, searchDepth.Value, respectClosedGaps);
+            if (!includingThis)
+            {
+                connectedHulls.Remove(startHull);
+            }
+
+            return connectedHulls;
+        }
+
+        public static void UpdateHullsWithLeaks()
+        {
+            HullsWithSmallFlow.Clear();
+            HullsWithMediumFlow.Clear();
+            HullsWithLargeFlow.Clear();
+
+            // This code uses the same approach found in SoundPlayer.UpdateWaterFlowSounds.
+            Vector2 listenerPos = new Vector2(GameMain.SoundManager.ListenerPosition.X, GameMain.SoundManager.ListenerPosition.Y);
+            foreach (Gap gap in Gap.GapList)
+            {
+                Vector2 diff = gap.WorldPosition - listenerPos;
+                if (Math.Abs(diff.X) < SoundPlayer.FlowSoundRange && Math.Abs(diff.Y) < SoundPlayer.FlowSoundRange)
+                {
+                    if (gap.Open < 0.01f || gap.LerpedFlowForce.LengthSquared() < 100.0f || !ConfigManager.Config.FlowSoundsTraverseWaterDucts && gap.ConnectedDoor?.Item != null && gap.ConnectedDoor.Item.HasTag("ductblock")) { continue; }
+
+                    float gapFlow = Math.Abs(gap.LerpedFlowForce.X) + Math.Abs(gap.LerpedFlowForce.Y) * 2.5f;
+                    if (!gap.IsRoomToRoom) { gapFlow *= 2.0f; }
+                    if (gapFlow < 10.0f) { continue; }
+
+                    if (gap.linkedTo.Count == 2 && gap.linkedTo[0] is Hull hull1 && gap.linkedTo[1] is Hull hull2)
+                    {
+                        //no flow sounds between linked hulls (= rooms consisting of multiple hulls)
+                        if (hull1.linkedTo.Contains(hull2)) { continue; }
+                        if (hull1.linkedTo.Any(h => h.linkedTo.Contains(hull1) && h.linkedTo.Contains(hull2))) { continue; }
+                        if (hull2.linkedTo.Any(h => h.linkedTo.Contains(hull1) && h.linkedTo.Contains(hull2))) { continue; }
+                    }
+
+                    int flowSoundIndex = (int)Math.Floor(MathHelper.Clamp(gapFlow / SoundPlayer.MaxFlowStrength, 0, SoundPlayer.FlowSounds.Count));
+                    flowSoundIndex = Math.Min(flowSoundIndex, SoundPlayer.FlowSounds.Count - 1);
+
+                    float dist = diff.Length();
+                    float distFallOff = dist / SoundPlayer.FlowSoundRange;
+                    if (distFallOff >= 0.99f) { continue; }
+
+                    HashSet<Hull> targetSet = HullsWithSmallFlow;
+                    if (flowSoundIndex == 2) { targetSet = HullsWithLargeFlow; }
+                    else if (flowSoundIndex == 1) { targetSet = HullsWithMediumFlow; }
+
+                    if (gap.FlowTargetHull != null) { targetSet.Add(gap.FlowTargetHull); }
+                }
+            }
         }
 
         private static bool IsCharacterWearingExoSuit(Character character)

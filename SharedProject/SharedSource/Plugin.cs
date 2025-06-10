@@ -13,7 +13,6 @@ namespace SoundproofWalls
         readonly Harmony harmony = new Harmony("plag.barotrauma.soundproofwalls");
         public void Initialize()
         {
-            LuaCsLogger.Log("shared init");
 #if SERVER
             InitServer();
 #elif CLIENT

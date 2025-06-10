@@ -425,29 +425,6 @@ namespace SoundproofWalls
             return (outerItem != null && outerItem.HasTag(id)) || (headItem != null && headItem.HasTag(id));
         }
 
-        // Copy of the vanilla GetConnectedHulls with minor adjustments to align with Soundproof Walls searching algorithms.
-        public static HashSet<Hull> GetConnectedHulls(Hull? startHull, bool includingThis, int? searchDepth = null, bool respectClosedGaps = false)
-        {
-            if (startHull == null) { return new HashSet<Hull>(); }
-
-            startHull.adjacentHulls.Clear();
-            int step = 0;
-            int valueOrDefault = searchDepth.GetValueOrDefault();
-            if (!searchDepth.HasValue)
-            {
-                valueOrDefault = 100;
-                searchDepth = valueOrDefault;
-            }
-
-            GetAdjacentHulls(startHull, startHull.adjacentHulls, ref step, searchDepth.Value, respectClosedGaps);
-            if (!includingThis)
-            {
-                startHull.adjacentHulls.Remove(startHull);
-            }
-
-            return startHull.adjacentHulls;
-        }
-
         public static bool IsDoorClosed(Door door)
         {
             if (door != null && !door.IsBroken) 
@@ -531,44 +508,6 @@ namespace SoundproofWalls
                     }
                 }
             }
-        }
-
-        // TODO Pretty bad. Redo this?
-        public static bool IsPathToFlow()
-        {
-            Character character = Character.Controlled;
-            if (character == null || character.CurrentHull == null) { return true; }
-
-            return GetPathToFlow(character.CurrentHull, new HashSet<Hull>());
-        }
-        public static bool GetPathToFlow(Hull startHull, HashSet<Hull> connectedHulls)
-        {
-            Vector2 listenerPos = Character.Controlled.WorldPosition;
-
-            foreach (Gap gap in startHull.ConnectedGaps)
-            {
-                Vector2 diff = gap.WorldPosition - listenerPos;
-
-                if (Math.Abs(diff.X) >= SoundPlayer.FlowSoundRange && Math.Abs(diff.Y) >= SoundPlayer.FlowSoundRange) { continue; }
-                if (gap.Open < 0.01f || gap.LerpedFlowForce.LengthSquared() < 100.0f) { continue; }
-                float gapFlow = Math.Abs(gap.LerpedFlowForce.X) + Math.Abs(gap.LerpedFlowForce.Y) * 2.5f;
-                if (!gap.IsRoomToRoom) { gapFlow *= 2.0f; }
-                if (gapFlow >= 10.0f) { return true; }
-
-                for (int i = 0; i < 2 && i < gap.linkedTo.Count; i++)
-                {
-                    if (gap.linkedTo[i] is Hull newStartHull && !connectedHulls.Contains(newStartHull))
-                    {
-                        bool path = GetPathToFlow(newStartHull, connectedHulls);
-                        if (path)
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
-
-            return false;
         }
 
         public static bool StringHasKeyword(string inputString, HashSet<string> set, string? exclude = null, string? include = null)

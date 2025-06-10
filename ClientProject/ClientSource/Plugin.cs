@@ -134,11 +134,6 @@ namespace SoundproofWalls
                 typeof(SoundPlayer).GetMethod(nameof(SoundPlayer.UpdateWaterFlowSounds), BindingFlags.NonPublic | BindingFlags.Static),
                 null,
                 new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_SoundPlayer_UpdateWaterFlowSounds))));
-            // For modifying volume based on eavesdropping fade and sidechaining.
-            harmony.Patch(
-                typeof(SoundPlayer).GetMethod(nameof(SoundPlayer.UpdateFireSounds), BindingFlags.NonPublic | BindingFlags.Static),
-                null,
-                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_SoundPlayer_UpdateFireSounds))));
 
             // BiQuad prefix.
             // Used for modifying the muffle frequency of standard OggSounds.
@@ -213,6 +208,14 @@ namespace SoundproofWalls
             harmony.Patch(
                 typeof(SoundPlayer).GetMethod(nameof(SoundPlayer.UpdateWaterAmbience), BindingFlags.Static | BindingFlags.NonPublic),
                 new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_UpdateWaterAmbience))));
+
+
+            // UpdateFireSounds prefix REPLACEMENT.
+            // Fixes a bug in the vanilla code that caused gain attenuation for large fires to drop off dramatically.
+            // Also adds channels to channelInfoMap for modifying volume based on eavesdropping fade and sidechaining.
+            harmony.Patch(
+                typeof(SoundPlayer).GetMethod(nameof(SoundPlayer.UpdateFireSounds), BindingFlags.Static | BindingFlags.NonPublic),
+                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_SoundPlayer_UpdateFireSounds))));
 
             // Dispose prefix.
             // Auto remove entries in SourceInfoMap, as the keys in this dict are SoundChannels.
@@ -1750,6 +1753,145 @@ namespace SoundproofWalls
             return false;
         }
 
+        public static bool SPW_SoundPlayer_UpdateFireSounds(float deltaTime)
+        {
+            if (!ConfigManager.Config.Enabled) { return true; }
+
+            // Reset volume accumulators.
+            for (int i = 0; i < SoundPlayer.fireVolumeLeft.Length; i++)
+            {
+                SoundPlayer.fireVolumeLeft[i] = 0.0f;
+                SoundPlayer.fireVolumeRight[i] = 0.0f;
+            }
+
+            // Get the listener's position.
+            Vector2 listenerPos = new Vector2(GameMain.SoundManager.ListenerPosition.X, GameMain.SoundManager.ListenerPosition.Y);
+
+            // Accumulate volume from all active fire sources.
+            foreach (Hull hull in Hull.HullList)
+            {
+                foreach (FireSource fs in hull.FireSources)
+                {
+                    AddFireVolume(fs, listenerPos);
+                }
+                foreach (FireSource fs in hull.FakeFireSources)
+                {
+                    AddFireVolume(fs, listenerPos);
+                }
+            }
+
+            // Update or create sound channels based on the calculated volumes.
+            for (int i = 0; i < SoundPlayer.fireVolumeLeft.Length; i++)
+            {
+                // If volume is negligible, fade out and remove the sound.
+                if (SoundPlayer.fireVolumeLeft[i] < 0.05f && SoundPlayer.fireVolumeRight[i] < 0.05f)
+                {
+                    if (SoundPlayer.fireSoundChannels[i] != null)
+                    {
+                        SoundPlayer.fireSoundChannels[i].FadeOutAndDispose();
+                        SoundPlayer.fireSoundChannels[i] = null;
+                    }
+                }
+                else // Otherwise, play the sound with updated properties.
+                {
+                    // The sound system uses the difference between right and left volumes to pan the sound.
+                    // A positive difference pans right, a negative difference pans left.
+                    Vector2 soundPos = new Vector2(GameMain.SoundManager.ListenerPosition.X + (SoundPlayer.fireVolumeRight[i] - SoundPlayer.fireVolumeLeft[i]) * 100, GameMain.SoundManager.ListenerPosition.Y);
+
+                    if (SoundPlayer.fireSoundChannels[i] == null || !SoundPlayer.fireSoundChannels[i].IsPlaying)
+                    {
+                        SoundPlayer.fireSoundChannels[i] = SoundPlayer.GetSound(SoundPlayer.fireSoundTags[i])?.Play(1.0f, SoundPlayer.FireSoundRange, soundPos);
+                        if (SoundPlayer.fireSoundChannels[i] == null) { continue; }
+                        SoundPlayer.fireSoundChannels[i].Looping = true;
+                    }
+
+                    // The gain is the loudest of the two channels.
+                    SoundPlayer.fireSoundChannels[i].Gain = Math.Max(SoundPlayer.fireVolumeRight[i], SoundPlayer.fireVolumeLeft[i]);
+                    // The position is updated to handle panning.
+                    SoundPlayer.fireSoundChannels[i].Position = new Vector3(soundPos, 0.0f);
+                }
+            }
+
+            void AddFireVolume(FireSource fs, Vector2 listenerPos)
+            {
+                // 1. Find the closest horizontal point on the fire's surface to the listener.
+                // This is key to fixing the vanilla bug. clamp the listener's X position to the fire's horizontal bounds.
+                float fireLeftEdgeX = fs.WorldPosition.X;
+                float fireRightEdgeX = fs.WorldPosition.X + fs.Size.X;
+                float closestX = Math.Clamp(listenerPos.X, fireLeftEdgeX, fireRightEdgeX);
+
+                // 2. The sound's origin for distance calculation is this closest point at the fire's vertical center.
+                Vector2 soundSourcePos = new Vector2(closestX, fs.WorldPosition.Y + fs.Size.Y / 2.0f);
+
+                // 3. Calculate the actual distance to this correct point.
+                float dist = Vector2.Distance(listenerPos, soundSourcePos);
+
+                // 4. Calculate volume falloff based on the correct distance.
+                float distFalloff = dist / SoundPlayer.FireSoundRange;
+
+                // If the sound is out of range, it contributes no volume.
+                if (distFalloff >= 0.99f) return;
+
+                float baseVolume = (1.0f - distFalloff);
+
+                // 5. Determine panning. We need to calculate left/right volumes that the
+                // sound system can use to create a positional effect.
+                // Note: The original system uses 'fireVolumeLeft' for sounds on the right, and 'fireVolumeRight' for sounds on the left?
+
+                float fireCenterX = fs.WorldPosition.X + fs.Size.X / 2.0f;
+                float halfWidth = fs.Size.X / 2.0f;
+
+                // Calculate a pan value from -1.0 (left) to 1.0 (right) based on listener's position relative to the fire's center.
+                float pan = (listenerPos.X - fireCenterX) / (halfWidth + 0.001f); // Add epsilon to prevent div by zero
+                pan = Math.Clamp(pan, -1.0f, 1.0f);
+
+                float rightChannelVolume = 0.0f;
+                float leftChannelVolume = 0.0f;
+
+                // Distribute the baseVolume into the two channels based on the pan value.
+                // This creates a smooth panning effect across the surface of the fire.
+                if (pan < 0) // Listener is on the left half of the fire
+                {
+                    leftChannelVolume = baseVolume;
+                    rightChannelVolume = baseVolume * (1.0f + pan); // Volume on the right channel fades out as pan approaches -1
+                }
+                else // Listener is on the right half of the fire
+                {
+                    rightChannelVolume = baseVolume;
+                    leftChannelVolume = baseVolume * (1.0f - pan); // Volume on the left channel fades out as pan approaches 1
+                }
+
+                // 6. Add the calculated volumes to the correct global accumulators.
+                // Remember: fireVolumeLeft is for right-panned sounds, fireVolumeRight is for left-panned sounds.
+                SoundPlayer.fireVolumeLeft[0] += rightChannelVolume;
+                SoundPlayer.fireVolumeRight[0] += leftChannelVolume;
+
+                // Apply same logic for the larger fire sound layers, scaled by the fire's size.
+                if (fs.Size.X > SoundPlayer.FireSoundLargeLimit)
+                {
+                    float factor = (fs.Size.X - SoundPlayer.FireSoundLargeLimit) / SoundPlayer.FireSoundLargeLimit;
+                    SoundPlayer.fireVolumeLeft[2] += rightChannelVolume * factor;
+                    SoundPlayer.fireVolumeRight[2] += leftChannelVolume * factor;
+                }
+                else if (fs.Size.X > SoundPlayer.FireSoundMediumLimit)
+                {
+                    float factor = (fs.Size.X - SoundPlayer.FireSoundMediumLimit) / SoundPlayer.FireSoundMediumLimit;
+                    SoundPlayer.fireVolumeLeft[1] += rightChannelVolume * factor;
+                    SoundPlayer.fireVolumeRight[1] += leftChannelVolume * factor;
+                }
+            }
+
+            // Add channels to channelInfoMap for modifying volume based on eavesdropping fade and sidechaining.
+            for (int i = 0; i < SoundPlayer.fireSoundChannels.Count(); i++)
+            {
+                SoundChannel channel = SoundPlayer.fireSoundChannels[i];
+                if (channel == null) { continue; }
+                ChannelInfoManager.EnsureUpdateChannelInfo(channel);
+            }
+
+            return false;
+        }
+
         public static bool SPW_ItemComponent_UpdateSounds(ItemComponent __instance)
         {
             if (!Config.Enabled) { return true; }
@@ -1962,21 +2104,11 @@ namespace SoundproofWalls
         {
             if (!Config.Enabled) { return; }
 
+            Listener.UpdateHullsWithLeaks();
+
             for (int i = 0; i < SoundPlayer.flowSoundChannels.Count(); i++)
             {
                 SoundChannel channel = SoundPlayer.flowSoundChannels[i];
-                if (channel == null) { continue; }
-                ChannelInfoManager.EnsureUpdateChannelInfo(channel);
-            }
-        }
-
-        public static void SPW_SoundPlayer_UpdateFireSounds()
-        {
-            if (!Config.Enabled) { return; }
-
-            for (int i = 0; i < SoundPlayer.fireSoundChannels.Count(); i++)
-            {
-                SoundChannel channel = SoundPlayer.fireSoundChannels[i];
                 if (channel == null) { continue; }
                 ChannelInfoManager.EnsureUpdateChannelInfo(channel);
             }

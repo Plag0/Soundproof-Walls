@@ -337,7 +337,7 @@ namespace SoundproofWalls
             // Influences decay and delay times.
             float roomSizeFactor = (Listener.ConnectedArea * ConfigManager.Config.DynamicReverbAreaSizeMultiplier) / 180000; // Arbitrary magic number that seems to work well.
 
-            LuaCsLogger.Log($" targetReverbGain: {targetReverbGain} actualReverbGain: {AirReverbGain} playingChannelMult: {amplitudeMult} totalAudioAmplitude: {totalAudioAmplitude} loudSoundGain {loudSoundGain}");
+            //LuaCsLogger.Log($" targetReverbGain: {targetReverbGain} actualReverbGain: {AirReverbGain} playingChannelMult: {amplitudeMult} totalAudioAmplitude: {totalAudioAmplitude} loudSoundGain {loudSoundGain}");
 
             // Decay Time
             float decayTime = 3.1f + (roomSizeFactor * 1.0f);
