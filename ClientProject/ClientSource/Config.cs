@@ -130,6 +130,7 @@ namespace SoundproofWalls
         public bool EavesdroppingEnabled { get; set; } = true;
         public bool EavesdroppingTransitionEnabled { get; set; } = true;
         public bool EavesdroppingDucksRadio { get; set; } = true;
+        [JsonIgnore]
         public string EavesdroppingBind { get; set; } = "SecondaryMouse";
         public float EavesdroppingSoundVolumeMultiplier { get; set; } = 2.5f;
         public float EavesdroppingVoiceVolumeMultiplier { get; set; } = 1.5f;
@@ -165,6 +166,7 @@ namespace SoundproofWalls
         public float UnmuffledVoicePitchMultiplier { get; set; } = 1f;
 
         // Advanced settings
+        public bool DisableVanillaFadeOutAndDispose { get; set; } = true; // Disables the vanilla "FadeOutAndDispose" function that has the potential to cause issues with permanently looping sounds.
         public bool UpdateNonLoopingSounds { get; set; } = true; // Updates the gain and pitch of non looping "single-shot" sounds every tick. Muffle is updated every NonLoopingSoundMuffleUpdateInterval.
         public double NonLoopingSoundMuffleUpdateInterval { get; set; } = 0.2f; // Only applied if UpdateNonLoopingSounds is enabled.
         public double ComponentMuffleUpdateInterval { get; set; } = 0.2f;
@@ -192,7 +194,7 @@ namespace SoundproofWalls
         public float ObstructionSuit { get; set; } = 0.50f;
 
         // Amount of combined obstruction strength needed to achieve different muffle levels
-        public float ClassicMinMuffleThreshold { get; set; } = 0.80f;
+        public float ClassicMinMuffleThreshold { get; set; } = 0.85f;
         public float StaticMinLightMuffleThreshold { get; set; } = 0.01f;
         public float StaticMinMediumMuffleThreshold { get; set; } = 0.80f;
         public float StaticMinHeavyMuffleThreshold { get; set; } = 0.95f;
@@ -200,8 +202,8 @@ namespace SoundproofWalls
         // A general rule is to keep the most vague names at the bottom so when searching for a match the more specific ones can be found first.
         public HashSet<CustomSound> CustomSounds { get; set; } = new HashSet<CustomSound>(new ElementEqualityComparer())
         {
-            new CustomSound("footstep", 0.75f),
-            new CustomSound("door", 1.0f, 2.0f),
+            new CustomSound("footstep", 0.75f, 0.8f),
+            new CustomSound("door", 0.9f, 1.3f),
             new CustomSound("metalimpact", 0.8f, 1.2f),
             new CustomSound("revolver", 2.0f, 1.2f, 1, 1.1f),
             new CustomSound("shotgunshot", 2.5f, 1.3f, 1, 1.5f),
@@ -220,9 +222,14 @@ namespace SoundproofWalls
             new CustomSound("stungrenade", 3, 1.2f, 1, 4),
             new CustomSound("explosion", 3, 1.6f, 1, 5),
             new CustomSound("gravityshells", 1.5f, 1.4f, 1, 1.5f),
-            new CustomSound("tinnitus", 0.6f, 1, 1, 8),
+            new CustomSound("firelarge.ogg", 1.4f, 1, 0.6f, 1),
 
-            new CustomSound("firelarge.ogg", 1.4f, 1, 0.6f, 1)
+            // Real Sonar changes.
+            new CustomSound("2936760984/sounds/sonar", 1, 1, 1, 5, "air", "sonarpoweron", "sonarambience", "sonardistortion"),
+            new CustomSound("2936760984/sounds/cortizide", 1, 1, 1, 3),
+            new CustomSound("2936760984/sounds/tinnitus", 1, 1, 0.65f, 1), // Looping sound so short release. Place real sonar specific tinnitus before vanilla so it's discovered first.
+            
+            new CustomSound("tinnitus", 0.7f, 1, 1, 8), // Vanilla/general tinnitus sounds - non looping.
         };
 
         // Sounds in this list are ignored by all muffling/pitching/other processing except for gain.
@@ -331,6 +338,14 @@ namespace SoundproofWalls
             "divingsuitoxygenleakloop",
             "scooterloop",
 
+        };
+
+        public HashSet<string> DistortionForcedSounds { get; set; } = new HashSet<string> // Sounds that are always distorted //TODO implement
+        {
+        };
+
+        public HashSet<string> DistortionIgnoredSounds { get; set; } = new HashSet<string> // Sounds that are not distorted by dynamic processing mode. //TODO implement
+        {
         };
 
         public HashSet<string> ContainerIgnoredSounds { get; set; } = new HashSet<string>

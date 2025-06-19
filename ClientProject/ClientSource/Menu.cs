@@ -3,6 +3,7 @@ using Barotrauma;
 using Microsoft.Xna.Framework;
 using System.Reflection;
 using System.Text.Json;
+using System.Collections.Generic;
 
 namespace SoundproofWalls
 {
@@ -18,6 +19,9 @@ namespace SoundproofWalls
         public static GUIScrollBar? EffectsModeSlider = null;
         private static GUIButton? settingsButton = null; // To store the button added to the pause menu
 
+        private static GUIFrame? currentPopupFrame = null;
+        private static GUIListBox? currentPopupList = null;
+
         public static void ForceOpenMenu()
         {
             if (!GUI.PauseMenuOpen)
@@ -25,7 +29,7 @@ namespace SoundproofWalls
                 GUI.TogglePauseMenu();
             }
 
-            HandlePauseMenuToggle();
+            SPW_TogglePauseMenu();
 
             if (GUI.PauseMenuOpen)
             {
@@ -33,7 +37,55 @@ namespace SoundproofWalls
             }
         }
 
-        public static void HandlePauseMenuToggle()
+        public static void ForceOpenWelcomePopUp()
+        {
+            if (!GUI.PauseMenuOpen)
+            {
+                GUI.TogglePauseMenu();
+            }
+
+            if (GUI.PauseMenuOpen)
+            {
+                ShowPopUpFrame();
+            }
+        }
+
+        private static void ShowPopUpFrame()
+        {
+            GUIFrame parentElement = GUI.PauseMenu;
+            if (parentElement == null) return;
+
+            // If frame exists but is hidden, just show it
+            if (currentPopupFrame != null && currentPopupFrame.Parent == parentElement)
+            {
+                currentPopupFrame.Visible = true;
+                return;
+            }
+
+            // Create UI elements.
+            currentPopupFrame = new GUIFrame(new RectTransform(new Vector2(0.35f, 0.30f), parentElement.RectTransform, Anchor.Center));
+
+            // Add text.
+            new GUITextBlock(new RectTransform(new Vector2(1f, 0.2f), currentPopupFrame.RectTransform), TextManager.Get("spw_popuptitle").Value, textAlignment: Alignment.Center, font: GUIStyle.LargeFont, color: Color.White);
+            GUITextBlock messageText = new GUITextBlock(new RectTransform(new Vector2(1f, 1f), currentPopupFrame.RectTransform), TextManager.Get("spw_popupmessage").Value, textAlignment: Alignment.Center, wrap: true);
+            messageText.Padding = new Vector4(50, 50, 50, 50);
+            messageText.SetTextPos();
+
+            // Add close button.
+            GUIButton button = new GUIButton(new RectTransform(new Vector2(0.5f, 0.05f), currentPopupFrame.RectTransform, Anchor.BottomCenter), TextManager.Get("close").Value, Alignment.Center, "GUIButton");
+            button.OnClicked = (sender, args) =>
+            {
+                if (currentPopupFrame != null)
+                {
+                    currentPopupFrame.Visible = false;
+                }
+                return true;
+            };
+
+            currentPopupFrame.Visible = true; // Ensure it's visible
+        }
+
+        public static void SPW_TogglePauseMenu()
         {
             if (GUI.PauseMenuOpen)
             {
@@ -41,28 +93,19 @@ namespace SoundproofWalls
                 if (pauseMenuFrame == null) return;
 
                 GUIComponent? pauseMenuList = null;
-                try
+                var frameChildren = GetChildren(pauseMenuFrame);
+                if (frameChildren.Count > 1)
                 {
-                    // Use non-generic GetChildren helper
-                    var frameChildren = GetChildren(pauseMenuFrame);
-                    if (frameChildren.Count > 1)
+                    var secondChildChildren = GetChildren(frameChildren[1]);
+                    if (secondChildChildren.Count > 0)
                     {
-                        var secondChildChildren = GetChildren(frameChildren[1]);
-                        if (secondChildChildren.Count > 0)
-                        {
-                            pauseMenuList = secondChildChildren[0];
-                        }
+                        pauseMenuList = secondChildChildren[0];
                     }
-                }
-                catch (Exception ex)
-                {
-                    LuaCsLogger.LogError($"Error finding pause menu list for SoundproofWalls button: {ex.Message}");
-                    return; // Cannot add button if list not found
                 }
 
                 if (pauseMenuList == null)
                 {
-                    LuaCsLogger.LogError("Could not find the target list within the pause menu to add the SoundproofWalls button.");
+                    LuaCsLogger.LogError("[SoundproofWalls] Failed to add settings button");
                     return;
                 }
 
@@ -89,6 +132,8 @@ namespace SoundproofWalls
                     }
                 }
 
+                // Don't add button if the option to hide it is enabled.
+                if (ConfigManager.Config.HideSettings) { return; }
 
                 // --- Add the button if it doesn't exist ---
                 if (!buttonExists)
@@ -115,14 +160,19 @@ namespace SoundproofWalls
                 {
                     currentMenuFrame.Visible = false;
                 }
+
+                // Hide popup
+                if (currentPopupFrame != null && currentPopupFrame.Visible)
+                {
+                    currentPopupFrame.Visible = false;
+                }
+
                 ApplyPendingSettings();
             }
         }
 
         private static void ShowSettingsFrame()
         {
-            if (ConfigManager.Config.HideSettings) { return; }
-
             GUIFrame parentElement = GUI.PauseMenu; // Parent to pause menu
             if (parentElement == null) return; // Should not happen if button exists, but safety check
 
@@ -140,9 +190,14 @@ namespace SoundproofWalls
             new GUITextBlock(new RectTransform(new Vector2(1f, 0.05f), currentMenuFrame.RectTransform), TextManager.Get("spw_settings").Value, textAlignment: Alignment.Center);
             CreateSettingsContentInternal(currentSettingsList);
 
-            if (currentSettingsList != null && ConfigManager.Config.RememberScroll) currentSettingsList.BarScroll = lastScrollPosition;
+            // Should remember scroll position.
+            if (currentSettingsList != null && ConfigManager.Config.RememberScroll)
+            {
+                currentSettingsList.BarScroll = lastScrollPosition;
+            }
 
             CloseButton(currentMenuFrame); // Creates the close button
+            //RevertAllButton(currentMenuFrame); //TODO
             ResetAllButton(currentMenuFrame); // Creates the reset button
 
             currentMenuFrame.Visible = true; // Ensure it's visible
@@ -163,7 +218,7 @@ namespace SoundproofWalls
             // Multiplayer config update
             if (GameMain.IsMultiplayer && (GameMain.Client.IsServerOwner || GameMain.Client.HasPermission(ClientPermissions.Ban)))
             {
-                ConfigManager.UploadServerConfig(manualUpdate: true);
+                ConfigManager.UploadClientConfigToServer(manualUpdate: true);
             }
 
             // Singleplayer/nosync config update
@@ -1099,6 +1154,27 @@ namespace SoundproofWalls
                     currentMenuFrame.Visible = false;
                 }
                 ApplyPendingSettings();
+                return true;
+            };
+            return button;
+        }
+
+        public static GUIButton RevertAllButton(GUIFrame parent)
+        {
+            GUIButton button = new GUIButton(new RectTransform(new Vector2(0.5f, 0.05f), parent.RectTransform, Anchor.BottomCenter), TextManager.Get("spw_revertall").Value, Alignment.Center, "GUIButton");
+            button.OnClicked = (sender, args) =>
+            {
+                NewLocalConfig = new Config();
+                ConfigManager.SaveConfig(NewLocalConfig);
+                ShouldUpdateConfig = true; // Flag that changes need applying *when the pause menu closes*
+
+                if (currentMenuFrame != null)
+                {
+                    GUIListBox? listBox = null;
+                    foreach (var child in currentMenuFrame.Children) { if (child is GUIListBox lb) { listBox = lb; break; } }
+                    if (listBox != null) { listBox.Content.ClearChildren(); CreateSettingsContentInternal(listBox); }
+                    else { LuaCsLogger.LogError("Could not find GUIListBox child in currentMenuFrame during ResetAll."); }
+                }
                 return true;
             };
             return button;

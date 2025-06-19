@@ -11,6 +11,17 @@ namespace SoundproofWalls
     public partial class Plugin : IAssemblyPlugin
     {
         readonly Harmony harmony = new Harmony("plag.barotrauma.soundproofwalls");
+
+        public System.Reflection.MethodInfo? PatchToKeep;
+
+        // Net message names.
+        public const string SERVER_RECEIVE_CONFIG = "spw_netmessage_server_receiveconfig";
+        public const string SERVER_SEND_CONFIG = "spw_netmessage_server_sendconfig";
+        public const string CLIENT_RECEIVE_CONFIG = "spw_netmessage_client_receiveconfig";
+        public const string CLIENT_SEND_CONFIG = "spw_netmessage_client_sendconfig";
+        // Represents a config with syncing disabled. Sent in place of a serialized Config.
+        public const string DISABLED_CONFIG_VALUE = "spw_disabledconfigvalue";
+
         public void Initialize()
         {
 #if SERVER
@@ -53,27 +64,68 @@ namespace SoundproofWalls
 
         }
 
-        public void PreInitPatching() 
+        public void PreInitPatching()
         {
             // TODO when this works, load extended/reduced sounds early.
         }
 
         public void Dispose()
         {
-            LuaCsLogger.Log("Soundproof Walls: Stop hook started running.");
+            LuaCsLogger.Log("[SoundproofWalls] Shutting down...");
 
 #if CLIENT
             DisposeClient();
 #endif
-            harmony.UnpatchSelf();
+            HarmonyUnpatchSelfExceptTogglePauseMenu();
 
-            LuaCsLogger.Log("Soundproof Walls: Stop hook stopped running.");
+            LuaCsLogger.Log("[SoundproofWalls] Shut down successfully.");
+        }
+
+        public void HarmonyUnpatchSelfExceptTogglePauseMenu()
+        {
+            if (PatchToKeep == null)
+            {
+                harmony.UnpatchSelf();
+                return;
+            }
+
+            foreach (var method in Harmony.GetAllPatchedMethods())
+            {
+                var info = Harmony.GetPatchInfo(method);
+                if (info == null) continue;
+
+                foreach (var prefix in info.Prefixes)
+                {
+                    if (prefix.owner == harmony.Id)
+                        harmony.Unpatch(method, HarmonyPatchType.Prefix, harmony.Id);
+                }
+
+                foreach (var postfix in info.Postfixes)
+                {
+                    string patchName = postfix.PatchMethod.ToString() ?? "";
+                    // Don't remove the TogglePauseMenu patch so the mod can still be enabled/disabled via menu.
+                    if (postfix.owner == harmony.Id && !patchName.Contains("TogglePauseMenu"))
+                        harmony.Unpatch(method, HarmonyPatchType.Postfix, harmony.Id);
+                }
+
+                foreach (var transpiler in info.Transpilers)
+                {
+                    if (transpiler.owner == harmony.Id)
+                        harmony.Unpatch(method, HarmonyPatchType.Postfix, harmony.Id);
+                }
+
+                foreach (var finalizer in info.Finalizers)
+                {
+                    if (finalizer.owner == harmony.Id)
+                        harmony.Unpatch(method, HarmonyPatchType.Postfix, harmony.Id);
+                }
+            }
         }
     }
 
     public class DataAppender
     {
-        private const string Delimiter = "|";
+        private const string Delimiter = "|spw_delimiter|";
 
         public static string AppendData(string originalString, bool boolData, byte byteData)
         {

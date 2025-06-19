@@ -108,6 +108,7 @@ namespace SoundproofWalls
 
         private int flowFireChannelIndex;
 
+        private bool rolloffFactorModified = false;
         private float rolloffFactor
         {
             get
@@ -1026,6 +1027,7 @@ namespace SoundproofWalls
             if ((config.AttenuateWithApproximateDistance || isClone) && approximateDistance != null && MathF.Abs(Distance - euclideanDistance) > 100)
             {
                 rolloffFactor = 0; // Disable OpenAL distance attenuation.
+                rolloffFactorModified = true;
 
                 bool shouldUseEuclideanDistance = Distance >= Channel.Far;
                 DistanceModel newModel = shouldUseEuclideanDistance ? DistanceModel.Euclidean : DistanceModel.Approximate;
@@ -1040,7 +1042,7 @@ namespace SoundproofWalls
                 float distMult = CalculateLinearDistanceClampedMult(distance, Channel.Near, Channel.Far);
                 mult *= distMult;
             }
-            else
+            else if (rolloffFactorModified)
             {
                 rolloffFactor = 1;
                 distanceModel = DistanceModel.OpenAL;

@@ -5,7 +5,7 @@ using OpenAL;
 
 namespace SoundproofWalls
 {
-    internal sealed class ExtendedOggSound : Sound
+    public sealed class ExtendedOggSound : Sound
     {
         private readonly VorbisReader streamReader;
 
@@ -21,6 +21,8 @@ namespace SoundproofWalls
         private short[] muffleBufferMedium = Array.Empty<short>();
         private short[] muffleBufferLight = Array.Empty<short>();
 
+        private readonly double durationSeconds;
+        public override double? DurationSeconds => durationSeconds;
 
         private new ExtendedSoundBuffers buffers;
         public new ExtendedSoundBuffers Buffers
@@ -32,13 +34,13 @@ namespace SoundproofWalls
             stream, true, xElement)
         {
             var reader = new VorbisReader(Filename);
+            durationSeconds = reader.TotalTime.TotalSeconds;
             TotalSamples = reader.TotalSamples * reader.Channels;
+            ALFormat = reader.Channels == 1 ? Al.FormatMono16 : Al.FormatStereo16;
+            SampleRate = reader.SampleRate;
 
             // Allow for more simulatenous instances so rapdily repeated sounds with long reverbs on them (e.g. gunshots) don't get skipped.
             MaxSimultaneousInstances = 10;
-
-            ALFormat = reader.Channels == 1 ? Al.FormatMono16 : Al.FormatStereo16;
-            SampleRate = reader.SampleRate;
 
             if (stream)
             {

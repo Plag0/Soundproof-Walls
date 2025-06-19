@@ -250,7 +250,6 @@ namespace SoundproofWalls
                 DebugConsole.NewMessage("[SoundproofWalls][AlEffects] ALC_EXT_EFX not supported.");
                 return false;
             }
-            DebugConsole.NewMessage("[SoundproofWalls][AlEffects] ALC_EXT_EFX found.");
 
             // Get Max Auxiliary Sends
             Alc.GetInteger(device, ALC_MAX_AUXILIARY_SENDS, out int maxSends);
@@ -261,7 +260,6 @@ namespace SoundproofWalls
                 maxSends = 0; // Default to 0 if query fails
             }
             MaxAuxiliarySends = maxSends;
-            DebugConsole.NewMessage($"[SoundproofWalls][AlEffects] Max Auxiliary Sends per Source: {MaxAuxiliarySends}");
 
             // Load function pointers using Alc.GetProcAddress
 
@@ -311,11 +309,11 @@ namespace SoundproofWalls
 
             if (_efxInitialized)
             {
-                DebugConsole.NewMessage("[SoundproofWalls][AlEffects] Initialization successful.");
+                DebugConsole.NewMessage("[SoundproofWalls] OpenAL Effects Extension loaded successfully.");
             }
             else
             {
-                DebugConsole.NewMessage("[SoundproofWalls][AlEffects] Initialization failed: One or more function pointers could not be loaded.");
+                DebugConsole.NewMessage("[SoundproofWalls] OpenAL Effects Extension failed to load: One or more function pointers could not be loaded.");
             }
 
 

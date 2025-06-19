@@ -5,7 +5,7 @@ using OpenAL;
 
 namespace SoundproofWalls
 {
-    internal sealed class ReducedOggSound : Sound
+    public sealed class ReducedOggSound : Sound
     {
         private readonly VorbisReader streamReader;
 
@@ -15,6 +15,9 @@ namespace SoundproofWalls
         private const int AMPLITUDE_SAMPLE_COUNT = 4410; //100ms in a 44100hz file
 
         private short[] sampleBuffer = Array.Empty<short>();
+
+        private readonly double durationSeconds;
+        public override double? DurationSeconds => durationSeconds;
 
         private new ReducedSoundBuffers buffers;
         public new ReducedSoundBuffers Buffers
@@ -26,6 +29,7 @@ namespace SoundproofWalls
             stream, true, xElement)
         {
             var reader = new VorbisReader(Filename);
+            durationSeconds = reader.TotalTime.TotalSeconds;
 
             ALFormat = reader.Channels == 1 ? Al.FormatMono16 : Al.FormatStereo16;
             SampleRate = reader.SampleRate;

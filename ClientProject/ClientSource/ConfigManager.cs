@@ -8,21 +8,24 @@ namespace SoundproofWalls
 {
     public static class ConfigManager
     {
-        public static readonly string ConfigPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SoundproofWalls_Config.json");
+        public static readonly string ConfigPath = Path.Combine(SaveUtil.DefaultSaveFolder, "ModConfigs/SoundproofWalls_Config.json").Replace('\\', '/');
         private static Config _cachedConfig = LoadConfig();
 
         public static Config LocalConfig = LoadConfig();
         public static Config? ServerConfig = null;
         public static Config Config { get { return ServerConfig ?? LocalConfig; } }
 
-        static double LastConfigUploadTime = 5f;
+        private static float lastRequestTime = 0;
 
         public static void Update()
         {
-            if (Timing.TotalTime > LastConfigUploadTime + 5)
+            if (GameMain.IsMultiplayer && ServerConfig == null && Timing.TotalTime > lastRequestTime + 10)
             {
-                LastConfigUploadTime = (float)Timing.TotalTime;
-                UploadServerConfig(manualUpdate: false);
+                lastRequestTime = (float)Timing.TotalTime;
+                IWriteMessage message = GameMain.LuaCs.Networking.Start(Plugin.SERVER_SEND_CONFIG);
+                message.WriteByte(GameMain.Client.SessionId);
+                GameMain.LuaCs.Networking.Send(message);
+
             }
         }
 
@@ -59,34 +62,18 @@ namespace SoundproofWalls
             }
         }
 
-        // Called every 5 seconds or when the client changes a setting.
-        public static void UploadServerConfig(bool manualUpdate = false)
+        public static void UploadClientConfigToServer(bool manualUpdate = false)
         {
             if (!GameMain.IsMultiplayer) { return; }
 
-            foreach (Client client in GameMain.Client.ConnectedClients)
-            {
-                if (client.IsOwner || client.HasPermission(ClientPermissions.Ban))
-                {
-                    // TODO I could merge both of these signals into one. I could search the string server-side for the state of the SyncSettings to discern what to do.
-                    if (LocalConfig.SyncSettings)
-                    {
-                        string data = DataAppender.AppendData(JsonSerializer.Serialize(LocalConfig), manualUpdate, GameMain.Client.SessionId);
-                        IWriteMessage message = GameMain.LuaCs.Networking.Start("SPW_UpdateConfigServer");
-                        message.WriteString(data);
-                        GameMain.LuaCs.Networking.Send(message);
-                    }
-                    // Remove the server config for all users.
-                    else if (!LocalConfig.SyncSettings && ServerConfig != null)
-                    {
-                        string data = DataAppender.AppendData("_", manualUpdate, GameMain.Client.SessionId);
-                        IWriteMessage message = GameMain.LuaCs.Networking.Start("SPW_DisableConfigServer");
-                        message.WriteString(data);
-                        GameMain.LuaCs.Networking.Send(message);
-                    }
+            Client client = GameMain.Client.MyClient;
 
-                    return;
-                }
+            if (client != null && (client.IsOwner || client.HasPermission(ClientPermissions.Ban)))
+            {
+                string data = DataAppender.AppendData(LocalConfig.SyncSettings ? JsonSerializer.Serialize(LocalConfig) : Plugin.DISABLED_CONFIG_VALUE, manualUpdate, client.SessionId);
+                IWriteMessage message = GameMain.LuaCs.Networking.Start(Plugin.SERVER_RECEIVE_CONFIG);
+                message.WriteString(data);
+                GameMain.LuaCs.Networking.Send(message);
             }
         }
 

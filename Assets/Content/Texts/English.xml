@@ -269,7 +269,9 @@
 
 	<spw_hidesettings>Hide Menu Button</spw_hidesettings>
 	<spw_hidesettingstooltip>Warning: Enabling this setting will remove the "Soundproof Settings" button from your UI. Requiring you to type "spw" in the console to open it again.</spw_hidesettingstooltip>
+
 	
+	<!-- Extra -->
 	<spw_updateserverconfig>modified settings - the server config has been updated</spw_updateserverconfig>
 	<spw_disableserverconfig>disabled setting synchronization - local configs now take priority</spw_disableserverconfig>
 	<spw_hydrophonemonitoring>Monitor Hydrophones</spw_hydrophonemonitoring>
@@ -283,5 +285,44 @@
 	<spw_concave>(Concave)</spw_concave>
 	<spw_convex>(Convex)</spw_convex>
 	<spw_reset>Reset</spw_reset>
-	<spw_resetall>Reset All</spw_resetall>
+	<spw_resetall>Reset All Default</spw_resetall>
+	<spw_revertall>Undo Changes</spw_revertall>
+
+	
+	<!-- 2.0 Popup message -->
+	<spw_popuptitle>Welcome to Soundproof Walls 2.0!</spw_popuptitle>
+	<spw_popupsummary>Soundproof Walls 2.0 is a totally rewritten and expanded version of the original mod and confidently stands as a complete audio system overhaul for Barotrauma. It comes with an abundance of fixes and brand new exciting features such as:</spw_popupsummary>
+	
+	<spw_popupsubheading1>Environmentally Simulated Reverb</spw_popupsubheading1>
+	<spw_popupdescription1>Sounds and player voices echo realistically in large or quiet spaces depending on the size and soundscape of the room. Outside the submarine, loud sounds can be heard echoing for miles as the soundwaves bounce off the icy surface of Europa.</spw_popupdescription1>
+	
+	<spw_popupsubheading2>Sidechain Compression System</spw_popupsubheading2>
+	<spw_popupdescription2>Loud sounds, like gunshots or explosions, feel more powerful as they crush other audio in the mix by dipping their volume.</spw_popupdescription2>
+	
+	<spw_popupsubheading3>Dynamic Lowpass Frequency</spw_popupsubheading3>
+	<spw_popupdescription3>Sounds are no longer limited to being muffled at one set strength and will now accurately become more or less audible based on how many layers of obstructions are in the way.</spw_popupdescription3>
+	
+	<spw_popupsubheading4>Sound Occlusion</spw_popupsubheading4>
+	<spw_popupdescription4>Sounds are muffled by the shape of the surrounding level geometry as they explore their path to the player's ears.</spw_popupdescription4>
+	
+	<spw_popupsubheading5>Powerful Distortion</spw_popupsubheading5>
+	<spw_popupdescription5>Gunshots, explosions, and other loud sounds distort violently. By default this effect is somewhat subtle, but I wouldn't recommend increasing the edge or gain too high; if you don't believe me, just remember I'm the guy who made Real Sonar.</spw_popupdescription5>
+	
+	<spw_popupsubheading6>More Muffled Sounds</spw_popupsubheading6>
+	<spw_popupdescription6>In the vanilla game and previous versions of Soundproof Walls, water flow and fire sounds were never muffled. Additionally, sounds like footsteps, damage hits, or any other sounds that didn't originate from an item were unaffected by tSoundproof Walls' lowpass filter. In 2.0, all audio is now lowpassed, and most importantly, water flow and fire sounds are finally muffled by walls and other obstructions!</spw_popupdescription6>
+	
+	<spw_popupsubheading7>Sound Propagation</spw_popupsubheading7>
+	<spw_popupdescription7>Certain sounds are better at piercing through nearby walls and doors, allowing them to be heard clearer on the other side. By default this applies to structural damage sounds, explosions, and turrets.</spw_popupdescription7>
+	
+	<spw_popupsubheading8>100+ New Config Settings</spw_popupsubheading8>
+	<spw_popupdescription8>Soundproof Walls has never been so customizable. 2.0 grants complete control over the properties and effects for every individual sound. The default settings are designed to be the most applicable to the general playerbase, but there is enormous potential for vastly different configuations and the ability to make whatever soundscape you desire.</spw_popupdescription8>
+	
+	<spw_popupsubheading9>One Last Thing...</spw_popupsubheading9>
+	<spw_popupdescription9>Before I say this, you should know that the changes listed here are just the tip of the iceburg, so if you're interested in looking at the full changelog, see the link below. As a final note, I have also been working on another audio-related mod for Barotrauma that I am releasing alongside this 2.0 update. The mod is called ReSound and it's a framework for modders or players with no modding experience to easily create and release their own sound replacement mods without worrying about programming knowledge, compatibility with other mods, or the maintenence overhead that came with the previous approach of XML overrides. Soundproof Walls can only go so far working with the vanilla sound effects - the biggest change to the sound of Barotrauma will come with overhauling the sounds themselves. I've been working with a handful of popular sound replacement mod authors to port their previously outdated mods over to this new framework and make them available to players again, and I encourage anyone else with a passion for sound or just a funny idea to give it a try too. If you want to get started with ReSound or find the new and updated sound overhaul mods, take a look at ReSound's Steam workshop page!</spw_popupdescription9>
+
+	<spw_popupconclusion>I hope you enjoy the new stuff! Don't hesitate to ask questions or let me know if you have any issues. I am dedicated to creating the best experience for players and read everything that gets commented or sent my way :)\nThank you for playing -Plag</spw_popupconclusion>
+
+	<spw_popupblock1>For a full list of changes, see the patch notes on the Steam Workshop page!</spw_popupblock1>
+	<spw_popupblock2>If you would like to support me in creating more mods for Barotrauma, nothing motivates me more than being bought a coffee on KoFi!</spw_popupblock2>
+	<spw_popupblock3>Soundproof Walls is an open source project on GitHub, give the repo a star!</spw_popupblock3>
 </infotexts>

@@ -113,7 +113,7 @@ namespace SoundproofWalls
             Character character = Character.Controlled;
 
             if (!ConfigManager.Config.EavesdroppingEnabled ||
-                !ConfigManager.Config.EavesdroppingKeyOrMouse.IsDown() ||
+                !ConfigManager.LocalConfig.EavesdroppingKeyOrMouse.IsDown() ||
                 character == null ||
                 character.CurrentHull == null ||
                 character.CurrentSpeed > 0.05 ||

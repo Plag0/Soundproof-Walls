@@ -2,7 +2,7 @@
 
 namespace SoundproofWalls
 {
-    internal sealed class RadioFilter
+    public class RadioFilter
     {
         public double frequency;
         public double q;

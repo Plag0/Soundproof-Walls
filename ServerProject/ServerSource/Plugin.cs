@@ -3,80 +3,100 @@ using Barotrauma.Items.Components;
 using Barotrauma.Networking;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
+using MonoMod.Utils;
 using System.Reflection;
 
 namespace SoundproofWalls
 {
     public partial class Plugin : IAssemblyPlugin
     {
-        static float LastSyncReceiveTime = 0;
-        static String LastConfig = "";
-        static byte LastConfigOwnerID = (byte)1;
+        static bool HasNotReceivedConfigYet = true; // Has the server recieved any client config
+        static float LastConfigRequestTime = 0;
+        static string LastConfigString = DISABLED_CONFIG_VALUE;
+        static byte LastConfigSenderID = 1;
 
         public void InitServer()
         {
-            LuaCsLogger.Log($"Server init started...");
-            GameMain.LuaCs.Networking.Receive("SPW_UpdateConfigServer", (object[] args) => 
+            GameMain.LuaCs.Networking.Receive(SERVER_RECEIVE_CONFIG, (object[] args) => 
             {
-                LastSyncReceiveTime = 0f;
-
+                // Unpack message.
                 IReadMessage msg = (IReadMessage)args[0];
-
                 string data = msg.ReadString();
-                bool manualUpdate = false;
-                byte configSenderId = 1;
-                string newConfig = DataAppender.RemoveData(data, out manualUpdate, out configSenderId);
+                string configString = DataAppender.RemoveData(data, out bool manualUpdate, out byte configSenderId);
 
-                if (manualUpdate)
-                {
-                    LastConfigOwnerID = configSenderId;
-                }
-                if (LastConfigOwnerID != configSenderId) { return; }
+                bool isFirstConfig = HasNotReceivedConfigYet;
 
-                LastConfig = newConfig;
+                // Prevent automatic updates (when another admin connects to the server) from overriding an existing config unless they manually change a setting.
+                if (manualUpdate || HasNotReceivedConfigYet) { LastConfigSenderID = configSenderId; }
 
-                IWriteMessage response = GameMain.LuaCs.Networking.Start("SPW_UpdateConfigClient");
+                // Return early if automatic update from different config sender.
+                if (!manualUpdate && LastConfigSenderID != configSenderId) { return; }
+
+                // Return early if the config recieved is identical.
+                if (LastConfigString == configString) { return; }
+
+                // Update values.
+                LastConfigString = configString;
+                HasNotReceivedConfigYet = false;
+
+                // Send config to all clients.
+                IWriteMessage response = GameMain.LuaCs.Networking.Start(CLIENT_RECEIVE_CONFIG);
                 response.WriteString(data);
                 GameMain.LuaCs.Networking.Send(response);
+
+                if (isFirstConfig && !HasNotReceivedConfigYet)
+                {
+                    string updaterName = Client.ClientList.FirstOrDefault(client => client.SessionId == configSenderId)?.Name ?? "unknown";
+                    LuaCsLogger.Log($"[Soundproof Walls][Server] Sync server started with config from \"{updaterName}\"", Color.LimeGreen);
+                }
             });
 
-            GameMain.LuaCs.Networking.Receive("SPW_DisableConfigServer", (object[] args) =>
+            // Clients can request the latest version of the config from the server.
+            GameMain.LuaCs.Networking.Receive(SERVER_SEND_CONFIG, (object[] args) =>
             {
+                LuaCsLogger.Log("Server: client requesting config");
                 IReadMessage msg = (IReadMessage)args[0];
+                byte requesterId = msg.ReadByte();
+                Client? requesterClient = Client.ClientList.FirstOrDefault(client => client.SessionId == requesterId);
 
-                string data = msg.ReadString();
-                bool manualUpdate = false;
-                byte configSenderId = 1;
-                string _ = DataAppender.RemoveData(data, out manualUpdate, out configSenderId);
+                if (requesterClient == null) { return; }
 
-                if (manualUpdate)
+                // No config has been uploaded yet.
+                if (HasNotReceivedConfigYet)
                 {
-                    LastConfigOwnerID = configSenderId;
+                    LuaCsLogger.LogError($"[SoundproofWalls][Server] \"{requesterClient.Name}\" requested the server config before it was uploaded");
+                    return;
                 }
 
-                if (LastConfigOwnerID != configSenderId) { return; }
+                string newConfigData = DataAppender.AppendData(LastConfigString, false, LastConfigSenderID);
 
-                LastConfig = string.Empty;
-
-                IWriteMessage response = GameMain.LuaCs.Networking.Start("SPW_DisableConfigClient");
-                response.WriteString(data);
-                GameMain.LuaCs.Networking.Send(response);
+                // Send new config to requesting client.
+                IWriteMessage response = GameMain.LuaCs.Networking.Start(CLIENT_RECEIVE_CONFIG);
+                response.WriteString(newConfigData);
+                GameMain.LuaCs.Networking.Send(response, requesterClient.Connection);
+                LuaCsLogger.Log("Server: sent config to client");
             });
 
+            // Requests the host, or first admin to connect, for their config until it is recieved.
             GameMain.LuaCs.Hook.Add("think", "spw_serverupdate", (object[] args) =>
             {
-                if (Timing.TotalTime > LastSyncReceiveTime + 10 && LastConfig != string.Empty)
+                if (HasNotReceivedConfigYet && Timing.TotalTime > LastConfigRequestTime + 10)
                 {
-                    // Keeps the server synced in a dedicated server if no admins are online.
-                    string data = DataAppender.AppendData(LastConfig, false, LastConfigOwnerID);
-                    IWriteMessage message = GameMain.LuaCs.Networking.Start("SPW_UpdateConfigClient");
-                    message.WriteString(data);
-                    GameMain.LuaCs.Networking.Send(message);
-
-                    LastSyncReceiveTime = (float)Timing.TotalTime;
+                    LastConfigRequestTime = (float)Timing.TotalTime;
+                    foreach (Client client in Client.ClientList)
+                    {
+                        if (client.Connection == GameMain.Server.OwnerConnection || client.HasPermission(ClientPermissions.Ban))
+                        {
+                            IWriteMessage message = GameMain.LuaCs.Networking.Start(CLIENT_SEND_CONFIG);
+                            GameMain.LuaCs.Networking.Send(message);
+                            LuaCsLogger.Log("Server: requesting config...");
+                            break;
+                        }
+                    }
                 }
                 return null;
             });
+
             try
             {
                 // VoipServer CanReceive prefix REPLACEMENT.

@@ -56,10 +56,10 @@ namespace SoundproofWalls
             Instance = this;
 
             // Compatibility with Lua mods that mess with with Sound objects.
-            LuaUserData.RegisterType("SoundproofWalls.ExtendedOggSound");
-            LuaUserData.RegisterType("SoundproofWalls.ExtendedSoundBuffers");
-            LuaUserData.RegisterType("SoundproofWalls.ReducedOggSound");
-            LuaUserData.RegisterType("SoundproofWalls.ReducedSoundBuffers");
+            LuaUserData.RegisterType(typeof(ExtendedOggSound).FullName);
+            LuaUserData.RegisterType(typeof(ExtendedSoundBuffers).FullName);
+            LuaUserData.RegisterType(typeof(ReducedOggSound).FullName);
+            LuaUserData.RegisterType(typeof(ReducedSoundBuffers).FullName);
 
             GameMain.LuaCs.Hook.Add("think", "spw_clientupdate", (object[] args) =>
             {
@@ -240,10 +240,11 @@ namespace SoundproofWalls
 
             // TogglePauseMenu postfix.
             // Displays menu button and updates the config when the menu is closed.
-            harmony.Patch(
+            // Don't unpatch this because otherwise the config won't save when renabling SPW and closing menu with esc after disabling it.
+            PatchToKeep = harmony.Patch(
                 typeof(GUI).GetMethod(nameof(GUI.TogglePauseMenu)),
                 null,
-                new HarmonyMethod(typeof(Menu).GetMethod(nameof(Menu.HandlePauseMenuToggle))));
+                new HarmonyMethod(typeof(Menu).GetMethod(nameof(Menu.SPW_TogglePauseMenu))));
 
             // ShouldMuffleSounds prefix REPLACEMENT (blank).
             // Just returns true. Workaround for ignoring muffling on sounds with "dontmuffle" in their XML. 
@@ -251,41 +252,40 @@ namespace SoundproofWalls
                 typeof(SoundPlayer).GetMethod(nameof(SoundPlayer.ShouldMuffleSound)),
                 new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_ShouldMuffleSound))));
 
-            // Clients receiving the admin's config.
-            GameMain.LuaCs.Networking.Receive("SPW_UpdateConfigClient", (object[] args) =>
+            // Server requests client to send their config.
+            GameMain.LuaCs.Networking.Receive(CLIENT_SEND_CONFIG, (object[] args) =>
             {
-                IReadMessage msg = (IReadMessage)args[0];
-
-                string data = msg.ReadString();
-                bool manualUpdate = false;
-                byte configSenderId = 1;
-                string newConfig = DataAppender.RemoveData(data, out manualUpdate, out configSenderId);
-
-                Config? newServerConfig = JsonSerializer.Deserialize<Config>(newConfig);
-
-                if (newServerConfig == null)
-                {
-                    LuaCsLogger.LogError($"[SoundproofWalls] Invalid config from host");
-                    return;
-                }
-
-                ConfigManager.UpdateConfig(newConfig: newServerConfig, oldConfig: Config, isServerConfigEnabled: true, manualUpdate: manualUpdate, configSenderId: configSenderId);
+                ConfigManager.UploadClientConfigToServer();
             });
 
-            // Clients receiving word that the admin has disabled syncing.
-            GameMain.LuaCs.Networking.Receive("SPW_DisableConfigClient", (object[] args) =>
+            // Clients receiving the server config.
+            GameMain.LuaCs.Networking.Receive(CLIENT_RECEIVE_CONFIG, (object[] args) =>
             {
+                // Unpack message.
                 IReadMessage msg = (IReadMessage)args[0];
-
                 string data = msg.ReadString();
-                bool manualUpdate = false;
-                byte configSenderId = 1;
-                DataAppender.RemoveData(data, out manualUpdate, out configSenderId);
-                ConfigManager.UpdateConfig(newConfig: LocalConfig, oldConfig: Config, isServerConfigEnabled: false, manualUpdate: manualUpdate, configSenderId: configSenderId);
+                string configString = DataAppender.RemoveData(data, out bool manualUpdate, out byte configSenderId);
+
+                bool useServerConfig = configString != DISABLED_CONFIG_VALUE; // configString will be equal to DISABLED_CONFIG_VALUE if syncing is disabled.
+                LuaCsLogger.Log($"Client: received config from server. is valid: {useServerConfig}");
+
+                Config? newConfig = null;
+                try
+                {
+                    newConfig = useServerConfig ? JsonSerializer.Deserialize<Config>(configString) : LocalConfig;
+                } catch (Exception e) { LuaCsLogger.LogError($"[SoundproofWalls] Failed to deserialize server config, {e}"); }
+
+                if (newConfig == null)
+                {
+                    LuaCsLogger.LogError("[SoundproofWalls] Error detected in server config, switching to local config");
+                    newConfig = LocalConfig;
+                    useServerConfig = false;
+                }
+
+                ConfigManager.UpdateConfig(newConfig: newConfig, oldConfig: Config, isServerConfigEnabled: useServerConfig, manualUpdate: manualUpdate, configSenderId: configSenderId);
             });
 
             InitDynamicFx();
-            ConfigManager.UploadServerConfig();
 
             HydrophoneManager.Setup();
             EavesdropManager.Setup();
@@ -296,6 +296,13 @@ namespace SoundproofWalls
             { 
                 Util.ReloadSounds(starting: true);
                 SoundInfoManager.UpdateSoundInfoMap();
+            }
+
+            if (ModStateManager.State.FirstLaunch)
+            {
+                Menu.ForceOpenWelcomePopUp();
+                ModStateManager.State.FirstLaunch = false;
+                ModStateManager.SaveState(ModStateManager.State);
             }
         }
 
@@ -386,7 +393,7 @@ namespace SoundproofWalls
 
         public static bool SPW_LoadCustomOggSound(SoundManager __instance, string filename, bool stream, ref Sound __result)
         {
-            bool badFilename = !filename.IsNullOrEmpty() && (Config.StaticFx && Util.StringHasKeyword(filename, SoundInfoManager.IgnoredPrefabs) || Util.StringHasKeyword(filename, CustomSoundPaths.Values.ToHashSet()));
+            bool badFilename = !string.IsNullOrEmpty(filename) && (Config.StaticFx && Util.StringHasKeyword(filename, SoundInfoManager.IgnoredPrefabs) || Util.StringHasKeyword(filename, CustomSoundPaths.Values.ToHashSet()));
             if (badFilename ||
                 !Config.Enabled ||
                 Config.ClassicFx ||
@@ -437,7 +444,7 @@ namespace SoundproofWalls
 
             string filePath = overrideFilePath ?? element.GetAttributeContentPath("file")?.Value ?? "";
 
-            if (!filePath.IsNullOrEmpty() && 
+            if (!string.IsNullOrEmpty(filePath) && 
                 (Config.StaticFx && Util.StringHasKeyword(filePath, SoundInfoManager.IgnoredPrefabs) ||
                 Util.StringHasKeyword(filePath, CustomSoundPaths.Values.ToHashSet())))
             { return true; }
@@ -659,6 +666,7 @@ namespace SoundproofWalls
             if (!clientAlive) // Stop here if the speaker is spectating or in lobby.
             {
                 client.VoipSound.UseMuffleFilter = false;
+                client.VoipSound.UseRadioFilter = false;
                 return false; 
             }
 
@@ -688,6 +696,10 @@ namespace SoundproofWalls
             // Range.
             float localRangeMultiplier = 1 * Config.VoiceRangeMultiplier;
             float radioRangeMultiplier = 1 * Config.RadioRangeMultiplier;
+            if (Config.WhisperMode)
+            {
+                localRangeMultiplier *= client.VoipSound.CurrentAmplitude;
+            }
             float speechImpedimentMultiplier = 1.0f - client.Character.SpeechImpediment / 100.0f;
             if (messageType == ChatMessageType.Radio)
             {
@@ -1362,6 +1374,9 @@ namespace SoundproofWalls
 
         public static bool SPW_SoundChannel_FadeOutAndDispose(SoundChannel __instance)
         {
+            // Run the original method if this setting is disabled. Og method can help with sounds cutting off too abruptly
+            if (!Config.DisableVanillaFadeOutAndDispose) { return true; }
+
             __instance.Dispose();
             return false;
         }

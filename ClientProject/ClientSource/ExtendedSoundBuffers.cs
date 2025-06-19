@@ -5,7 +5,7 @@ using OpenAL;
 
 namespace SoundproofWalls
 {
-    sealed class ExtendedSoundBuffers : IDisposable
+    public sealed class ExtendedSoundBuffers : IDisposable
     {
         private static readonly HashSet<uint> bufferPool = new HashSet<uint>();
 #if OSX
