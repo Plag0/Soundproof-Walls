@@ -5,6 +5,7 @@ namespace SoundproofWalls
     public class SoundInfo
     {
         public Sound Sound;
+        public CustomSound? CustomSound;
 
         public float GainMult = 1;
         public float RangeMult = 1;
@@ -52,13 +53,13 @@ namespace SoundproofWalls
                 Sound.MaxSimultaneousInstances = config.MaxSimultaneousInstances;
             }
 
-            CustomSound? customSound = GetCustomSound(filename);
-            if (customSound != null)
+            CustomSound = GetCustomSound(filename);
+            if (CustomSound != null)
             {
-                GainMult = customSound.GainMultiplier;
-                RangeMult = customSound.RangeMultiplier;
-                SidechainMult = customSound.SidechainMultiplier;
-                SidechainRelease = customSound.Release;
+                GainMult = CustomSound.GainMultiplier;
+                RangeMult = CustomSound.RangeMultiplier;
+                SidechainMult = CustomSound.SidechainMultiplier;
+                SidechainRelease = CustomSound.Release;
                 IsLoud = SidechainMult > 0;
             }
         }

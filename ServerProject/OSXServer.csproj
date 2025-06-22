@@ -25,8 +25,8 @@
 		<Reference Include="Mono.Cecil">
 			<HintPath>..\Refs\Mono.Cecil.dll</HintPath>
 		</Reference>
-		<Reference Include="MonoGame.Framework.MacOs.NetStandard">
-			<HintPath>..\Refs\MonoGame.Framework.MacOs.NetStandard.dll</HintPath>
+		<Reference Include="MonoGame.Framework.MacOS.NetStandard">
+			<HintPath>..\Refs\MonoGame.Framework.MacOS.NetStandard.dll</HintPath>
 		</Reference>
 		<Reference Include="MonoMod.Backports">
 			<HintPath>..\Refs\MonoMod.Backports.dll</HintPath>

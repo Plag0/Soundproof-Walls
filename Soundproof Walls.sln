@@ -18,6 +18,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Linux", "Linux", "{35C69328-1676-4ACD-825C-9B3732501A75}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Windows", "Windows", "{A43FEDB3-075D-4468-8FFE-55ACE8302253}"
+	ProjectSection(SolutionItems) = preProject
+		readme.md = readme.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OSX", "OSX", "{FB4AF98D-A8B6-43EA-95FC-4A635E4315B6}"
 EndProject

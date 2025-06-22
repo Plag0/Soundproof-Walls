@@ -2,15 +2,18 @@
 {
     public class SidechainProcessor
     {
-        private float sidechainStartingValue;
         private float sidechainRelease; // in seconds
-        private float progress = 0f;
         private float frameTime;
         private bool isReleasing = false;
 
+        private float sidechainStartingValue = 0;
+        private float progress = 0f;
+
+        public float CompletionRatio { get; private set; } = 0;
+        public CustomSound? ActiveSoundGroup { get; private set; } = null;
         // Current multiplier value
+        public float SidechainRawStartValue { get; private set; } = 0;
         public float SidechainMultiplier { get; private set; } = 0;
-        public float SidechainStartValue { get; private set; } = 0;
 
         public SidechainProcessor(float frameRate = 60f)
         {
@@ -19,13 +22,15 @@
         }
 
         // Call this to start the release phase
-        public void StartRelease(float startingValue, float releaseTimeInSeconds)
+        public void StartRelease(float rawStartingValue, float releaseTimeInSeconds, CustomSound? activeSoundGroup)
         {
             // Only start a new release if it's more intense.
-            startingValue = Math.Clamp(startingValue, 0f, 1f);
-            if (startingValue < SidechainMultiplier) { return;}
-
-            sidechainStartingValue = startingValue;
+            if (rawStartingValue < SidechainRawStartValue * CompletionRatio) { return;}
+            
+            SidechainRawStartValue = rawStartingValue;
+            // Normalise to between 0-1.
+            sidechainStartingValue = Math.Clamp(SidechainRawStartValue, 0f, 1f);
+            ActiveSoundGroup = activeSoundGroup;
 
             // Use the new release if it's longer than the current remaining release.
             if (releaseTimeInSeconds > sidechainRelease * (1 - progress))
@@ -35,8 +40,7 @@
                 progress = 0f;
             }
 
-            SidechainMultiplier = startingValue;
-            SidechainStartValue = startingValue;
+            SidechainMultiplier = sidechainStartingValue;
             isReleasing = true;
         }
 
@@ -64,10 +68,10 @@
             }
 
             float exponent = ConfigManager.Config.SidechainReleaseCurve;
-            float multiplierRatio = (float)Math.Pow(1 - progress, exponent);
+            CompletionRatio = (float)Math.Pow(1 - progress, exponent);
 
             // Max out at 0.98 to prevent auto-disposing of SoundChannels unnecessarily.
-            SidechainMultiplier = Math.Clamp(sidechainStartingValue * multiplierRatio, 0, 0.98f);
+            SidechainMultiplier = Math.Clamp(sidechainStartingValue * CompletionRatio, 0, 0.98f);
 
             return SidechainMultiplier;
         }

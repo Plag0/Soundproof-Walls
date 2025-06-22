@@ -316,8 +316,6 @@ namespace SoundproofWalls
 
             if (!SoundInfo.IgnoreAll)
             {
-                // Kinda just easier to leave this here.
-                channel.Sound.MaxSimultaneousInstances = ConfigManager.Config.MaxSimultaneousInstances;
 
                 if (config.DynamicFx && Plugin.EffectsManager != null)
                 {
@@ -325,6 +323,9 @@ namespace SoundproofWalls
                     Plugin.EffectsManager.RegisterSource(sourceId);
                 }
             }
+
+            // Kinda just easier to leave this here.
+            channel.Sound.MaxSimultaneousInstances = ConfigManager.Config.MaxSimultaneousInstances;
 
             Update(channelHull, statusEffect, itemComp, speakingClient, messageType);
             isFirstIteration = false;
@@ -352,7 +353,7 @@ namespace SoundproofWalls
             else if (statusEffect != null && item == null) { item = statusEffect.soundEmitter as Item; }
             if (item != null && soundHull == null) { soundHull = item.CurrentHull; }
 
-            this.ChannelHull = soundHull;
+            ChannelHull = soundHull ?? ChannelHull;
             this.itemComp = itemComp;
             this.statusEffect = statusEffect;
             this.speakingClient = speakingClient;
@@ -407,9 +408,10 @@ namespace SoundproofWalls
                 }
             }
 
+            UpdateProperties();
+
             if (!skipMuffleUpdate || isFirstIteration)
             {
-                UpdateProperties();
                 UpdateMuffle();
             }
 
@@ -982,7 +984,7 @@ namespace SoundproofWalls
                 else if (Hydrophoned) { mult += config.HydrophoneVolumeMultiplier - 1; mult *= HydrophoneManager.HydrophoneEfficiency; }
 
                 // Tweak for vanilla exosuit volume.
-                if (item != null && item.HasTag(new Identifier("deepdivinglarge")) && Channel.Sound.Filename.EndsWith("WEAPONS_chargeUp.ogg")) { mult *= config.VanillaExosuitVolumeMultiplier; }
+                if (item != null && item.HasTag(new Identifier("deepdivinglarge")) && LongName.EndsWith("WEAPONS_chargeUp.ogg")) { mult *= config.VanillaExosuitVolumeMultiplier; }
             }
             // Single (non-looping sound).
             else
@@ -1003,22 +1005,24 @@ namespace SoundproofWalls
                 else if (eavesdropped) { mult *= Math.Clamp(eavesdropEfficiency * (1 / config.EavesdroppingThreshold) - 1, 0.1f, 1); }
             }
 
-            // Start sidechain release for loud sounds.
             float mEfficiency = config.SidechainMuffleEfficiencyMultiplier;
+            float thisSidechainStartingStrength = SoundInfo.SidechainMult * (1 - MuffleStrength * mEfficiency);
+            float globalSidechainStartingStrength = Plugin.Sidechain.SidechainRawStartValue;
+            // If a more powerful loud sound is playing than the current loud sound.
+            if (IsLoud && Plugin.Sidechain.ActiveSoundGroup != SoundInfo.CustomSound && globalSidechainStartingStrength > thisSidechainStartingStrength)
+            {
+                float overpowerMult = Math.Clamp(1 - (globalSidechainStartingStrength - thisSidechainStartingStrength), 0f, 1f);
+                mult *= MathHelper.Lerp(1, overpowerMult, Plugin.Sidechain.CompletionRatio);
+            }
+
+            // Start sidechain release for loud sounds.
             if (IsLoud && (Channel.Looping || audioIsVoice || audioIsRadio || !Channel.Looping && !sidechainTriggered))
             {
                 // The strength of the sidechaining slightly decreases the more muffled the loud sound is.
-                Plugin.Sidechain.StartRelease(SoundInfo.SidechainMult * (1 - MuffleStrength * mEfficiency), SoundInfo.SidechainRelease * (1 - MuffleStrength * mEfficiency));
+                Plugin.Sidechain.StartRelease(thisSidechainStartingStrength, SoundInfo.SidechainRelease * (1 - MuffleStrength * mEfficiency), SoundInfo.CustomSound);
                 sidechainTriggered = true; // Only trigger sidechaining once for non-looping sounds in case UpdateNonLoopingSounds is enabled.
             }
             else if (!IsLoud) { mult *= 1 - Plugin.Sidechain.SidechainMultiplier; }
-
-            float highestSidechainStrength = Plugin.Sidechain.SidechainMultiplier;
-            float currentSidechainStrength = SoundInfo.SidechainMult * (1 - MuffleStrength * mEfficiency);
-            if (IsLoud && highestSidechainStrength > currentSidechainStrength) // If a more powerful loud sound is playing than the current loud sound.
-            {
-                mult *= 1 - (Plugin.Sidechain.SidechainMultiplier - currentSidechainStrength / 2);
-            }
 
             // Replace OpenAL's distance attenuation using the approximate distance gathered from traversing gaps.
             // Only do this if there's a noticable difference between the euclideanDistance that OpenAL uses and the approximate distance,
@@ -1042,7 +1046,7 @@ namespace SoundproofWalls
                 float distMult = CalculateLinearDistanceClampedMult(distance, Channel.Near, Channel.Far);
                 mult *= distMult;
             }
-            else if (rolloffFactorModified)
+            else if (rolloffFactorModified || distanceModel == DistanceModel.OpenAL && rolloffFactor != 1)
             {
                 rolloffFactor = 1;
                 distanceModel = DistanceModel.OpenAL;
@@ -1126,11 +1130,6 @@ namespace SoundproofWalls
             {
                 Pitch = targetPitch;
             }
-
-            if (isClone && ShortName.Contains("oxy"))
-            {
-                LuaCsLogger.Log($"Pitch {Pitch} = currentPitch {currentPitch} * mult {mult}");
-            }
         }
 
         private void UpdateFlowFireObstructions()
@@ -1208,9 +1207,18 @@ namespace SoundproofWalls
                 else if (eavesdropped) { mult *= Math.Clamp(eavesdropEfficiency * (1 / config.EavesdroppingThreshold) - 1, 0.1f, 1); }
             }
 
-            // The strength of the sidechaining decreases the more muffled the loud sound is.
             float mEfficiency = config.SidechainMuffleEfficiencyMultiplier;
-            if (IsLoud) Plugin.Sidechain.StartRelease(SoundInfo.SidechainMult * (1 - MuffleStrength * mEfficiency), SoundInfo.SidechainRelease * (1 - MuffleStrength * mEfficiency));
+            float thisSidechainStartingStrength = SoundInfo.SidechainMult * (1 - MuffleStrength * mEfficiency);
+            float globalSidechainStartingStrength = Plugin.Sidechain.SidechainRawStartValue;
+            // If a more powerful loud sound is playing than the current loud sound.
+            if (IsLoud && Plugin.Sidechain.ActiveSoundGroup != SoundInfo.CustomSound && globalSidechainStartingStrength > thisSidechainStartingStrength)
+            {
+                float overpowerMult = Math.Clamp(1 - (globalSidechainStartingStrength - thisSidechainStartingStrength), 0f, 1f);
+                mult *= MathHelper.Lerp(1, overpowerMult, Plugin.Sidechain.CompletionRatio);
+            }
+
+            // The strength of the sidechaining decreases the more muffled the loud sound is.
+            if (IsLoud) Plugin.Sidechain.StartRelease(SoundInfo.SidechainMult * (1 - MuffleStrength * mEfficiency), SoundInfo.SidechainRelease * (1 - MuffleStrength * mEfficiency), SoundInfo.CustomSound);
             else if (!IsLoud) mult *= 1 - Plugin.Sidechain.SidechainMultiplier;
 
             float highestSidechainStrength = Plugin.Sidechain.SidechainMultiplier;

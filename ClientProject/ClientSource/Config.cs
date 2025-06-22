@@ -205,31 +205,31 @@ namespace SoundproofWalls
             new CustomSound("footstep", 0.75f, 0.8f),
             new CustomSound("door", 0.9f, 1.3f),
             new CustomSound("metalimpact", 0.8f, 1.2f),
-            new CustomSound("revolver", 2.0f, 1.2f, 1, 1.1f),
-            new CustomSound("shotgunshot", 2.5f, 1.3f, 1, 1.5f),
-            new CustomSound("rifleshot", 2.5f, 1.3f, 1, 1.3f, "harpooncoilrifleshot"),
+            new CustomSound("revolver", 2.0f, 1.2f, 1.1f, 1.1f),
+            new CustomSound("shotgunshot", 2.5f, 1.3f, 1.4f, 1.5f),
+            new CustomSound("rifleshot", 2.5f, 1.3f, 1.2f, 1.3f, "harpooncoilrifleshot"),
             new CustomSound("shot", 2f, 1.15f, 1, 0.9f, "shotgunload", "tasershot", "riflegrenadeshot"),
 
-            new CustomSound("coilgun", 2.3f, 1.35f, 1, 1.3f),
-            new CustomSound("flakgun", 2.5f, 1.4f, 1, 1.5f),
-            new CustomSound("railgun", 3f, 1.5f, 1, 1.9f, "railgunloop", "railgunstart", "railgunstop"),
-            new CustomSound("lasergunshot", 2.8f, 1.3f, 1, 1.7f),
-            new CustomSound("gravityshells_boom.ogg", 2.0f, 1.5f, 1, 3),
+            new CustomSound("coilgun", 2.3f, 1.35f, 1.2f, 1.3f),
+            new CustomSound("flakgun", 2.5f, 1.4f, 1.3f, 1.5f),
+            new CustomSound("railgun", 3f, 1.5f, 1.5f, 1.9f, "railgunloop", "railgunstart", "railgunstop"),
+            new CustomSound("lasergunshot", 2.8f, 1.3f, 1.4f, 1.7f),
+            new CustomSound("gravityshells_boom.ogg", 2.0f, 1.5f, 2, 3),
 
             new CustomSound("sonardecoy.ogg", 1, 1.1f, 0.6f, 1.5f),
 
-            new CustomSound("incendiumgrenade", 2, 1.2f, 1, 3),
-            new CustomSound("stungrenade", 3, 1.2f, 1, 4),
-            new CustomSound("explosion", 3, 1.6f, 1, 5),
-            new CustomSound("gravityshells", 1.5f, 1.4f, 1, 1.5f),
+            new CustomSound("incendiumgrenade", 2, 1.2f, 1.4f, 3),
+            new CustomSound("stungrenade", 3, 1.2f, 1.5f, 4),
+            new CustomSound("explosion", 3, 1.6f, 2, 5),
+            new CustomSound("gravityshells", 1.5f, 1.4f, 2, 1.5f),
             new CustomSound("firelarge.ogg", 1.4f, 1, 0.6f, 1),
 
             // Real Sonar changes.
-            new CustomSound("2936760984/sounds/sonar", 1, 1, 1, 5, "air", "sonarpoweron", "sonarambience", "sonardistortion"),
+            new CustomSound("2936760984/sounds/sonar", 1, 1, 3, 5, "air", "sonarpoweron", "sonarambience", "sonardistortion"),
             new CustomSound("2936760984/sounds/cortizide", 1, 1, 1, 3),
-            new CustomSound("2936760984/sounds/tinnitus", 1, 1, 0.65f, 1), // Looping sound so short release. Place real sonar specific tinnitus before vanilla so it's discovered first.
+            new CustomSound("2936760984/sounds/tinnitus", 1, 1, 0.65f, 1), // Looping sound is fine with short release. Place real sonar specific tinnitus before vanilla so it's discovered first.
             
-            new CustomSound("tinnitus", 0.7f, 1, 1, 8), // Vanilla/general tinnitus sounds - non looping.
+            new CustomSound("tinnitus", 0.7f, 1, 1.8f, 8), // Vanilla/general tinnitus sounds - non looping.
         };
 
         // Sounds in this list are ignored by all muffling/pitching/other processing except for gain.

@@ -87,6 +87,7 @@ namespace SoundproofWalls
             // Create default config if file doesn't exist
             if (!File.Exists(ConfigPath))
             {
+                Directory.CreateDirectory(Path.GetDirectoryName(ConfigPath)); // Create ModConfigs folder if it doesn't exist.
                 _cachedConfig = new Config();
                 SaveConfig(_cachedConfig);
             }

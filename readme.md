@@ -10,13 +10,13 @@ Alternatively, if you want to try unreleased features or prefer compiling the mo
 
 ## 🛠️ Build Instructions
 
-This project is built with .NET 6.0 and is designed for cross-platform use via Visual Studio or command-line using the .NET SDK.
+This project is built with .NET 8.0 and is designed for cross-platform use via Visual Studio or command-line using the .NET SDK.
 
 Follow these steps to build the project on any platform:
 
 ### 1. Install the .NET SDK
 
-Download and install the **.NET 6 SDK or newer** from the official Microsoft website:  
+Download and install the **.NET 8 SDK or newer** from the official Microsoft website:  
 👉 [https://dotnet.microsoft.com/download/dotnet](https://dotnet.microsoft.com/download/dotnet)
 
 ---
@@ -83,7 +83,9 @@ You can safely ignore any build warnings. If there are errors, refer to the trou
 
 ## 🧪 In-Game Usage
 
-Once built, launch *Barotrauma* and navigate to your mods list:
+Once built, first make sure you are subscribed to [Lua For Barotrauma](https://steamcommunity.com/sharedfiles/filedetails/?id=2559634234) and have client-side Lua installed. I recommend using the Steam launch option installation method shown in the mod's description.
+
+Then launch *Barotrauma* and navigate to your mods list:
 
 - You should see two versions of **Soundproof Walls**.
 - Enable the one with the **grey pencil icon** - this is the local version you just built.
