@@ -6,7 +6,7 @@ namespace SoundproofWalls
 {
     public class ModState
     {
-        public string Version { get; set; } = "2.0.0";
+        public string Version { get; set; } = "2.0";
         public bool FirstLaunch { get; set; } = true;
     }
     public static class ModStateManager

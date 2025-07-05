@@ -98,5 +98,5 @@ Then launch *Barotrauma* and navigate to your mods list:
 
 - **Missing assembly errors?** Ensure all files and folders from `luacsforbarotrauma_refs.zip` and the `NVorbis.dll` are placed inside the `Refs` folder located at `Soundproof-Walls/Refs`.
 - **Being used by another process error?** Try the command again. I tend to run the command until the project builds successfully twice in a row.
-- **Command not found?** Check your .NET SDK installation is valid by running `dotnet --info`. If there are errors, or your SDK version is less than 6.0, reinstall your .NET SDK.
+- **Command not found?** Check your .NET SDK installation is valid by running `dotnet --info`. If there are errors, or your SDK version is less than 8.0, reinstall your .NET SDK.
 ---

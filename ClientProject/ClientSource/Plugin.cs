@@ -37,18 +37,18 @@ namespace SoundproofWalls
             BubbleLocal,
             BubbleRadio,
         }
-        private static string modPath = Util.GetModDirectory();
+        public static string ModPath = Util.GetModDirectory();
         public static readonly Dictionary<SoundPath, string> CustomSoundPaths = new Dictionary<SoundPath, string>
         {
-            { SoundPath.EavesdroppingActivation1, Path.Combine(modPath, "Content/Sounds/SPW_EavesdroppingActivation1.ogg") },
-            { SoundPath.EavesdroppingActivation2, Path.Combine(modPath, "Content/Sounds/SPW_EavesdroppingActivation2.ogg") },
-            { SoundPath.EavesdroppingAmbienceDry, Path.Combine(modPath, "Content/Sounds/SPW_EavesdroppingAmbienceDryRoom.ogg") },
-            { SoundPath.EavesdroppingAmbienceWet, Path.Combine(modPath, "Content/Sounds/SPW_EavesdroppingAmbienceWetRoom.ogg") },
+            { SoundPath.EavesdroppingActivation1, Path.Combine(ModPath, "Content/Sounds/SPW_EavesdroppingActivation1.ogg") },
+            { SoundPath.EavesdroppingActivation2, Path.Combine(ModPath, "Content/Sounds/SPW_EavesdroppingActivation2.ogg") },
+            { SoundPath.EavesdroppingAmbienceDry, Path.Combine(ModPath, "Content/Sounds/SPW_EavesdroppingAmbienceDryRoom.ogg") },
+            { SoundPath.EavesdroppingAmbienceWet, Path.Combine(ModPath, "Content/Sounds/SPW_EavesdroppingAmbienceWetRoom.ogg") },
 
             { SoundPath.HydrophoneMovement1, "Content/Sounds/Water/SplashLoop.ogg" },
 
-            { SoundPath.BubbleLocal, Path.Combine(modPath, "Content/Sounds/SPW_BubblesLoopMono.ogg") },
-            { SoundPath.BubbleRadio, Path.Combine(modPath, "Content/Sounds/SPW_RadioBubblesLoopStereo.ogg") },
+            { SoundPath.BubbleLocal, Path.Combine(ModPath, "Content/Sounds/SPW_BubblesLoopMono.ogg") },
+            { SoundPath.BubbleRadio, Path.Combine(ModPath, "Content/Sounds/SPW_RadioBubblesLoopStereo.ogg") },
         };
 
         public void InitClient()
@@ -209,7 +209,6 @@ namespace SoundproofWalls
                 typeof(SoundPlayer).GetMethod(nameof(SoundPlayer.UpdateWaterAmbience), BindingFlags.Static | BindingFlags.NonPublic),
                 new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_UpdateWaterAmbience))));
 
-
             // UpdateFireSounds prefix REPLACEMENT.
             // Fixes a bug in the vanilla code that caused gain attenuation for large fires to drop off dramatically.
             // Also adds channels to channelInfoMap for modifying volume based on eavesdropping fade and sidechaining.
@@ -267,7 +266,7 @@ namespace SoundproofWalls
                 string configString = DataAppender.RemoveData(data, out bool manualUpdate, out byte configSenderId);
 
                 bool useServerConfig = configString != DISABLED_CONFIG_VALUE; // configString will be equal to DISABLED_CONFIG_VALUE if syncing is disabled.
-                LuaCsLogger.Log($"Client: received config from server. is valid: {useServerConfig}");
+                //LuaCsLogger.Log($"Client: received config from server. is valid: {useServerConfig}");
 
                 Config? newConfig = null;
                 try
@@ -277,7 +276,7 @@ namespace SoundproofWalls
 
                 if (newConfig == null)
                 {
-                    LuaCsLogger.LogError("[SoundproofWalls] Error detected in server config, switching to local config");
+                    LuaCsLogger.LogError("[SoundproofWalls] Error detected in server config - switching to local config");
                     newConfig = LocalConfig;
                     useServerConfig = false;
                 }
@@ -501,18 +500,6 @@ namespace SoundproofWalls
 
         public static bool SPW_Draw(ref Camera cam, ref SpriteBatch spriteBatch)
         {
-            // Processing mode tooltip.
-            GUIFrame? frame = Menu.currentMenuFrame;
-            if (frame != null && GUIComponent.toolTipBlock != null && GUIComponent.toolTipBlock.Text == TextManager.Get("spw_effectprocessingmodetooltip"))
-            {
-                float padding = 30;
-                RichString menuText = "";
-                if (Menu.NewLocalConfig.ClassicFx) { menuText = TextManager.Get("spw_vanillafxtooltip"); }
-                else if (Menu.NewLocalConfig.StaticFx) { menuText = TextManager.Get("spw_staticfxtooltip"); }
-                else if (Menu.NewLocalConfig.DynamicFx) { menuText = TextManager.Get("spw_dynamicfxtooltip"); }
-                GUIComponent.DrawToolTip(spriteBatch, menuText, new Vector2(frame.Rect.X + frame.Rect.Width + padding, frame.Rect.Y));
-            }
-
             Character character = Character.Controlled;
             if (character == null || cam == null) { return true; }
 
@@ -1123,7 +1110,7 @@ namespace SoundproofWalls
         {
             if (!Config.Enabled) { return true; }
 
-            bool sidechaining = Config.SidechainingEnabled && Config.SidechainingDucksMusic;
+            bool sidechaining = Config.SidechainingEnabled && Config.SidechainMusic;
 
             if (SoundPlayer.musicClips == null || (GameMain.SoundManager?.Disabled ?? true)) { return false; }
 
@@ -1284,7 +1271,7 @@ namespace SoundproofWalls
                     {
                         //mute the Channel
                         SoundPlayer.musicChannel[i].Gain = MathHelper.Lerp(SoundPlayer.musicChannel[i].Gain, 0.0f, SoundPlayer.MusicLerpSpeed * deltaTime);
-                        if (sidechaining) { SoundPlayer.musicChannel[i].Gain *= 1 - (Sidechain.SidechainMultiplier * Config.SidechainMusicDuckMultiplier); }
+                        if (sidechaining) { SoundPlayer.musicChannel[i].Gain *= 1 - (Sidechain.SidechainMultiplier * Config.SidechainIntensityMaster * Config.SidechainMusicMultiplier); }
                         if (SoundPlayer.musicChannel[i].Gain < 0.01f) { SoundPlayer.DisposeMusicChannel(i); }
                     }
                 }
@@ -1300,7 +1287,7 @@ namespace SoundproofWalls
                     if (SoundPlayer.musicChannel[i] != null && SoundPlayer.musicChannel[i].IsPlaying)
                     {
                         SoundPlayer.musicChannel[i].Gain = MathHelper.Lerp(SoundPlayer.musicChannel[i].Gain, 0.0f, SoundPlayer.MusicLerpSpeed * deltaTime);
-                        if (sidechaining) { SoundPlayer.musicChannel[i].Gain *= 1 - (Sidechain.SidechainMultiplier * Config.SidechainMusicDuckMultiplier); }
+                        if (sidechaining) { SoundPlayer.musicChannel[i].Gain *= 1 - (Sidechain.SidechainMultiplier * Config.SidechainIntensityMaster * Config.SidechainMusicMultiplier); }
                         if (SoundPlayer.musicChannel[i].Gain < 0.01f) { SoundPlayer.DisposeMusicChannel(i); }
                     }
                     //Channel free now, start playing the correct clip
@@ -1341,7 +1328,7 @@ namespace SoundproofWalls
                         targetGain *= (float)Math.Sqrt(1.0f / activeTrackCount);
                     }
                     SoundPlayer.musicChannel[i].Gain = MathHelper.Lerp(SoundPlayer.musicChannel[i].Gain, targetGain, SoundPlayer.MusicLerpSpeed * deltaTime);
-                    if (sidechaining) { SoundPlayer.musicChannel[i].Gain *= 1 - (Sidechain.SidechainMultiplier * Config.SidechainMusicDuckMultiplier); }
+                    if (sidechaining) { SoundPlayer.musicChannel[i].Gain *= 1 - (Sidechain.SidechainMultiplier * Config.SidechainIntensityMaster * Config.SidechainMusicMultiplier); }
                 }
             }
 
@@ -2071,9 +2058,12 @@ namespace SoundproofWalls
                 {
                     if (volume < 0.01f) { return; }
                     if (chn is not null) { SoundPlayer.waterAmbienceChannels.Remove(chn); }
-                    chn = sound.Play(volume, "waterambience");
-                    chn.Looping = true;
-                    SoundPlayer.waterAmbienceChannels.Add(chn);
+                    chn = sound.Play(volume, SoundManager.SoundCategoryWaterAmbience);
+                    if (chn != null)
+                    {
+                        chn.Looping = true;
+                        SoundPlayer.waterAmbienceChannels.Add(chn);
+                    }
                 }
                 else
                 {
@@ -2108,9 +2098,9 @@ namespace SoundproofWalls
                 }
             }
 
-            updateWaterAmbience(SoundPlayer.waterAmbienceIn.Sound, ambienceVolume * (1.0f - movementSoundVolume) * insideSubFactor);
-            updateWaterAmbience(SoundPlayer.waterAmbienceMoving.Sound, ambienceVolume * movementSoundVolume * insideSubFactor);
-            updateWaterAmbience(SoundPlayer.waterAmbienceOut.Sound, 1.0f - insideSubFactor);
+            updateWaterAmbience(SoundPlayer.waterAmbienceIn.Sound, ambienceVolume * (1.0f - movementSoundVolume) * insideSubFactor * SoundPlayer.waterAmbienceIn.Volume * Config.WaterAmbienceInVolumeMultiplier);
+            updateWaterAmbience(SoundPlayer.waterAmbienceMoving.Sound, ambienceVolume * movementSoundVolume * insideSubFactor * SoundPlayer.waterAmbienceMoving.Volume * Config.WaterAmbienceMovingVolumeMultiplier);
+            updateWaterAmbience(SoundPlayer.waterAmbienceOut.Sound, (1.0f - insideSubFactor) * SoundPlayer.waterAmbienceOut.Volume * Config.WaterAmbienceOutVolumeMultiplier);
 
             return false;
         }

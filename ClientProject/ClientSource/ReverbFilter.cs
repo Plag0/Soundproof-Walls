@@ -97,6 +97,7 @@
 
         public ReverbFilter(int sampleRate, float reverbTimeSeconds, float mix = 0.5f)
         {
+            reverbTimeSeconds = MathF.Max(reverbTimeSeconds, 0.01f);
             this.reverbTimeSeconds = reverbTimeSeconds;
 
             combFilters = new List<CombFilter>();

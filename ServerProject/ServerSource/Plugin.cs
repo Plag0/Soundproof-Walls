@@ -3,7 +3,7 @@ using Barotrauma.Items.Components;
 using Barotrauma.Networking;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
-using MonoMod.Utils;
+using System.Linq;
 using System.Reflection;
 
 namespace SoundproofWalls
@@ -54,7 +54,6 @@ namespace SoundproofWalls
             // Clients can request the latest version of the config from the server.
             GameMain.LuaCs.Networking.Receive(SERVER_SEND_CONFIG, (object[] args) =>
             {
-                LuaCsLogger.Log("Server: client requesting config");
                 IReadMessage msg = (IReadMessage)args[0];
                 byte requesterId = msg.ReadByte();
                 Client? requesterClient = Client.ClientList.FirstOrDefault(client => client.SessionId == requesterId);
@@ -64,7 +63,7 @@ namespace SoundproofWalls
                 // No config has been uploaded yet.
                 if (HasNotReceivedConfigYet)
                 {
-                    LuaCsLogger.LogError($"[SoundproofWalls][Server] \"{requesterClient.Name}\" requested the server config before it was uploaded");
+                    LuaCsLogger.Log($"[SoundproofWalls][Server] \"{requesterClient.Name}\" requested the server config before it was uploaded", color: Color.Yellow);
                     return;
                 }
 
@@ -89,7 +88,7 @@ namespace SoundproofWalls
                         {
                             IWriteMessage message = GameMain.LuaCs.Networking.Start(CLIENT_SEND_CONFIG);
                             GameMain.LuaCs.Networking.Send(message);
-                            LuaCsLogger.Log("Server: requesting config...");
+                            //LuaCsLogger.Log("Server: requesting config...");
                             break;
                         }
                     }

@@ -1,9 +1,10 @@
-﻿using Barotrauma.Items.Components;
-using Barotrauma.Sounds;
-using Barotrauma;
-using System.Reflection;
-using Microsoft.Xna.Framework;
+﻿using Barotrauma;
+using Barotrauma.Items.Components;
 using Barotrauma.Networking;
+using Barotrauma.Sounds;
+using Microsoft.Xna.Framework;
+using System.Reflection;
+using System.Xml.Linq;
 
 namespace SoundproofWalls
 {
@@ -315,6 +316,58 @@ namespace SoundproofWalls
                     for (int j = 0; j < GameMain.SoundManager.playingChannels[i].Length; j++)
                     {
                         GameMain.SoundManager.playingChannels[i][j]?.Dispose();
+                    }
+                }
+            }
+        }
+
+        public static void UpdateAITarget()
+        {
+            float soundMult = Config.AITargetSoundRangeMultiplierMaster;
+            float sightMult = Config.AITargetSightRangeMultiplierMaster;
+
+            foreach (Item item in Item.ItemList)
+            {
+                foreach (var subElement in item.Prefab.originalElement.Elements())
+                {
+                    if (subElement.Name.ToString().ToLowerInvariant() == "aitarget")
+                    {
+                        float baseSoundRange = subElement.GetAttributeFloat("soundrange", 0f);
+                        float baseMaxSoundRange = subElement.GetAttributeFloat("maxsoundrange", baseSoundRange);
+                        float baseSightRange = subElement.GetAttributeFloat("sightrange", 0f);
+                        float baseMaxSightRange = subElement.GetAttributeFloat("maxsoundrange", baseSoundRange);
+
+                        AITarget newAITarget = new AITarget(item, subElement);
+                        newAITarget.MaxSoundRange = item.AiTarget.MaxSoundRange > 0 ? baseMaxSoundRange * soundMult : 0;
+                        newAITarget.SoundRange = item.AiTarget.SoundRange > 0 ? baseSoundRange * soundMult : 0;
+                        newAITarget.MaxSightRange = item.AiTarget.MaxSightRange > 0 ? baseMaxSightRange * sightMult : 0;
+                        newAITarget.SightRange = item.AiTarget.SightRange > 0 ? baseSightRange * sightMult : 0;
+                        item.aiTarget = newAITarget;
+
+                        break; // Go to next item.
+                    }
+                }
+            }
+
+            foreach (var character in Character.CharacterList)
+            {
+                foreach (var subElement in character.Prefab.originalElement.Elements())
+                {
+                    if (subElement.Name.ToString().ToLowerInvariant() == "aitarget")
+                    {
+                        float baseSoundRange = subElement.GetAttributeFloat("soundrange", 0f);
+                        float baseMaxSoundRange = subElement.GetAttributeFloat("maxsoundrange", baseSoundRange);
+                        float baseSightRange = subElement.GetAttributeFloat("sightrange", 0f);
+                        float baseMaxSightRange = subElement.GetAttributeFloat("maxsoundrange", baseSoundRange);
+
+                        AITarget newAITarget = new AITarget(character, subElement);
+                        newAITarget.MaxSoundRange = character.AiTarget.MaxSoundRange > 0 ? baseMaxSoundRange * soundMult : 0;
+                        newAITarget.SoundRange = character.AiTarget.SoundRange > 0 ? baseSoundRange * soundMult : 0;
+                        newAITarget.MaxSightRange = character.AiTarget.MaxSightRange > 0 ? baseMaxSightRange * sightMult : 0;
+                        newAITarget.SightRange = character.AiTarget.SightRange > 0 ? baseSightRange * sightMult : 0;
+                        character.aiTarget = newAITarget;
+
+                        break; // Go to next character.
                     }
                 }
             }

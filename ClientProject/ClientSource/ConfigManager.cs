@@ -12,7 +12,18 @@ namespace SoundproofWalls
         private static Config _cachedConfig = LoadConfig();
 
         public static Config LocalConfig = LoadConfig();
-        public static Config? ServerConfig = null;
+        private static Config? serverConfig = null;
+        public static Config? ServerConfig 
+        { 
+            get => serverConfig; 
+            set 
+            { 
+                serverConfig = value; 
+                // Refresh menu if it's open.
+                if (SoundproofWallsMenu.Instance != null) { SoundproofWallsMenu.Create(); } 
+            } 
+        }
+        public static Client? ServerConfigUploader = null;
         public static Config Config { get { return ServerConfig ?? LocalConfig; } }
 
         private static float lastRequestTime = 0;
@@ -34,9 +45,14 @@ namespace SoundproofWalls
             bool shouldStop = oldConfig.Enabled && !newConfig.Enabled;
             bool shouldStart = !oldConfig.Enabled && newConfig.Enabled;
             bool shouldReloadSounds = Util.ShouldReloadSounds(newConfig: newConfig, oldConfig: oldConfig);
+            bool shouldUpdateAITarget = oldConfig.AITargetSoundRangeMultiplierMaster != newConfig.AITargetSoundRangeMultiplierMaster;
             bool shouldUpdateSoundInfo = Util.ShouldUpdateSoundInfo(newConfig, oldConfig: oldConfig);
             bool shouldStartAlEffects = !shouldStart && !oldConfig.DynamicFx && newConfig.DynamicFx;
             bool shouldStopAlEffects = !shouldStop && oldConfig.DynamicFx && !newConfig.DynamicFx;
+
+            bool shouldUpdateWaterAmbienceIn = oldConfig.WaterAmbienceInVolumeMultiplier != newConfig.WaterAmbienceInVolumeMultiplier;
+            bool shouldUpdateWaterAmbienceOut = oldConfig.WaterAmbienceOutVolumeMultiplier != newConfig.WaterAmbienceOutVolumeMultiplier;
+            bool shouldUpdateWaterAmbienceMoving = oldConfig.WaterAmbienceMovingVolumeMultiplier != newConfig.WaterAmbienceMovingVolumeMultiplier;
 
             ServerConfig = isServerConfigEnabled ? newConfig : null;
 
@@ -48,16 +64,19 @@ namespace SoundproofWalls
             else if (shouldReloadSounds) { Util.ReloadSounds(); }
             else if (shouldUpdateSoundInfo) { SoundInfoManager.UpdateSoundInfoMap(); }
 
+            if (shouldUpdateAITarget) { Util.UpdateAITarget(); }
+
             if (manualUpdate && configSenderId != 0)
             {
-                string updaterName = GameMain.Client.ConnectedClients.FirstOrDefault(client => client.SessionId == configSenderId)?.Name ?? "unknown";
+                ServerConfigUploader = GameMain.Client.ConnectedClients.FirstOrDefault(client => client.SessionId == configSenderId);
+                string uploaderName = ServerConfigUploader?.Name ?? "unknown";
                 if (isServerConfigEnabled)
                 {
-                    LuaCsLogger.Log($"Soundproof Walls: \"{updaterName}\" {TextManager.Get("spw_updateserverconfig").Value}", Color.LimeGreen);
+                    LuaCsLogger.Log($"Soundproof Walls: \"{uploaderName}\" {TextManager.Get("spw_updateserverconfig").Value}", Color.LimeGreen);
                 }
                 else
                 {
-                    LuaCsLogger.Log($"Soundproof Walls: \"{updaterName}\" {TextManager.Get("spw_disableserverconfig").Value}", Color.MonoGameOrange);
+                    LuaCsLogger.Log($"Soundproof Walls: \"{uploaderName}\" {TextManager.Get("spw_disableserverconfig").Value}", Color.MonoGameOrange);
                 }
             }
         }

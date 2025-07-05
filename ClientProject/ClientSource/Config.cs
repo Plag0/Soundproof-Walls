@@ -41,26 +41,27 @@ namespace SoundproofWalls
 
         // General
         public bool Enabled { get; set; } = true;
-        public uint EffectProcessingMode { get; set; } = 2;
         public bool SyncSettings { get; set; } = true;
-        public bool TalkingRagdolls { get; set; } = true;
-        public bool DrowningBubblesEnabled { get; set; } = true;
+        public uint EffectProcessingMode { get; set; } = 2;
         public bool FocusTargetAudio { get; set; } = false;
         public bool AttenuateWithApproximateDistance = true;
-        public bool WhisperMode { get; set; } = true;
-        public double HeavyLowpassFrequency { get; set; } = 200; // Used for wall and water obstructions.
+        public int HeavyLowpassFrequency { get; set; } = 200; // Used by classic and staticFx modes.
         public float SoundRangeMultiplierMaster { get; set; } = 1.6f;
         public float LoopingSoundRangeMultiplierMaster { get; set; } = 0.9f;
 
         // DynamicFx
+        public bool OccludeSounds { get; set; } = true; // Enable muffle strength from wall occlusion. Is still disabled for classicFx
+        public bool AutoAttenuateMuffledSounds { get; set; } = true; // Should the volume of the lower frequencies (not just the high freqs) be attenuated with muffle strength.
+        public float DynamicMuffleStrengthMultiplier { get; set; } = 1.0f;
+        public float DynamicMuffleTransitionFactor { get; set; } = 0f; // The max change of high frequency gain over the span of a second. Transitions the muffle effect on and off.
         public bool DynamicReverbEnabled { get; set; } = true;
         public bool DynamicReverbRadio { get; set; } = false;
         public float DynamicReverbAreaSizeMultiplier { get; set; } = 1.0f;
         public float DynamicReverbAirTargetGain { get; set; } = 0.37f;
-        public float DynamicReverbWaterTargetGain { get; set; } = 0.48f;
+        public float DynamicReverbWaterTargetGain { get; set; } = 0.55f;
         public float DyanmicReverbWaterAmplitudeThreshold { get; set; } = 0.75f; // The necessary amplitude * gain needed for a non "loud" source to have reverb applied in water.
         public bool LoudSoundDistortionEnabled { get; set; } = true; // Warning: CAN make loud sounds extremely loud.
-        public float LoudSoundDistortionTargetGain { get; set; } = 0.06f;
+        public float LoudSoundDistortionTargetGain { get; set; } = 0.11f;
         public float LoudSoundDistortionTargetEdge { get; set; } = 0.34f;
         public int LoudSoundDistortionTargetFrequency { get; set; } = 250; // The frequencies targeted by the distortion
         public int LoudSoundDistortionLowpassFrequency { get; set; } = 24000; // The frequencies allowed through post-distortion
@@ -70,28 +71,28 @@ namespace SoundproofWalls
         public bool HydrophoneBandpassFilterEnabled { get; set; } = true;
         public float HydrophoneBandpassFilterHfGain { get; set; } = 0.2f;
         public float HydrophoneBandpassFilterLfGain { get; set; } = 0.65f;
-        public float DynamicMuffleTransitionFactor { get; set; } = 0f; // The max change of high frequency gain over the span of a second. Transitions the muffle effect on and off.
-        public float DynamicMuffleStrengthMultiplier { get; set; } = 1.0f;
         public bool RealSoundDirectionsEnabled { get; set; } = false;
         public int RealSoundDirectionsMax { get; set; } = 1; // How many additional versions of the same sound can be playing simultaneously from different directions.
-        public bool OccludeSounds { get; set; } = true; // Enable muffle strength from wall occlusion. Is still disabled for classicFx
-        public bool AutoAttenuateMuffledSounds { get; set; } = true; // Should the volume of the lower frequencies (not just the high freqs) be attenuated with muffle strength.
         public bool HighFidelityMuffling { get; set; } = false; // Creates a new effect slot with an EQ for each pool of uniquely muffled channels. Higher performance cost over basic lowpass filters.
         public bool RemoveUnusedBuffers { get; set; } = false; // If enabled, sounds are loaded without the vanilla muffle buffer which saves roughly 200MB of memory. Downside is 1-2 seconds of extra loading times.
 
         // StaticFx
+        public int MediumLowpassFrequency { get; set; } = 700; // Used for eavesdropping.
+        public int LightLowpassFrequency { get; set; } = 1920; // Used for wearing suits, propagating sounds, and path ignored sounds.
+
         public bool StaticReverbEnabled { get; set; } = true;
         public bool StaticReverbAlwaysOnLoudSounds { get; set; } = true;
         public float StaticReverbDuration { get; set; } = 2.2f;
         public float StaticReverbWetDryMix { get; set; } = 0.30f;
         public int StaticReverbMinArea { get; set; } = 375_000; // The minimum area the listener has to be in for non-looping non-muffled sounds to use reverb buffers.
-        public double MediumLowpassFrequency { get; set; } = 700; // Used for eavesdropping.
-        public double LightLowpassFrequency { get; set; } = 1920; // Used for wearing suits, propagating sounds, and path ignored sounds.
-        
+
         // Voice
+        public bool TalkingRagdolls { get; set; } = true;
+        public bool DrowningBubblesEnabled { get; set; } = true;
         public bool RadioCustomFilterEnabled { get; set; } = true;
-        public double VoiceHeavyLowpassFrequency { get; set; } = 150f; // Used when a player's voice is muffled heavily. Otherwise, uses medium or light.
-        public double RadioBandpassFrequency { get; set; } = 2010;
+        public bool WhisperMode { get; set; } = true;
+        public int VoiceHeavyLowpassFrequency { get; set; } = 150; // Used when a player's voice is muffled heavily. Otherwise, uses medium or light.
+        public int RadioBandpassFrequency { get; set; } = 2010;
         public float RadioBandpassQualityFactor { get; set; } = 2.5f;
         public float RadioDistortion { get; set; } = 0.0f;
         public float RadioStatic { get; set; } = 0.0f;
@@ -102,21 +103,33 @@ namespace SoundproofWalls
 
         // Muffle
         public bool MuffleDivingSuits { get; set; } = true; // Not available for Classic mode.
-        public bool MuffleEavesdropping { get; set; } = true; // Not available for Classic mode.
         public bool MuffleSubmergedPlayer { get; set; } = true; // the equivalent of adding all sounds into SubmersionIgnoredSounds
         public bool MuffleSubmergedViewTarget { get; set; } = true; // ^
         public bool MuffleWaterSurface { get; set; } = true; // the equivalent of adding all sounds into SurfaceIgnoredSounds
         public bool MuffleFlowFireSoundsWithEstimatedPath { get; set; } = true;
         public bool MuffleFlowSounds { get; set; } = true;
         public bool MuffleFireSounds { get; set; } = true;
+        // How muffled each type of obstruction is. Lowpass doesn't increase on values > 1.0, but gain continues to be reduced.
+        public float ObstructionWaterSurface { get; set; } = 1.0f;
+        public float ObstructionWaterBody { get; set; } = 0.75f;
+        public float ObstructionWallThick { get; set; } = 0.998f;
+        public float ObstructionWallThin { get; set; } = 0.70f;
+        public float ObstructionDoorThick { get; set; } = 1.0f;
+        public float ObstructionDoorThin { get; set; } = 0.80f;
+        public float ObstructionSuit { get; set; } = 0.50f;
+        // Amount of combined obstruction strength needed to achieve different muffle levels
+        public float ClassicMinMuffleThreshold { get; set; } = 0.85f;
+        public float StaticMinLightMuffleThreshold { get; set; } = 0.01f;
+        public float StaticMinMediumMuffleThreshold { get; set; } = 0.80f;
+        public float StaticMinHeavyMuffleThreshold { get; set; } = 0.95f;
 
         // Volume
         public bool SidechainingEnabled { get; set; } = true;
-        public bool SidechainingDucksMusic { get; set; } = true;
-        public float SidechainMusicDuckMultiplier { get; set; } = 0.05f;
+        public bool SidechainMusic { get; set; } = true;
         public float SidechainIntensityMaster { get; set; } = 1f;
         public float SidechainReleaseMaster { get; set; } = 0;
         public float SidechainReleaseCurve { get; set; } = 0.4f;
+        public float SidechainMusicMultiplier { get; set; } = 0.05f;
         public float MuffledSoundVolumeMultiplier { get; set; } = 0.8f;
         public float MuffledVoiceVolumeMultiplier { get; set; } = 0.8f;
         public float MuffledLoopingVolumeMultiplier { get; set; } = 0.75f;
@@ -128,9 +141,9 @@ namespace SoundproofWalls
 
         // Eavesdropping
         public bool EavesdroppingEnabled { get; set; } = true;
+        public bool EavesdroppingMuffle { get; set; } = true; // Not available for Classic mode.
         public bool EavesdroppingTransitionEnabled { get; set; } = true;
         public bool EavesdroppingDucksRadio { get; set; } = true;
-        [JsonIgnore]
         public string EavesdroppingBind { get; set; } = "SecondaryMouse";
         public float EavesdroppingSoundVolumeMultiplier { get; set; } = 2.5f;
         public float EavesdroppingVoiceVolumeMultiplier { get; set; } = 1.5f;
@@ -142,6 +155,9 @@ namespace SoundproofWalls
         public float EavesdroppingThreshold { get; set; } = 0.28f; // How high Efficiency needs to be before your listening hull swaps.
 
         // Hydrophone monitoring
+        public bool HydrophoneHearEngine { get; set; } = true;
+        public bool HydrophoneHearIntoStructures { get; set; } = true;
+        public bool HydrophoneMuffleOwnSub { get; set; } = true;
         public bool HydrophoneSwitchEnabled { get; set; } = true;
         public bool HydrophoneLegacySwitch { get; set; } = false;
         public float HydrophoneSoundRange { get; set; } = 7500; // In cm.
@@ -150,7 +166,14 @@ namespace SoundproofWalls
 
         // Ambience
         public bool DisableWhiteNoise { get; set; } = true;
-        public float UnsubmergedWaterAmbienceVolumeMultiplier { get; set; } = 0.15f;
+
+        // Pertains to specific channels in all environments.
+        public float WaterAmbienceInVolumeMultiplier { get; set; } = 1.0f; 
+        public float WaterAmbienceOutVolumeMultiplier { get; set; } = 0.25f;
+        public float WaterAmbienceMovingVolumeMultiplier { get; set; } = 1.5f;
+
+        // Pertains to all channels in specific environments.
+        public float UnsubmergedWaterAmbienceVolumeMultiplier { get; set; } = 0.12f;
         public float SubmergedWaterAmbienceVolumeMultiplier { get; set; } = 0.6f;
         public float HydrophoneWaterAmbienceVolumeMultiplier { get; set; } = 2.0f;
         public float WaterAmbienceTransitionSpeedMultiplier { get; set; } = 3.5f;
@@ -168,13 +191,15 @@ namespace SoundproofWalls
         // Advanced settings
         public bool DisableVanillaFadeOutAndDispose { get; set; } = true; // Disables the vanilla "FadeOutAndDispose" function that has the potential to cause issues with permanently looping sounds.
         public bool UpdateNonLoopingSounds { get; set; } = true; // Updates the gain and pitch of non looping "single-shot" sounds every tick. Muffle is updated every NonLoopingSoundMuffleUpdateInterval.
-        public double NonLoopingSoundMuffleUpdateInterval { get; set; } = 0.2f; // Only applied if UpdateNonLoopingSounds is enabled.
-        public double ComponentMuffleUpdateInterval { get; set; } = 0.2f;
-        public double StatusEffectMuffleUpdateInterval { get; set; } = 0.2f;
+        public float NonLoopingSoundMuffleUpdateInterval { get; set; } = 0.2f; // Only applied if UpdateNonLoopingSounds is enabled.
+        public float ComponentMuffleUpdateInterval { get; set; } = 0.2f;
+        public float StatusEffectMuffleUpdateInterval { get; set; } = 0.2f;
         public float PitchTransitionFactor { get; set; } = 0f;
         public float GainTransitionFactor { get; set; } = 1.5f;
 
         public int MaxSimultaneousInstances = 8; // How many instances of the same sound clip can be playing at the same time. Vanilla is 5 (cite Sound.cs)
+        public float AITargetSoundRangeMultiplierMaster { get; set; } = 1.0f;
+        public float AITargetSightRangeMultiplierMaster { get; set; } = 1.0f;
         public float LoopingComponentSoundNearMultiplier { get; set; } = 0.3f; // near = far * thisMult - "near" is the max range before volume falloff starts.
         public float MinAttenuateWithApproximateDistanceVolume { get; set; } = 0.15f; // The minimum gain a sound being attenuated by approx dist can reach.
         public float SidechainMuffleEfficiencyMultiplier { get; set; } = 0.8f;
@@ -183,21 +208,6 @@ namespace SoundproofWalls
         public bool FlowSoundsTraverseWaterDucts { get; set; } = true;
         public float OpenDoorThreshold { get; set; } = 0.1f; // How open a door/hatch/duct must be for sound to pass through unobstructed.
         public float OpenWallThreshold { get; set; } = 0.35f; // How open a gap in a wall must be for sound to pass through unobstructed.
-
-        // How muffled each type of obstruction is. Lowpass doesn't increase on values > 1.0, but gain continues to be reduced.
-        public float ObstructionWaterSurface { get; set; } = 1.0f;
-        public float ObstructionWaterBody { get; set; } = 0.75f;
-        public float ObstructionWallThick { get; set; } = 0.998f;
-        public float ObstructionWallThin { get; set; } = 0.70f;
-        public float ObstructionDoorThick { get; set; } = 1.0f;
-        public float ObstructionDoorThin { get; set; } = 0.80f;
-        public float ObstructionSuit { get; set; } = 0.50f;
-
-        // Amount of combined obstruction strength needed to achieve different muffle levels
-        public float ClassicMinMuffleThreshold { get; set; } = 0.85f;
-        public float StaticMinLightMuffleThreshold { get; set; } = 0.01f;
-        public float StaticMinMediumMuffleThreshold { get; set; } = 0.80f;
-        public float StaticMinHeavyMuffleThreshold { get; set; } = 0.95f;
 
         // A general rule is to keep the most vague names at the bottom so when searching for a match the more specific ones can be found first.
         public HashSet<CustomSound> CustomSounds { get; set; } = new HashSet<CustomSound>(new ElementEqualityComparer())
@@ -356,13 +366,9 @@ namespace SoundproofWalls
         {
         };
 
-        [JsonIgnore]
-        public bool HideSettings { get; set; } = false;
-        [JsonIgnore]
-        public bool RememberScroll { get; set; } = true;
-        [JsonIgnore]
+        public bool HideSettingsButton { get; set; } = false;
+        public bool RememberMenuTabAndScroll { get; set; } = true;
         public bool DebugObstructions { get; set; } = false; // See what is obstructing all audio with console output.
-        [JsonIgnore]
         public bool DebugPlayingSounds { get; set; } = false; // See all playing sounds and their filenames.
     }
 }

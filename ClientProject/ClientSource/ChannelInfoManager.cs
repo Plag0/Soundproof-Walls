@@ -1,7 +1,7 @@
-﻿using Barotrauma.Items.Components;
+﻿using Barotrauma;
+using Barotrauma.Items.Components;
 using Barotrauma.Networking;
 using Barotrauma.Sounds;
-using Barotrauma;
 using System.Collections.Concurrent;
 
 namespace SoundproofWalls
@@ -16,7 +16,6 @@ namespace SoundproofWalls
 
         private static ConcurrentDictionary<uint, ChannelInfo> channelInfoMap = new ConcurrentDictionary<uint, ChannelInfo>();
         private static ConcurrentDictionary<SoundChannel, bool> pitchedChannels = new ConcurrentDictionary<SoundChannel, bool>();
-
         public static ConcurrentDictionary<SoundChannel, float> VoiceChannelsToUpdate = new ConcurrentDictionary<SoundChannel, float>();
 
         public static void Update()
@@ -42,11 +41,11 @@ namespace SoundproofWalls
                 // Update non-looping sounds.
                 else if (!info.Channel.Looping && ConfigManager.Config.UpdateNonLoopingSounds && info.Channel.IsPlaying)
                 {
-                    info.Update();
+                    info.Update();  
                 }
             }
 
-            if (ConfigManager.Config.DebugPlayingSounds)
+            if (ConfigManager.LocalConfig.DebugPlayingSounds)
             {
                 int i = 1;
                 string newLines = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
