@@ -53,18 +53,20 @@ namespace SoundproofWalls
         {
             if (oldConfig == null) { oldConfig = Config; }
 
-            return  !oldConfig.CustomSounds.SetEquals(newConfig.CustomSounds) ||
+            return !oldConfig.CustomSounds.SetEquals(newConfig.CustomSounds) ||
                     !oldConfig.IgnoredSounds.SetEquals(newConfig.IgnoredSounds) ||
-                    !oldConfig.PitchIgnoredSounds.SetEquals(newConfig.PitchIgnoredSounds) ||
-                    !oldConfig.LowpassIgnoredSounds.SetEquals(newConfig.LowpassIgnoredSounds) ||
-                    !oldConfig.LowpassForcedSounds.SetEquals(newConfig.LowpassForcedSounds) ||
-                    !oldConfig.ContainerIgnoredSounds.SetEquals(newConfig.ContainerIgnoredSounds) ||
-                    !oldConfig.PathIgnoredSounds.SetEquals(newConfig.PathIgnoredSounds) ||
-                    !oldConfig.PropagatingSounds.SetEquals(newConfig.PropagatingSounds) ||
-                    !oldConfig.ReverbIgnoredSounds.SetEquals(newConfig.ReverbIgnoredSounds) ||
-                    !oldConfig.ReverbForcedSounds.SetEquals(newConfig.ReverbForcedSounds) ||
                     !oldConfig.SurfaceIgnoredSounds.SetEquals(newConfig.SurfaceIgnoredSounds) ||
-                    !oldConfig.SubmersionIgnoredSounds.SetEquals(newConfig.SubmersionIgnoredSounds);
+                    !oldConfig.SubmersionIgnoredSounds.SetEquals(newConfig.SubmersionIgnoredSounds) ||
+                    !oldConfig.PropagatingSounds.SetEquals(newConfig.PropagatingSounds) ||
+                    !oldConfig.PathIgnoredSounds.SetEquals(newConfig.PathIgnoredSounds) ||
+                    !oldConfig.PitchIgnoredSounds.SetEquals(newConfig.PitchIgnoredSounds) ||
+                    !oldConfig.LowpassForcedSounds.SetEquals(newConfig.LowpassForcedSounds) ||
+                    !oldConfig.LowpassIgnoredSounds.SetEquals(newConfig.LowpassIgnoredSounds) ||
+                    !oldConfig.ReverbForcedSounds.SetEquals(newConfig.ReverbForcedSounds) ||
+                    !oldConfig.ReverbIgnoredSounds.SetEquals(newConfig.LowpassIgnoredSounds) ||
+                    !oldConfig.DistortionForcedSounds.SetEquals(newConfig.DistortionForcedSounds) ||
+                    !oldConfig.DistortionIgnoredSounds.SetEquals(newConfig.DistortionIgnoredSounds) ||
+                    !oldConfig.ContainerIgnoredSounds.SetEquals(newConfig.ContainerIgnoredSounds);
         }
 
         private static Sound GetNewSound(Sound oldSound)

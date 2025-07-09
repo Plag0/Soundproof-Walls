@@ -470,7 +470,21 @@ namespace SoundproofWalls
 
             if (ignoreLowpass) { Muffled = false; return; };
 
-            if (!isClone) { UpdateObstructions(); }
+            if (!isClone)
+            { 
+                UpdateObstructions();
+
+                if (ConfigManager.LocalConfig.DebugObstructions)
+                {
+                    string firstIterText = isFirstIteration ? " (NEW)" : "";
+                    LuaCsLogger.Log($"Obstructions for \"{ShortName}\"{firstIterText}:", color: isFirstIteration ? Color.LightSeaGreen : Color.LightSkyBlue);
+                    for (int i = 0; i < obstructions.Count; i++)
+                    {
+                        LuaCsLogger.Log($"          {i + 1}. {obstructions[i]} {obstructions[i].GetStrength()}");
+                    }
+                    if (obstructions.Count <= 0) { LuaCsLogger.Log($"          None"); }
+                }
+            }
 
             // Calculate muffle strength based on obstructions.
             float gainMultHf = 1;
@@ -604,14 +618,14 @@ namespace SoundproofWalls
                 {
                     Hydrophoned = true;
                     obstructions.Add(Obstruction.Suit);
-                    return;
+                    return; // No path obstructions
                 }
                 // Sound is in a station or other submarine.
                 else if (config.HydrophoneHearIntoStructures && ChannelHull != null && ChannelHull.Submarine != LightManager.ViewTarget?.Submarine)
                 {
                     Hydrophoned = true;
                     obstructions.Add(Obstruction.WallThin);
-                    return;
+                    return; // No path obstructions
                 }
                 // Sound is in own submarine.
                 else if (config.HydrophoneMuffleOwnSub)
@@ -622,17 +636,6 @@ namespace SoundproofWalls
 
             if (config.DynamicFx) { UpdatePathObstructionsAdvanced(); }
             else                  { UpdatePathObstructionsSimple(); }
-
-            if (ConfigManager.LocalConfig.DebugObstructions)
-            {
-                string firstIterText = isFirstIteration ? " (NEW)" : "";
-                LuaCsLogger.Log($"Obstructions for \"{ShortName}\"{firstIterText}:", color: isFirstIteration ? Color.LightSeaGreen : Color.LightSkyBlue);
-                for (int i = 0; i < obstructions.Count; i++)
-                {
-                    LuaCsLogger.Log($"          {i+1}. {obstructions[i]} {obstructions[i].GetStrength()}");
-                }
-                if (obstructions.Count <= 0) { LuaCsLogger.Log($"          None"); }
-            }
         }
 
         private void UpdateWaterObstructions()
@@ -966,11 +969,11 @@ namespace SoundproofWalls
             // Radio can only be muffled when the sender is drowning.
             if (audioIsRadio)
             {
-                mult += MathHelper.Lerp(1, config.MuffledVoiceVolumeMultiplier, MuffleStrength) - 1;
+                mult += MathHelper.Lerp(config.UnmuffledVoiceVolumeMultiplier, config.MuffledVoiceVolumeMultiplier, MuffleStrength) - 1;
             }
             else if (audioIsVoice)
             {
-                mult += MathHelper.Lerp(1, config.MuffledVoiceVolumeMultiplier, MuffleStrength) - 1;
+                mult += MathHelper.Lerp(config.UnmuffledVoiceVolumeMultiplier, config.MuffledVoiceVolumeMultiplier, MuffleStrength) - 1;
                 if (bothInWater) mult += config.SubmergedVolumeMultiplier - 1;
                 else if (eavesdropped) mult += config.EavesdroppingVoiceVolumeMultiplier - 1;
                 else if (Hydrophoned) { mult += config.HydrophoneVolumeMultiplier - 1; mult *= HydrophoneManager.HydrophoneEfficiency; }
@@ -989,7 +992,7 @@ namespace SoundproofWalls
             // Single (non-looping sound).
             else
             {
-                mult += MathHelper.Lerp(1, config.MuffledSoundVolumeMultiplier, MuffleStrength) - 1;
+                mult += MathHelper.Lerp(config.UnmuffledSoundVolumeMultiplier, config.MuffledSoundVolumeMultiplier, MuffleStrength) - 1;
                 if (bothInWater) mult += config.SubmergedVolumeMultiplier - 1;
                 else if (eavesdropped) mult += config.EavesdroppingSoundVolumeMultiplier - 1;
                 else if (Hydrophoned) { mult += config.HydrophoneVolumeMultiplier - 1; mult *= HydrophoneManager.HydrophoneEfficiency; }
@@ -1005,7 +1008,7 @@ namespace SoundproofWalls
                 else if (eavesdropped) { mult *= Math.Clamp(eavesdropEfficiency * (1 / config.EavesdroppingThreshold) - 1, 0.1f, 1); }
             }
 
-            float mEfficiency = config.SidechainMuffleEfficiencyMultiplier;
+            float mEfficiency = config.SidechainMuffleInfluence;
             float thisSidechainRelease = SoundInfo.SidechainRelease * (1 - MuffleStrength * mEfficiency) + config.SidechainReleaseMaster;
             float thisSidechainStartingStrength = SoundInfo.SidechainMult * (1 - MuffleStrength * mEfficiency) * config.SidechainIntensityMaster;
             float globalSidechainStartingStrength = Plugin.Sidechain.SidechainRawStartValue;
@@ -1085,15 +1088,17 @@ namespace SoundproofWalls
             float mult = 1;
             float currentPitch = startPitch;
 
+            mult += SoundInfo.PitchMult - 1;
+
             // Voice.
             if (audioIsVoice || audioIsRadio)
             {
-                mult = MathHelper.Lerp(config.UnmuffledVoicePitchMultiplier, config.MuffledLoopingPitchMultiplier, MuffleStrength);
+                mult += MathHelper.Lerp(config.UnmuffledVoicePitchMultiplier, config.MuffledLoopingPitchMultiplier, MuffleStrength) - 1;
             }
             // Either a component or status effect sound.
             else if (Channel.Looping)
             {
-                mult = MathHelper.Lerp(config.UnmuffledSoundPitchMultiplier, config.MuffledLoopingPitchMultiplier, MuffleStrength);
+                mult += MathHelper.Lerp(config.UnmuffledSoundPitchMultiplier, config.MuffledLoopingPitchMultiplier, MuffleStrength) - 1;
 
                 if (eavesdropped) mult += config.EavesdroppingPitchMultiplier - 1;
                 else if (Hydrophoned) mult += config.HydrophonePitchMultiplier - 1;
@@ -1104,9 +1109,9 @@ namespace SoundproofWalls
             // Single (non-looping sound).
             else
             {
-                mult = MathHelper.Lerp(config.UnmuffledSoundPitchMultiplier, config.MuffledSoundPitchMultiplier, MuffleStrength);
+                mult += MathHelper.Lerp(config.UnmuffledSoundPitchMultiplier, config.MuffledSoundPitchMultiplier, MuffleStrength) - 1;
 
-                if (config.PitchSoundsByDistance) // Additional pitching based on distance and muffle strength.
+                if (config.PitchWithDistance) // Additional pitching based on distance and muffle strength.
                 {
                     float distanceRatio = Math.Clamp(1 - Distance / Channel.Far, 0, 1);
                     mult += MathHelper.Lerp(1, distanceRatio, MuffleStrength) - 1;
@@ -1208,7 +1213,7 @@ namespace SoundproofWalls
                 else if (eavesdropped) { mult *= Math.Clamp(eavesdropEfficiency * (1 / config.EavesdroppingThreshold) - 1, 0.1f, 1); }
             }
 
-            float mEfficiency = config.SidechainMuffleEfficiencyMultiplier;
+            float mEfficiency = config.SidechainMuffleInfluence;
             float thisSidechainRelease = SoundInfo.SidechainRelease * (1 - MuffleStrength * mEfficiency) + config.SidechainReleaseMaster;
             float thisSidechainStartingStrength = SoundInfo.SidechainMult * (1 - MuffleStrength * mEfficiency) * config.SidechainIntensityMaster;
             float globalSidechainStartingStrength = Plugin.Sidechain.SidechainRawStartValue;
@@ -1259,7 +1264,7 @@ namespace SoundproofWalls
                 gain = 1.0f - rolloffFactor * (currentDistance - near) / denominator;
             }
 
-            return Math.Max(config.MinAttenuateWithApproximateDistanceVolume, Math.Min(1.0f, gain));
+            return Math.Max(config.MinDistanceFalloffVolume, Math.Min(1.0f, gain));
         }
 
         private static bool SoundPropagatesToListener(Vector2 soundWorldPos)

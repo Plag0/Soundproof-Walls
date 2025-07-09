@@ -700,10 +700,10 @@ namespace SoundproofWalls
             }
             else
             {
-                float rangeFar = ChatMessage.SpeakRangeVOIP * Config.VoiceRangeMultiplier;
-                if (Listener.IsUsingHydrophones) { rangeFar += Config.HydrophoneSoundRange; }
+                float baseRange = ChatMessage.SpeakRangeVOIP;
+                if (Listener.IsUsingHydrophones) { baseRange += Config.HydrophoneSoundRange; }
                 client.VoipSound.UsingRadio = false;
-                client.VoipSound.SetRange(rangeFar * VoipClient.RangeNear * speechImpedimentMultiplier * localRangeMultiplier, rangeFar * speechImpedimentMultiplier * localRangeMultiplier);
+                client.VoipSound.SetRange(baseRange * VoipClient.RangeNear * speechImpedimentMultiplier * localRangeMultiplier, baseRange * speechImpedimentMultiplier * localRangeMultiplier);
             }
 
             // Sound Info stuff.
@@ -736,13 +736,13 @@ namespace SoundproofWalls
                 instance.VoipSound.Gain = 0.0f;
             }
 
-            float rangeFar = instance.VoipSound.Far * Config.VoiceRangeMultiplier;
-            float rangeNear = instance.VoipSound.Near * Config.VoiceRangeMultiplier;
+            float rangeFar = instance.VoipSound.Far; //* Config.VoiceRangeMultiplier;
+            float rangeNear = instance.VoipSound.Near; //* Config.VoiceRangeMultiplier;
             float maxAudibleRange = ChatMessage.SpeakRangeVOIP * Config.VoiceRangeMultiplier;
             if (Listener.IsUsingHydrophones)
             {
-                rangeFar += Config.HydrophoneSoundRange;
-                rangeNear += Config.HydrophoneSoundRange;
+                //rangeFar += Config.HydrophoneSoundRange;
+                //rangeNear += Config.HydrophoneSoundRange;
                 maxAudibleRange += Config.HydrophoneSoundRange;
             }
 
@@ -1351,7 +1351,7 @@ namespace SoundproofWalls
             }
 
             // We don't want to modify anything if the vanilla game is constructing a filter.
-            else if (__instance.GetType() == typeof(BandpassFilter) && frequency != ChannelInfoManager.VANILLA_VOIP_BANDPASS_FREQUENCY)
+            else if (Config.RadioCustomFilterEnabled && __instance.GetType() == typeof(BandpassFilter) && frequency != ChannelInfoManager.VANILLA_VOIP_BANDPASS_FREQUENCY)
             {
                 q = Config.RadioBandpassQualityFactor;
             }
@@ -1978,21 +1978,17 @@ namespace SoundproofWalls
         {
             if (!Config.Enabled || !Util.RoundStarted || Character.Controlled == null) { return true; }
 
-            if (Character.Controlled.AnimController.HeadInWater)
+            if (Listener.IsSubmerged)
             {
-                ambienceVolume *= Config.SubmergedWaterAmbienceVolumeMultiplier;
+                ambienceVolume *= Listener.IsWearingDivingSuit || !Listener.IsCharacter ? Config.SubmergedSuitWaterAmbienceVolumeMultiplier : Config.SubmergedNoSuitWaterAmbienceVolumeMultiplier;
             }
             else if (Listener.IsUsingHydrophones)
             {
                 ambienceVolume *= Config.HydrophoneWaterAmbienceVolumeMultiplier; ambienceVolume *= HydrophoneManager.HydrophoneEfficiency;
             }
-            else if (Config.FocusTargetAudio && LightManager.ViewTarget != null && Listener.CurrentHull == null)
-            {
-                ambienceVolume *= Config.SubmergedWaterAmbienceVolumeMultiplier;
-            }
             else
             {
-                ambienceVolume *= Config.UnsubmergedWaterAmbienceVolumeMultiplier;
+                ambienceVolume *= Listener.IsWearingDivingSuit ? Config.UnsubmergedSuitWaterAmbienceVolumeMultiplier : Config.UnsubmergedNoSuitWaterAmbienceVolumeMultiplier;
             }
 
             float ducking = 1 - Sidechain.SidechainMultiplier;

@@ -61,7 +61,7 @@ namespace SoundproofWalls
         public float DynamicReverbWaterTargetGain { get; set; } = 0.55f;
         public float DyanmicReverbWaterAmplitudeThreshold { get; set; } = 0.75f; // The necessary amplitude * gain needed for a non "loud" source to have reverb applied in water.
         public bool LoudSoundDistortionEnabled { get; set; } = true; // Warning: CAN make loud sounds extremely loud.
-        public float LoudSoundDistortionTargetGain { get; set; } = 0.11f;
+        public float LoudSoundDistortionTargetGain { get; set; } = 0.10f;
         public float LoudSoundDistortionTargetEdge { get; set; } = 0.34f;
         public int LoudSoundDistortionTargetFrequency { get; set; } = 250; // The frequencies targeted by the distortion
         public int LoudSoundDistortionLowpassFrequency { get; set; } = 24000; // The frequencies allowed through post-distortion
@@ -89,17 +89,18 @@ namespace SoundproofWalls
         // Voice
         public bool TalkingRagdolls { get; set; } = true;
         public bool DrowningBubblesEnabled { get; set; } = true;
-        public bool RadioCustomFilterEnabled { get; set; } = true;
         public bool WhisperMode { get; set; } = true;
         public int VoiceHeavyLowpassFrequency { get; set; } = 150; // Used when a player's voice is muffled heavily. Otherwise, uses medium or light.
+        public float VoiceRangeMultiplier { get; set; } = 1.1f;
+        public float RadioRangeMultiplier { get; set; } = 1.0f;
+
+        public bool RadioCustomFilterEnabled { get; set; } = true;
         public int RadioBandpassFrequency { get; set; } = 2010;
         public float RadioBandpassQualityFactor { get; set; } = 2.5f;
         public float RadioDistortion { get; set; } = 0.0f;
         public float RadioStatic { get; set; } = 0.0f;
         public float RadioCompressionThreshold { get; set; } = 0.2f;
         public float RadioCompressionRatio { get; set; } = 0.2f;
-        public float VoiceRangeMultiplier { get; set; } = 0.90f;
-        public float RadioRangeMultiplier { get; set; } = 0.75f;
 
         // Muffle
         public bool MuffleDivingSuits { get; set; } = true; // Not available for Classic mode.
@@ -131,7 +132,9 @@ namespace SoundproofWalls
         public float SidechainReleaseCurve { get; set; } = 0.4f;
         public float SidechainMusicMultiplier { get; set; } = 0.05f;
         public float MuffledSoundVolumeMultiplier { get; set; } = 0.8f;
+        public float UnmuffledSoundVolumeMultiplier { get; set; } = 1.0f;
         public float MuffledVoiceVolumeMultiplier { get; set; } = 0.8f;
+        public float UnmuffledVoiceVolumeMultiplier { get; set; } = 1.0f;
         public float MuffledLoopingVolumeMultiplier { get; set; } = 0.75f;
         public float UnmuffledLoopingVolumeMultiplier { get; set; } = 1f;
         public float SubmergedVolumeMultiplier { get; set; } = 3.0f;
@@ -150,17 +153,17 @@ namespace SoundproofWalls
         public float EavesdroppingPitchMultiplier { get; set; } = 1f;
         public int EavesdroppingMaxDistance { get; set; } = 50; // Max distance in cm from gap.
         public float EavesdroppingTransitionDuration { get; set; } = 1.6f;
+        public float EavesdroppingThreshold { get; set; } = 0.28f; // How high Efficiency needs to be before your listening hull swaps.
         public float EavesdroppingZoomMultiplier { get; set; } = 1.15f;
         public float EavesdroppingVignetteOpacityMultiplier { get; set; } = 1.0f;
-        public float EavesdroppingThreshold { get; set; } = 0.28f; // How high Efficiency needs to be before your listening hull swaps.
 
         // Hydrophone monitoring
+        public bool HydrophoneSwitchEnabled { get; set; } = true;
         public bool HydrophoneHearEngine { get; set; } = true;
         public bool HydrophoneHearIntoStructures { get; set; } = true;
         public bool HydrophoneMuffleOwnSub { get; set; } = true;
-        public bool HydrophoneSwitchEnabled { get; set; } = true;
         public bool HydrophoneLegacySwitch { get; set; } = false;
-        public float HydrophoneSoundRange { get; set; } = 7500; // In cm.
+        public int HydrophoneSoundRange { get; set; } = 7500; // In cm.
         public float HydrophoneVolumeMultiplier { get; set; } = 1.5f;
         public float HydrophonePitchMultiplier { get; set; } = 0.75f;
 
@@ -173,56 +176,75 @@ namespace SoundproofWalls
         public float WaterAmbienceMovingVolumeMultiplier { get; set; } = 1.5f;
 
         // Pertains to all channels in specific environments.
-        public float UnsubmergedWaterAmbienceVolumeMultiplier { get; set; } = 0.12f;
-        public float SubmergedWaterAmbienceVolumeMultiplier { get; set; } = 0.6f;
+        public float UnsubmergedNoSuitWaterAmbienceVolumeMultiplier { get; set; } = 0.14f;
+        public float UnsubmergedSuitWaterAmbienceVolumeMultiplier { get; set; } = 0.05f;
+        public float SubmergedNoSuitWaterAmbienceVolumeMultiplier { get; set; } = 0.75f;
+        public float SubmergedSuitWaterAmbienceVolumeMultiplier { get; set; } = 0.25f;
         public float HydrophoneWaterAmbienceVolumeMultiplier { get; set; } = 2.0f;
         public float WaterAmbienceTransitionSpeedMultiplier { get; set; } = 3.5f;
 
         // Pitch settings
-        public bool PitchSoundsByDistance { get; set; } = true;
+        public bool PitchWithDistance { get; set; } = true;
         public float DivingSuitPitchMultiplier { get; set; } = 1f;
         public float SubmergedPitchMultiplier { get; set; } = 0.65f;
         public float MuffledSoundPitchMultiplier { get; set; } = 1f; // Strength of the distance-based pitch effect on muffled non-looping sounds.
-        public float MuffledLoopingPitchMultiplier { get; set; } = 0.98f;
         public float UnmuffledSoundPitchMultiplier { get; set; } = 1f;
+        public float MuffledLoopingPitchMultiplier { get; set; } = 0.98f;
+        public float UnmuffledLoopingPitchMultiplier { get; set; } = 1.0f;
         public float MuffledVoicePitchMultiplier { get; set; } = 1f;
         public float UnmuffledVoicePitchMultiplier { get; set; } = 1f;
 
         // Advanced settings
-        public bool DisableVanillaFadeOutAndDispose { get; set; } = true; // Disables the vanilla "FadeOutAndDispose" function that has the potential to cause issues with permanently looping sounds.
+        public bool HideSettingsButton { get; set; } = false;
+        public bool RememberMenuTabAndScroll { get; set; } = true;
+        public bool DebugObstructions { get; set; } = false; // See what is obstructing all audio with console output.
+        public bool DebugPlayingSounds { get; set; } = false; // See all playing sounds and their filenames.
+        public int MaxSimultaneousInstances = 8; // How many instances of the same sound clip can be playing at the same time. Vanilla is 5 (cite Sound.cs)
+
+            // Update Intervals
         public bool UpdateNonLoopingSounds { get; set; } = true; // Updates the gain and pitch of non looping "single-shot" sounds every tick. Muffle is updated every NonLoopingSoundMuffleUpdateInterval.
         public float NonLoopingSoundMuffleUpdateInterval { get; set; } = 0.2f; // Only applied if UpdateNonLoopingSounds is enabled.
         public float ComponentMuffleUpdateInterval { get; set; } = 0.2f;
         public float StatusEffectMuffleUpdateInterval { get; set; } = 0.2f;
-        public float PitchTransitionFactor { get; set; } = 0f;
-        public float GainTransitionFactor { get; set; } = 1.5f;
 
-        public int MaxSimultaneousInstances = 8; // How many instances of the same sound clip can be playing at the same time. Vanilla is 5 (cite Sound.cs)
-        public float AITargetSoundRangeMultiplierMaster { get; set; } = 1.0f;
-        public float AITargetSightRangeMultiplierMaster { get; set; } = 1.0f;
-        public float LoopingComponentSoundNearMultiplier { get; set; } = 0.3f; // near = far * thisMult - "near" is the max range before volume falloff starts.
-        public float MinAttenuateWithApproximateDistanceVolume { get; set; } = 0.15f; // The minimum gain a sound being attenuated by approx dist can reach.
-        public float SidechainMuffleEfficiencyMultiplier { get; set; } = 0.8f;
-        public float SoundPropagationRange { get; set; } = 500; // Area^2 that a sound in WallPropagatingSounds can search for a hull to propagate to.
+            // Transitions
+        public bool DisableVanillaFadeOutAndDispose { get; set; } = true; // Disables the vanilla "FadeOutAndDispose" function that has the potential to cause issues with permanently looping sounds.
+        public float GainTransitionFactor { get; set; } = 1.5f;
+        public float PitchTransitionFactor { get; set; } = 0f;
+       
+            // Volume Attenuation
+        public float LoopingComponentSoundNearMultiplier { get; set; } = 0.25f; // near = far * thisMult  |  "near" is the max range before volume falloff starts.
+        public float MinDistanceFalloffVolume { get; set; } = 0.04f; // The minimum gain a sound being attenuated by approx dist can reach.
+        public float SidechainMuffleInfluence { get; set; } = 0.75f;
+        
+            // Sound Pathfinding
         public bool TraverseWaterDucts { get; set; } = false; // Should the search algorithm pass through water ducts?
         public bool FlowSoundsTraverseWaterDucts { get; set; } = true;
         public float OpenDoorThreshold { get; set; } = 0.1f; // How open a door/hatch/duct must be for sound to pass through unobstructed.
         public float OpenWallThreshold { get; set; } = 0.35f; // How open a gap in a wall must be for sound to pass through unobstructed.
+        public int SoundPropagationRange { get; set; } = 500; // Distance that a sound in WallPropagatingSounds can search for a hull to propagate to.
 
+            // Character AI
+        public float AITargetSoundRangeMultiplierMaster { get; set; } = 1.0f;
+        public float AITargetSightRangeMultiplierMaster { get; set; } = 1.0f;
+
+            // Sound Rules
         // A general rule is to keep the most vague names at the bottom so when searching for a match the more specific ones can be found first.
         public HashSet<CustomSound> CustomSounds { get; set; } = new HashSet<CustomSound>(new ElementEqualityComparer())
         {
+            //"barotrauma/content/sounds/damage/creak",
+            //"barotrauma/content/sounds/hull",
             new CustomSound("footstep", 0.75f, 0.8f),
             new CustomSound("door", 0.9f, 1.3f),
             new CustomSound("metalimpact", 0.8f, 1.2f),
             new CustomSound("revolver", 2.0f, 1.2f, 1.1f, 1.1f),
             new CustomSound("shotgunshot", 2.5f, 1.3f, 1.4f, 1.5f),
-            new CustomSound("rifleshot", 2.5f, 1.3f, 1.2f, 1.3f, "harpooncoilrifleshot"),
-            new CustomSound("shot", 2f, 1.15f, 1, 0.9f, "shotgunload", "tasershot", "riflegrenadeshot"),
+            new CustomSound("rifleshot", 2.5f, 1.3f, 1.2f, 1.3f, 1, "harpooncoilrifleshot"),
+            new CustomSound("shot", 2f, 1.15f, 1, 0.9f, 1, "shotgunload", "tasershot", "riflegrenadeshot"),
 
             new CustomSound("coilgun", 2.3f, 1.35f, 1.2f, 1.3f),
             new CustomSound("flakgun", 2.5f, 1.4f, 1.3f, 1.5f),
-            new CustomSound("railgun", 3f, 1.5f, 1.5f, 1.9f, "railgunloop", "railgunstart", "railgunstop"),
+            new CustomSound("railgun", 3f, 1.5f, 1.5f, 1.9f, 1, "railgunloop", "railgunstart", "railgunstop"),
             new CustomSound("lasergunshot", 2.8f, 1.3f, 1.4f, 1.7f),
             new CustomSound("gravityshells_boom.ogg", 2.0f, 1.5f, 2, 3),
 
@@ -234,9 +256,14 @@ namespace SoundproofWalls
             new CustomSound("gravityshells", 1.5f, 1.4f, 2, 1.5f),
             new CustomSound("firelarge.ogg", 1.4f, 1, 0.6f, 1),
 
+            // Pitch adjustments. The ambience sounds really cool stretched out over a low pitch
+            new CustomSound("barotrauma/content/sounds/ambient", 1.0f, 1, 0, 0, 0.45f),
+            new CustomSound("barotrauma/content/sounds/damage/creak", 1.0f, 1, 0, 0, 0.5f),
+            new CustomSound("barotrauma/content/sounds/hull", 1.0f, 1, 0, 0, 0.4f),
+
             // Real Sonar changes.
-            new CustomSound("2936760984/sounds/sonar", 1, 1, 3, 5, "air", "sonarpoweron", "sonarambience", "sonardistortion"),
-            new CustomSound("2936760984/sounds/cortizide", 1, 1, 1, 3),
+            new CustomSound("2936760984/sounds/sonar", 1, 1, 3, 5, 1, "air", "sonarpoweron", "sonarambience", "sonardistortion"),
+            new CustomSound("2936760984/sounds/cortizide", 0.6f, 1, 1, 15),
             new CustomSound("2936760984/sounds/tinnitus", 1, 1, 0.65f, 1), // Looping sound is fine with short release. Place real sonar specific tinnitus before vanilla so it's discovered first.
             
             new CustomSound("tinnitus", 0.7f, 1, 1.8f, 8), // Vanilla/general tinnitus sounds - non looping.
@@ -246,14 +273,9 @@ namespace SoundproofWalls
         public HashSet<string> IgnoredSounds { get; set; } = new HashSet<string>
         {
             "barotrauma/content/sounds/ui",
-            "barotrauma/content/sounds/ambient",
             "barotrauma/content/sounds/music",
-            "barotrauma/content/sounds/damage/creak",
-            "barotrauma/content/sounds/hull",
             "barotrauma/content/sounds/dropitem",
             "barotrauma/content/sounds/pickitem",
-            "tinnitus",
-            "sonarambience" // Real Sonar entry.
         };
 
         // Sounds that don't treat the surface of the water like another wall and can pass in and out freely.
@@ -315,6 +337,7 @@ namespace SoundproofWalls
             "items/warningsiren.ogg",
             "items/warningbeep",
             "items/fabricators",
+            "items/button",
             "divingsuitloop",
             "divingsuitoxygenleakloop",
             "door",
@@ -334,6 +357,11 @@ namespace SoundproofWalls
 
         public HashSet<string> LowpassIgnoredSounds { get; set; } = new HashSet<string>
         {
+            "barotrauma/content/sounds/ambient",
+            "barotrauma/content/sounds/damage/creak",
+            "barotrauma/content/sounds/hull",
+            "tinnitus",
+            "sonarambience" // Real Sonar entry.
         };
 
         public HashSet<string> ReverbForcedSounds { get; set; } = new HashSet<string> // Sounds that are always reverbed.
@@ -356,6 +384,10 @@ namespace SoundproofWalls
 
         public HashSet<string> DistortionIgnoredSounds { get; set; } = new HashSet<string> // Sounds that are not distorted by dynamic processing mode. //TODO implement
         {
+            "firelarge.ogg",
+            "2936760984/sounds/sonar", // Prevent Real Sonar sounds from becoming distorted
+            "2936760984/sounds/cortizide",
+            "2936760984/sounds/tinnitus"
         };
 
         public HashSet<string> ContainerIgnoredSounds { get; set; } = new HashSet<string>
@@ -365,10 +397,5 @@ namespace SoundproofWalls
         public HashSet<string> BubbleIgnoredNames { get; set; } = new HashSet<string>
         {
         };
-
-        public bool HideSettingsButton { get; set; } = false;
-        public bool RememberMenuTabAndScroll { get; set; } = true;
-        public bool DebugObstructions { get; set; } = false; // See what is obstructing all audio with console output.
-        public bool DebugPlayingSounds { get; set; } = false; // See all playing sounds and their filenames.
     }
 }

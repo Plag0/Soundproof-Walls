@@ -45,14 +45,10 @@ namespace SoundproofWalls
             bool shouldStop = oldConfig.Enabled && !newConfig.Enabled;
             bool shouldStart = !oldConfig.Enabled && newConfig.Enabled;
             bool shouldReloadSounds = Util.ShouldReloadSounds(newConfig: newConfig, oldConfig: oldConfig);
-            bool shouldUpdateAITarget = oldConfig.AITargetSoundRangeMultiplierMaster != newConfig.AITargetSoundRangeMultiplierMaster;
+            bool shouldUpdateAITarget = !GameMain.IsMultiplayer && oldConfig.AITargetSoundRangeMultiplierMaster != newConfig.AITargetSoundRangeMultiplierMaster;
             bool shouldUpdateSoundInfo = Util.ShouldUpdateSoundInfo(newConfig, oldConfig: oldConfig);
             bool shouldStartAlEffects = !shouldStart && !oldConfig.DynamicFx && newConfig.DynamicFx;
             bool shouldStopAlEffects = !shouldStop && oldConfig.DynamicFx && !newConfig.DynamicFx;
-
-            bool shouldUpdateWaterAmbienceIn = oldConfig.WaterAmbienceInVolumeMultiplier != newConfig.WaterAmbienceInVolumeMultiplier;
-            bool shouldUpdateWaterAmbienceOut = oldConfig.WaterAmbienceOutVolumeMultiplier != newConfig.WaterAmbienceOutVolumeMultiplier;
-            bool shouldUpdateWaterAmbienceMoving = oldConfig.WaterAmbienceMovingVolumeMultiplier != newConfig.WaterAmbienceMovingVolumeMultiplier;
 
             ServerConfig = isServerConfigEnabled ? newConfig : null;
 

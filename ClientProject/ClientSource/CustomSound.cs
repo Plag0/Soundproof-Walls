@@ -4,25 +4,27 @@ namespace SoundproofWalls
     [Serializable]
     public class CustomSound
     {
-        public string Name { get; set; }
-        public float GainMultiplier { get; set; }
-        public float RangeMultiplier { get; set; }
-        public float SidechainMultiplier { get; set; }
-        public float Release { get; set; }
-        public HashSet<string> Exclusions { get; set; }
+        public string Keyword { get; set; }
+        public float GainMult { get; set; }
+        public float RangeMult { get; set; }
+        public float SidechainMult { get; set; }
+        public float SidechainRelease { get; set; }
+        public float PitchMult { get; set; }
+        public HashSet<string> KeywordExclusions { get; set; }
 
         public CustomSound()
         {
-            Exclusions = new HashSet<string>();
+            KeywordExclusions = new HashSet<string>();
         }
-        public CustomSound(string name, float gainMultiplier, float rangeMultiplier = 1, float sidechainMultiplier = 0, float release = 0, params string[]? exclusions)
+        public CustomSound(string name, float gainMultiplier, float rangeMultiplier = 1, float sidechainMultiplier = 0, float release = 0, float pitchMultiplier = 1, params string[]? exclusions)
         {
-            Name = name;
-            GainMultiplier = gainMultiplier;
-            RangeMultiplier = rangeMultiplier;
-            SidechainMultiplier = sidechainMultiplier;
-            Release = release;
-            Exclusions = new HashSet<string>(exclusions ?? Array.Empty<string>());
+            Keyword = name;
+            GainMult = gainMultiplier;
+            RangeMult = rangeMultiplier;
+            SidechainMult = sidechainMultiplier;
+            SidechainRelease = release;
+            PitchMult = pitchMultiplier;
+            KeywordExclusions = new HashSet<string>(exclusions ?? Array.Empty<string>());
         }
     }
 
@@ -32,12 +34,13 @@ namespace SoundproofWalls
         {
             if (x == null || y == null) return false;
             
-            return x.Name == y.Name && 
-                   x.GainMultiplier == y.GainMultiplier &&
-                   x.RangeMultiplier == y.RangeMultiplier &&
-                   x.SidechainMultiplier == y.SidechainMultiplier && 
-                   x.Release == y.Release && 
-                   x.Exclusions.SetEquals(y.Exclusions);
+            return x.Keyword == y.Keyword && 
+                   x.GainMult == y.GainMult &&
+                   x.RangeMult == y.RangeMult &&
+                   x.SidechainMult == y.SidechainMult && 
+                   x.SidechainRelease == y.SidechainRelease && 
+                   x.PitchMult == y.PitchMult &&
+                   x.KeywordExclusions.SetEquals(y.KeywordExclusions);
         }
 
         public int GetHashCode(CustomSound obj)
@@ -45,12 +48,13 @@ namespace SoundproofWalls
             if (obj == null) return 0;
 
             int hash = 17;
-            hash = hash * 31 + obj.Name.GetHashCode();
-            hash = hash * 31 + obj.GainMultiplier.GetHashCode();
-            hash = hash * 31 + obj.RangeMultiplier.GetHashCode();
-            hash = hash * 31 + obj.SidechainMultiplier.GetHashCode();
-            hash = hash * 31 + obj.Release.GetHashCode();
-            hash = hash * 31 + obj.Exclusions.GetHashCode();
+            hash = hash * 31 + obj.Keyword.GetHashCode();
+            hash = hash * 31 + obj.GainMult.GetHashCode();
+            hash = hash * 31 + obj.RangeMult.GetHashCode();
+            hash = hash * 31 + obj.SidechainMult.GetHashCode();
+            hash = hash * 31 + obj.SidechainRelease.GetHashCode();
+            hash = hash * 31 + obj.PitchMult.GetHashCode();
+            hash = hash * 31 + obj.KeywordExclusions.GetHashCode();
             return hash;
         }
     }
