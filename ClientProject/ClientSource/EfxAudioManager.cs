@@ -610,7 +610,7 @@ namespace SoundproofWalls
 
             // Select which slot to route to.
             uint send1_targetSlot = Send1_DetermineTargetEffectSlot(inHull, channelInfo.IgnoreReverb, hydrophoned, shouldReverbWater);
-            uint send0_targetSlot = Send0_DetermineTargetEffectSlot(!channelInfo.SoundInfo.IgnoreDistortion && (channelInfo.IsLoud || channelInfo.SoundInfo.ForceDistortion) && channelInfo.MuffleStrength <= 0.5f);
+            uint send0_targetSlot = Send0_DetermineTargetEffectSlot(channelInfo.SoundInfo.Distortion && channelInfo.MuffleStrength <= 0.5f);
             uint sendFilterId = filterId;
 
             int targetFreq = CalculateFrequencyKey(channelInfo.MuffleStrength);

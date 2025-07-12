@@ -44,7 +44,7 @@ namespace SoundproofWalls
         public bool SyncSettings { get; set; } = true;
         public uint EffectProcessingMode { get; set; } = 2;
         public bool FocusTargetAudio { get; set; } = false;
-        public bool AttenuateWithApproximateDistance = true;
+        public bool AttenuateWithApproximateDistance { get; set; } = true;
         public int HeavyLowpassFrequency { get; set; } = 200; // Used by classic and staticFx modes.
         public float SoundRangeMultiplierMaster { get; set; } = 1.6f;
         public float LoopingSoundRangeMultiplierMaster { get; set; } = 0.9f;
@@ -54,9 +54,12 @@ namespace SoundproofWalls
         public bool AutoAttenuateMuffledSounds { get; set; } = true; // Should the volume of the lower frequencies (not just the high freqs) be attenuated with muffle strength.
         public float DynamicMuffleStrengthMultiplier { get; set; } = 1.0f;
         public float DynamicMuffleTransitionFactor { get; set; } = 0f; // The max change of high frequency gain over the span of a second. Transitions the muffle effect on and off.
+        public float DynamicMuffleTransitionFactorFlowFire { get; set; } = 3.5f;
         public bool DynamicReverbEnabled { get; set; } = true;
+        public bool DynamicReverbWaterSubtractsArea { get; set; } = true;
         public bool DynamicReverbRadio { get; set; } = false;
         public float DynamicReverbAreaSizeMultiplier { get; set; } = 1.0f;
+        public float DynamicReverbWetRoomAreaSizeMultiplier { get; set; } = 3.0f;
         public float DynamicReverbAirTargetGain { get; set; } = 0.37f;
         public float DynamicReverbWaterTargetGain { get; set; } = 0.55f;
         public float DyanmicReverbWaterAmplitudeThreshold { get; set; } = 0.75f; // The necessary amplitude * gain needed for a non "loud" source to have reverb applied in water.
@@ -184,6 +187,7 @@ namespace SoundproofWalls
         public float WaterAmbienceTransitionSpeedMultiplier { get; set; } = 3.5f;
 
         // Pitch settings
+        public bool PitchEnabled { get; set; } = true; // Global pitch toggle. Affects Custom Sound pitches too.
         public bool PitchWithDistance { get; set; } = true;
         public float DivingSuitPitchMultiplier { get; set; } = 1f;
         public float SubmergedPitchMultiplier { get; set; } = 0.65f;
@@ -199,7 +203,7 @@ namespace SoundproofWalls
         public bool RememberMenuTabAndScroll { get; set; } = true;
         public bool DebugObstructions { get; set; } = false; // See what is obstructing all audio with console output.
         public bool DebugPlayingSounds { get; set; } = false; // See all playing sounds and their filenames.
-        public int MaxSimultaneousInstances = 8; // How many instances of the same sound clip can be playing at the same time. Vanilla is 5 (cite Sound.cs)
+        public int MaxSimultaneousInstances { get; set; } = 8; // How many instances of the same sound clip can be playing at the same time. Vanilla is 5 (cite Sound.cs)
 
             // Update Intervals
         public bool UpdateNonLoopingSounds { get; set; } = true; // Updates the gain and pitch of non looping "single-shot" sounds every tick. Muffle is updated every NonLoopingSoundMuffleUpdateInterval.
@@ -209,7 +213,7 @@ namespace SoundproofWalls
 
             // Transitions
         public bool DisableVanillaFadeOutAndDispose { get; set; } = true; // Disables the vanilla "FadeOutAndDispose" function that has the potential to cause issues with permanently looping sounds.
-        public float GainTransitionFactor { get; set; } = 1.5f;
+        public float GainTransitionFactor { get; set; } = 2.5f;
         public float PitchTransitionFactor { get; set; } = 0f;
        
             // Volume Attenuation
@@ -220,7 +224,7 @@ namespace SoundproofWalls
             // Sound Pathfinding
         public bool TraverseWaterDucts { get; set; } = false; // Should the search algorithm pass through water ducts?
         public bool FlowSoundsTraverseWaterDucts { get; set; } = true;
-        public float OpenDoorThreshold { get; set; } = 0.1f; // How open a door/hatch/duct must be for sound to pass through unobstructed.
+        public float OpenDoorThreshold { get; set; } = 0.01f; // How open a door/hatch/duct must be for sound to pass through unobstructed.
         public float OpenWallThreshold { get; set; } = 0.35f; // How open a gap in a wall must be for sound to pass through unobstructed.
         public int SoundPropagationRange { get; set; } = 500; // Distance that a sound in WallPropagatingSounds can search for a hull to propagate to.
 
@@ -228,45 +232,230 @@ namespace SoundproofWalls
         public float AITargetSoundRangeMultiplierMaster { get; set; } = 1.0f;
         public float AITargetSightRangeMultiplierMaster { get; set; } = 1.0f;
 
-            // Sound Rules
+        // Sound Rules
         // A general rule is to keep the most vague names at the bottom so when searching for a match the more specific ones can be found first.
         public HashSet<CustomSound> CustomSounds { get; set; } = new HashSet<CustomSound>(new ElementEqualityComparer())
-        {
-            //"barotrauma/content/sounds/damage/creak",
-            //"barotrauma/content/sounds/hull",
-            new CustomSound("footstep", 0.75f, 0.8f),
-            new CustomSound("door", 0.9f, 1.3f),
-            new CustomSound("metalimpact", 0.8f, 1.2f),
-            new CustomSound("revolver", 2.0f, 1.2f, 1.1f, 1.1f),
-            new CustomSound("shotgunshot", 2.5f, 1.3f, 1.4f, 1.5f),
-            new CustomSound("rifleshot", 2.5f, 1.3f, 1.2f, 1.3f, 1, "harpooncoilrifleshot"),
-            new CustomSound("shot", 2f, 1.15f, 1, 0.9f, 1, "shotgunload", "tasershot", "riflegrenadeshot"),
+{
+        new CustomSound("footstep",
+            gainMultiplier: 0.75f,
+            rangeMultiplier: 0.8f,
+            muffleMultiplier: 1.1f),
+        new CustomSound("door",
+            gainMultiplier: 0.9f,
+            rangeMultiplier: 1.3f),
+        new CustomSound("metalimpact",
+            gainMultiplier: 0.8f,
+            rangeMultiplier: 1.2f),
 
-            new CustomSound("coilgun", 2.3f, 1.35f, 1.2f, 1.3f),
-            new CustomSound("flakgun", 2.5f, 1.4f, 1.3f, 1.5f),
-            new CustomSound("railgun", 3f, 1.5f, 1.5f, 1.9f, 1, "railgunloop", "railgunstart", "railgunstop"),
-            new CustomSound("lasergunshot", 2.8f, 1.3f, 1.4f, 1.7f),
-            new CustomSound("gravityshells_boom.ogg", 2.0f, 1.5f, 2, 3),
 
-            new CustomSound("sonardecoy.ogg", 1, 1.1f, 0.6f, 1.5f),
+        new CustomSound("revolver",
+            gainMultiplier: 2.0f,
+            rangeMultiplier: 1.2f,
+            sidechainMultiplier: 1.1f,
+            release: 1.1f,
+            distortion: true,
+            pitchMultiplier: 1.0f,
+            muffleMultiplier: 0.95f),
+        new CustomSound("shotgunshot",
+            gainMultiplier: 2.5f,
+            rangeMultiplier: 1.3f,
+            sidechainMultiplier: 1.4f,
+            release: 1.5f,
+            distortion: true,
+            pitchMultiplier: 1.0f,
+            muffleMultiplier: 0.95f),
+        new CustomSound("rifleshot",
+            gainMultiplier: 2.5f,
+            rangeMultiplier: 1.3f,
+            sidechainMultiplier: 1.2f,
+            release: 1.3f,
+            distortion: true,
+            pitchMultiplier: 1.0f,
+            muffleMultiplier: 0.95f,
+            exclusions: ["harpooncoilrifleshot"]),
+        new CustomSound("shot",
+            gainMultiplier: 2.0f,
+            rangeMultiplier: 1.15f,
+            sidechainMultiplier: 1.0f,
+            release: 0.9f,
+            distortion: true,
+            pitchMultiplier: 1.0f,
+            muffleMultiplier: 0.95f,
+            exclusions: ["shotgunload", "tasershot", "riflegrenadeshot"]),
 
-            new CustomSound("incendiumgrenade", 2, 1.2f, 1.4f, 3),
-            new CustomSound("stungrenade", 3, 1.2f, 1.5f, 4),
-            new CustomSound("explosion", 3, 1.6f, 2, 5),
-            new CustomSound("gravityshells", 1.5f, 1.4f, 2, 1.5f),
-            new CustomSound("firelarge.ogg", 1.4f, 1, 0.6f, 1),
 
-            // Pitch adjustments. The ambience sounds really cool stretched out over a low pitch
-            new CustomSound("barotrauma/content/sounds/ambient", 1.0f, 1, 0, 0, 0.45f),
-            new CustomSound("barotrauma/content/sounds/damage/creak", 1.0f, 1, 0, 0, 0.5f),
-            new CustomSound("barotrauma/content/sounds/hull", 1.0f, 1, 0, 0, 0.4f),
+        new CustomSound("coilgun",
+            gainMultiplier: 2.3f,
+            rangeMultiplier: 1.35f,
+            sidechainMultiplier: 1.2f,
+            release: 1.3f,
+            distortion: true,
+            pitchMultiplier: 1.0f,
+            muffleMultiplier: 0.85f),
+        new CustomSound("flakgun",
+            gainMultiplier: 2.5f,
+            rangeMultiplier: 1.4f,
+            sidechainMultiplier: 1.3f,
+            release: 1.5f,
+            distortion: true,
+            pitchMultiplier: 1.0f,
+            muffleMultiplier: 0.85f),
+        new CustomSound("railgun",
+            gainMultiplier: 3.0f,
+            rangeMultiplier: 1.5f,
+            sidechainMultiplier: 1.5f,
+            release: 1.9f,
+            distortion: true,
+            pitchMultiplier: 1.0f,
+            muffleMultiplier: 0.85f,
+            exclusions: ["railgunstart", "railgunloop", "railgunstop"]),
+        new CustomSound("lasergunshot",
+            gainMultiplier: 2.8f,
+            rangeMultiplier: 1.3f,
+            sidechainMultiplier: 1.4f,
+            release: 1.7f,
+            distortion: true,
+            pitchMultiplier: 1.0f,
+            muffleMultiplier: 0.85f),
 
-            // Real Sonar changes.
-            new CustomSound("2936760984/sounds/sonar", 1, 1, 3, 5, 1, "air", "sonarpoweron", "sonarambience", "sonardistortion"),
-            new CustomSound("2936760984/sounds/cortizide", 0.6f, 1, 1, 15),
-            new CustomSound("2936760984/sounds/tinnitus", 1, 1, 0.65f, 1), // Looping sound is fine with short release. Place real sonar specific tinnitus before vanilla so it's discovered first.
-            
-            new CustomSound("tinnitus", 0.7f, 1, 1.8f, 8), // Vanilla/general tinnitus sounds - non looping.
+
+        new CustomSound("gravityshells_boom.ogg",
+            gainMultiplier: 2.0f,
+            rangeMultiplier: 1.5f,
+            sidechainMultiplier: 2.0f,
+            release: 3.0f,
+            distortion: true),
+        new CustomSound("sonardecoy.ogg",
+            gainMultiplier: 1.0f,
+            rangeMultiplier: 1.1f,
+            sidechainMultiplier: 0.6f,
+            release: 1.5f,
+            distortion: false),
+        new CustomSound("incendiumgrenade",
+            gainMultiplier: 2.0f,
+            rangeMultiplier: 1.2f,
+            sidechainMultiplier: 1.4f,
+            release: 3.0f,
+            distortion: true),
+        new CustomSound("stungrenade",
+            gainMultiplier: 3.0f,
+            rangeMultiplier: 1.2f,
+            sidechainMultiplier: 3.0f,
+            release: 7.0f,
+            distortion: true),
+        new CustomSound("explosion",
+            gainMultiplier: 3.0f,
+            rangeMultiplier: 1.6f,
+            sidechainMultiplier: 2.0f,
+            release: 5.0f,
+            distortion: true,
+            pitchMultiplier: 0.95f,
+            muffleMultiplier: 0.95f),
+        new CustomSound("gravityshells",
+            gainMultiplier: 1.5f,
+            rangeMultiplier: 1.4f,
+            sidechainMultiplier: 2.0f,
+            release: 1.5f,
+            distortion: true),
+
+
+        new CustomSound("firelarge.ogg",
+            gainMultiplier: 1.4f,
+            rangeMultiplier: 1.0f,
+            sidechainMultiplier: 0.6f,
+            release: 1.0f,
+            distortion: false),
+        
+
+        new CustomSound("damage/structure",
+            gainMultiplier: 2.0f,
+            rangeMultiplier: 1.5f,
+            sidechainMultiplier: 0.5f,
+            release: 2.0f,
+            distortion: false,
+            pitchMultiplier: 0.9f,
+            muffleMultiplier: 0.55f),
+        new CustomSound("items/alarmdivingloop.ogg",
+            gainMultiplier: 1.0f,
+            rangeMultiplier: 1.1f,
+            sidechainMultiplier: 0.3f,
+            release: 1.0f,
+            distortion: false,
+            pitchMultiplier: 1.0f,
+            muffleMultiplier: 0.70f),
+        new CustomSound("items/alarmbuzzerloop.ogg",
+            gainMultiplier: 1.0f,
+            rangeMultiplier: 1.8f,
+            sidechainMultiplier: 0.3f,
+            release: 1.0f,
+            distortion: false,
+            pitchMultiplier: 1.0f,
+            muffleMultiplier: 0.70f),
+        new CustomSound("items/warningsiren.ogg",
+            gainMultiplier: 1.0f,
+            rangeMultiplier: 1.8f,
+            sidechainMultiplier: 0.3f,
+            release: 1.0f,
+            distortion: false,
+            pitchMultiplier: 1.0f,
+            muffleMultiplier: 0.70f),
+
+
+        // Pitch adjustments. The ambience sounds really cool stretched out over a low pitch
+        new CustomSound("barotrauma/content/sounds/ambient",
+            gainMultiplier: 1.0f,
+            rangeMultiplier: 1.0f,
+            sidechainMultiplier: 0.0f,
+            release: 0.0f,
+            distortion: false,
+            pitchMultiplier: 0.45f),
+        new CustomSound("barotrauma/content/sounds/damage/creak",
+            gainMultiplier: 1.0f,
+            rangeMultiplier: 1.0f,
+            sidechainMultiplier: 0.0f,
+            release: 0.0f,
+            distortion: false,
+            pitchMultiplier: 0.5f),
+        new CustomSound("barotrauma/content/sounds/hull",
+            gainMultiplier: 1.0f,
+            rangeMultiplier: 1.0f,
+            sidechainMultiplier: 0.0f,
+            release: 0.0f,
+            distortion: false,
+            pitchMultiplier: 0.4f),
+
+
+        // Real Sonar changes.
+        new CustomSound("2936760984/sounds/sonar",
+            gainMultiplier: 1.0f,
+            rangeMultiplier: 1.0f,
+            sidechainMultiplier: 3.0f,
+            release: 5.0f,
+            distortion: false,
+            pitchMultiplier: 1.0f,
+            muffleMultiplier: 0.0f,
+            exclusions: ["air", "sonarpoweron", "sonarambience", "sonardistortion"]),
+        new CustomSound("2936760984/sounds/cortizide",
+            gainMultiplier: 0.6f,
+            rangeMultiplier: 1.0f,
+            sidechainMultiplier: 1.0f,
+            release: 15.0f,
+            distortion: false),
+        new CustomSound("2936760984/sounds/tinnitus",
+            gainMultiplier: 0.6f,
+            rangeMultiplier: 1.0f,
+            sidechainMultiplier: 0.55f,
+            release: 3.0f,
+            distortion: false),
+        
+        // Vanilla/general tinnitus sounds - non looping.
+        // Place real sonar specific tinnitus before vanilla so it's discovered first.
+        new CustomSound("tinnitus",
+            gainMultiplier: 0.7f,
+            rangeMultiplier: 1.0f,
+            sidechainMultiplier: 0.8f,
+            release: 8.0f,
+            distortion: false),
         };
 
         // Sounds in this list are ignored by all muffling/pitching/other processing except for gain.
@@ -297,6 +486,7 @@ namespace SoundproofWalls
             "barotrauma/content/items/diving",
             "barotrauma/content/items/warningbeep",
             "barotrauma/content/items/alien",
+            "explosion",
             "sonar"
         };
 
@@ -309,25 +499,11 @@ namespace SoundproofWalls
             "damage/damage_alienruins",
             "doorbreak",
             "electricaldischarge",
-            "sonarping",
-            "explosion",
-
-            // Allow turrets to be heard from the hull directly below/above them.
-            "railgun1",
-            "railgun2",
-            "railgun3",
-            "chaingunshot",
-            "flakgun",
-            "coilgun",
-            "lasergunshot",
         };
 
         // Alarms/sirens should be able to be heard across the ship regardless of walls (still affected by water).
         public HashSet<string> PathIgnoredSounds { get; set; } = new HashSet<string>
         {
-            "items/alarmdivingloop.ogg",
-            "items/alarmbuzzerloop.ogg",
-            "items/warningsiren.ogg"
         };
 
         public HashSet<string> PitchIgnoredSounds { get; set; } = new HashSet<string>
@@ -340,6 +516,12 @@ namespace SoundproofWalls
             "items/button",
             "divingsuitloop",
             "divingsuitoxygenleakloop",
+            "railgunloop",
+            "railgunstart",
+            "railgunstop",
+            "tinnitus",
+            "repairloop",
+            "music",
             "door",
             "sonar",
             "male",
@@ -375,19 +557,6 @@ namespace SoundproofWalls
             "divingsuitloop", // Remove this line for some cool new ambience sounds :)
             "divingsuitoxygenleakloop",
             "scooterloop",
-
-        };
-
-        public HashSet<string> DistortionForcedSounds { get; set; } = new HashSet<string> // Sounds that are always distorted //TODO implement
-        {
-        };
-
-        public HashSet<string> DistortionIgnoredSounds { get; set; } = new HashSet<string> // Sounds that are not distorted by dynamic processing mode. //TODO implement
-        {
-            "firelarge.ogg",
-            "2936760984/sounds/sonar", // Prevent Real Sonar sounds from becoming distorted
-            "2936760984/sounds/cortizide",
-            "2936760984/sounds/tinnitus"
         };
 
         public HashSet<string> ContainerIgnoredSounds { get; set; } = new HashSet<string>

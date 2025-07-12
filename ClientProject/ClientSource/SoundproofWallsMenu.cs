@@ -1029,6 +1029,21 @@ namespace SoundproofWalls
                 TextManager.Get("spw_dynamicmuffletransitionfactortooltip")
             );
 
+            Label(settingsFrame, TextManager.Get("spw_dynamicmuffletransitionfactorflowfire"));
+            Slider(settingsFrame, (0, 5), 0.01f,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.DynamicMuffleTransitionFactorFlowFire ?? default,
+                    formatter: RawValue),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.DynamicMuffleTransitionFactorFlowFire,
+                    vanillaValue: null),
+                currentValue: unsavedConfig.DynamicMuffleTransitionFactorFlowFire,
+                setter: v => unsavedConfig.DynamicMuffleTransitionFactorFlowFire = v,
+                TextManager.Get("spw_dynamicmuffletransitionfactorflowfiretooltip")
+            );
+
             SpacerLabel(settingsFrame, TextManager.Get("spw_dynamiccategoryreverb"));
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
@@ -1038,6 +1053,14 @@ namespace SoundproofWalls
                 tooltip: TextManager.Get("spw_dynamicreverbtooltip"),
                 currentValue: unsavedConfig.DynamicReverbEnabled,
                 setter: v => unsavedConfig.DynamicReverbEnabled = v);
+
+            Tickbox(settingsFrame, FormatTextBoxLabel(
+                label: TextManager.Get("spw_dynamicreverbwatersubtractsarea"),
+                serverValue: ConfigManager.ServerConfig?.DynamicReverbWaterSubtractsArea ?? default,
+                formatter: BoolFormatter),
+                tooltip: TextManager.Get("spw_dynamicreverbwatersubtractsareatooltip"),
+                currentValue: unsavedConfig.DynamicReverbWaterSubtractsArea,
+                setter: v => unsavedConfig.DynamicReverbWaterSubtractsArea = v);
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
                 label: TextManager.Get("spw_dynamicreverbradio"),
@@ -1062,6 +1085,21 @@ namespace SoundproofWalls
                 currentValue: unsavedConfig.DynamicReverbAreaSizeMultiplier,
                 setter: v => unsavedConfig.DynamicReverbAreaSizeMultiplier = v,
                 TextManager.Get("spw_dynamicreverbareasizemultipliertooltip")
+            );
+
+            Label(settingsFrame, TextManager.Get("spw_dynamicreverbwetroomareasizemultiplier"));
+            Slider(settingsFrame, (0, 5), 0.01f,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.DynamicReverbWetRoomAreaSizeMultiplier ?? default,
+                    formatter: Percentage),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.DynamicReverbWetRoomAreaSizeMultiplier,
+                    vanillaValue: null),
+                currentValue: unsavedConfig.DynamicReverbWetRoomAreaSizeMultiplier,
+                setter: v => unsavedConfig.DynamicReverbWetRoomAreaSizeMultiplier = v,
+                TextManager.Get("spw_dynamicreverbwetroomareasizemultipliertooltip")
             );
 
             Label(settingsFrame, TextManager.Get("spw_dynamicreverbairtargetgain"));
@@ -2483,6 +2521,14 @@ namespace SoundproofWalls
             GUIFrame settingsFrame = NewListContent(content);
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
+                label: TextManager.Get("spw_pitchenabled"),
+                serverValue: ConfigManager.ServerConfig?.PitchEnabled ?? default,
+                formatter: BoolFormatter),
+                tooltip: TextManager.Get("spw_pitchenabledtooltip"),
+                currentValue: unsavedConfig.PitchEnabled,
+                setter: v => unsavedConfig.PitchEnabled = v);
+
+            Tickbox(settingsFrame, FormatTextBoxLabel(
                 label: TextManager.Get("spw_pitchwithdistance"),
                 serverValue: ConfigManager.ServerConfig?.PitchWithDistance ?? default,
                 formatter: BoolFormatter),
@@ -3037,28 +3083,6 @@ namespace SoundproofWalls
                 tooltip: TextManager.Get("spw_lowpassignoredsoundstooltip"),
                 getter: config => config.LowpassIgnoredSounds,
                 setter: newSet => unsavedConfig.LowpassIgnoredSounds = newSet,
-                itemFormatter: s => s
-            );
-
-            Spacer(settingsFrame);
-
-            CreateJsonTextBox(
-                parentListBox: settingsList,
-                labelText: TextManager.Get("spw_distortionforcedsounds"),
-                tooltip: TextManager.Get("spw_distortionforcedsoundstooltip"),
-                getter: config => config.DistortionForcedSounds,
-                setter: newSet => unsavedConfig.DistortionForcedSounds = newSet,
-                itemFormatter: s => s
-            );
-
-            Spacer(settingsFrame);
-
-            CreateJsonTextBox(
-                parentListBox: settingsList,
-                labelText: TextManager.Get("spw_distortionignoredsounds"),
-                tooltip: TextManager.Get("spw_distortionignoredsoundstooltip"),
-                getter: config => config.DistortionIgnoredSounds,
-                setter: newSet => unsavedConfig.DistortionIgnoredSounds = newSet,
                 itemFormatter: s => s
             );
 

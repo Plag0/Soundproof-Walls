@@ -62,18 +62,26 @@ namespace SoundproofWalls
             FocusedHull = IsEavesdropping ? EavesdroppedHull : CurrentHull;
             ConnectedHulls = GetConnectedHulls(FocusedHull, includingThis: true, respectClosedGaps: true);
 
-            ConnectedArea = 0;
-            foreach (Hull hull in ConnectedHulls)
-            {
-                ConnectedArea += hull.RectHeight * hull.RectWidth;
-            }
-
             IsCharacter = !ConfigManager.Config.FocusTargetAudio || LightManager.ViewTarget as Character == Character.Controlled;
             IsSubmerged = IsCharacter ? Character.Controlled?.AnimController?.HeadInWater == true : LightManager.ViewTarget != null && Util.SoundInWater(LightManager.ViewTarget.Position, CurrentHull);
             IsUsingHydrophones = HydrophoneManager.HydrophoneEfficiency > 0.01f && Character.Controlled?.SelectedItem?.GetComponent<Sonar>() is Sonar sonar && HydrophoneManager.HydrophoneSwitches.ContainsKey(sonar) && HydrophoneManager.HydrophoneSwitches[sonar].State;
             IsWearingDivingSuit = Character.Controlled?.LowPassMultiplier < 0.5f;
             IsWearingExoSuit = IsCharacterWearingExoSuit(character!);
-            
+
+            ConnectedArea = 0;
+            foreach (Hull hull in ConnectedHulls)
+            {
+                float mult = hull.IsWetRoom && FocusedHull == hull ? ConfigManager.Config.DynamicReverbWetRoomAreaSizeMultiplier : 1;
+                float roomArea = hull.RectHeight * hull.RectWidth;
+                if (ConfigManager.Config.DynamicReverbWaterSubtractsArea)
+                {
+                    float waterRatio = Math.Clamp(hull.WaterPercentage, 0.0f, 100.0f) / 100;
+                    // If listener is submerged use the area of the water, otherwise use the area of the air.
+                    roomArea *= IsSubmerged ? waterRatio : 1 - waterRatio; 
+                }
+                ConnectedArea += roomArea * mult;
+            }
+
             Limb head = Util.GetCharacterHead(character!);
             LocalPos = IsCharacter ? head.Position : LightManager.ViewTarget?.Position ?? Vector2.Zero;
             WorldPos = IsCharacter ? head.WorldPosition : LightManager.ViewTarget?.WorldPosition ?? new Vector2(GameMain.SoundManager.ListenerPosition.X, GameMain.SoundManager.ListenerPosition.Y);

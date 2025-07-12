@@ -358,7 +358,6 @@ namespace SoundproofWalls
         public static void SPW_StartRound()
         {
             HydrophoneManager.SetupHydrophoneSwitches(firstStartup: true);
-            SoundPathfinder.InitializeGraph(Character.Controlled?.Submarine);
         }
 
         // This patch might not exist when the base method is called, but it's here in principal to prevent memory leaks.
@@ -2110,7 +2109,7 @@ namespace SoundproofWalls
             for (int i = 0; i < SoundPlayer.flowSoundChannels.Count(); i++)
             {
                 SoundChannel channel = SoundPlayer.flowSoundChannels[i];
-                if (channel == null) { continue; }
+                if (channel == null || GameMain.Instance.Paused) { continue; }
                 ChannelInfoManager.EnsureUpdateChannelInfo(channel);
             }
         }

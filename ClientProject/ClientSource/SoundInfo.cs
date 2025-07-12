@@ -10,8 +10,10 @@ namespace SoundproofWalls
         public float GainMult = 1;
         public float RangeMult = 1;
         public float SidechainMult = 0;
-        public float SidechainRelease = 1;
+        public float SidechainRelease = 0;
+        public bool Distortion = false;
         public float PitchMult = 1;
+        public float MuffleMult = 1;
         public bool IsLoud = false;
 
         public bool IgnorePath = false;
@@ -21,8 +23,6 @@ namespace SoundproofWalls
         public bool IgnoreLowpass = false;
         public bool ForceLowpass = false;
         public bool IgnoreReverb = false;
-        public bool ForceDistortion = false;
-        public bool IgnoreDistortion = false;
         public bool ForceReverb = false;
         public bool IgnoreContainer = false;
         public bool IgnoreAll = false;
@@ -46,8 +46,6 @@ namespace SoundproofWalls
                 IgnorePitch = Util.StringHasKeyword(filename, config.PitchIgnoredSounds);
                 IgnoreReverb = Util.StringHasKeyword(filename, config.ReverbIgnoredSounds);
                 ForceReverb = !IgnoreReverb && Util.StringHasKeyword(filename, config.ReverbForcedSounds);
-                IgnoreDistortion = Util.StringHasKeyword(filename, config.DistortionIgnoredSounds);
-                ForceDistortion = !IgnoreDistortion && Util.StringHasKeyword(filename, config.DistortionForcedSounds);
                 IgnorePath = IgnoreLowpass || Util.StringHasKeyword(filename, config.PathIgnoredSounds);
                 IgnoreSurface = IgnoreLowpass || !config.MuffleWaterSurface || Util.StringHasKeyword(filename, config.SurfaceIgnoredSounds);
                 IgnoreSubmersion = IgnoreLowpass || Util.StringHasKeyword(filename, config.SubmersionIgnoredSounds, exclude: "Barotrauma/Content/Characters/Human/");
@@ -65,7 +63,9 @@ namespace SoundproofWalls
                 RangeMult = CustomSound.RangeMult;
                 SidechainMult = CustomSound.SidechainMult;
                 SidechainRelease = CustomSound.SidechainRelease;
+                Distortion = CustomSound.Distortion;
                 PitchMult = CustomSound.PitchMult;
+                MuffleMult = CustomSound.MuffleMult;
                 IsLoud = SidechainMult > 0;
             }
         }

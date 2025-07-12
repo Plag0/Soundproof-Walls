@@ -24,14 +24,14 @@
 	<spw_syncsettingstooltip>Requires server-side Lua to be running.\nSynchronizes the host/admin's local config file with all players connected to the server (this is achieved by creating a separate config held server-side for players' to inherit. This setting does not modify any local config files)</spw_syncsettingstooltip>
 
 	<spw_effectprocessingmode>Effect Processing Mode</spw_effectprocessingmode>
-	<spw_effectprocessingmodetooltip>Determines what audio effects are used and how are they processed. This is the core setting for Soundproof Walls and it has three available "modes" (you can learn more about each mode by dragging the bar). While each mode delivers a fairly unique experience with its own pros and cons, they can be generally be thought of in terms of increasing fidelity, similar to a graphical preset in both performance cost and features (e.g., "low", "medium", and "high"). However, the performance cost for all three modes should be negligible for most systems.\nNote: updating this value while playing may briefly freeze the game as buffers are loaded</spw_effectprocessingmodetooltip>
+	<spw_effectprocessingmodetooltip>Select how sound effects are processed. Changing this during gameplay may briefly freeze the game while buffers reload.</spw_effectprocessingmodetooltip>
 
 	<spw_vanillafx>Classic</spw_vanillafx>
-	<spw_vanillafxtooltip>This is classic Soundproof Walls. Modifies the muffle buffer provided by the vanilla game.\nPros:\n• Zero performance considerations\n\nCons:\n• Only one muffle frequency (creates a very on/off feel)\n• No reverb support</spw_vanillafxtooltip>
+	<spw_vanillafxtooltip>Vanilla-style muffling. Minimal resource use, but limited to a single muffling level with no reverb support</spw_vanillafxtooltip>
 	<spw_staticfx>Static</spw_staticfx>
-	<spw_staticfxtooltip>Adds two new muffle presets (light and medium) and optional reverb for certain sounds by creating additional buffers.\nPros:\n• Three total muffle frequencies allow for more nuanced audio\n• Reverb support for non-looping sounds\n\nCons:\n• Longer loading times (~2s) and more memory usage (~250MB)\n•Potential for instability with other sound-based Lua/C# mods (extremely unlikely)</spw_staticfxtooltip>
+	<spw_staticfxtooltip>Adds light and medium muffling plus optional reverb. Slightly longer load times and higher memory use (~250 MB)</spw_staticfxtooltip>
 	<spw_dynamicfx>Dynamic</spw_dynamicfx>
-	<spw_dynamicfxtooltip>Highly recommended. Uses the OpenAL Effects Extension to simulate advanced audio effects in real-time.\nPros:\n• Effectively unlimited muffle frequencies for more variety\n• Muffle strength is determined by advanced factors such as the number of surfaces the sound travelled through\n• Significantly less audio pops and crackles\n• Sounds are heard from the direction they came from instead of just their origin point, and can appear to come from multiple directions based on the environment.\n\nCons:\n• Higher CPU load which may impact performance</spw_dynamicfxtooltip>
+	<spw_dynamicfxtooltip>Advanced real-time effects via OpenAL. Most realistic audio with simulated sound and advanced muffling, at higher CPU cost</spw_dynamicfxtooltip>
 
 	<spw_focustargetaudio>Focus Target Audio</spw_focustargetaudio>
 	<spw_focustargetaudiotooltip>Simulate audio from the POV of the current target (i.e., you hear what the turret/camera hears)</spw_focustargetaudiotooltip>
@@ -60,14 +60,20 @@
 	<spw_dynamicmufflestrengthmastertooltip>The overall strength of the muffle effect</spw_dynamicmufflestrengthmastertooltip>
 	<spw_dynamicmuffletransitionfactor>Muffle Transition Speed</spw_dynamicmuffletransitionfactor>
 	<spw_dynamicmuffletransitionfactortooltip>The speed that dynamic muffle values transition between each other. This value represents how much the internal muffle strength value can change per second when transitioning. A value of zero disables this feature for instant transitions.\nNote: until Barotrauma updates its OpenAL Soft version, this feature can produce audible pops when transitioning</spw_dynamicmuffletransitionfactortooltip>
-
+	<spw_dynamicmuffletransitionfactorflowfire>Flow &amp; Fire Muffle Transition Speed</spw_dynamicmuffletransitionfactorflowfire>
+	<spw_dynamicmuffletransitionfactorflowfiretooltip>The speed that dynamic muffle values transition between each other specifically for water flow and fire sounds because these sounds are known to oscillate rapidly.</spw_dynamicmuffletransitionfactorflowfiretooltip>
+	
 	<spw_dynamiccategoryreverb>Reverb</spw_dynamiccategoryreverb>
 	<spw_dynamicreverb>Simulate Reverb</spw_dynamicreverb>
 	<spw_dynamicreverbtooltip>Sounds dynamically reverberate based on the size and aggregate audio amplitude of their environment (i.e., echos are stronger in larger and quieter spaces)</spw_dynamicreverbtooltip>
+	<spw_dynamicreverbwatersubtractsarea>Subtract Water/Air Area</spw_dynamicreverbwatersubtractsarea>
+	<spw_dynamicreverbwatersubtractsareatooltip>Use the area of the air in a hull if the listener is not submerged, otherwise use the area of the water.</spw_dynamicreverbwatersubtractsareatooltip>
 	<spw_dynamicreverbradio>Reverb Radio</spw_dynamicreverbradio>
 	<spw_dynamicreverbradiotooltip>Requires "Simulate Reverb" to be enabled.\nAllows reverb to be applied to player voices heard over the radio</spw_dynamicreverbradiotooltip>
-	<spw_dynamicreverbareasizemultiplier>Reverb Size</spw_dynamicreverbareasizemultiplier>
+	<spw_dynamicreverbareasizemultiplier>Reverb Size Master</spw_dynamicreverbareasizemultiplier>
 	<spw_dynamicreverbareasizemultipliertooltip>Area multiplier for the current environment. Affects the decay time, reflections delay, and late reverb delay (i.e., how big the room sounds)</spw_dynamicreverbareasizemultipliertooltip>
+	<spw_dynamicreverbwetroomareasizemultiplier>Reverb Size Wet Rooms</spw_dynamicreverbwetroomareasizemultiplier>
+	<spw_dynamicreverbwetroomareasizemultipliertooltip>Multiplies the area of every ballast tank and airlock in the current environment to give them a larger echo</spw_dynamicreverbwetroomareasizemultipliertooltip>
 	<spw_dynamicreverbairtargetgain>Reverb Strength (Inside)</spw_dynamicreverbairtargetgain>
 	<spw_dynamicreverbairtargetgaintooltip>The base gain of the reverb effect when inside a hull</spw_dynamicreverbairtargetgaintooltip>
 	<spw_dynamicreverbwatertargetgain>Reverb Strength (Outside)</spw_dynamicreverbwatertargetgain>
@@ -343,6 +349,8 @@
 
 	<!-- Pitch -->
 	<spw_pitchtab>Pitch</spw_pitchtab>
+	<spw_pitchenabled>Enable Pitch</spw_pitchenabled>
+	<spw_pitchenabledtooltip>Globally toggles all pitch effects. May be helpful as a quick fix for weird pitch interactions with sounds from other mods</spw_pitchenabledtooltip>
 	<spw_pitchwithdistance>Pitch With Distance</spw_pitchwithdistance>
 	<spw_pitchwithdistancetooltip>Dynamically lower the pitch of non-looping sounds based on their distance ratio and muffle strength. Stacks additively with other pitch effects</spw_pitchwithdistancetooltip>
 	<spw_divingsuitpitch>Diving Suit Pitch</spw_divingsuitpitch>
@@ -379,7 +387,7 @@
 	<spw_debugplayingsoundstooltip>Output all actively playing sounds in the Barotrauma console</spw_debugplayingsoundstooltip>
 	
 	<spw_maxsimultaneousinstances>Max Simultaneous Instances</spw_maxsimultaneousinstances>
-	<spw_maxsimultaneousinstancestooltip>How many instances of the same sound can be playing at the same time</spw_maxsimultaneousinstancestooltip>
+	<spw_maxsimultaneousinstancestooltip>How many instances of the same sound can be playing at the same time. Lowering this setting may improve performance</spw_maxsimultaneousinstancestooltip>
 
 	<spw_advancedcategoryintervals>Update Intervals</spw_advancedcategoryintervals>
 	<spw_updatenonloopingsounds>Update Non-Looping Sounds</spw_updatenonloopingsounds>
@@ -413,7 +421,7 @@
 	<spw_flowsoundstraversewaterducts>Flow Sounds Traverse Water Ducts</spw_flowsoundstraversewaterducts>
 	<spw_flowsoundstraversewaterductstooltip>Requires "Muffle Flow &amp; Fire Paths" to be enabled.\nAllow the estimation of a flow sound's path to pass through open water ducts unobstructed</spw_flowsoundstraversewaterductstooltip>
 	<spw_opendoorthreshold>Open Door Threshold</spw_opendoorthreshold>
-	<spw_opendoorthresholdtooltip>How open a door, hatch, or duct must be for sound to pass through unobstructed.</spw_opendoorthresholdtooltip>
+	<spw_opendoorthresholdtooltip>How open a door, hatch, or duct must be for sound to pass through unobstructed. A value of zero allows sounds to pass through fully closed doors unobstructed</spw_opendoorthresholdtooltip>
 	<spw_openwallthreshold>Open Wall Threshold</spw_openwallthreshold>
 	<spw_openwallthresholdtooltip>How open a gap in a wall must be for sound to pass through unobstructed.</spw_openwallthresholdtooltip>
 	<spw_soundpropagationrange>Sound Propagation Range</spw_soundpropagationrange>
@@ -459,12 +467,6 @@
 	
 	<spw_lowpassignoredsounds>Lowpass Ignored Sounds</spw_lowpassignoredsounds>
 	<spw_lowpassignoredsoundstooltip>Sounds in this list will never receive muffle effects</spw_lowpassignoredsoundstooltip>
-
-	<spw_distortionforcedsounds>Distortion Forced Sounds</spw_distortionforcedsounds>
-	<spw_distortionforcedsoundstooltip>Exclusive to the "Dynamic" effect mode. Sounds in this list will always receive the "Loud Sound Distortion" effect</spw_distortionforcedsoundstooltip>
-
-	<spw_distortionignoredsounds>Distortion Ignored Sounds</spw_distortionignoredsounds>
-	<spw_distortionignoredsoundstooltip>Exclusive to the "Dynamic" effect mode. Sounds in this list will never receive the "Loud Sound Distortion" effect</spw_distortionignoredsoundstooltip>
 	
 	<spw_containerignoredsounds>Container Ignored Sounds</spw_containerignoredsounds>
 	<spw_containerignoredsoundstooltip>Sounds in this list pass through any containers that they're stored in unobstructed</spw_containerignoredsoundstooltip>

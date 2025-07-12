@@ -64,8 +64,6 @@ namespace SoundproofWalls
                     !oldConfig.LowpassIgnoredSounds.SetEquals(newConfig.LowpassIgnoredSounds) ||
                     !oldConfig.ReverbForcedSounds.SetEquals(newConfig.ReverbForcedSounds) ||
                     !oldConfig.ReverbIgnoredSounds.SetEquals(newConfig.LowpassIgnoredSounds) ||
-                    !oldConfig.DistortionForcedSounds.SetEquals(newConfig.DistortionForcedSounds) ||
-                    !oldConfig.DistortionIgnoredSounds.SetEquals(newConfig.DistortionIgnoredSounds) ||
                     !oldConfig.ContainerIgnoredSounds.SetEquals(newConfig.ContainerIgnoredSounds);
         }
 
@@ -482,7 +480,7 @@ namespace SoundproofWalls
 
         public static bool IsDoorClosed(Door door)
         {
-            if (door != null && !door.IsBroken) 
+            if (door != null && !door.IsBroken && !door.IsFullyOpen && door.Item.Condition > 0) 
             {
                 if (!ConfigManager.Config.TraverseWaterDucts && door.Item.HasTag("ductblock")) { return true; }
 
@@ -492,9 +490,9 @@ namespace SoundproofWalls
             return false;
         }
 
-        public static Gap? GetDoorSoundGap(bool isDoorSound, Hull? soundHull, Vector2 soundPos)
+        public static Gap? GetDoorSoundGap(Hull? soundHull, Vector2 soundPos)
         {
-            if (!isDoorSound || soundHull == null) { return null; }
+            if (soundHull == null) { return null; }
 
             Gap? closestGap = null; // Closest gap to the sound will be the gap with the door the sound came from.
             float bestDistance = float.MaxValue;
@@ -512,23 +510,6 @@ namespace SoundproofWalls
             }
 
             return closestGap;
-        }
-
-        public static bool IsPathThroughOwnDoor(bool isDoorSound, Hull soundHull, Vector2 soundPos)
-        {
-            Gap? closestGap = GetDoorSoundGap(isDoorSound, soundHull, soundPos);
-            if (closestGap != null)
-            {
-                for (int i = 0; i < 2 && i < closestGap.linkedTo.Count; i++)
-                {
-                    if (closestGap.linkedTo[i] is Hull hull && Listener.ConnectedHulls.Contains(hull))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
         }
 
         public static void GetAdjacentHulls(Hull currentHull, HashSet<Hull> connectedHulls, ref int step, int searchDepth, bool respectClosedGaps = false)
@@ -594,9 +575,9 @@ namespace SoundproofWalls
         // Returns true if the given localised position is in water (not accurate when using WorldPositions).
         public static bool SoundInWater(Vector2 soundPos, Hull? soundHull)
         {
-            float epsilon = 30.0f;
+            float epsilon = 1.0f;
             if (soundHull?.WaterPercentage <= 0) { return false; }
-            return soundHull == null || soundHull.WaterVolume > 0 && soundPos.Y < soundHull.Surface - epsilon;
+            return soundHull == null || soundHull.WaterPercentage >= 100 || soundHull.WaterVolume > 0 && soundPos.Y < soundHull.Surface - epsilon;
         }
 
         public static string GetModDirectory()
