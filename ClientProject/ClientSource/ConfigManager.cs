@@ -20,7 +20,7 @@ namespace SoundproofWalls
             { 
                 serverConfig = value; 
                 // Refresh menu if it's open.
-                if (SoundproofWallsMenu.Instance != null) { SoundproofWallsMenu.Create(); } 
+                if (Menu.Instance != null) { Menu.Create(); } 
             } 
         }
         public static Client? ServerConfigUploader = null;

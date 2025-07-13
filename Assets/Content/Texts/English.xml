@@ -70,6 +70,8 @@
 	<spw_dynamicreverbwatersubtractsareatooltip>Use the area of the air in a hull if the listener is not submerged, otherwise use the area of the water.</spw_dynamicreverbwatersubtractsareatooltip>
 	<spw_dynamicreverbradio>Reverb Radio</spw_dynamicreverbradio>
 	<spw_dynamicreverbradiotooltip>Requires "Simulate Reverb" to be enabled.\nAllows reverb to be applied to player voices heard over the radio</spw_dynamicreverbradiotooltip>
+	<spw_dynamicreverbminarea>Reverb Area Requirement</spw_dynamicreverbminarea>
+	<spw_dynamicreverbminareatooltip>The minimum total area of the connected rooms inhabited by the listener required for sounds to become reverberated</spw_dynamicreverbminareatooltip>
 	<spw_dynamicreverbareasizemultiplier>Reverb Size Master</spw_dynamicreverbareasizemultiplier>
 	<spw_dynamicreverbareasizemultipliertooltip>Area multiplier for the current environment. Affects the decay time, reflections delay, and late reverb delay (i.e., how big the room sounds)</spw_dynamicreverbareasizemultipliertooltip>
 	<spw_dynamicreverbwetroomareasizemultiplier>Reverb Size Wet Rooms</spw_dynamicreverbwetroomareasizemultiplier>
@@ -394,6 +396,10 @@
 	<spw_updatenonloopingsoundstooltip>This allows for non-looping sounds to update their volume, muffle, and other effects, while playing. This is something the vanilla game only does for looping sounds. Disabling this setting may improve performance</spw_updatenonloopingsoundstooltip>
 	<spw_nonloopingsoundmuffleupdateinterval>Non-Looping Sound Update Interval</spw_nonloopingsoundmuffleupdateinterval>
 	<spw_nonloopingsoundmuffleupdateintervaltooltip>Requires "Update Non-Looping Sounds" to be enabled.\nThe amount of time between each obstruction and dynamic effects update for non-looping sounds. Volume and pitch values are still updated every tick. Increasing this value may improve performance</spw_nonloopingsoundmuffleupdateintervaltooltip>
+	<spw_openaleffectsupdateinterval>OpenAL Effects Update Interval</spw_openaleffectsupdateinterval>
+	<spw_openaleffectsupdateintervaltooltip>The amount of time between each effect parameter update for OpenAL effects. Only relevant when using Dynamic mode</spw_openaleffectsupdateintervaltooltip>
+	<spw_voicemuffleupdateinterval>Voice Update Interval</spw_voicemuffleupdateinterval>
+	<spw_voicemuffleupdateintervaltooltip>The amount of time between each obstruction and dynamic effects update for player voices. Volume and pitch values are still updated every tick. Increasing this value may improve performance</spw_voicemuffleupdateintervaltooltip>
 	<spw_componentmuffleupdateinterval>Component Sound Update Interval</spw_componentmuffleupdateinterval>
 	<spw_componentmuffleupdateintervaltooltip>The amount of time between each obstruction and dynamic effects update for looping component sounds (e.g., vents, reactor, engine). Volume and pitch values are still updated every tick. Increasing this value may improve performance</spw_componentmuffleupdateintervaltooltip>
 	<spw_statuseffectmuffleupdateinterval>Status Effect Sound Update Interval</spw_statuseffectmuffleupdateinterval>

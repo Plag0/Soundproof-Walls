@@ -183,13 +183,6 @@ namespace SoundproofWalls
                 typeof(StatusEffect).GetMethod(nameof(StatusEffect.UpdateAllProjSpecific), BindingFlags.Static | BindingFlags.NonPublic),
                 new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_StatusEffect_UpdateAllProjSpecific))));
 
-            // VoipClient SendToServer prefix REPLACEMENT.
-            // Plays bubbles on the client's character when they speak underwater.
-            // TODO Surely this is better done in an update loop just checking if the client is speaking?
-            harmony.Patch(
-                typeof(VoipClient).GetMethod(nameof(VoipClient.SendToServer), BindingFlags.Instance | BindingFlags.Public),
-                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_VoipClient_SendToServer))));
-
             // VoipClient Read prefix REPLACEMENT.
             // Manages the range, muffle flagging, and spectating changes for voice chat. Maintainability note: has VERY high contrast with vanilla implementation.
             harmony.Patch(
@@ -299,7 +292,7 @@ namespace SoundproofWalls
 
             if (ModStateManager.State.FirstLaunch)
             {
-                Menu.ForceOpenWelcomePopUp();
+                //SoundproofWallsMenu.ShowWelcomePopup();
                 ModStateManager.State.FirstLaunch = false;
                 ModStateManager.SaveState(ModStateManager.State);
             }
@@ -531,68 +524,6 @@ namespace SoundproofWalls
             return false;
         }
 
-        public static bool SPW_VoipClient_SendToServer(VoipClient __instance)
-        {
-            if (!Config.Enabled) { return true; };
-            if (GameSettings.CurrentConfig.Audio.VoiceSetting == VoiceMode.Disabled)
-            {
-                if (VoipCapture.Instance != null)
-                {
-                    __instance.storedBufferID = VoipCapture.Instance.LatestBufferID;
-                    VoipCapture.Instance.Dispose();
-                }
-                return false; ;
-            }
-            else
-            {
-                try
-                {
-                    if (VoipCapture.Instance == null) { VoipCapture.Create(GameSettings.CurrentConfig.Audio.VoiceCaptureDevice, __instance.storedBufferID); }
-                }
-                catch (Exception e)
-                {
-                    DebugConsole.ThrowError($"VoipCature.Create failed: {e.Message} {e.StackTrace.CleanupStackTrace()}");
-                    var config = GameSettings.CurrentConfig;
-                    config.Audio.VoiceSetting = VoiceMode.Disabled;
-                    GameSettings.SetCurrentConfig(config);
-                }
-                if (VoipCapture.Instance == null || VoipCapture.Instance.EnqueuedTotalLength <= 0) { return false; }
-            }
-
-            if (DateTime.Now >= __instance.lastSendTime + VoipConfig.SEND_INTERVAL)
-            {
-                // Additions to original method start here.
-
-                // Create bubble particles around local character.
-                Character character = __instance.gameClient.Character;
-                if (BubbleManager.ShouldPlayBubbles(character))
-                {
-                    Limb playerHead = Util.GetCharacterHead(character);
-                    Hull limbHull = playerHead.Hull;
-                    GameMain.ParticleManager.CreateParticle(
-                        "bubbles",
-                        playerHead.WorldPosition,
-                        velocity: playerHead.LinearVelocity * 10,
-                        rotation: 0,
-                        limbHull);
-                }
-
-                // Additions to original method end here.
-
-                IWriteMessage msg = new WriteOnlyMessage();
-
-                msg.WriteByte((byte)ClientPacketHeader.VOICE);
-                msg.WriteByte((byte)VoipCapture.Instance.QueueID);
-                VoipCapture.Instance.Write(msg);
-
-                __instance.netClient.Send(msg, DeliveryMethod.Unreliable);
-
-                __instance.lastSendTime = DateTime.Now;
-            }
-
-            return false;
-        }
-
         public static bool SPW_VoipClient_Read(VoipClient __instance, ref IReadMessage msg)
         {
             if (!Config.Enabled) { return true; }
@@ -708,7 +639,6 @@ namespace SoundproofWalls
             // Sound Info stuff.
             SoundChannel channel = client.VoipSound.soundChannel;
             Hull? clientHull = client.Character.CurrentHull;
-            //CrossThread.RequestExecutionOnMainThread(() => ChannelInfoManager.EnsureUpdateVoiceInfo(Channel, clientHull, speakingClient: client, messageType: messageType));
             client.VoipSound.UseMuffleFilter = true; // default to muffled to stop pops.
             ChannelInfoManager.EnsureUpdateVoiceInfo(channel, clientHull, speakingClient: client, messageType: messageType);
             return false;
@@ -735,13 +665,11 @@ namespace SoundproofWalls
                 instance.VoipSound.Gain = 0.0f;
             }
 
-            float rangeFar = instance.VoipSound.Far; //* Config.VoiceRangeMultiplier;
-            float rangeNear = instance.VoipSound.Near; //* Config.VoiceRangeMultiplier;
+            float rangeFar = instance.VoipSound.Far;
+            float rangeNear = instance.VoipSound.Near;
             float maxAudibleRange = ChatMessage.SpeakRangeVOIP * Config.VoiceRangeMultiplier;
             if (Listener.IsUsingHydrophones)
             {
-                //rangeFar += Config.HydrophoneSoundRange;
-                //rangeNear += Config.HydrophoneSoundRange;
                 maxAudibleRange += Config.HydrophoneSoundRange;
             }
 

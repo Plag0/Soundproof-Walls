@@ -7,24 +7,6 @@ namespace SoundproofWalls
     public class EfxAudioManager : IDisposable
     {
         private const uint INVALID_ID = 0;
-        private const float MIN_EQ_FREQ = 80.0f;    // Min cutoff freq for EQ (Hz)
-        private const float MAX_EQ_FREQ = 8000.0f;   // Max useful cutoff freq for EQ (Hz)
-        private const float MUFFLE_SHAPE = 2.0f;     // Shape parameter for frequency formula (Higher = faster drop initially)
-
-        // Periodic cleanup timing for unused EQ slots
-        private double _lastEqSlotCheckTime = 0;
-        private const double EQ_SLOT_CHECK_INTERVAL = 5.0; // Check every 5 seconds
-        private const double UNUSED_EQ_SLOT_TIMEOUT = 10.0; // Delete slot if unused for 10 seconds
-
-        // --- State for EQ Muffling ---
-        private class MuffleSlotInfo // Renamed from HqMuffleSlotInfo for brevity
-        {
-            public uint SlotId { get; set; }
-            public uint EqEffectId { get; set; } // AL_EFFECT_EQUALIZER used as lowpass
-            public HashSet<uint> Users { get; set; } = new HashSet<uint>(); // sources using this slot
-            public double LastUsedTime { get; set; }
-            public int FrequencyKey { get; set; } // Store the target frequency this slot represents
-        }
 
         private uint _indoorReverbSlotId = INVALID_ID;
         private uint _indoorReverbEffectId = INVALID_ID;
@@ -35,24 +17,15 @@ namespace SoundproofWalls
         private uint _loudDistortionSlotId = INVALID_ID;
         private uint _loudDistortionEffectId = INVALID_ID;
 
-
-        // Maps source IDs to their lowpass filter ID
+        // Maps source IDs to their current filter ID
         private Dictionary<uint, uint> _sourceFilters = new Dictionary<uint, uint>();
-        // Maps target cutoff frequency (rounded int) to slot info
-        private Dictionary<int, MuffleSlotInfo> _eqEffectSlots = new Dictionary<int, MuffleSlotInfo>();
-        // Maps Source ID to its current target cutoff frequency (0 = direct path active, >0 = EQ slot active)
-        private Dictionary<uint, int> _sourceEqFrequencies = new Dictionary<uint, int>();
 
         public bool IsInitialized { get; private set; } = false;
 
-        private double LastReverbUpdateTime = 0;
-        private double ReverbUpdateInterval = 0.2f;
+        private double LastEffectUpdateTime = 0;
 
-        private float AirReverbGain = ConfigManager.Config.DynamicReverbAirTargetGain;
+        private float trailingAirReverbGain = ConfigManager.Config.DynamicReverbAirTargetGain;
 
-        /// <summary>
-        /// Initializes auxiliary effect slots, reverb effects, and the source filter dictionary.
-        /// </summary>
         public EfxAudioManager()
         {
             if (!AlEffects.IsInitialized)
@@ -64,8 +37,6 @@ namespace SoundproofWalls
             if (!InitEffects()) { Dispose(); return; }
 
             _sourceFilters = new Dictionary<uint, uint>();
-            _sourceEqFrequencies = new Dictionary<uint, int>();
-            _eqEffectSlots = new Dictionary<int, MuffleSlotInfo>();
 
             IsInitialized = true;
             DebugConsole.NewMessage("[SoundproofWalls] DynamicFx initialization complete.");
@@ -141,57 +112,13 @@ namespace SoundproofWalls
         {
             if (!ConfigManager.Config.DynamicFx) { return; }
 
-            UpdatePooledSlots();
-
-            // Update reverb effects.
-            if (Timing.TotalTime < LastReverbUpdateTime + ReverbUpdateInterval) { return; }
-            LastReverbUpdateTime = Timing.TotalTime;
+            if (Timing.TotalTime < LastEffectUpdateTime + ConfigManager.Config.OpenALEffectsUpdateInterval) { return; }
+            LastEffectUpdateTime = Timing.TotalTime;
 
             UpdateInsideReverbEffect();
             UpdateOutsideReverbEffect();
-
-            // TODO unique intervals for these.
             UpdateHydrophoneDistortionEffect();
             UpdateLoudSoundDistortionEffect();
-        }
-
-        /// <summary>
-        /// Periodically checks for unused EQ Muffle slots and cleans them up.
-        /// </summary>
-        public void UpdatePooledSlots()
-        {
-            if (!IsInitialized || Timing.TotalTime < _lastEqSlotCheckTime + EQ_SLOT_CHECK_INTERVAL) return;
-            _lastEqSlotCheckTime = Timing.TotalTime;
-
-            List<int> keysToDelete = new List<int>();
-            foreach (var kvp in _eqEffectSlots)
-            {
-                if (kvp.Value.Users.Count == 0 && Timing.TotalTime > kvp.Value.LastUsedTime + UNUSED_EQ_SLOT_TIMEOUT)
-                {
-                    keysToDelete.Add(kvp.Key);
-                }
-            }
-            
-            foreach (int freqKey in keysToDelete)
-            {
-                if (!_eqEffectSlots.TryGetValue(freqKey, out MuffleSlotInfo? slotInfo)) { continue; }
-
-                int alError;
-                Al.GetError();
-                if (slotInfo.SlotId != INVALID_ID)
-                {
-                    AlEffects.AuxiliaryEffectSloti(slotInfo.SlotId, AlEffects.AL_EFFECTSLOT_EFFECT, AlEffects.AL_EFFECT_NULL);
-                    AlEffects.DeleteAuxiliaryEffectSlots(1, new[] { slotInfo.SlotId });
-                    if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to cleanup expired EQ slot ID: {slotInfo.SlotId}, {Al.GetErrorString(alError)}");
-                }
-                if (slotInfo.EqEffectId != INVALID_ID)
-                {
-                    AlEffects.DeleteEffects(1, new[] { slotInfo.EqEffectId });
-                    if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to cleanup expired EQ effect ID: {slotInfo.EqEffectId}, {Al.GetErrorString(alError)}");
-                }
-
-                _eqEffectSlots.Remove(freqKey);
-            }
         }
 
         private void UpdateLoudSoundDistortionEffect()
@@ -331,8 +258,8 @@ namespace SoundproofWalls
 
             targetReverbGain = Math.Clamp(targetReverbGain, 0.0f, 1.0f);
 
-            float gainDiff = targetReverbGain - AirReverbGain;
-            AirReverbGain += Math.Abs(gainDiff) < 0.01f ? gainDiff : Math.Sign(gainDiff) * 0.01f;
+            float gainDiff = targetReverbGain - trailingAirReverbGain;
+            trailingAirReverbGain += Math.Abs(gainDiff) < 0.01f ? gainDiff : Math.Sign(gainDiff) * 0.01f;
 
             // Influences decay and delay times.
             float roomSizeFactor = (Listener.ConnectedArea * ConfigManager.Config.DynamicReverbAreaSizeMultiplier) / 180000; // Arbitrary magic number that seems to work well.
@@ -356,7 +283,7 @@ namespace SoundproofWalls
             reflectionsDelay = Math.Clamp(reflectionsDelay, 0.005f, 0.1f); // Sensible bounds
 
             // Late Reverb Gain: Tail of the reverb
-            float lateReverbGain = AirReverbGain * 1.8f; // Make tail prominent relative to overall gain
+            float lateReverbGain = trailingAirReverbGain * 1.8f; // Make tail prominent relative to overall gain
             lateReverbGain = Math.Clamp(lateReverbGain, 0.0f, 10.0f);
 
             // Late Reverb Delay
@@ -380,7 +307,7 @@ namespace SoundproofWalls
 
             AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_DENSITY, density);
             AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_DIFFUSION, diffusion);
-            AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_GAIN, AirReverbGain);
+            AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_GAIN, trailingAirReverbGain);
             AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_GAINHF, gainHf);
             AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_DECAY_TIME, decayTime);
             AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_DECAY_HFRATIO, decayHfRatio);
@@ -518,7 +445,6 @@ namespace SoundproofWalls
                 return;
             }
 
-            _sourceEqFrequencies[sourceId] = 0;
             _sourceFilters[sourceId] = filterId;
         }
 
@@ -538,9 +464,6 @@ namespace SoundproofWalls
             if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to disconnect send 0 for source ID: {sourceId}, {Al.GetErrorString(alError)}");
             Al.Source3i(sourceId, AlEffects.AL_AUXILIARY_SEND_FILTER, AlEffects.AL_EFFECTSLOT_NULL, 1, AlEffects.AL_FILTER_NULL);
             if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to disconnect send 1 for source ID: {sourceId}, {Al.GetErrorString(alError)}");
-                
-            // Disconnect from EQ effect slot
-            DisconnectSourceFromEqSlot(sourceId);
 
             // Detach direct filter
             Al.Sourcei(sourceId, AlEffects.AL_DIRECT_FILTER, AlEffects.AL_FILTER_NULL);
@@ -553,48 +476,7 @@ namespace SoundproofWalls
                 if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to delete filter ID: {filterId}, {Al.GetErrorString(alError)}");
             }
 
-            // Remove from dictionaries
             _sourceFilters.Remove(sourceId);
-            _sourceEqFrequencies.Remove(sourceId);
-        }
-
-        private void DisconnectSourceFromEqSlot(uint sourceId)
-        {
-            if (!IsInitialized) return;
-
-            if (_sourceEqFrequencies.TryGetValue(sourceId, out int eqFrequencyKey) && eqFrequencyKey > 0)
-            {
-                // Remove source from the user list of that slot
-                if (_eqEffectSlots.TryGetValue(eqFrequencyKey, out MuffleSlotInfo? slotInfo))
-                {
-                    slotInfo.Users.Remove(sourceId);
-                    slotInfo.LastUsedTime = Timing.TotalTime; // Mark slot as recently active
-                }
-
-                int alError;
-                Al.GetError();
-
-                Al.Source3i(sourceId, AlEffects.AL_AUXILIARY_SEND_FILTER, AlEffects.AL_EFFECTSLOT_NULL, 0, AlEffects.AL_FILTER_NULL);
-                if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to disconnect send 0 for source ID: {sourceId}, {Al.GetErrorString(alError)}");
-
-                _sourceEqFrequencies[sourceId] = 0;
-            }
-        }
-
-        /// <summary>
-        /// Calculates the target frequency key (rounded integer Hz) based on muffle strength.
-        /// Returns 0 if muffleStrength is negligible.
-        /// </summary>
-        private int CalculateFrequencyKey(float muffleStrength)
-        {
-            if (muffleStrength < 0.01f || !ConfigManager.Config.HighFidelityMuffling) return 0;
-            muffleStrength = Math.Clamp(muffleStrength, 0.0f, 1.0f);
-            // f_c = f_min * (f_max / f_min)^(1 - (1 - muffleStrength)^k)
-            float ratio = MAX_EQ_FREQ / MIN_EQ_FREQ;
-            if (ratio < 1.0f) ratio = 1.0f;
-            float exponentTerm = 1.0f - (float)Math.Pow(muffleStrength, MUFFLE_SHAPE);
-            float cutoffHz = MIN_EQ_FREQ * (float)Math.Pow(ratio, exponentTerm);
-            return (int)Math.Round(Math.Clamp(cutoffHz, MIN_EQ_FREQ, MAX_EQ_FREQ));
         }
 
         public void UpdateSource(ChannelInfo channelInfo, float gainHf, float gainLf = 1)
@@ -603,75 +485,22 @@ namespace SoundproofWalls
 
             if (!IsInitialized || !_sourceFilters.TryGetValue(sourceId, out uint filterId)) { return; }
 
-            bool inHull = channelInfo.ChannelHull != null;
-            bool hydrophoned = channelInfo.Hydrophoned;
-            float amplitude = channelInfo.Channel.CurrentAmplitude * channelInfo.Gain; // TODO this may be unreliable if a user changes the submerged gain mult
-            bool shouldReverbWater = channelInfo.IsLoud || amplitude >= ConfigManager.Config.DyanmicReverbWaterAmplitudeThreshold;
+            // Select which effect slot to route to.
+            uint send1_targetSlot = Send1_DetermineTargetEffectSlot(channelInfo);
+            uint send0_targetSlot = Send0_DetermineTargetEffectSlot(channelInfo);
 
-            // Select which slot to route to.
-            uint send1_targetSlot = Send1_DetermineTargetEffectSlot(inHull, channelInfo.IgnoreReverb, hydrophoned, shouldReverbWater);
-            uint send0_targetSlot = Send0_DetermineTargetEffectSlot(channelInfo.SoundInfo.Distortion && channelInfo.MuffleStrength <= 0.5f);
-            uint sendFilterId = filterId;
-
-            int targetFreq = CalculateFrequencyKey(channelInfo.MuffleStrength);
-            bool useBandpassFilter = hydrophoned && ConfigManager.Config.HydrophoneBandpassFilterEnabled;
-
-            bool useEqMuffling = targetFreq > 0;
-            if (!useEqMuffling) 
-            {
-                DisconnectSourceFromEqSlot(sourceId);
-                UpdateSourceFilter(sourceId, filterId, gainHf, gainLf, bandpass: useBandpassFilter);
-                RouteSourceToEffectSlot(sourceId, send1_targetSlot, sendFilterId, 1);
-                RouteSourceToEffectSlot(sourceId, send0_targetSlot, sendFilterId, 0);
-                return; 
-            }
-
-            _sourceEqFrequencies.TryGetValue(sourceId, out int currentFreq);
-            if (targetFreq == currentFreq) { return; }
-
-            DisconnectSourceFromEqSlot(sourceId); // Disconnect Send 0, remove from Users set, sets state to 0
-
-            MuffleSlotInfo? slotInfo = GetOrCreateEqSlot(targetFreq);
-            if (slotInfo != null)
-            {
-                UpdateSourceFilter(sourceId, filterId, 0, 0, bandpass: false); // Silence Direct Path
-
-                int alError;
-                Al.GetError();
-                Al.Source3i(sourceId, AlEffects.AL_AUXILIARY_SEND_FILTER, (int)slotInfo.SlotId, 0, AlEffects.AL_FILTER_NULL); // Route Send 0 to EQ
-                if ((alError = Al.GetError()) != Al.NoError)
-                {
-                    DebugConsole.NewMessage($"[SoundproofWalls] Failed to route source to target EQ slot ID: {slotInfo.SlotId}, {Al.GetErrorString(alError)}");
-                    UpdateSourceFilter(sourceId, filterId, gainHf, gainLf, bandpass: useBandpassFilter); // Restore direct path
-                    RouteSourceToEffectSlot(sourceId, send1_targetSlot, sendFilterId);
-                    return;
-                }
-                slotInfo.Users.Add(sourceId);
-                slotInfo.LastUsedTime = Timing.TotalTime;
-                _sourceEqFrequencies[sourceId] = targetFreq;
-            }
-            else
-            {
-                // Failed to get/create slot
-                DebugConsole.NewMessage($"[SoundproofWalls] Failed get/create EQ slot for freq {targetFreq}. Falling back to lowpass filters for source ID: {sourceId}");
-                UpdateSourceFilter(sourceId, filterId, gainHf, gainLf, bandpass: useBandpassFilter); // Restore direct path
-            }
-            RouteSourceToEffectSlot(sourceId, send1_targetSlot, sendFilterId);
+            UpdateSourceFilter(sourceId, filterId, gainHf, gainLf, channelInfo);
+            RouteSourceToEffectSlot(sourceId, send1_targetSlot, filterId, send: 1);
+            RouteSourceToEffectSlot(sourceId, send0_targetSlot, filterId, send: 0);
         }
 
-        private void UpdateSourceFilter(uint sourceId, uint filterId, float gainHf, float gainLf, bool disableFilter = false, bool bandpass = false)
+        private void UpdateSourceFilter(uint sourceId, uint filterId, float gainHf, float gainLf, ChannelInfo channelInfo)
         {
             int alError;
             Al.GetError();
-
-            if (disableFilter)
-            {
-                Al.Sourcei(sourceId, AlEffects.AL_DIRECT_FILTER, AlEffects.AL_FILTER_NULL);
-                if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to remove filter from source ID {sourceId}, {Al.GetErrorString(alError)}");
-                return;
-            }
-
-            if (bandpass)
+           
+            bool useBandpass = channelInfo.Hydrophoned && ConfigManager.Config.HydrophoneBandpassFilterEnabled;
+            if (useBandpass)
             {
                 AlEffects.Filteri(filterId, AlEffects.AL_FILTER_TYPE, AlEffects.AL_FILTER_BANDPASS);
             }
@@ -685,7 +514,7 @@ namespace SoundproofWalls
                 return;
             }
 
-            if (bandpass)
+            if (useBandpass)
             {
                 gainHf = ConfigManager.Config.HydrophoneBandpassFilterHfGain;
                 gainLf = ConfigManager.Config.HydrophoneBandpassFilterLfGain;
@@ -738,27 +567,6 @@ namespace SoundproofWalls
             var sourceIdsToClean = new List<uint>(_sourceFilters.Keys);
             foreach (uint sourceId in sourceIdsToClean) { UnregisterSource(sourceId); }
             _sourceFilters.Clear();
-            _sourceEqFrequencies.Clear();
-
-            // Cleanup EQ slots and effects.
-            var keysToClean = new List<int>(_eqEffectSlots.Keys);
-            foreach (int freqKey in keysToClean)
-            {
-                if (!_eqEffectSlots.TryGetValue(freqKey, out MuffleSlotInfo? slotInfo)) { continue; }
-
-                if (slotInfo.SlotId != INVALID_ID)
-                {
-                    AlEffects.AuxiliaryEffectSloti(slotInfo.SlotId, AlEffects.AL_EFFECTSLOT_EFFECT, AlEffects.AL_EFFECT_NULL);
-                    AlEffects.DeleteAuxiliaryEffectSlots(1, new[] { slotInfo.SlotId });
-                    if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to cleanup expired EQ slot ID: {slotInfo.SlotId}, {Al.GetErrorString(alError)}");
-                }
-                if (slotInfo.EqEffectId != INVALID_ID)
-                {
-                    AlEffects.DeleteEffects(1, new[] { slotInfo.EqEffectId });
-                    if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to cleanup expired EQ effect ID: {slotInfo.EqEffectId}, {Al.GetErrorString(alError)}");
-                }
-            }
-            _eqEffectSlots.Clear();
 
             // Cleanup reverb slots and effects.
             // Detach effects from slots
@@ -818,108 +626,46 @@ namespace SoundproofWalls
         /// <summary>
         /// Determines the correct reverb slot ID based on environment and config flags.
         /// </summary>
-        private uint Send1_DetermineTargetEffectSlot(bool sourceInHull, bool ignoreReverb, bool isHydrophoned, bool shouldReverbWater)
+        private uint Send1_DetermineTargetEffectSlot(ChannelInfo channelInfo)
         {
-            if (isHydrophoned && ConfigManager.Config.HydrophoneDistortionEnabled) { return _hydrophoneDistortionSlotId; }
+            bool inHull = channelInfo.ChannelHull != null;
+            bool hydrophoned = channelInfo.Hydrophoned;
+            bool ingoreReverb = channelInfo.IgnoreReverb;
+            float amplitude = channelInfo.Channel.CurrentAmplitude * channelInfo.Gain; // TODO this may be unreliable if a user changes the submerged gain mult
+            bool shouldReverbWater = channelInfo.IsLoud || amplitude >= ConfigManager.Config.DyanmicReverbWaterAmplitudeThreshold;
 
-            if (!ignoreReverb && ConfigManager.Config.DynamicReverbEnabled) { return sourceInHull ? _indoorReverbSlotId : shouldReverbWater ? _outdoorReverbSlotId : INVALID_ID; }
-            
+            if (hydrophoned && ConfigManager.Config.HydrophoneDistortionEnabled)
+            { 
+                return _hydrophoneDistortionSlotId; 
+            }
+
+            if (ingoreReverb || !ConfigManager.Config.DynamicReverbEnabled)
+            {
+                return INVALID_ID;
+            }
+
+            if (inHull)
+            {
+                return Listener.ConnectedArea >= ConfigManager.Config.DynamicReverbMinArea
+                    ? _indoorReverbSlotId
+                    : INVALID_ID;
+            }
+            else // Not in hull
+            {
+                return shouldReverbWater
+                    ? _outdoorReverbSlotId
+                    : INVALID_ID;
+            }
+        }
+
+        private uint Send0_DetermineTargetEffectSlot(ChannelInfo channelInfo)
+        {
+            if (channelInfo.SoundInfo.Distortion && 
+                channelInfo.MuffleStrength <= 0.5f && 
+                ConfigManager.Config.LoudSoundDistortionEnabled) 
+            { return _loudDistortionSlotId; }
+
             return INVALID_ID;
-        }
-
-        private uint Send0_DetermineTargetEffectSlot(bool isLoud)
-        {
-            if (isLoud && ConfigManager.Config.LoudSoundDistortionEnabled) { return _loudDistortionSlotId; }
-
-            return INVALID_ID;
-        }
-
-        /// <summary>
-        /// Configures the EQ effect to simulate a low-pass filter with a target cutoff frequency (targetFrequency).
-        /// </summary>
-        /// <param name="eqEffectId">The ID of the AL_EFFECT_EQUALIZER object to modify.</param>
-        /// <param name="targetFrequency">The target cutoff frequency (Hz), rounded to the nearest integer.</param>
-        private void ConfigureEqForFrequency(uint eqEffectId, int targetFrequency)
-        {
-            if (eqEffectId == INVALID_ID || targetFrequency <= 0) return;
-
-            // Make sure we're in the required range.
-            int freq = Math.Clamp(targetFrequency, (int)MIN_EQ_FREQ, (int)MAX_EQ_FREQ);
-
-            // Apply parameters
-            Al.GetError();
-            int alError;
-            AlEffects.Effectf(eqEffectId, AlEffects.AL_DISTORTION_EDGE, 0);
-            AlEffects.Effectf(eqEffectId, AlEffects.AL_DISTORTION_GAIN, 1);
-            AlEffects.Effectf(eqEffectId, AlEffects.AL_DISTORTION_LOWPASS_CUTOFF, freq);
-            AlEffects.Effectf(eqEffectId, AlEffects.AL_DISTORTION_EQCENTER, 80);
-            AlEffects.Effectf(eqEffectId, AlEffects.AL_DISTORTION_EQBANDWIDTH, 80);
-
-            if ((alError = Al.GetError()) != Al.NoError)
-            {
-                DebugConsole.NewMessage($"[SoundproofWalls] Failed to edit properties for EQ effect ID: {eqEffectId}, {Al.GetErrorString(alError)}");
-            }
-        }
-
-        /// <summary>
-        /// Gets existing or tries to create a new Muffle Slot/Effect for a given frequency key.
-        /// Returns null if creation fails.
-        /// </summary>
-        private MuffleSlotInfo? GetOrCreateEqSlot(int frequencyKey)
-        {
-            if (frequencyKey <= 0 || !ConfigManager.Config.HighFidelityMuffling) return null;
-
-            if (_eqEffectSlots.TryGetValue(frequencyKey, out MuffleSlotInfo? slotInfo))
-            {
-                slotInfo.LastUsedTime = Timing.TotalTime;
-                return slotInfo; // Return existing
-            }
-
-            int alError;
-            Al.GetError();
-
-            uint[] slots = new uint[1];
-            AlEffects.GenAuxiliaryEffectSlots(1, slots);
-            if ((alError = Al.GetError()) != Al.NoError)
-            {
-                DebugConsole.NewMessage($"[SoundproofWalls] Failed to generate EQ effect slot, {Al.GetErrorString(alError)}");
-                return null;
-            }
-            uint slotId = slots[0];
-
-            uint[] effects = new uint[1];
-            AlEffects.GenEffects(1, effects);
-            if ((alError = Al.GetError()) != Al.NoError)
-            {
-                DebugConsole.NewMessage($"[SoundproofWalls] Failed to generate effect for EQ slot ID: {slotId}, {Al.GetErrorString(alError)}");
-                AlEffects.DeleteAuxiliaryEffectSlots(1, new[] { slotId });
-                return null;
-            }
-            uint eqEffectId = effects[0];
-            
-            AlEffects.Effecti(eqEffectId, AlEffects.AL_EFFECT_TYPE, AlEffects.AL_EFFECT_DISTORTION);
-            if ((alError = Al.GetError()) != Al.NoError)
-            {
-                DebugConsole.NewMessage($"[SoundproofWalls] Failed to set effect ID {eqEffectId} type to EQ for slot ID: {slotId}, {Al.GetErrorString(alError)}");
-                AlEffects.DeleteAuxiliaryEffectSlots(1, new[] { slotId });
-                AlEffects.DeleteEffects(1, new[] { eqEffectId });
-                return null;
-            }
-
-            ConfigureEqForFrequency(eqEffectId, frequencyKey);
-
-            AlEffects.AuxiliaryEffectSloti(slotId, AlEffects.AL_EFFECTSLOT_EFFECT, eqEffectId); // CRASH HERE
-            if ((alError = Al.GetError()) != Al.NoError)
-            {
-                DebugConsole.NewMessage($"[SoundproofWalls] Failed to attach EQ effect ID {eqEffectId} to EQ slot ID: {slotId}, {Al.GetErrorString(alError)}");
-                AlEffects.DeleteAuxiliaryEffectSlots(1, new[] { slotId });
-                AlEffects.DeleteEffects(1, new[] { eqEffectId });
-                return null;
-            }
-
-            slotInfo = new MuffleSlotInfo { SlotId = slotId, EqEffectId = eqEffectId, FrequencyKey = frequencyKey, LastUsedTime = Timing.TotalTime };
-            _eqEffectSlots[frequencyKey] = slotInfo;
-            return slotInfo;
         }
     }
 }

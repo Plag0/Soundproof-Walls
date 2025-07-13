@@ -58,6 +58,7 @@ namespace SoundproofWalls
         public bool DynamicReverbEnabled { get; set; } = true;
         public bool DynamicReverbWaterSubtractsArea { get; set; } = true;
         public bool DynamicReverbRadio { get; set; } = false;
+        public int DynamicReverbMinArea { get; set; } = 0;
         public float DynamicReverbAreaSizeMultiplier { get; set; } = 1.0f;
         public float DynamicReverbWetRoomAreaSizeMultiplier { get; set; } = 3.0f;
         public float DynamicReverbAirTargetGain { get; set; } = 0.37f;
@@ -76,7 +77,6 @@ namespace SoundproofWalls
         public float HydrophoneBandpassFilterLfGain { get; set; } = 0.65f;
         public bool RealSoundDirectionsEnabled { get; set; } = false;
         public int RealSoundDirectionsMax { get; set; } = 1; // How many additional versions of the same sound can be playing simultaneously from different directions.
-        public bool HighFidelityMuffling { get; set; } = false; // Creates a new effect slot with an EQ for each pool of uniquely muffled channels. Higher performance cost over basic lowpass filters.
         public bool RemoveUnusedBuffers { get; set; } = false; // If enabled, sounds are loaded without the vanilla muffle buffer which saves roughly 200MB of memory. Downside is 1-2 seconds of extra loading times.
 
         // StaticFx
@@ -92,9 +92,9 @@ namespace SoundproofWalls
         // Voice
         public bool TalkingRagdolls { get; set; } = true;
         public bool DrowningBubblesEnabled { get; set; } = true;
-        public bool WhisperMode { get; set; } = true;
+        public bool WhisperMode { get; set; } = false;
         public int VoiceHeavyLowpassFrequency { get; set; } = 150; // Used when a player's voice is muffled heavily. Otherwise, uses medium or light.
-        public float VoiceRangeMultiplier { get; set; } = 1.1f;
+        public float VoiceRangeMultiplier { get; set; } = 1.4f;
         public float RadioRangeMultiplier { get; set; } = 1.0f;
 
         public bool RadioCustomFilterEnabled { get; set; } = true;
@@ -207,7 +207,9 @@ namespace SoundproofWalls
 
             // Update Intervals
         public bool UpdateNonLoopingSounds { get; set; } = true; // Updates the gain and pitch of non looping "single-shot" sounds every tick. Muffle is updated every NonLoopingSoundMuffleUpdateInterval.
+        public float VoiceMuffleUpdateInterval { get; set; } = 0.2f;
         public float NonLoopingSoundMuffleUpdateInterval { get; set; } = 0.2f; // Only applied if UpdateNonLoopingSounds is enabled.
+        public float OpenALEffectsUpdateInterval { get; set; } = 0.2f;
         public float ComponentMuffleUpdateInterval { get; set; } = 0.2f;
         public float StatusEffectMuffleUpdateInterval { get; set; } = 0.2f;
 
@@ -224,7 +226,7 @@ namespace SoundproofWalls
             // Sound Pathfinding
         public bool TraverseWaterDucts { get; set; } = false; // Should the search algorithm pass through water ducts?
         public bool FlowSoundsTraverseWaterDucts { get; set; } = true;
-        public float OpenDoorThreshold { get; set; } = 0.01f; // How open a door/hatch/duct must be for sound to pass through unobstructed.
+        public float OpenDoorThreshold { get; set; } = 0.1f; // How open a door/hatch/duct must be for sound to pass through unobstructed.
         public float OpenWallThreshold { get; set; } = 0.35f; // How open a gap in a wall must be for sound to pass through unobstructed.
         public int SoundPropagationRange { get; set; } = 500; // Distance that a sound in WallPropagatingSounds can search for a hull to propagate to.
 

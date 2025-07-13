@@ -15,7 +15,8 @@ namespace SoundproofWalls
             PlayLocalBubbles,
         }
 
-        static double LastBubbleUpdateTime = 0.2f;
+        private static double lastBubbleUpdateTime = 0.0f;
+        private static double bubbleUpdateInterval = 0.2f;
 
         // Custom sounds.
         static Sound? BubbleSound;
@@ -26,9 +27,9 @@ namespace SoundproofWalls
         public static void Update()
         {
             // Bubble sound stuff.
-            if (GameMain.IsMultiplayer && Timing.TotalTime > LastBubbleUpdateTime + 0.2f)
+            if (GameMain.IsMultiplayer && Timing.TotalTime > lastBubbleUpdateTime + bubbleUpdateInterval)
             {
-                LastBubbleUpdateTime = (float)Timing.TotalTime;
+                lastBubbleUpdateTime = (float)Timing.TotalTime;
 
                 // In case a client disconnects while their bubble Channel is playing.
                 foreach (var kvp in clientBubbleChannels)
@@ -46,6 +47,21 @@ namespace SoundproofWalls
                 {
                     UpdateClientBubbleSounds(client);
                 }
+            }
+
+            // Create bubble particles around local character.
+            bool ownClientIsSpeaking = VoipCapture.Instance?.EnqueuedTotalLength > 0;
+            Character character = Character.Controlled;
+            if (ownClientIsSpeaking && ShouldPlayBubbles(character))
+            {
+                Limb playerHead = Util.GetCharacterHead(character);
+                Hull limbHull = playerHead.Hull;
+                GameMain.ParticleManager.CreateParticle(
+                    "bubbles",
+                    playerHead.WorldPosition,
+                    velocity: playerHead.LinearVelocity * 5,
+                    rotation: 0,
+                    limbHull);
             }
         }
         public static void Dispose()
@@ -171,7 +187,7 @@ namespace SoundproofWalls
                 GameMain.ParticleManager.CreateParticle(
                     "bubbles",
                     playerHead.WorldPosition,
-                    velocity: playerHead.LinearVelocity * 10,
+                    velocity: playerHead.LinearVelocity * 5,
                     rotation: 0,
                     playerHead.Hull);
             }

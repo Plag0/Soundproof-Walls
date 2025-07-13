@@ -22,9 +22,13 @@ namespace SoundproofWalls
         {
             foreach (ChannelInfo info in channelInfoMap.Values)
             {
-                // Update obstructions for voice on the main thread. TODO put an interval on this for performance?
-                if (ConfigManager.Config.DynamicFx && (info.audioIsVoice || info.audioIsRadio))
+                // Update obstructions for voice on the main thread.
+                double currentTime = Timing.TotalTime;
+                if (ConfigManager.Config.DynamicFx && info.audioIsVoice &&
+                    currentTime > info.LastVoiceMainThreadUpdateTime + info.VoiceMainThreadUpdateInterval)
                 {
+                    info.LastVoiceMainThreadUpdateTime = currentTime;
+
                     // Get occluding bodies.
                     IEnumerable<FarseerPhysics.Dynamics.Body> bodies = Submarine.PickBodies(Listener.SimPos, info.SimPos, collisionCategory: Physics.CollisionWall);
                     lock (info.VoiceOcclusionsLock) { info.VoiceOcclusions = bodies.ToList(); }
@@ -39,7 +43,7 @@ namespace SoundproofWalls
                 }
 
                 // Update non-looping sounds.
-                else if (!info.Channel.Looping && ConfigManager.Config.UpdateNonLoopingSounds && info.Channel.IsPlaying)
+                else if (ConfigManager.Config.UpdateNonLoopingSounds && !info.Channel.Looping && !info.audioIsVoice && info.Channel.IsPlaying)
                 {
                     info.Update();  
                 }
