@@ -147,8 +147,8 @@ namespace SoundproofWalls
         private float[] streamFloatBuffer = null;
         public override int FillStreamBuffer(int samplePos, short[] buffer)
         {
-            if (!Stream) { throw new Exception("Called FillStreamBuffer on a non-streamed sound!"); }
-            if (streamReader == null) { throw new Exception("Called FillStreamBuffer when the reader is null!"); }
+            if (!Stream) { DebugConsole.ThrowError("ExtendedOggSound.FillStreamBuffer called on a non-streamed sound!"); return 0; }
+            if (streamReader == null) { DebugConsole.ThrowError("ExtendedOggSound.FillStreamBuffer called when the stream reader is null!"); return 0; }
 
             if (samplePos >= MaxStreamSamplePos) { return 0; }
 
@@ -212,23 +212,23 @@ namespace SoundproofWalls
 
             Al.BufferData(buffers.AlBuffer, ALFormat, sampleBuffer, sampleBuffer.Length * sizeof(short), SampleRate);
             alError = Al.GetError();
-            if (alError != Al.NoError) { throw new Exception("Failed to set regular buffer data for non-streamed audio! " + Al.GetErrorString(alError)); }
+            if (alError != Al.NoError) { DebugConsole.LogError("Failed to set regular buffer data for non-streamed audio! " + Al.GetErrorString(alError)); return; }
 
             Al.BufferData(buffers.AlHeavyMuffledBuffer, ALFormat, muffleBufferHeavy, muffleBufferHeavy.Length * sizeof(short), SampleRate);
             alError = Al.GetError();
-            if (alError != Al.NoError) { throw new Exception("Failed to set heavy muffled buffer data for non-streamed audio! " + Al.GetErrorString(alError)); }
+            if (alError != Al.NoError) { DebugConsole.LogError("Failed to set heavy muffled buffer data for non-streamed audio! " + Al.GetErrorString(alError)); return; }
 
             Al.BufferData(buffers.AlMediumMuffledBuffer, ALFormat, muffleBufferMedium, muffleBufferMedium.Length * sizeof(short), SampleRate);
             alError = Al.GetError();
-            if (alError != Al.NoError) { throw new Exception("Failed to set medium muffled buffer data for non-streamed audio! " + Al.GetErrorString(alError)); }
+            if (alError != Al.NoError) { DebugConsole.LogError("Failed to set medium muffled buffer data for non-streamed audio! " + Al.GetErrorString(alError)); return; }
 
             Al.BufferData(buffers.AlLightMuffledBuffer, ALFormat, muffleBufferLight, muffleBufferLight.Length * sizeof(short), SampleRate);
             alError = Al.GetError();
-            if (alError != Al.NoError) { throw new Exception("Failed to set light muffled buffer data for non-streamed audio! " + Al.GetErrorString(alError)); }
+            if (alError != Al.NoError) { DebugConsole.LogError("Failed to set light muffled buffer data for non-streamed audio! " + Al.GetErrorString(alError)); return; }
 
             Al.BufferData(buffers.AlReverbBuffer, ALFormat, reverbBuffer, reverbBuffer.Length * sizeof(short), SampleRate);
             alError = Al.GetError();
-            if (alError != Al.NoError) { throw new Exception("Failed to set reverb buffer data for non-streamed audio! " + Al.GetErrorString(alError)); }
+            if (alError != Al.NoError) { DebugConsole.LogError("Failed to set reverb buffer data for non-streamed audio! " + Al.GetErrorString(alError)); return; }
         }
 
         // This override is not included in the vanilla OggSound but in our case it's required to prevent memory leaks.

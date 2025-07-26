@@ -30,6 +30,14 @@ namespace SoundproofWalls
 
         public static void Update()
         {
+            // Open a welcome popup on first launch. Included in the update loop so we can check if the player is in-game.
+            if (ModStateManager.State.FirstLaunch && Util.RoundStarted)
+            {
+                Menu.ShowWelcomePopup();
+                ModStateManager.State.FirstLaunch = false;
+                ModStateManager.SaveState(ModStateManager.State);
+            }
+
             if (GameMain.IsMultiplayer && ServerConfig == null && Timing.TotalTime > lastRequestTime + 10)
             {
                 lastRequestTime = (float)Timing.TotalTime;
@@ -49,11 +57,14 @@ namespace SoundproofWalls
             bool shouldUpdateSoundInfo = Util.ShouldUpdateSoundInfo(newConfig, oldConfig: oldConfig);
             bool shouldStartAlEffects = !shouldStart && !oldConfig.DynamicFx && newConfig.DynamicFx;
             bool shouldStopAlEffects = !shouldStop && oldConfig.DynamicFx && !newConfig.DynamicFx;
+            bool shouldResizeSourcePool = oldConfig.MaxSourceCount != newConfig.MaxSourceCount;
 
             ServerConfig = isServerConfigEnabled ? newConfig : null;
 
             if (shouldStartAlEffects) { Plugin.InitDynamicFx(); }
             else if (shouldStopAlEffects) { Plugin.DisposeDynamicFx(); }
+
+            if (shouldResizeSourcePool) { Plugin.ResizeSoundManagerPools(newConfig.MaxSourceCount); }
 
             if (shouldStop) { Plugin.Instance?.Dispose(); }
             else if (shouldStart) { Plugin.Instance?.Initialize(); }

@@ -1,115 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <RootNamespace>SoundproofWalls</RootNamespace>
-        <AssemblyName>SoundproofWalls</AssemblyName>
-    </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<RootNamespace>SoundproofWalls</RootNamespace>
+		<AssemblyName>SoundproofWalls</AssemblyName>
+	</PropertyGroup>
 
-    <ItemGroup>
-      <None Remove="Content\Sounds\SPW_BubblesLoopMono.ogg" />
-      <None Remove="Content\Sounds\SPW_EavesdroppingActivation1.ogg" />
-      <None Remove="Content\Sounds\SPW_EavesdroppingActivation2.ogg" />
-      <None Remove="Content\Sounds\SPW_EavesdroppingAmbienceDryRoom.ogg" />
-      <None Remove="Content\Sounds\SPW_EavesdroppingAmbienceWetRoom.ogg" />
-      <None Remove="Content\Sounds\SPW_RadioBubblesLoopStereo.ogg" />
-      <None Remove="Content\Texts\BrazilianPortuguese.xml" />
-      <None Remove="Content\Texts\CastilianSpanish.xml" />
-      <None Remove="Content\Texts\English.xml" />
-      <None Remove="Content\Texts\French.xml" />
-      <None Remove="Content\Texts\German.xml" />
-      <None Remove="Content\Texts\Japanese.xml" />
-      <None Remove="Content\Texts\Korean.xml" />
-      <None Remove="Content\Texts\LatinamericanSpanish.xml" />
-      <None Remove="Content\Texts\Polish.xml" />
-      <None Remove="Content\Texts\Russian.xml" />
-      <None Remove="Content\Texts\SimplifiedChinese.xml" />
-      <None Remove="Content\Texts\TraditionalChinese.xml" />
-      <None Remove="Content\Texts\Turkish.xml" />
-      <None Remove="Content\UI\SoundproofWallsIcon.jpg" />
-      <None Remove="Content\UI\TabIcons.png" />
-    </ItemGroup>
+	<ItemGroup>
+		<Content Include="Content\**\*.*" />
+	</ItemGroup>
 
-    <ItemGroup>
-      <Content Include="Content\Sounds\SPW_BubblesLoopMono.ogg">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Content\Sounds\SPW_EavesdroppingActivation1.ogg">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Content\Sounds\SPW_EavesdroppingActivation2.ogg">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Content\Sounds\SPW_EavesdroppingAmbienceDryRoom.ogg">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Content\Sounds\SPW_EavesdroppingAmbienceWetRoom.ogg">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Content\Sounds\SPW_RadioBubblesLoopStereo.ogg">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Content\Texts\BrazilianPortuguese.xml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Content\Texts\CastilianSpanish.xml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Content\Texts\English.xml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Content\Texts\French.xml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Content\Texts\German.xml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Content\Texts\Japanese.xml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Content\Texts\Korean.xml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Content\Texts\LatinamericanSpanish.xml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Content\Texts\Polish.xml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Content\Texts\Russian.xml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Content\Texts\SimplifiedChinese.xml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Content\Texts\TraditionalChinese.xml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Content\Texts\Turkish.xml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Content\UI\SoundproofWallsIcon.jpg">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <Content Include="Content\UI\TabIcons.png">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-    </ItemGroup>
 
-    <Import Project="../Build.props" />
+	<Import Project="../Build.props" />
 
-    <Target Name="CopyFiles" AfterTargets="Build">
-        <ItemGroup>
-            <FileList Include="$(ProjectDir)filelist.xml" />
-            <RunConfig Include="$(ProjectDir)RunConfig.xml" />
-            <Content Include="$(ProjectDir)Content\**\*.*" />
-        </ItemGroup>
-        <Copy SourceFiles="@(FileList)" DestinationFiles="$(ModDeployDir)filelist.xml" />
-        <Copy SourceFiles="@(RunConfig)" DestinationFiles="$(ModDeployDir)CSharp\RunConfig.xml" />
-        <Copy SourceFiles="@(Content)" DestinationFolder="$(ModDeployDir)Content\%(RecursiveDir)" />
-    </Target>
+	<Target Name="CopyFiles" AfterTargets="Build">
+		<ItemGroup>
+			<FileList Include="$(ProjectDir)filelist.xml" />
+			<RunConfig Include="$(ProjectDir)RunConfig.xml" />
+		</ItemGroup>
 
+		<Copy SourceFiles="@(FileList)" DestinationFiles="$(ModDeployDir)filelist.xml" SkipUnchangedFiles="true" />
+		<Copy SourceFiles="@(RunConfig)" DestinationFiles="$(ModDeployDir)CSharp\RunConfig.xml" SkipUnchangedFiles="true" />
+		<Copy SourceFiles="@(Content)" DestinationFolder="$(ModDeployDir)Content\%(RecursiveDir)" SkipUnchangedFiles="true" />
+	</Target>
 
 </Project>

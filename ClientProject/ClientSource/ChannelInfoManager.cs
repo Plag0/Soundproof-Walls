@@ -3,6 +3,7 @@ using Barotrauma.Items.Components;
 using Barotrauma.Networking;
 using Barotrauma.Sounds;
 using System.Collections.Concurrent;
+using System.Threading.Channels;
 
 namespace SoundproofWalls
 {
@@ -14,17 +15,33 @@ namespace SoundproofWalls
 
         public const float CLONE_FREQ_MULT_CODE = 1.006921f;
 
+        public static int SourceCount = 64;
+
         private static ConcurrentDictionary<uint, ChannelInfo> channelInfoMap = new ConcurrentDictionary<uint, ChannelInfo>();
         private static ConcurrentDictionary<SoundChannel, bool> pitchedChannels = new ConcurrentDictionary<SoundChannel, bool>();
-        public static ConcurrentDictionary<SoundChannel, float> VoiceChannelsToUpdate = new ConcurrentDictionary<SoundChannel, float>();
+        public static List<ChannelInfo> EavesdroppedChannels = new List<ChannelInfo>();
+        public static List<ChannelInfo> HydrophonedChannels = new List<ChannelInfo>();
 
         public static void Update()
         {
+            List<ChannelInfo> eavesdroppedChannels = new List<ChannelInfo>();
+            List<ChannelInfo> hydrophonedChannels = new List<ChannelInfo>();
+
             foreach (ChannelInfo info in channelInfoMap.Values)
             {
+                if (info.Eavesdropped && !info.AudioIsFlow && !info.AudioIsFire && info.Channel.IsPlaying)
+                {
+                    eavesdroppedChannels.Add(info);
+                }
+                // Don't display flow/fire sounds or engine sounds.
+                else if (info.Hydrophoned && !info.AudioIsFlow && !info.AudioIsFire && info.Channel.IsPlaying && info.ItemComp as Engine == null && !info.SoundInfo.IgnoreHydrophoneVisuals)
+                {
+                    hydrophonedChannels.Add(info);
+                }
+
                 // Update obstructions for voice on the main thread.
                 double currentTime = Timing.TotalTime;
-                if (ConfigManager.Config.DynamicFx && info.audioIsVoice &&
+                if (ConfigManager.Config.DynamicFx && info.AudioIsVoice &&
                     currentTime > info.LastVoiceMainThreadUpdateTime + info.VoiceMainThreadUpdateInterval)
                 {
                     info.LastVoiceMainThreadUpdateTime = currentTime;
@@ -43,11 +60,14 @@ namespace SoundproofWalls
                 }
 
                 // Update non-looping sounds.
-                else if (ConfigManager.Config.UpdateNonLoopingSounds && !info.Channel.Looping && !info.audioIsVoice && info.Channel.IsPlaying)
+                else if (ConfigManager.Config.UpdateNonLoopingSounds && !info.Channel.Looping && !info.AudioIsVoice && info.Channel.IsPlaying)
                 {
                     info.Update();  
                 }
             }
+
+            EavesdroppedChannels = eavesdroppedChannels;
+            HydrophonedChannels = hydrophonedChannels;
 
             if (ConfigManager.LocalConfig.DebugPlayingSounds)
             {

@@ -1,15 +1,18 @@
-﻿using System.Reflection;
-using System.Text.Json;
-using Barotrauma;
+﻿using Barotrauma;
+using Barotrauma.Extensions;
 using Barotrauma.Items.Components;
 using Barotrauma.Lights;
 using Barotrauma.Networking;
 using Barotrauma.Sounds;
+using FarseerPhysics;
 using HarmonyLib;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using OpenAL;
-using Barotrauma.Extensions;
+using System.Data;
+using System.Reflection;
+using System.Reflection.Emit;
+using System.Text.Json;
 
 namespace SoundproofWalls
 {
@@ -32,7 +35,17 @@ namespace SoundproofWalls
             EavesdroppingAmbienceDry,
             EavesdroppingAmbienceWet,
 
-            HydrophoneMovement1,
+            HydrophoneAmbienceColdCaverns,
+            HydrophoneAmbienceEuropanRidge,
+            HydrophoneAmbienceAphoticPlateau,
+            HydrophoneAmbienceGreatSea,
+            HydrophoneAmbienceHydrothermalWastes,
+            HydrophoneMovementSmall1,
+            HydrophoneMovementSmall2,
+            HydrophoneMovementMedium1,
+            HydrophoneMovementMedium2,
+            HydrophoneMovementLarge1,
+            HydrophoneMovementLarge2,
 
             BubbleLocal,
             BubbleRadio,
@@ -45,7 +58,14 @@ namespace SoundproofWalls
             { SoundPath.EavesdroppingAmbienceDry, Path.Combine(ModPath, "Content/Sounds/SPW_EavesdroppingAmbienceDryRoom.ogg") },
             { SoundPath.EavesdroppingAmbienceWet, Path.Combine(ModPath, "Content/Sounds/SPW_EavesdroppingAmbienceWetRoom.ogg") },
 
-            { SoundPath.HydrophoneMovement1, "Content/Sounds/Water/SplashLoop.ogg" },
+            { SoundPath.HydrophoneAmbienceColdCaverns, Path.Combine(ModPath, "Content/Sounds/SPW_HydrophoneAmbienceColdCaverns.ogg") },
+            { SoundPath.HydrophoneAmbienceEuropanRidge, Path.Combine(ModPath, "Content/Sounds/SPW_HydrophoneAmbienceEuropanRidge.ogg") },
+            { SoundPath.HydrophoneAmbienceAphoticPlateau, Path.Combine(ModPath, "Content/Sounds/SPW_HydrophoneAmbienceAphoticPlateau.ogg") },
+            { SoundPath.HydrophoneAmbienceGreatSea, Path.Combine(ModPath, "Content/Sounds/SPW_HydrophoneAmbienceGreatSea.ogg") },
+            { SoundPath.HydrophoneAmbienceHydrothermalWastes, Path.Combine(ModPath, "Content/Sounds/SPW_HydrophoneAmbienceHydrothermalWastes.ogg") },
+
+            { SoundPath.HydrophoneMovementSmall1, Path.Combine(ModPath, "Content/Sounds/SPW_HydrophoneMovementSmall1.ogg") },
+            { SoundPath.HydrophoneMovementSmall2, Path.Combine(ModPath, "Content/Sounds/SPW_HydrophoneMovementSmall2.ogg") },
 
             { SoundPath.BubbleLocal, Path.Combine(ModPath, "Content/Sounds/SPW_BubblesLoopMono.ogg") },
             { SoundPath.BubbleRadio, Path.Combine(ModPath, "Content/Sounds/SPW_RadioBubblesLoopStereo.ogg") },
@@ -71,6 +91,36 @@ namespace SoundproofWalls
             {
                 Menu.ForceOpenMenu();
             });
+
+            GameMain.LuaCs.Game.AddCommand("spw_welcome", TextManager.Get("spw_openpopuphelp").Value, args =>
+            {
+                Menu.ShowWelcomePopup();
+            });
+
+            GameMain.LuaCs.Game.AddCommand("spw_stats", TextManager.Get("spw_openpopuphelp").Value, args =>
+            {
+                ModStateManager.SaveState(ModStateManager.State);
+                ModStateManager.PrintStats();
+            });
+
+            GameMain.LuaCs.Game.AddCommand("spw_workshop", TextManager.Get("spw_openworkshophelp").Value, args =>
+            {
+                ToolBox.OpenFileWithShell("https://steamcommunity.com/sharedfiles/filedetails/?id=3153737715");
+            });
+
+            // SoundManager_Constructor transpiler.
+            // Needed to adjust the maximum source count.
+            harmony.Patch(
+                original: typeof(SoundManager).GetConstructor(Type.EmptyTypes),
+                transpiler: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SoundManager_Constructor_Transpiler), BindingFlags.Static | BindingFlags.Public))
+            );
+
+            // SoundPlayer_UpdateMusic transpiler.
+            // Needed to reflect changes to the maximum source count.
+            harmony.Patch(
+                original: typeof(SoundPlayer).GetMethod("UpdateMusic", BindingFlags.Static | BindingFlags.NonPublic),
+                transpiler: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SoundManager_Constructor_Transpiler), BindingFlags.Static | BindingFlags.Public))
+            );
 
             // StartRound postfix patch.
             // Needed to set up the first hydrophone switches after terminals have loaded in.
@@ -223,12 +273,36 @@ namespace SoundproofWalls
                 new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_MoveCamera))));
 
             // Draw prefix.
-            // Displays the eavesdropping text, eavesdropping vignette, and processing mode tooltip.
+            // Displays the eavesdropping text, eavesdropping vignette, and eavesdropping sprite overlay
             // Bug note: a line in this method causes MonoMod to crash on Linux due to an unmanaged PAL_SEHException https://github.com/dotnet/runtime/issues/78271
             // Bug note update: from my testing this doesn't seem to apply anymore as of June 2025
             harmony.Patch(
                 typeof(GUI).GetMethod(nameof(GUI.Draw)),
                 new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_Draw))));
+
+            // Sonar_Draw postfix.
+            // Displays active hydrophone sectors.
+            harmony.Patch(
+                original: typeof(Sonar).GetMethod(nameof(Sonar.DrawSonar), BindingFlags.NonPublic | BindingFlags.Instance),
+                postfix: new HarmonyMethod(typeof(HydrophoneManager).GetMethod(nameof(HydrophoneManager.DrawHydrophoneSprites))));
+
+            // Sonar_DrawBlip prefix.
+            // Disables sonar blips when using hydrophones.
+            harmony.Patch(
+                original: typeof(Sonar).GetMethod(nameof(Sonar.DrawBlip), BindingFlags.NonPublic | BindingFlags.Instance),
+                prefix: new HarmonyMethod(typeof(HydrophoneManager).GetMethod(nameof(HydrophoneManager.DrawSonarBlips))));
+
+            // Sonar_DrawDockingPorts prefix.
+            // Disables drawing of docking ports when using hydrophones.
+            harmony.Patch(
+                original: typeof(Sonar).GetMethod(nameof(Sonar.DrawDockingPorts), BindingFlags.NonPublic | BindingFlags.Instance),
+                prefix: new HarmonyMethod(typeof(HydrophoneManager).GetMethod(nameof(HydrophoneManager.DrawDockingPorts))));
+
+            // Sonar_DrawOwnSubmarineBorders prefix.
+            // Disables drawing of submarine borders when using hydrophones.
+            harmony.Patch(
+                original: typeof(Sonar).GetMethod(nameof(Sonar.DrawOwnSubmarineBorders), BindingFlags.NonPublic | BindingFlags.Instance),
+                prefix: new HarmonyMethod(typeof(HydrophoneManager).GetMethod(nameof(HydrophoneManager.DrawSubBorders))));
 
             // TogglePauseMenu postfix.
             // Displays menu button and updates the config when the menu is closed.
@@ -265,11 +339,11 @@ namespace SoundproofWalls
                 try
                 {
                     newConfig = useServerConfig ? JsonSerializer.Deserialize<Config>(configString) : LocalConfig;
-                } catch (Exception e) { LuaCsLogger.LogError($"[SoundproofWalls] Failed to deserialize server config, {e}"); }
+                } catch (Exception e) { DebugConsole.LogError($"[SoundproofWalls] Failed to deserialize server config, {e}"); }
 
                 if (newConfig == null)
                 {
-                    LuaCsLogger.LogError("[SoundproofWalls] Error detected in server config - switching to local config");
+                    DebugConsole.LogError("[SoundproofWalls] Error detected in server config - switching to local config");
                     newConfig = LocalConfig;
                     useServerConfig = false;
                 }
@@ -290,12 +364,11 @@ namespace SoundproofWalls
                 SoundInfoManager.UpdateSoundInfoMap();
             }
 
-            if (ModStateManager.State.FirstLaunch)
-            {
-                //SoundproofWallsMenu.ShowWelcomePopup();
-                ModStateManager.State.FirstLaunch = false;
-                ModStateManager.SaveState(ModStateManager.State);
-            }
+            LuaCsLogger.Log(TextManager.GetWithVariable("initmessage", "[version]", ModStateManager.State.Version).Value, color: Menu.ConsolePrimaryColor);
+            LuaCsLogger.Log(TextManager.Get("initmessagefollowup").Value, color: Menu.ConsoleSecondaryColor);
+            
+            ModStateManager.State.TimesInitialized++;
+            ModStateManager.SaveState(ModStateManager.State);
         }
 
         public static void InitDynamicFx()
@@ -330,6 +403,8 @@ namespace SoundproofWalls
 
         public void DisposeClient()
         {
+            ModStateManager.SaveState(ModStateManager.State); // Save stats
+
             // Unpatch these earlier to stop custom sound types from being created when reloading sounds
             // (this shouldn't be necessary but there was weird behaviour with the early return that SHOULD handle this inside the LoadSound functions.
             harmony.Unpatch(typeof(SoundManager).GetMethod(nameof(SoundManager.LoadSound), BindingFlags.Instance | BindingFlags.Public, new Type[] { typeof(string), typeof(bool) }), HarmonyPatchType.Prefix);
@@ -371,6 +446,8 @@ namespace SoundproofWalls
 
         public static void SPW_Update()
         {
+            ModStateManager.State.TimeSpentPlaying += Timing.Step;
+
             if (GameMain.Instance.Paused || !Config.Enabled) return;
             ConfigManager.Update();
             Listener.Update();
@@ -380,6 +457,55 @@ namespace SoundproofWalls
             ChannelInfoManager.Update();
             Sidechain.Update();
             EffectsManager?.Update();
+        }
+
+        public static IEnumerable<CodeInstruction> SoundManager_Constructor_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+        {
+
+            FieldInfo dynamicCountField = typeof(ChannelInfoManager).GetField(nameof(ChannelInfoManager.SourceCount), BindingFlags.Public | BindingFlags.Static);
+
+            var codes = new List<CodeInstruction>(instructions);
+
+            for (int i = 0; i < codes.Count; i++)
+            {
+                // Check for instructions that load the integer constant '32'.
+                bool isOriginalSourceCount = (codes[i].opcode == OpCodes.Ldc_I4_S && (sbyte)codes[i].operand == 32) ||
+                                             (codes[i].opcode == OpCodes.Ldc_I4 && (int)codes[i].operand == 32);
+
+                if (isOriginalSourceCount)
+                {
+                    // Replace the "load constant 32" instruction with dynamicCountField.
+                    codes[i] = new CodeInstruction(OpCodes.Ldsfld, dynamicCountField);
+                }
+            }
+
+            return codes.AsEnumerable();
+        }
+
+        public static void ResizeSoundManagerPools(int newSize)
+        {
+            SoundManager soundManager = GameMain.SoundManager;
+            var playingChannelsField = AccessTools.Field(typeof(SoundManager), "playingChannels");
+            var sourcePoolsField = AccessTools.Field(typeof(SoundManager), "sourcePools");
+            var playingChannels = (SoundChannel[][])playingChannelsField.GetValue(soundManager);
+            var sourcePools = (SoundSourcePool[])sourcePoolsField.GetValue(soundManager);
+
+            SoundChannel[] defaultChannels = playingChannels[(int)SoundManager.SourcePoolIndex.Default];
+            lock (defaultChannels)
+            {
+                for (int i = 0; i < defaultChannels.Length; i++)
+                {
+                    defaultChannels[i]?.Dispose();
+                    defaultChannels[i] = null;
+                }
+            }
+            sourcePools[(int)SoundManager.SourcePoolIndex.Default]?.Dispose();
+
+            ChannelInfoManager.SourceCount = newSize;
+
+            // Re-initialize the arrays with the new size
+            playingChannels[(int)SoundManager.SourcePoolIndex.Default] = new SoundChannel[newSize];
+            sourcePools[(int)SoundManager.SourcePoolIndex.Default] = new SoundSourcePool(newSize);
         }
 
         public static bool SPW_LoadCustomOggSound(SoundManager __instance, string filename, bool stream, ref Sound __result)
@@ -395,7 +521,8 @@ namespace SoundproofWalls
 
             if (!File.Exists(filename))
             {
-                throw new System.IO.FileNotFoundException("Sound file \"" + filename + "\" doesn't exist!");
+                DebugConsole.LogError("[SoundproofWalls] Sound file \"" + filename + "\" doesn't exist!");
+                return false;
             }
 
 #if DEBUG
@@ -442,7 +569,8 @@ namespace SoundproofWalls
 
             if (!File.Exists(filePath))
             {
-                throw new System.IO.FileNotFoundException($"Sound file \"{filePath}\" doesn't exist! Content package \"{(element.ContentPackage?.Name ?? "Unknown")}\".");
+                DebugConsole.LogError($"[SoundproofWalls] Sound file \"{filePath}\" doesn't exist! Content package \"{(element.ContentPackage?.Name ?? "Unknown")}\".");
+                return false;
             }
 
             float range = element.GetAttributeFloat("range", 1000.0f);
@@ -499,6 +627,20 @@ namespace SoundproofWalls
             int vignetteOpacity = (int)(EavesdropManager.EavesdroppingTextAlpha * Config.EavesdroppingVignetteOpacityMultiplier);
             EavesdropManager.Vignette.Color = new Color(0, 0, 0, vignetteOpacity);
             EavesdropManager.Vignette.Draw(spriteBatch);
+            EavesdropManager.Vignette.Draw(spriteBatch);
+            EavesdropManager.Vignette.Draw(spriteBatch);
+            EavesdropManager.Vignette.Draw(spriteBatch);
+            EavesdropManager.Vignette.Draw(spriteBatch);
+            EavesdropManager.Vignette.Draw(spriteBatch);
+            EavesdropManager.Vignette.Draw(spriteBatch);
+            EavesdropManager.Vignette.Draw(spriteBatch);
+            EavesdropManager.Vignette.Draw(spriteBatch);
+            EavesdropManager.Vignette.Draw(spriteBatch);
+            EavesdropManager.Vignette.Draw(spriteBatch);
+            EavesdropManager.Vignette.Draw(spriteBatch);
+            EavesdropManager.Vignette.Draw(spriteBatch); // Draw multiple times for extra darkness. Yeah this is pretty stupid.
+
+            DrawEavesdroppingOverlay(spriteBatch, cam);
 
             // Eavesdropping text.
             Limb limb = Util.GetCharacterHead(character);
@@ -511,6 +653,82 @@ namespace SoundproofWalls
                 cam.Zoom / size, 0, 0.001f, Alignment.Center);
 
             return true;
+        }
+
+        private static void DrawEavesdroppingOverlay(SpriteBatch spriteBatch, Camera cam)
+        {
+            if (ConfigManager.Config.EavesdroppingSpriteOpacity <= 0 || EavesdropManager.Efficiency <= 0 || ChannelInfoManager.EavesdroppedChannels.Count == 0 || cam == null)
+            {
+                return;
+            }
+
+            spriteBatch.End();
+
+            float effectState = (float)Timing.TotalTime;
+            float pulse = 0.8f + MathF.Sin(effectState * 2.0f) * 0.2f; // Smooth pulse from 0.6 to 1.0
+            float colorIntensityBase = 0.65f; //Multiplies the overlay color by this amount, the higher the value, the more bright/vibrant the color.
+            float colorIntensityVariance = 0.05f; //The variance of the pulse effect affecting the color's brightness/vibrance 
+            GameMain.LightManager.SolidColorEffect.Parameters["color"].SetValue(Color.DarkSeaGreen.ToVector4() * (colorIntensityBase + pulse * colorIntensityVariance) * EavesdropManager.Efficiency * ConfigManager.Config.EavesdroppingSpriteOpacity);
+            GameMain.LightManager.SolidColorEffect.CurrentTechnique = GameMain.LightManager.SolidColorEffect.Techniques["SolidColorBlur"];
+            GameMain.LightManager.SolidColorEffect.Parameters["blurDistance"].SetValue(0.005f + pulse * 0.0025f);
+            GameMain.LightManager.SolidColorEffect.CurrentTechnique.Passes[0].Apply();
+
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, transformMatrix: cam.Transform, effect: GameMain.LightManager.SolidColorEffect);
+
+            Sprite glowSprite = GUIStyle.UIThermalGlow.Value.Sprite;
+
+            foreach (ChannelInfo channelInfo in ChannelInfoManager.EavesdroppedChannels)
+            {
+                if (!channelInfo.Channel.IsPlaying) { continue; }
+
+                float noise1;
+                float noise2;
+                Vector2 spriteScale;
+                Vector2 drawPos;
+
+                // Draw character body.
+                Character? c = channelInfo.ChannelCharacter;
+                if (c != null && !c.IsDead)
+                {
+                    foreach (Limb limb in channelInfo.ChannelCharacter!.AnimController.Limbs)
+                    {
+                        if (limb.Mass < 0.5f || !limb.IsLeg) { continue; } // Only show legs to maintain some anonymity
+                        noise1 = PerlinNoise.GetPerlin((effectState + limb.Params.ID + c.ID) * 0.01f, (effectState + limb.Params.ID + c.ID) * 0.02f);
+                        noise2 = PerlinNoise.GetPerlin((effectState + limb.Params.ID + c.ID) * 0.01f, (effectState + limb.Params.ID + c.ID) * 0.008f);
+                        spriteScale = ConvertUnits.ToDisplayUnits(limb.body.GetSize()) / glowSprite.size * (noise1 * 0.5f + 2f);
+                        drawPos = new Vector2(limb.body.DrawPosition.X + (noise1 - 0.5f) * 100, -limb.body.DrawPosition.Y + (noise2 - 0.5f) * 100);
+                        glowSprite.Draw(spriteBatch, drawPos, 0.0f, scale: Math.Max(spriteScale.X, spriteScale.Y));
+                    }
+                }
+
+                float maxSpriteRange = channelInfo.Channel.Sound.BaseFar * 2;
+                float soundLifeMult = 1;
+                double? duration = channelInfo.Channel?.Sound?.DurationSeconds;
+                int? sampleRate = channelInfo.Channel?.Sound?.SampleRate;
+                if (duration != null && sampleRate != null && !channelInfo.Channel.Looping)
+                {
+                    soundLifeMult = 1 - Math.Clamp((float)channelInfo.PlaybackPosition / (float)(duration * sampleRate), 0f, 1f);
+                    soundLifeMult = (float)Math.Pow(soundLifeMult, ConfigManager.Config.EavesdroppingSpriteFadeCurve);
+                }
+                
+                // Create a glow radius around the sound source.
+                uint sourceId = channelInfo.Channel.Sound.Owner.GetSourceFromIndex(channelInfo.Channel.Sound.SourcePoolIndex, channelInfo.Channel.ALSourceIndex);
+                noise1 = PerlinNoise.GetPerlin((effectState + sourceId) * 0.01f, (effectState + sourceId) * 0.02f);
+                noise2 = PerlinNoise.GetPerlin((effectState + sourceId) * 0.01f, (effectState + sourceId) * 0.008f);
+                spriteScale = new Vector2(Math.Min(channelInfo.Channel.Far / 6, maxSpriteRange)) / glowSprite.size * (noise1 * 0.5f + 2f);
+                spriteScale *= soundLifeMult;
+                drawPos = channelInfo.WorldPos;
+                Submarine? sub = channelInfo.ChannelHull?.Submarine;
+                if (sub != null)
+                {
+                    drawPos = channelInfo.LocalPos + sub.WorldPosition - sub.HiddenSubPosition;
+                }
+                drawPos = new Vector2(drawPos.X, -drawPos.Y);
+                glowSprite.Draw(spriteBatch, pos: drawPos, rotate: 0.0f, scale: Math.Max(spriteScale.X, spriteScale.Y), color: Color.White);
+            }
+
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied);
         }
 
         // Workaround for ignoring sounds with "dontmuffle" in their XML. 
@@ -821,15 +1039,21 @@ namespace SoundproofWalls
 
             SoundChannel channel = __instance;
 
-            uint sourceId = channel.Sound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
-            EffectsManager?.UnregisterSource(sourceId);
+            try
+            {
+                if (channel.mutex != null) { Monitor.Enter(channel.mutex); }
 
-            channel.Looping = false; // This isn't actually needed, it is more of a superstitious line of code...
+                uint sourceId = channel.Sound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
+                EffectsManager?.UnregisterSource(sourceId);
 
-            ChannelInfoManager.RemoveChannelInfo(channel);
-            ChannelInfoManager.RemovePitchedChannel(channel);
-            HydrophoneManager.RemoveHydrophoneChannel(channel);
-            BubbleManager.RemoveBubbleSound(channel);
+                ChannelInfoManager.RemoveChannelInfo(channel);
+                ChannelInfoManager.RemovePitchedChannel(channel);
+                BubbleManager.RemoveBubbleSound(channel);
+            }
+            finally
+            {
+                if (channel.mutex != null) { Monitor.Exit(channel.mutex); }
+            }
         }
 
         public static void SPW_SoundPlayer_PlaySound(ref Sound sound, ref float? range, ref Vector2 position, ref Hull hullGuess)
@@ -1329,7 +1553,7 @@ namespace SoundproofWalls
             int alError = Al.GetError();
             if (alError != Al.NoError)
             {
-                DebugConsole.ThrowError("Failed to get source's playback position: " + instance.debugName + ", " + Al.GetErrorString(alError), appendStackTrace: true);
+                DebugConsole.LogError("Failed to get source's playback position: " + instance.debugName + ", " + Al.GetErrorString(alError));
                 return false;
             }
             
@@ -1337,7 +1561,7 @@ namespace SoundproofWalls
             alError = Al.GetError();
             if (alError != Al.NoError)
             {
-                DebugConsole.ThrowError("Failed to stop source: " + instance.debugName + ", " + Al.GetErrorString(alError), appendStackTrace: true);
+                DebugConsole.LogError("Failed to stop source: " + instance.debugName + ", " + Al.GetErrorString(alError));
                 return false;
             }
 
@@ -1375,7 +1599,7 @@ namespace SoundproofWalls
             alError = Al.GetError();
             if (alError != Al.NoError)
             {
-                DebugConsole.ThrowError("Failed to bind buffer to source: " + instance.debugName + ", " + Al.GetErrorString(alError), appendStackTrace: true);
+                DebugConsole.LogError("Failed to bind buffer to source: " + instance.debugName + ", " + Al.GetErrorString(alError));
                 return false;
             }
 
@@ -1383,7 +1607,7 @@ namespace SoundproofWalls
             alError = Al.GetError();
             if (alError != Al.NoError)
             {
-                DebugConsole.ThrowError("Failed to replay source: " + instance.debugName + ", " + Al.GetErrorString(alError), appendStackTrace: true);
+                DebugConsole.LogError("Failed to replay source: " + instance.debugName + ", " + Al.GetErrorString(alError));
                 return false;
             }
 
@@ -1414,7 +1638,7 @@ namespace SoundproofWalls
             if (alError != Al.NoError)
             {
                 // This error still happens for StaticFx reverb buffers despite the above solutions of moving the playbackpos... I'm just turning it off because it doesn't actually matter anyway.
-                if (!Config.StaticFx) { DebugConsole.ThrowError("Failed to reset playback position: " + instance.debugName + ", " + Al.GetErrorString(alError), appendStackTrace: true); }
+                if (!Config.StaticFx) { DebugConsole.LogError("Failed to reset playback position: " + instance.debugName + ", " + Al.GetErrorString(alError)); }
                 return false;
             }
 
@@ -1439,7 +1663,8 @@ namespace SoundproofWalls
             int alError = Al.GetError();
             if (alError != Al.NoError)
             {
-                throw new Exception("Failed to bind buffer to source (" + instance.ALSourceIndex.ToString() + ":" + reducedSound.Owner.GetSourceFromIndex(reducedSound.SourcePoolIndex, instance.ALSourceIndex) + "," + alBuffer.ToString() + "): " + instance.debugName + ", " + Al.GetErrorString(alError));
+                DebugConsole.LogError("Failed to bind buffer to source (" + instance.ALSourceIndex.ToString() + ":" + reducedSound.Owner.GetSourceFromIndex(reducedSound.SourcePoolIndex, instance.ALSourceIndex) + "," + alBuffer.ToString() + "): " + instance.debugName + ", " + Al.GetErrorString(alError));
+                return false;
             }
 
             return true;
@@ -1484,7 +1709,8 @@ namespace SoundproofWalls
             int alError = Al.GetError();
             if (alError != Al.NoError)
             {
-                throw new Exception("Failed to bind buffer to source (" + instance.ALSourceIndex.ToString() + ":" + extendedSound.Owner.GetSourceFromIndex(extendedSound.SourcePoolIndex, instance.ALSourceIndex) + "," + alBuffer.ToString() + "): " + instance.debugName + ", " + Al.GetErrorString(alError));
+                DebugConsole.LogError("Failed to bind buffer to source (" + instance.ALSourceIndex.ToString() + ":" + extendedSound.Owner.GetSourceFromIndex(extendedSound.SourcePoolIndex, instance.ALSourceIndex) + "," + alBuffer.ToString() + "): " + instance.debugName + ", " + Al.GetErrorString(alError));
+                return false;
             }
 
             return true;
@@ -1509,7 +1735,8 @@ namespace SoundproofWalls
             int alError = Al.GetError();
             if (Al.GetError() != Al.NoError)
             {
-                throw new Exception("Failed to bind buffer to source (" + instance.ALSourceIndex.ToString() + ":" + sound.Owner.GetSourceFromIndex(sound.SourcePoolIndex, instance.ALSourceIndex) + "," + alBuffer.ToString() + "): " + instance.debugName + ", " + Al.GetErrorString(alError));
+                DebugConsole.LogError("Failed to bind buffer to source (" + instance.ALSourceIndex.ToString() + ":" + sound.Owner.GetSourceFromIndex(sound.SourcePoolIndex, instance.ALSourceIndex) + "," + alBuffer.ToString() + "): " + instance.debugName + ", " + Al.GetErrorString(alError));
+                return false;
             }
 
             return true;
@@ -1573,7 +1800,8 @@ namespace SoundproofWalls
                     alError = Al.GetError();
                     if (alError != Al.NoError)
                     {
-                        throw new Exception("Failed to reset source buffer: " + instance.debugName + ", " + Al.GetErrorString(alError));
+                        DebugConsole.LogError("Failed to reset source buffer: " + instance.debugName + ", " + Al.GetErrorString(alError));
+                        return false;
                     }
 
                     SetProperties();
@@ -1598,7 +1826,8 @@ namespace SoundproofWalls
                     alError = Al.GetError();
                     if (alError != Al.NoError)
                     {
-                        throw new Exception("Failed to play source: " + instance.debugName + ", " + Al.GetErrorString(alError));
+                        DebugConsole.LogError("Failed to play source: " + instance.debugName + ", " + Al.GetErrorString(alError));
+                        return false;
                     }
                 }
                 else
@@ -1608,14 +1837,16 @@ namespace SoundproofWalls
                     alError = Al.GetError();
                     if (alError != Al.NoError)
                     {
-                        throw new Exception("Failed to reset source buffer: " + instance.debugName + ", " + Al.GetErrorString(alError));
+                        DebugConsole.LogError("Failed to reset source buffer: " + instance.debugName + ", " + Al.GetErrorString(alError));
+                        return false;
                     }
 
                     Al.Sourcei(sound.Owner.GetSourceFromIndex(instance.Sound.SourcePoolIndex, instance.ALSourceIndex), Al.Looping, Al.False);
                     alError = Al.GetError();
                     if (alError != Al.NoError)
                     {
-                        throw new Exception("Failed to set stream looping state: " + instance.debugName + ", " + Al.GetErrorString(alError));
+                        DebugConsole.LogError("Failed to set stream looping state: " + instance.debugName + ", " + Al.GetErrorString(alError));
+                        return false;
                     }
 
                     // Modify readonly fields via reflection.
@@ -1639,12 +1870,14 @@ namespace SoundproofWalls
                         alError = Al.GetError();
                         if (alError != Al.NoError)
                         {
-                            throw new Exception("Failed to generate stream buffers: " + instance.debugName + ", " + Al.GetErrorString(alError));
+                            DebugConsole.LogError("Failed to generate stream buffer: " + instance.debugName + ", " + Al.GetErrorString(alError));
+                            return false;
                         }
 
                         if (!Al.IsBuffer(streamBuffersArray[i]))
                         {
-                            throw new Exception("Generated streamBuffer[" + i.ToString() + "] is invalid! " + instance.debugName);
+                            DebugConsole.LogError("Generated streamBuffer[" + i.ToString() + "] is not a valid buffer: " + instance.debugName);
+                            return false;
                         }
                     }
                     instance.Sound.Owner.InitUpdateChannelThread();
@@ -1911,7 +2144,7 @@ namespace SoundproofWalls
             }
             else if (Listener.IsUsingHydrophones)
             {
-                ambienceVolume *= Config.HydrophoneWaterAmbienceVolumeMultiplier; ambienceVolume *= HydrophoneManager.HydrophoneEfficiency;
+                ambienceVolume *= 0;
             }
             else
             {

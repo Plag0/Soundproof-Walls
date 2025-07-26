@@ -13,7 +13,7 @@ namespace SoundproofWalls
         public float SidechainRelease = 0;
         public bool Distortion = false;
         public float PitchMult = 1;
-        public float MuffleMult = 1;
+        public float MuffleInfluence = 1;
         public bool IsLoud = false;
 
         public bool IgnorePath = false;
@@ -22,15 +22,31 @@ namespace SoundproofWalls
         public bool IgnorePitch = false;
         public bool IgnoreLowpass = false;
         public bool ForceLowpass = false;
-        public bool IgnoreReverb = false;
+        public bool IgnoreAirReverb = false;
+        public bool IgnoreWaterReverb = false;
         public bool ForceReverb = false;
         public bool IgnoreContainer = false;
         public bool IgnoreAll = false;
         public bool PropagateWalls = false;
+        public bool IgnoreHydrophoneVisuals = false;
+        public bool IgnoreHydrophoneMuffle = false;
+
+        public enum AudioType
+        {
+            BaseSound,
+            DoorSound,
+            FlowSound,
+            FireSound,
+            AmbientSound,
+            LocalVoice,
+            RadioVoice
+        }
+
+        public AudioType StaticType;
 
         public SoundInfo(Sound sound)
         {
-            this.Sound = sound;
+            Sound = sound;
 
             Config config = ConfigManager.Config;
 
@@ -44,14 +60,17 @@ namespace SoundproofWalls
                 IgnoreLowpass = Util.StringHasKeyword(filename, config.LowpassIgnoredSounds);
                 ForceLowpass = Util.StringHasKeyword(filename, config.LowpassForcedSounds);
                 IgnorePitch = Util.StringHasKeyword(filename, config.PitchIgnoredSounds);
-                IgnoreReverb = Util.StringHasKeyword(filename, config.ReverbIgnoredSounds);
-                ForceReverb = !IgnoreReverb && Util.StringHasKeyword(filename, config.ReverbForcedSounds);
+                IgnoreAirReverb = Util.StringHasKeyword(filename, config.AirReverbIgnoredSounds);
+                IgnoreWaterReverb = Util.StringHasKeyword(filename, config.WaterReverbIgnoredSounds);
+                ForceReverb = Util.StringHasKeyword(filename, config.ReverbForcedSounds);
                 IgnorePath = IgnoreLowpass || Util.StringHasKeyword(filename, config.PathIgnoredSounds);
                 IgnoreSurface = IgnoreLowpass || !config.MuffleWaterSurface || Util.StringHasKeyword(filename, config.SurfaceIgnoredSounds);
                 IgnoreSubmersion = IgnoreLowpass || Util.StringHasKeyword(filename, config.SubmersionIgnoredSounds, exclude: "Barotrauma/Content/Characters/Human/");
                 IgnoreContainer = IgnoreLowpass || Util.StringHasKeyword(filename, config.ContainerIgnoredSounds);
                 IgnoreAll = IgnoreLowpass && IgnorePitch;
                 PropagateWalls = !IgnoreAll && !IgnoreLowpass && Util.StringHasKeyword(filename, config.PropagatingSounds);
+                IgnoreHydrophoneMuffle = Util.StringHasKeyword(filename, config.HydrophoneMuffleIgnoredSounds);
+                IgnoreHydrophoneVisuals = Util.StringHasKeyword(filename, config.HydrophoneVisualIgnoredSounds);
 
                 Sound.MaxSimultaneousInstances = config.MaxSimultaneousInstances;
             }
@@ -65,8 +84,22 @@ namespace SoundproofWalls
                 SidechainRelease = CustomSound.SidechainRelease;
                 Distortion = CustomSound.Distortion;
                 PitchMult = CustomSound.PitchMult;
-                MuffleMult = CustomSound.MuffleMult;
+                MuffleInfluence = CustomSound.MuffleInfluence;
                 IsLoud = SidechainMult > 0;
+            }
+
+            // We can only determine types based on their filename here. More advanced types are resolved in ChannelInfo.
+            StaticType = AudioType.BaseSound;
+            string lower = filename.ToLower();
+            if (lower.Contains("door") && !lower.Contains("doorbreak") || lower.Contains("duct") && !lower.Contains("ductbreak"))
+            {
+                StaticType = AudioType.DoorSound;
+            }
+            else if (lower.Contains("barotrauma/content/sounds/ambient") || 
+                     lower.Contains("barotrauma/content/sounds/damage/creak") || 
+                     lower.Contains("barotrauma/content/sounds/hull"))
+            {
+                StaticType = AudioType.AmbientSound;
             }
         }
 

@@ -20,6 +20,8 @@ namespace SoundproofWalls
         static SoundChannel? EavesdroppingAmbienceWetRoomChannel;
         static List<Sound> EavesdroppingActivationSounds = new List<Sound>();
 
+        static Random Random = new Random();
+
         public static void Update()
         {
             bool shouldFadeOut = Listener.EavesdroppedHull == null || !ConfigManager.Config.Enabled;
@@ -42,6 +44,8 @@ namespace SoundproofWalls
                 float textChange = 255 / duration;
                 EavesdroppingTextAlpha = Math.Clamp(EavesdroppingTextAlpha + textChange * 6, 0, 255);
                 Efficiency = Math.Clamp(Efficiency + 1 / duration, 0, 1);
+
+                ModStateManager.State.TimeSpentEavesdropping += Timing.Step;
             }
         }
 
@@ -80,14 +84,13 @@ namespace SoundproofWalls
         {
             if (Efficiency < 0.01 && EavesdroppingActivationSounds.Count > 0 && EavesdroppingActivationSounds.All(sound => sound != null && !sound.IsPlaying()))
             {
-                Random random = new Random();
-                int randomIndex = random.Next(EavesdroppingActivationSounds.Count);
+                int randomIndex = Random.Next(EavesdroppingActivationSounds.Count);
                 Sound eavesdropSound = EavesdroppingActivationSounds[randomIndex];
                 SoundChannel channel = eavesdropSound.Play(null, 1, muffle: false); //SoundPlayer.PlaySound(eavesdropSound, Character.Controlled.Position, volume: 10, ignoreMuffling: true);
                 if (channel != null && channel.Sound != null)
                 {
                     channel.Gain = 1.0f;
-                    channel.FrequencyMultiplier = random.Range(0.8f, 1.2f);
+                    channel.FrequencyMultiplier = Random.Range(0.8f, 1.2f);
                 }
             }
         }

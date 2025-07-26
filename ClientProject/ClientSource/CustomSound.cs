@@ -11,14 +11,14 @@ namespace SoundproofWalls
         public float SidechainRelease { get; set; }
         public bool Distortion { get; set; }
         public float PitchMult { get; set; }
-        public float MuffleMult { get; set; }
+        public float MuffleInfluence { get; set; }
         public HashSet<string> KeywordExclusions { get; set; }
 
         public CustomSound()
         {
             KeywordExclusions = new HashSet<string>();
         }
-        public CustomSound(string name, float gainMultiplier, float rangeMultiplier = 1, float sidechainMultiplier = 0, float release = 0, bool distortion = false, float pitchMultiplier = 1, float muffleMultiplier = 1, params string[]? exclusions)
+        public CustomSound(string name, float gainMultiplier, float rangeMultiplier = 1, float sidechainMultiplier = 0, float release = 0, bool distortion = false, float pitchMultiplier = 1, float muffleInfluence = 1, params string[]? exclusions)
         {
             Keyword = name;
             GainMult = gainMultiplier;
@@ -27,7 +27,7 @@ namespace SoundproofWalls
             SidechainRelease = release;
             Distortion = distortion;
             PitchMult = pitchMultiplier;
-            MuffleMult = muffleMultiplier;
+            MuffleInfluence = muffleInfluence;
             KeywordExclusions = new HashSet<string>(exclusions ?? Array.Empty<string>());
         }
     }
@@ -45,7 +45,7 @@ namespace SoundproofWalls
                    x.SidechainRelease == y.SidechainRelease && 
                    x.Distortion == y.Distortion &&
                    x.PitchMult == y.PitchMult &&
-                   x.MuffleMult == y.MuffleMult &&
+                   x.MuffleInfluence == y.MuffleInfluence &&
                    x.KeywordExclusions.SetEquals(y.KeywordExclusions);
         }
 
@@ -61,7 +61,7 @@ namespace SoundproofWalls
             hash = hash * 31 + obj.SidechainRelease.GetHashCode();
             hash = hash * 31 + obj.Distortion.GetHashCode();
             hash = hash * 31 + obj.PitchMult.GetHashCode();
-            hash = hash * 31 + obj.MuffleMult.GetHashCode();
+            hash = hash * 31 + obj.MuffleInfluence.GetHashCode();
             hash = hash * 31 + obj.KeywordExclusions.GetHashCode();
             return hash;
         }

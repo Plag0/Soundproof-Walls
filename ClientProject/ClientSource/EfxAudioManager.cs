@@ -1,30 +1,39 @@
 ﻿using Barotrauma;
 using Barotrauma.Sounds;
+using Microsoft.Xna.Framework;
 using OpenAL;
+using System.Threading.Channels;
 
 namespace SoundproofWalls
 {
     public class EfxAudioManager : IDisposable
     {
         private const uint INVALID_ID = 0;
+        private const uint REVERB_SEND = 0;
+        private const uint DISTORTION_SEND = 1;
 
         private uint _indoorReverbSlotId = INVALID_ID;
         private uint _indoorReverbEffectId = INVALID_ID;
         private uint _outdoorReverbSlotId = INVALID_ID;
         private uint _outdoorReverbEffectId = INVALID_ID;
+        private uint _hydrophoneReverbSlotId = INVALID_ID;
+        private uint _hydrophoneReverbEffectId = INVALID_ID;
         private uint _hydrophoneDistortionSlotId = INVALID_ID;
         private uint _hydrophoneDistortionEffectId = INVALID_ID;
         private uint _loudDistortionSlotId = INVALID_ID;
         private uint _loudDistortionEffectId = INVALID_ID;
 
+
         // Maps source IDs to their current filter ID
         private Dictionary<uint, uint> _sourceFilters = new Dictionary<uint, uint>();
+        private HashSet<uint> _reverbRoutedSources = new HashSet<uint>();
 
         public bool IsInitialized { get; private set; } = false;
 
         private double LastEffectUpdateTime = 0;
 
         private float trailingAirReverbGain = ConfigManager.Config.DynamicReverbAirTargetGain;
+        private float trailingHydrophoneReverbGain = ConfigManager.Config.HydrophoneReverbTargetGain;
 
         public EfxAudioManager()
         {
@@ -44,7 +53,7 @@ namespace SoundproofWalls
 
         private bool InitEffects()
         {
-            int numEffects = 4;
+            int numEffects = 5;
             uint[] effectSlots = new uint[numEffects];
             uint[] effects = new uint[numEffects];
 
@@ -59,8 +68,9 @@ namespace SoundproofWalls
             }
             _indoorReverbSlotId = effectSlots[0];
             _outdoorReverbSlotId = effectSlots[1];
-            _hydrophoneDistortionSlotId = effectSlots[2];
-            _loudDistortionSlotId = effectSlots[3];
+            _hydrophoneReverbSlotId = effectSlots[2];
+            _hydrophoneDistortionSlotId = effectSlots[3];
+            _loudDistortionSlotId = effectSlots[4];
 
             AlEffects.GenEffects(numEffects, effects);
             if ((alError = Al.GetError()) != Al.NoError)
@@ -69,9 +79,10 @@ namespace SoundproofWalls
                 return false;
             }
             _indoorReverbEffectId = effects[0];
-            _outdoorReverbEffectId= effects[1];
-            _hydrophoneDistortionEffectId = effects[2];
-            _loudDistortionEffectId = effects[3];
+            _outdoorReverbEffectId = effects[1];
+            _hydrophoneReverbEffectId = effects[2];
+            _hydrophoneDistortionEffectId = effects[3];
+            _loudDistortionEffectId = effects[4];
 
             // Set type
             AlEffects.Effecti(_indoorReverbEffectId, AlEffects.AL_EFFECT_TYPE, AlEffects.AL_EFFECT_REVERB);
@@ -86,6 +97,14 @@ namespace SoundproofWalls
             if ((alError = Al.GetError()) != Al.NoError)
             {
                 DebugConsole.NewMessage($"[SoundproofWalls] Failed to set effect ID {_outdoorReverbEffectId} type to reverb for slot ID: {_outdoorReverbSlotId}, {Al.GetErrorString(alError)}");
+                return false;
+            }
+
+            // Set type
+            AlEffects.Effecti(_hydrophoneReverbEffectId, AlEffects.AL_EFFECT_TYPE, AlEffects.AL_EFFECT_REVERB);
+            if ((alError = Al.GetError()) != Al.NoError)
+            {
+                DebugConsole.NewMessage($"[SoundproofWalls] Failed to set effect ID {_hydrophoneReverbEffectId} type to reverb for slot ID: {_hydrophoneReverbSlotId}, {Al.GetErrorString(alError)}");
                 return false;
             }
 
@@ -117,6 +136,7 @@ namespace SoundproofWalls
 
             UpdateInsideReverbEffect();
             UpdateOutsideReverbEffect();
+            UpdateHydrophoneReverbEffect();
             UpdateHydrophoneDistortionEffect();
             UpdateLoudSoundDistortionEffect();
         }
@@ -258,8 +278,16 @@ namespace SoundproofWalls
 
             targetReverbGain = Math.Clamp(targetReverbGain, 0.0f, 1.0f);
 
-            float gainDiff = targetReverbGain - trailingAirReverbGain;
-            trailingAirReverbGain += Math.Abs(gainDiff) < 0.01f ? gainDiff : Math.Sign(gainDiff) * 0.01f;
+            float transitionFactor = ConfigManager.Config.AirReverbGainTransitionFactor;
+            if (transitionFactor > 0)
+            {
+                float maxStep = (float)(transitionFactor * ConfigManager.Config.OpenALEffectsUpdateInterval);
+                trailingAirReverbGain = Util.SmoothStep(trailingAirReverbGain, targetReverbGain, maxStep);
+            }
+            else
+            {
+                trailingAirReverbGain = targetReverbGain;
+            }
 
             // Influences decay and delay times.
             float roomSizeFactor = (Listener.ConnectedArea * ConfigManager.Config.DynamicReverbAreaSizeMultiplier) / 180000; // Arbitrary magic number that seems to work well.
@@ -318,8 +346,8 @@ namespace SoundproofWalls
             AlEffects.Effecti(reverbEffectId, AlEffects.AL_REVERB_DECAY_HFLIMIT, Al.True); // Keep HF limit ON
             if ((alError = Al.GetError()) != Al.NoError) { DebugConsole.NewMessage($"[SoundproofWalls] Error applying inside reverb params for effect ID: {reverbEffectId}, {Al.GetErrorString(alError)}"); }
 
-            AlEffects.AuxiliaryEffectSloti(_indoorReverbSlotId, AlEffects.AL_EFFECTSLOT_EFFECT, _indoorReverbEffectId);
-            if ((alError = Al.GetError()) != Al.NoError) { DebugConsole.NewMessage($"[SoundproofWalls] Failed to attach reverb effect ID {_indoorReverbEffectId} to main slot ID: {_indoorReverbSlotId}, {Al.GetErrorString(alError)}"); }
+            AlEffects.AuxiliaryEffectSloti(_indoorReverbSlotId, AlEffects.AL_EFFECTSLOT_EFFECT, reverbEffectId);
+            if ((alError = Al.GetError()) != Al.NoError) { DebugConsole.NewMessage($"[SoundproofWalls] Failed to attach reverb effect ID {reverbEffectId} to slot ID: {_indoorReverbSlotId}, {Al.GetErrorString(alError)}"); }
         }
 
         public void UpdateOutsideReverbEffect()
@@ -386,8 +414,105 @@ namespace SoundproofWalls
 
             if ((alError = Al.GetError()) != Al.NoError) { DebugConsole.NewMessage($"[SoundproofWalls] Error applying outside reverb params for effect ID: {reverbEffectId}, {Al.GetErrorString(alError)}"); }
 
-            AlEffects.AuxiliaryEffectSloti(_outdoorReverbSlotId, AlEffects.AL_EFFECTSLOT_EFFECT, _outdoorReverbEffectId);
-            if ((alError = Al.GetError()) != Al.NoError) { DebugConsole.NewMessage($"[SoundproofWalls] Failed to attach reverb effect ID {_outdoorReverbEffectId} to secondary slot ID: {_outdoorReverbSlotId}, {Al.GetErrorString(alError)}"); }
+            AlEffects.AuxiliaryEffectSloti(_outdoorReverbSlotId, AlEffects.AL_EFFECTSLOT_EFFECT, reverbEffectId);
+            if ((alError = Al.GetError()) != Al.NoError) { DebugConsole.NewMessage($"[SoundproofWalls] Failed to attach reverb effect ID {reverbEffectId} to slot ID: {_outdoorReverbSlotId}, {Al.GetErrorString(alError)}"); }
+        }
+
+        public void UpdateHydrophoneReverbEffect()
+        {
+            if (!IsInitialized ||
+                _hydrophoneReverbEffectId == INVALID_ID ||
+                _hydrophoneReverbSlotId == INVALID_ID)
+                return;
+
+            uint reverbEffectId = _hydrophoneReverbEffectId;
+
+            int alError;
+            Al.GetError();
+
+            Vector2 averagePosition = Vector2.Zero;
+            Vector2 submarinePosition = Listener.CurrentHull?.Submarine?.WorldPosition ?? Vector2.Zero;
+            float gainMult = 1;
+            float maxRange = Math.Abs(ConfigManager.Config.HydrophoneSoundRange) + 1; // Avoid division by zero.
+            if (ChannelInfoManager.HydrophonedChannels.Count > 0)
+            {
+                Vector2 sumOfPositions = Vector2.Zero;
+                foreach (var channelInfo in ChannelInfoManager.HydrophonedChannels)
+                {
+                    sumOfPositions += Util.GetSoundChannelWorldPos(channelInfo.Channel); // Using channelInfo.WorldPos is too outdated.
+                }
+                averagePosition = sumOfPositions / ChannelInfoManager.HydrophonedChannels.Count;
+
+                float distance = Vector2.Distance(averagePosition, submarinePosition);
+                gainMult = Math.Clamp(distance / maxRange, 0f, 1f);
+            }
+
+            bool muteReverb = !Listener.IsUsingHydrophones || submarinePosition == Vector2.Zero;
+
+            float targetReverbGain = muteReverb ? 0 : ConfigManager.Config.HydrophoneReverbTargetGain * gainMult;
+            targetReverbGain = Math.Clamp(targetReverbGain, 0.0f, 1.0f);
+
+            float transitionFactor = ConfigManager.Config.HydrophoneReverbGainTransitionFactor;
+            if (transitionFactor > 0 && !muteReverb)
+            {
+                float maxStep = (float)(transitionFactor * ConfigManager.Config.OpenALEffectsUpdateInterval);
+                trailingHydrophoneReverbGain = Util.SmoothStep(trailingHydrophoneReverbGain, targetReverbGain, maxStep);
+            }
+            else
+            {
+                trailingHydrophoneReverbGain = targetReverbGain;
+            }
+
+            trailingHydrophoneReverbGain = Math.Clamp(trailingHydrophoneReverbGain, 0, 1);
+
+            //LuaCsLogger.Log($"HYDROPHONE REVERB: averagePosition {averagePosition} sub position {submarinePosition} distance {Vector2.Distance(averagePosition, submarinePosition)} gainMult {gainMult} targetReverbGain {targetReverbGain} trailingHydrophoneReverbGain {trailingHydrophoneReverbGain} muteReverb {muteReverb} channelCount: {ChannelInfoManager.HydrophonedChannels.Count}");
+
+            float decayTime = 12f;
+            decayTime = Math.Clamp(decayTime, 0.1f, 20.0f);
+
+            float decayHfRatio = 0.1f;
+            decayHfRatio = Math.Clamp(decayHfRatio, 0.1f, 2.0f);
+
+            float reflectionsGain = 0.2f;
+            reflectionsGain = Math.Clamp(reflectionsGain, 0.0f, 3.16f);
+
+            float reflectionsDelay = 0.0f;
+            reflectionsDelay = Math.Clamp(reflectionsDelay, 0.0f, 0.3f);
+
+            float lateReverbGain = trailingHydrophoneReverbGain * 2f; // Boost relative to main gain
+            lateReverbGain = Math.Clamp(lateReverbGain, 0.0f, 10.0f);
+
+            float lateReverbDelay = 0.8f;
+            lateReverbDelay = Math.Clamp(lateReverbDelay, 0.0f, 0.1f);
+
+            float diffusion = 0.45f;
+            diffusion = Math.Clamp(diffusion, 0.0f, 1.0f);
+
+            float density = 1.0f;
+            density = Math.Clamp(density, 0.0f, 1.0f);
+
+            float gainHf = 1.0f;
+            gainHf = Math.Clamp(gainHf, 0.0f, 1.0f);
+
+
+            AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_DENSITY, density);
+            AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_DIFFUSION, diffusion);
+            AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_GAIN, trailingHydrophoneReverbGain);
+            AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_GAINHF, gainHf);
+            AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_DECAY_TIME, decayTime);
+            AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_DECAY_HFRATIO, decayHfRatio);
+            AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_REFLECTIONS_GAIN, reflectionsGain);
+            AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_REFLECTIONS_DELAY, reflectionsDelay);
+            AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_LATE_REVERB_GAIN, lateReverbGain);
+            AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_LATE_REVERB_DELAY, lateReverbDelay);
+            AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_AIR_ABSORPTION_GAINHF, 1.0f);
+            AlEffects.Effectf(reverbEffectId, AlEffects.AL_REVERB_ROOM_ROLLOFF_FACTOR, 0.0f);
+            AlEffects.Effecti(reverbEffectId, AlEffects.AL_REVERB_DECAY_HFLIMIT, Al.False);
+
+            if ((alError = Al.GetError()) != Al.NoError) { DebugConsole.NewMessage($"[SoundproofWalls] Error applying hydrophone reverb params for effect ID: {reverbEffectId}, {Al.GetErrorString(alError)}"); }
+
+            AlEffects.AuxiliaryEffectSloti(_hydrophoneReverbSlotId, AlEffects.AL_EFFECTSLOT_EFFECT, _hydrophoneReverbEffectId);
+            if ((alError = Al.GetError()) != Al.NoError) { DebugConsole.NewMessage($"[SoundproofWalls] Failed to attach reverb effect ID {_hydrophoneReverbEffectId} to slot ID: {_hydrophoneReverbSlotId}, {Al.GetErrorString(alError)}"); }
         }
 
         /// <summary>
@@ -396,7 +521,7 @@ namespace SoundproofWalls
         /// </summary>
         public void RegisterSource(uint sourceId)
         {
-            if (!IsInitialized || _sourceFilters.ContainsKey(sourceId)) return;
+            if (!IsInitialized || sourceId <= 0 || _sourceFilters.ContainsKey(sourceId)) return;
 
             int alError;
             Al.GetError();
@@ -459,6 +584,19 @@ namespace SoundproofWalls
             int alError;
             Al.GetError();
 
+            if (sourceId <= 0)
+            {
+                if (filterId != INVALID_ID)
+                {
+                    AlEffects.DeleteFilters(1, new[] { filterId });
+                    if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to delete filter ID: {filterId}, {Al.GetErrorString(alError)}");
+                }
+                _sourceFilters.Remove(sourceId);
+                return;
+            }
+
+            _reverbRoutedSources.Remove(sourceId);
+
             // Disconnect auxiliary sends 0 and 1
             Al.Source3i(sourceId, AlEffects.AL_AUXILIARY_SEND_FILTER, AlEffects.AL_EFFECTSLOT_NULL, 0, AlEffects.AL_FILTER_NULL);
             if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to disconnect send 0 for source ID: {sourceId}, {Al.GetErrorString(alError)}");
@@ -485,13 +623,15 @@ namespace SoundproofWalls
 
             if (!IsInitialized || !_sourceFilters.TryGetValue(sourceId, out uint filterId)) { return; }
 
-            // Select which effect slot to route to.
-            uint send1_targetSlot = Send1_DetermineTargetEffectSlot(channelInfo);
-            uint send0_targetSlot = Send0_DetermineTargetEffectSlot(channelInfo);
+            if (sourceId <= 0)
+            {
+                UnregisterSource(sourceId);
+                return;
+            }
 
             UpdateSourceFilter(sourceId, filterId, gainHf, gainLf, channelInfo);
-            RouteSourceToEffectSlot(sourceId, send1_targetSlot, filterId, send: 1);
-            RouteSourceToEffectSlot(sourceId, send0_targetSlot, filterId, send: 0);
+            RouteSourceToEffectSlot(REVERB_SEND, sourceId, DetermineReverbEffectSlot(channelInfo), filterId);
+            RouteSourceToEffectSlot(DISTORTION_SEND, sourceId, DetermineDistortionEffectSlot(channelInfo), filterId);
         }
 
         private void UpdateSourceFilter(uint sourceId, uint filterId, float gainHf, float gainLf, ChannelInfo channelInfo)
@@ -536,18 +676,28 @@ namespace SoundproofWalls
             if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to re-attach filter {filterId} to source {sourceId}, {Al.GetErrorString(alError)}");
         }
 
-        /// <summary>
-        /// Routes a source's auxiliary send to the appropriate reverb slot.
-        /// </summary>
-        private void RouteSourceToEffectSlot(uint sourceId, uint targetSlot, uint filterId, uint send = 1)
+        private void RouteSourceToEffectSlot(uint send, uint sourceId, uint targetSlot, uint filterId)
         {
             if (!IsInitialized || send > AlEffects.MaxAuxiliarySends) return;
 
             Al.GetError();
             int alError;
 
+            // Disable auto gain when a source is sending to a reverb effect slot.
+            bool sourceHasReverb = _reverbRoutedSources.Contains(sourceId);
+            bool shouldDisableGainAuto = sourceHasReverb ||
+                targetSlot == _hydrophoneReverbSlotId || 
+                targetSlot == _outdoorReverbSlotId || 
+                targetSlot == _indoorReverbSlotId;
+
+            int state = shouldDisableGainAuto ? Al.False : Al.True;
+            Al.Sourcei(sourceId, AlEffects.AL_AUXILIARY_SEND_FILTER_GAIN_AUTO, state);
+            if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to set AL_AUXILIARY_SEND_FILTER_GAIN_AUTO for source ID: {sourceId}, {Al.GetErrorString(alError)}");
+            
             Al.Source3i(sourceId, AlEffects.AL_AUXILIARY_SEND_FILTER, (int)targetSlot, (int)send, (int)filterId);
-            if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to route source to target slot ID: {targetSlot} via send {send}, {Al.GetErrorString(alError)}");
+            if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to route source ID {sourceId} to target slot ID {targetSlot} via send {send}, {Al.GetErrorString(alError)}");
+
+            if (shouldDisableGainAuto) { _reverbRoutedSources.Add(sourceId); }
         }
 
         /// <summary>
@@ -567,6 +717,7 @@ namespace SoundproofWalls
             var sourceIdsToClean = new List<uint>(_sourceFilters.Keys);
             foreach (uint sourceId in sourceIdsToClean) { UnregisterSource(sourceId); }
             _sourceFilters.Clear();
+            _reverbRoutedSources.Clear();
 
             // Cleanup reverb slots and effects.
             // Detach effects from slots
@@ -575,6 +726,9 @@ namespace SoundproofWalls
 
             if (_outdoorReverbSlotId != INVALID_ID) AlEffects.AuxiliaryEffectSloti(_outdoorReverbSlotId, AlEffects.AL_EFFECTSLOT_EFFECT, AlEffects.AL_EFFECT_NULL);
             if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to detach outdoor reverb effect from slot ID: {_outdoorReverbSlotId}, {Al.GetErrorString(alError)}");
+
+            if (_hydrophoneReverbSlotId != INVALID_ID) AlEffects.AuxiliaryEffectSloti(_hydrophoneReverbSlotId, AlEffects.AL_EFFECTSLOT_EFFECT, AlEffects.AL_EFFECT_NULL);
+            if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to detach hydrophone reverb effect from slot ID: {_hydrophoneReverbSlotId}, {Al.GetErrorString(alError)}");
 
             if (_hydrophoneDistortionSlotId != INVALID_ID) AlEffects.AuxiliaryEffectSloti(_hydrophoneDistortionSlotId, AlEffects.AL_EFFECTSLOT_EFFECT, AlEffects.AL_EFFECT_NULL);
             if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to detach hydrophone distortion effect from slot ID: {_hydrophoneDistortionSlotId}, {Al.GetErrorString(alError)}");
@@ -585,10 +739,13 @@ namespace SoundproofWalls
 
             // Delete Slots
             if (_indoorReverbSlotId != INVALID_ID) AlEffects.DeleteAuxiliaryEffectSlots(1, new[] { _indoorReverbSlotId });
-            if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to delete indoor slot ID: {_indoorReverbSlotId}, {Al.GetErrorString(alError)}");
+            if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to delete indoor reverb slot ID: {_indoorReverbSlotId}, {Al.GetErrorString(alError)}");
 
             if (_outdoorReverbSlotId != INVALID_ID) AlEffects.DeleteAuxiliaryEffectSlots(1, new[] { _outdoorReverbSlotId });
-            if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to delete outdoor slot ID: {_outdoorReverbSlotId}, {Al.GetErrorString(alError)}");
+            if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to delete outdoor reverb slot ID: {_outdoorReverbSlotId}, {Al.GetErrorString(alError)}");
+
+            if (_hydrophoneReverbSlotId != INVALID_ID) AlEffects.DeleteAuxiliaryEffectSlots(1, new[] { _hydrophoneReverbSlotId });
+            if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to delete hydrophone reverb slot ID: {_hydrophoneReverbSlotId}, {Al.GetErrorString(alError)}");
 
             if (_hydrophoneDistortionSlotId != INVALID_ID) AlEffects.DeleteAuxiliaryEffectSlots(1, new[] { _hydrophoneDistortionSlotId });
             if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to delete hydrophone distortion slot ID: {_hydrophoneDistortionSlotId}, {Al.GetErrorString(alError)}");
@@ -603,6 +760,9 @@ namespace SoundproofWalls
             if (_outdoorReverbEffectId != INVALID_ID) AlEffects.DeleteEffects(1, new[] { _outdoorReverbEffectId });
             if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to delete outdoor reverb effect ID: {_outdoorReverbEffectId}, {Al.GetErrorString(alError)}");
 
+            if (_hydrophoneReverbEffectId != INVALID_ID) AlEffects.DeleteEffects(1, new[] { _hydrophoneReverbEffectId });
+            if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to delete hydrophone reverb effect ID: {_hydrophoneReverbEffectId}, {Al.GetErrorString(alError)}");
+
             if (_hydrophoneDistortionEffectId != INVALID_ID) AlEffects.DeleteEffects(1, new[] { _hydrophoneDistortionEffectId });
             if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to delete hydrophone distortion effect ID: {_hydrophoneDistortionEffectId}, {Al.GetErrorString(alError)}");
 
@@ -615,6 +775,8 @@ namespace SoundproofWalls
             _indoorReverbEffectId = INVALID_ID;
             _outdoorReverbSlotId = INVALID_ID;
             _outdoorReverbEffectId = INVALID_ID;
+            _hydrophoneReverbSlotId = INVALID_ID;
+            _hydrophoneReverbEffectId = INVALID_ID;
             _hydrophoneDistortionSlotId = INVALID_ID;
             _hydrophoneDistortionEffectId = INVALID_ID;
             _loudDistortionSlotId = INVALID_ID;
@@ -626,41 +788,47 @@ namespace SoundproofWalls
         /// <summary>
         /// Determines the correct reverb slot ID based on environment and config flags.
         /// </summary>
-        private uint Send1_DetermineTargetEffectSlot(ChannelInfo channelInfo)
+        private uint DetermineReverbEffectSlot(ChannelInfo channelInfo)
         {
-            bool inHull = channelInfo.ChannelHull != null;
-            bool hydrophoned = channelInfo.Hydrophoned;
-            bool ingoreReverb = channelInfo.IgnoreReverb;
-            float amplitude = channelInfo.Channel.CurrentAmplitude * channelInfo.Gain; // TODO this may be unreliable if a user changes the submerged gain mult
-            bool shouldReverbWater = channelInfo.IsLoud || amplitude >= ConfigManager.Config.DyanmicReverbWaterAmplitudeThreshold;
-
-            if (hydrophoned && ConfigManager.Config.HydrophoneDistortionEnabled)
-            { 
-                return _hydrophoneDistortionSlotId; 
-            }
-
-            if (ingoreReverb || !ConfigManager.Config.DynamicReverbEnabled)
+            if (channelInfo.Hydrophoned && ConfigManager.Config.HydrophoneReverbEnabled)
             {
-                return INVALID_ID;
+                return _hydrophoneReverbSlotId;
+            }
+            // Standard reverb.
+            else if (!channelInfo.Hydrophoned && ConfigManager.Config.DynamicReverbEnabled)
+            {
+                bool inHull = channelInfo.ChannelHull != null;
+                float amplitude = channelInfo.Channel.CurrentAmplitude * channelInfo.Gain; // TODO this may be unreliable if a user changes the submerged gain mult
+                bool shouldReverbWater = !channelInfo.IgnoreWaterReverb &&
+                    (channelInfo.IsLoud || channelInfo.SoundInfo.ForceReverb ||
+                    amplitude >= ConfigManager.Config.DyanmicReverbWaterAmplitudeThreshold);
+
+                if (inHull)
+                {
+                    return Listener.ConnectedArea >= ConfigManager.Config.DynamicReverbMinArea
+                        ? _indoorReverbSlotId
+                        : INVALID_ID;
+                }
+                else // Not in hull
+                {
+                    return shouldReverbWater
+                        ? _outdoorReverbSlotId
+                        : INVALID_ID;
+                }
             }
 
-            if (inHull)
-            {
-                return Listener.ConnectedArea >= ConfigManager.Config.DynamicReverbMinArea
-                    ? _indoorReverbSlotId
-                    : INVALID_ID;
-            }
-            else // Not in hull
-            {
-                return shouldReverbWater
-                    ? _outdoorReverbSlotId
-                    : INVALID_ID;
-            }
+            return INVALID_ID;
         }
 
-        private uint Send0_DetermineTargetEffectSlot(ChannelInfo channelInfo)
+        private uint DetermineDistortionEffectSlot(ChannelInfo channelInfo)
         {
-            if (channelInfo.SoundInfo.Distortion && 
+            if (channelInfo.Hydrophoned &&
+                ConfigManager.Config.HydrophoneDistortionEnabled)
+            {
+                return _hydrophoneDistortionSlotId;
+            }
+            else if (!channelInfo.Hydrophoned &&
+                channelInfo.SoundInfo.Distortion && 
                 channelInfo.MuffleStrength <= 0.5f && 
                 ConfigManager.Config.LoudSoundDistortionEnabled) 
             { return _loudDistortionSlotId; }

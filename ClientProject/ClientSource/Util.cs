@@ -4,7 +4,6 @@ using Barotrauma.Networking;
 using Barotrauma.Sounds;
 using Microsoft.Xna.Framework;
 using System.Reflection;
-using System.Xml.Linq;
 
 namespace SoundproofWalls
 {
@@ -63,8 +62,11 @@ namespace SoundproofWalls
                     !oldConfig.LowpassForcedSounds.SetEquals(newConfig.LowpassForcedSounds) ||
                     !oldConfig.LowpassIgnoredSounds.SetEquals(newConfig.LowpassIgnoredSounds) ||
                     !oldConfig.ReverbForcedSounds.SetEquals(newConfig.ReverbForcedSounds) ||
-                    !oldConfig.ReverbIgnoredSounds.SetEquals(newConfig.LowpassIgnoredSounds) ||
-                    !oldConfig.ContainerIgnoredSounds.SetEquals(newConfig.ContainerIgnoredSounds);
+                    !oldConfig.WaterReverbIgnoredSounds.SetEquals(newConfig.WaterReverbIgnoredSounds) ||
+                    !oldConfig.AirReverbIgnoredSounds.SetEquals(newConfig.AirReverbIgnoredSounds) ||
+                    !oldConfig.ContainerIgnoredSounds.SetEquals(newConfig.ContainerIgnoredSounds) ||
+                    !oldConfig.HydrophoneMuffleIgnoredSounds.SetEquals(newConfig.HydrophoneMuffleIgnoredSounds) ||
+                    !oldConfig.HydrophoneVisualIgnoredSounds.SetEquals(newConfig.HydrophoneVisualIgnoredSounds);
         }
 
         private static Sound GetNewSound(Sound oldSound)
@@ -77,16 +79,6 @@ namespace SoundproofWalls
             {
                 return GameMain.SoundManager.LoadSound(oldSound.Filename, oldSound.Stream);
             }
-        }
-
-        public static void HardDispose(this SoundChannel channel)
-        {
-            channel.Far = channel.Sound.BaseFar;
-            channel.Near = channel.Sound.BaseNear;
-            channel.Looping = false;
-            channel.FrequencyMultiplier = 1;
-            channel.Gain = 0;
-            channel.Dispose();
         }
 
         public static float SmoothStep(float current, float target, float maxStep)
@@ -141,7 +133,7 @@ namespace SoundproofWalls
             }
 
             sw.Stop();
-            LuaCsLogger.Log($"Created {t} new round sounds. Scanned {i} ({sw.ElapsedMilliseconds} ms)");
+            LuaCsLogger.Log($"[SoundproofWalls] Scanned {i} RoundSounds and created {t} new buffers. ({sw.ElapsedMilliseconds} ms)");
         }
         private static void AllocateCharacterSounds(Dictionary<string, Sound> updatedSounds, bool starting = false, bool stopping = false)
         {
@@ -174,7 +166,7 @@ namespace SoundproofWalls
                 }
             }
             sw.Stop();
-            LuaCsLogger.Log($"Created {t} new character sounds. Scanned {i} ({sw.ElapsedMilliseconds} ms)");
+            LuaCsLogger.Log($"[SoundproofWalls] Scanned {i} CharacterSounds and created {t} new buffers. ({sw.ElapsedMilliseconds} ms)");
         }
 
         private static void AllocateComponentSounds(Dictionary<string, Sound> updatedSounds, bool starting = false, bool stopping = false)
@@ -214,7 +206,7 @@ namespace SoundproofWalls
                 }
             }
             sw.Stop();
-            LuaCsLogger.Log($"Created {t} new comp sounds. Scanned {i} ({sw.ElapsedMilliseconds} ms)");
+            LuaCsLogger.Log($"[SoundproofWalls] Scanned {i} ItemComponent sounds and created {t} new buffers. ({sw.ElapsedMilliseconds} ms)");
         }
 
         private static void AllocateStatusEffectSounds(Dictionary<string, Sound> updatedSounds, bool starting = false, bool stopping = false)
@@ -247,7 +239,7 @@ namespace SoundproofWalls
                 }
             }
             sw.Stop();
-            LuaCsLogger.Log($"Created {t} new status effect sounds. Scanned {i} ({sw.ElapsedMilliseconds} ms)");
+            LuaCsLogger.Log($"[SoundproofWalls] Scanned {i} StatusEffect sounds and created {t} new buffers. ({sw.ElapsedMilliseconds} ms)");
         }
 
         private static void ReloadPrefabSounds(Dictionary<string, Sound> updatedSounds, bool starting = false, bool stopping = false)
@@ -256,9 +248,11 @@ namespace SoundproofWalls
             sw.Start();
 
             int t = 0;
+            int i = 0;
             foreach (SoundPrefab soundPrefab in SoundPrefab.Prefabs)
             {
                 Sound oldSound = soundPrefab.Sound;
+                i++;
 
                 if (ShouldSkipSound(oldSound, starting, stopping))
                     continue;
@@ -272,11 +266,10 @@ namespace SoundproofWalls
 
                 soundPrefab.Sound = newSound;
                 oldSound.Dispose();
-                t++;
             }
 
             sw.Stop();
-            LuaCsLogger.Log($"Created {t} new Sound prefab sounds ({sw.ElapsedMilliseconds} ms)");
+            LuaCsLogger.Log($"[SoundproofWalls] Scanned {i} SoundPrefab sounds and created {t} new buffers. ({sw.ElapsedMilliseconds} ms)");
         }
 
         // Compatibility with ReSound.
@@ -375,7 +368,7 @@ namespace SoundproofWalls
 
         public static void ReloadSounds(bool starting = false, bool stopping = false)
         {
-            LuaCsLogger.Log("Soundproof Walls: ReloadSounds() started running.");
+            LuaCsLogger.Log("[SoundproofWalls] Reloading sound buffers...");
 
             MoonSharp.Interpreter.DynValue Resound = GameMain.LuaCs.Lua.Globals.Get("Resound");
             // ReSound has its own code to stop at the end of the round but it needs to happen here and now before SPW.
@@ -395,7 +388,7 @@ namespace SoundproofWalls
 
             StartResound(Resound);
 
-            LuaCsLogger.Log("Soundproof Walls: ReloadSounds() stopped running.");
+            LuaCsLogger.Log("[SoundproofWalls] Finished reloading sound buffers.");
         }
 
         public static Limb GetCharacterHead(Character character)
