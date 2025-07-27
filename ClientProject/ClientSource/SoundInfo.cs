@@ -1,4 +1,6 @@
-﻿using Barotrauma.Sounds;
+﻿using Barotrauma;
+using Barotrauma.Sounds;
+using Microsoft.Xna.Framework;
 
 namespace SoundproofWalls
 {
@@ -103,23 +105,60 @@ namespace SoundproofWalls
             }
         }
 
-        private static CustomSound? GetCustomSound(string soundName)
+        private static CustomSound? GetCustomSound(string filename)
         {
-            string s = soundName.ToLower();
+            filename = filename.ToLower();
+            CustomSound? customSound = null;
+            ContentPackage? overridingMod = null;
 
             foreach (var sound in ConfigManager.Config.CustomSounds)
             {
-                if (s.Contains(sound.Keyword.ToLower()))
+                string keyword = sound.Keyword.ToLower();
+                if (filename.Contains(keyword))
                 {
                     bool excluded = false;
                     foreach (string exclusion in sound.KeywordExclusions)
                     {
-                        if (s.Contains(exclusion.ToLower())) { excluded = true; }
+                        if (filename.Contains(exclusion.ToLower())) { excluded = true; break; }
                     }
-                    if (!excluded) { return sound; }
+
+                    if (excluded) { continue; }
+                    
+                    if (customSound == null) { customSound = sound; }
+                    //else { LuaCsLogger.LogError($"[SoundproofWalls] Warning: sound with filename \"{filename}\" matched with multiple CustomSound keywords (\"{customSound.Keyword.ToLower()}\" & \"{keyword}\"). The CustomSound highest on the list has been selected (\"{customSound.Keyword.ToLower()}\")."); }
                 }
             }
-            return null;
+
+            foreach (var kvp in ConfigManager.ModdedCustomSounds)
+            {
+                ContentPackage mod = kvp.Key;
+                HashSet<CustomSound> moddedCustomSounds = kvp.Value;
+
+                foreach (var sound in moddedCustomSounds)
+                {
+                    string keyword = sound.Keyword.ToLower();
+                    if (filename.Contains(keyword))
+                    {
+                        bool excluded = false;
+                        foreach (string exclusion in sound.KeywordExclusions)
+                        {
+                            if (filename.Contains(exclusion.ToLower())) { excluded = true; break; }
+                        }
+
+                        if (excluded) { continue; }
+
+                        // Putting this warning here for other modders.
+                        if (overridingMod == null) 
+                        { 
+                            if (customSound != null) { LuaCsLogger.Log($"[SoundproofWalls] Potential conflict warning: sound with filename \"{filename}\" was already assigned CustomSound data using the keyword \"{customSound.Keyword.ToLower()}\". The mod \"{mod.Name}\" is overriding this assignment with their own CustomSound using the keyword \"{keyword}\". If this is intentional you can ignore this message.", color: Color.Yellow); }
+                            customSound = sound; overridingMod = mod;
+                        }
+                        else { LuaCsLogger.LogError($"[SoundproofWalls] Mod conflict warning: sound with filename \"{filename}\" was already assigned CustomSound data by the mod \"{overridingMod.Name}\" using the keyword \"{customSound.Keyword.ToLower()}\". The mod \"{mod.Name}\" is overriding this assignment with their own CustomSound using the keyword \"{keyword}\". The mod with the highest load order has been selected (\"{overridingMod.Name}\")."); }
+                    }
+                }
+            }
+
+            return customSound;
         }
     }
 }

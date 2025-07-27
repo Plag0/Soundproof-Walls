@@ -4,6 +4,7 @@ using Barotrauma.Networking;
 using Barotrauma.Sounds;
 using Microsoft.Xna.Framework;
 using System.Reflection;
+using System.Text.Json;
 
 namespace SoundproofWalls
 {
@@ -67,6 +68,33 @@ namespace SoundproofWalls
                     !oldConfig.ContainerIgnoredSounds.SetEquals(newConfig.ContainerIgnoredSounds) ||
                     !oldConfig.HydrophoneMuffleIgnoredSounds.SetEquals(newConfig.HydrophoneMuffleIgnoredSounds) ||
                     !oldConfig.HydrophoneVisualIgnoredSounds.SetEquals(newConfig.HydrophoneVisualIgnoredSounds);
+        }
+
+        public static bool ShouldUpdateSoundInfo(Dictionary<ContentPackage, HashSet<CustomSound>> dict1, Dictionary<ContentPackage, HashSet<CustomSound>> dict2)
+        {
+            if (dict1 == dict2) { LuaCsLogger.Log("1"); return false; }
+            if (dict1 == null || dict2 == null) { LuaCsLogger.Log("2"); return true; }
+            if (dict1.Count != dict2.Count) { LuaCsLogger.Log("3"); return true; }
+
+            // Check each key and its corresponding hash set.
+            foreach (var kvp in dict1)
+            {
+                ContentPackage key = kvp.Key;
+                HashSet<CustomSound> set1 = kvp.Value;
+
+                // Check if the second dictionary has the same key.
+                // If not, or if the hash sets don't match, they're not equal.
+                if (!dict2.TryGetValue(key, out HashSet<CustomSound> set2) || 
+                    JsonSerializer.Serialize(set1) != JsonSerializer.Serialize(set2))
+                {
+                    LuaCsLogger.Log("4");
+                    return true;
+                }
+            }
+
+            // If we get through the whole loop, they are equal.
+            LuaCsLogger.Log("5");
+            return false;
         }
 
         private static Sound GetNewSound(Sound oldSound)

@@ -272,16 +272,16 @@ namespace SoundproofWalls
         public StatusEffect? StatusEffect = null;
         public ItemComponent? ItemComp = null;
         public Item? Item = null;
-        private Client? speakingClient = null;
+        public Client? SpeakingClient = null;
         private ChatMessageType? messageType = null;
 
         private bool voiceUseMuffleFilter 
         { 
             set 
             { 
-                if (speakingClient != null && speakingClient.VoipSound != null) 
+                if (SpeakingClient != null && SpeakingClient.VoipSound != null) 
                 { 
-                    speakingClient.VoipSound.UseMuffleFilter = value; 
+                    SpeakingClient.VoipSound.UseMuffleFilter = value; 
                 } 
             } 
         }
@@ -290,9 +290,9 @@ namespace SoundproofWalls
         {
             set
             {
-                if (speakingClient != null && speakingClient.VoipSound != null)
+                if (SpeakingClient != null && SpeakingClient.VoipSound != null)
                 {
-                    speakingClient.VoipSound.UseRadioFilter = value;
+                    SpeakingClient.VoipSound.UseRadioFilter = value;
                 }
             }
         }
@@ -348,7 +348,7 @@ namespace SoundproofWalls
             StatusEffect = original.StatusEffect;
             ItemComp = original.ItemComp;
             Item = original.Item;
-            speakingClient = original.speakingClient;
+            SpeakingClient = original.SpeakingClient;
             messageType = original.messageType;
     }
         public ChannelInfo CreateClone(Vector3 pos)
@@ -375,7 +375,7 @@ namespace SoundproofWalls
             this.ChannelHull = channelHull;
             this.ItemComp = itemComp;
             this.StatusEffect = statusEffect;
-            this.speakingClient = speakingClient;
+            this.SpeakingClient = speakingClient;
             this.messageType = messageType;
 
             SoundInfo = SoundInfoManager.EnsureGetSoundInfo(channel.Sound);
@@ -450,7 +450,7 @@ namespace SoundproofWalls
             ChannelHull = soundHull ?? ChannelHull;
             this.ItemComp = itemComp;
             this.StatusEffect = statusEffect;
-            this.speakingClient = speakingClient;
+            this.SpeakingClient = speakingClient;
             this.messageType = messageType;
 
             if (Ignored)
@@ -487,7 +487,7 @@ namespace SoundproofWalls
             // Currently this is important to do every update because some of this information might not be present on the first update
             // Potentially I could do something like: if (Type == Unknown && !IsFirstIteration)
             DynamicType = SoundInfo.StaticType;
-            if (speakingClient != null && messageType != null)
+            if (SpeakingClient != null && messageType != null)
             {
                 DynamicType = (messageType == ChatMessageType.Radio) ? SoundInfo.AudioType.RadioVoice : SoundInfo.AudioType.LocalVoice;
             }
@@ -509,7 +509,7 @@ namespace SoundproofWalls
             Limb? speakerMouth = null;
             if (AudioIsVoice)
             {
-                speakerCharacter = speakingClient?.Character;
+                speakerCharacter = SpeakingClient?.Character;
                 speakerMouth = speakerCharacter?.AnimController?.GetLimb(LimbType.Head) ?? speakerCharacter?.AnimController?.GetLimb(LimbType.Torso);
                 bool speakerIsAlive = speakerCharacter != null && !speakerCharacter.IsDead;
                 if (!speakerIsAlive) { inWater = false; return; } // No point updating anything for dead speakers. Note: can only hear a dead speaker if the listener is dead (spectating) too.
@@ -655,9 +655,9 @@ namespace SoundproofWalls
             }
 
             // Muffle radio comms underwater to make room for bubble sounds.
-            if (AudioIsRadioVoice && speakingClient != null)
+            if (AudioIsRadioVoice && SpeakingClient != null)
             {
-                if (BubbleManager.ShouldPlayBubbles(speakingClient.Character))
+                if (BubbleManager.ShouldPlayBubbles(SpeakingClient.Character))
                 {
                     AddObstruction(Obstruction.WaterSurface, "Drowning");
                 }
@@ -666,7 +666,7 @@ namespace SoundproofWalls
                 dontReverb = !config.DynamicReverbRadio;
                 return;
             }
-            else if (AudioIsLocalVoice && speakingClient != null)
+            else if (AudioIsLocalVoice && SpeakingClient != null)
             {
                 dontReverb = !config.DynamicReverbLocal;
             }

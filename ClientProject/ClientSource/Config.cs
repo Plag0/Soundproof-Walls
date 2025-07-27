@@ -145,6 +145,9 @@ namespace SoundproofWalls
         public bool EavesdroppingMuffle { get; set; } = true; // Not available for Classic mode.
         public bool EavesdroppingTransitionEnabled { get; set; } = true;
         public bool EavesdroppingDucksRadio { get; set; } = true;
+        public bool EavesdroppingRevealsAll { get; set; } = false;
+        public int EavesdroppingSpriteMaxSize { get; set; } = 400;
+        public float EavesdroppingSpriteSizeMultiplier { get; set; } = 0.2f;
         public float EavesdroppingSpriteOpacity { get; set; } = 0.3f;
         public float EavesdroppingSpriteFadeCurve { get; set; } = 0.45f;
         public string EavesdroppingBind { get; set; } = "SecondaryMouse";
@@ -189,7 +192,7 @@ namespace SoundproofWalls
 
         public HashSet<string> HydrophoneMuffleIgnoredSounds { get; set; } = new HashSet<string> // Sounds that are always muffled.
         {
-            "sonar",
+            "sonar", // Don't muffle sonar pings when toggling it while eavesdropping
         };
         public HashSet<string> HydrophoneVisualIgnoredSounds { get; set; } = new HashSet<string> // Sounds that are always reverbed.
         {
@@ -263,7 +266,7 @@ namespace SoundproofWalls
 
         // Sound Rules
         // A general rule is to keep the most vague names at the bottom so when searching for a match the more specific ones can be found first.
-        public HashSet<CustomSound> CustomSounds { get; set; } = new HashSet<CustomSound>(new ElementEqualityComparer())
+        public HashSet<CustomSound> CustomSounds { get; set; } = new HashSet<CustomSound>()
         {
         new CustomSound("footstep",
             gainMultiplier: 0.75f,

@@ -3,7 +3,6 @@ using Barotrauma.Items.Components;
 using Barotrauma.Networking;
 using Barotrauma.Sounds;
 using System.Collections.Concurrent;
-using System.Threading.Channels;
 
 namespace SoundproofWalls
 {
@@ -15,7 +14,7 @@ namespace SoundproofWalls
 
         public const float CLONE_FREQ_MULT_CODE = 1.006921f;
 
-        public static int SourceCount = 64;
+        public static int SourceCount = 128;
 
         private static ConcurrentDictionary<uint, ChannelInfo> channelInfoMap = new ConcurrentDictionary<uint, ChannelInfo>();
         private static ConcurrentDictionary<SoundChannel, bool> pitchedChannels = new ConcurrentDictionary<SoundChannel, bool>();
@@ -29,12 +28,15 @@ namespace SoundproofWalls
 
             foreach (ChannelInfo info in channelInfoMap.Values)
             {
-                if (info.Eavesdropped && !info.AudioIsFlow && !info.AudioIsFire && info.Channel.IsPlaying)
+                if ((info.Eavesdropped || ConfigManager.Config.EavesdroppingRevealsAll && Listener.IsEavesdropping) && 
+                    !info.AudioIsFlow && !info.AudioIsFire && !info.AudioIsAmbience && 
+                    info.Channel.IsPlaying && info.ChannelHull != Listener.CurrentHull)
                 {
                     eavesdroppedChannels.Add(info);
                 }
                 // Don't display flow/fire sounds or engine sounds.
-                else if (info.Hydrophoned && !info.AudioIsFlow && !info.AudioIsFire && info.Channel.IsPlaying && info.ItemComp as Engine == null && !info.SoundInfo.IgnoreHydrophoneVisuals)
+                else if (info.Hydrophoned && !info.AudioIsFlow && !info.AudioIsFire && !info.AudioIsAmbience 
+                    && info.Channel.IsPlaying && info.ItemComp as Engine == null && !info.SoundInfo.IgnoreHydrophoneVisuals)
                 {
                     hydrophonedChannels.Add(info);
                 }

@@ -51,17 +51,15 @@ namespace SoundproofWalls
         public Tab CurrentTab { get; private set; }
 
         private Config unsavedConfig;
+        private Dictionary<ContentPackage, HashSet<CustomSound>> unsavedModdedCustomSounds;
 
         private readonly GUIFrame mainFrame;
         private readonly GUILayoutGroup tabber;
         private readonly GUIFrame contentFrame;
         private readonly Dictionary<Tab, (GUIButton Button, GUIFrame Content)> tabContents;
 
-        // This will hold a reference to the function that updates the specific keybind we're currently editing.
-        // If it's null, we are not waiting for any input.
         private Action<KeyOrMouse>? currentKeybindSetter;
         private GUIButton? selectedKeybindButton;
-        // This is a flag to prevent the click that selects the box from also being registered as the new keybind.
         private bool keybindBoxSelectedThisFrame;
 
         public static void Create(bool startAtDefaultValues = false)
@@ -81,7 +79,7 @@ namespace SoundproofWalls
                 return; // If the pause menu didn't open, we can't show the popup.
             }
 
-            var popupFrame = new GUIFrame(new RectTransform(new Vector2(0.4f, 0.6f), GUI.PauseMenu.RectTransform, Anchor.Center));
+            var popupFrame = new GUIFrame(new RectTransform(new Vector2(0.55f, 0.65f), GUI.PauseMenu.RectTransform, Anchor.Center));
             var mainLayout = new GUILayoutGroup(new RectTransform(new Vector2(0.9f, 0.95f), popupFrame.RectTransform, Anchor.Center), isHorizontal: false)
             {
                 Stretch = true,
@@ -89,7 +87,7 @@ namespace SoundproofWalls
             };
 
             // 1. Header Section
-            var headerSection = new GUILayoutGroup(new RectTransform(new Vector2(1.0f, 0.125f), mainLayout.RectTransform), isHorizontal: false, childAnchor: Anchor.TopCenter)
+            var headerSection = new GUILayoutGroup(new RectTransform(new Vector2(1.0f, 0.18f), mainLayout.RectTransform), isHorizontal: false, childAnchor: Anchor.TopCenter)
             {
                 RelativeSpacing = 0.05f
             };
@@ -122,7 +120,7 @@ namespace SoundproofWalls
             Spacer(bodyList.Content);
 
             // 3. Footer Section
-            var footerSection = new GUILayoutGroup(new RectTransform(new Vector2(1.0f, 0.125f), mainLayout.RectTransform), isHorizontal: true)
+            var footerSection = new GUILayoutGroup(new RectTransform(new Vector2(1.0f, 0.12f), mainLayout.RectTransform), isHorizontal: true)
             {
                 Stretch = true,
                 AbsoluteSpacing = 5
@@ -311,6 +309,12 @@ namespace SoundproofWalls
 
             unsavedConfig = ConfigManager.CloneConfig(startAtDefaultValues ? Menu.defaultConfig : ConfigManager.LocalConfig);
             unsavedConfig.EavesdroppingKeyOrMouse = unsavedConfig.ParseEavesdroppingBind();
+
+            // Clone the modded custom sounds list.
+            var targetDict = startAtDefaultValues ? ConfigManager.DefaultModdedCustomSounds : ConfigManager.ModdedCustomSounds;
+            unsavedModdedCustomSounds = targetDict.ToDictionary(
+                entry => entry.Key, 
+                entry => new HashSet<CustomSound>(entry.Value.Select(sound => JsonSerializer.Deserialize<CustomSound>(JsonSerializer.Serialize(sound)))));
 
             mainFrame = new GUIFrame(new RectTransform(new Vector2(0.5f, 0.6f), GUI.PauseMenu.RectTransform, Anchor.Center));
 
@@ -1008,7 +1012,7 @@ namespace SoundproofWalls
             {
                 var defaultSet = getter(Menu.defaultConfig);
                 setter(defaultSet);
-                textBox.Text = System.Text.Json.JsonSerializer.Serialize(defaultSet, jsonOptions);
+                textBox.Text = JsonSerializer.Serialize(defaultSet, jsonOptions);
                 return true;
             };
 
@@ -1019,12 +1023,12 @@ namespace SoundproofWalls
 
                 try
                 {
-                    var deserializedList = System.Text.Json.JsonSerializer.Deserialize<List<T>>(textBox.Text) ?? new List<T>();
+                    var deserializedList = JsonSerializer.Deserialize<List<T>>(textBox.Text) ?? new List<T>();
                     var newSet = new HashSet<T>(deserializedList, getter(unsavedConfig).Comparer);
                     setter(newSet);
                     label.TextColor = GUIStyle.TextColorNormal;
                 }
-                catch (System.Text.Json.JsonException)
+                catch (JsonException)
                 {
                     label.TextColor = GUIStyle.Red;
                 }
@@ -1042,13 +1046,13 @@ namespace SoundproofWalls
 
             var localSet = getter(unsavedConfig);
             var serverSet = getter(ConfigManager.ServerConfig ?? unsavedConfig);
-            // Call the new generic tooltip helper, passing the itemFormatter
+
             var (fullTooltip, diffCount) = GenerateServerDiffTooltip(localSet, serverSet, tooltip, itemFormatter);
 
             textBox.ToolTip = resetButton.ToolTip = label.ToolTip = fullTooltip;
             label.Text = diffCount > 0 ? $"{labelText} ({diffCount})" : labelText;
 
-            textBox.Text = System.Text.Json.JsonSerializer.Serialize(localSet, jsonOptions);
+            textBox.Text = JsonSerializer.Serialize(localSet, jsonOptions);
         }
 
         /// <summary>
@@ -1058,14 +1062,13 @@ namespace SoundproofWalls
             HashSet<T> localSet,
             HashSet<T> serverSet,
             LocalizedString baseTooltip,
-            Func<T, string> itemFormatter) // New: A function to convert an item of type T to a string
+            Func<T, string> itemFormatter)
         {
             if (!GameMain.IsMultiplayer || ConfigManager.ServerConfig == null)
             {
                 return (baseTooltip.Value, 0);
             }
 
-            // This works because your HashSets are created with the correct IEqualityComparer
             var differences = localSet.Except(serverSet).Union(serverSet.Except(localSet)).ToList();
 
             if (differences.Count == 0)
@@ -1087,6 +1090,80 @@ namespace SoundproofWalls
             }
 
             return (sb.ToString(), differences.Count);
+        }
+
+        private void CreateModdedCustomSoundsJsonTextBox(
+            GUIListBox parentListBox,
+            LocalizedString labelText,
+            LocalizedString tooltip,
+            Func<Dictionary<ContentPackage, HashSet<CustomSound>>, HashSet<CustomSound>> getter,
+            Action<HashSet<CustomSound>> setter)
+        {
+            GUIFrame parent = parentListBox.Content;
+            var topRow = new GUILayoutGroup(new RectTransform(new Vector2(1.0f, 0.05f), parent.RectTransform), isHorizontal: true);
+            var label = new GUITextBlock(new RectTransform(new Vector2(0.8f, 1.0f), topRow.RectTransform), labelText, font: GUIStyle.SubHeadingFont);
+            var resetButton = new GUIButton(new RectTransform(new Vector2(0.2f, 1.0f), topRow.RectTransform), TextManager.Get("spw_reset"), style: "GUIButtonSmall");
+
+            var listBox = new GUIListBox(new RectTransform(new Vector2(1.0f, 0.25f), parent.RectTransform));
+            var textBox = new GUITextBox(new RectTransform(Vector2.One, listBox.Content.RectTransform), "", wrap: true, style: "GUITextBoxNoBorder");
+            listBox.ScrollBarEnabled = false;
+
+            // shitty fix for the textbox blocking tab buttons
+            new GUICustomComponent(new RectTransform(Vector2.Zero, listBox.Content.RectTransform), onUpdate: (deltaTime, component) =>
+            {
+                bool mouseInParentListBox = parentListBox.Rect.Contains(PlayerInput.MousePosition);
+                bool mouseInListBox = listBox.Rect.Contains(PlayerInput.MousePosition);
+                textBox.Visible = !mouseInListBox || mouseInParentListBox;
+            });
+
+            Action updateSize = () =>
+            {
+                Vector2 textSize = textBox.Font.MeasureString(textBox.WrappedText);
+                listBox.RectTransform.NonScaledSize = new Point(listBox.Rect.Width, (int)textSize.Y + GUI.IntScale(20));
+
+                parentListBox.scrollBarNeedsRecalculation = true;
+            };
+
+            resetButton.OnClicked = (btn, data) =>
+            {
+                var defaultSet = getter(ConfigManager.DefaultModdedCustomSounds);
+                setter(defaultSet);
+                textBox.Text = JsonSerializer.Serialize(defaultSet, jsonOptions);
+                return true;
+            };
+
+            textBox.OnTextChangedDelegate = (sender, e) =>
+            {
+                textBox.SetText(textBox.Text, store: true);
+                updateSize();
+
+                try
+                {
+                    var deserializedList = JsonSerializer.Deserialize<List<CustomSound>>(textBox.Text) ?? new List<CustomSound>();
+                    var newSet = new HashSet<CustomSound>(deserializedList, getter(unsavedModdedCustomSounds).Comparer);
+                    setter(newSet);
+                    label.TextColor = GUIStyle.TextColorNormal;
+                }
+                catch (JsonException)
+                {
+                    label.TextColor = GUIStyle.Red;
+                }
+                return true;
+            };
+
+            textBox.OnEnterPressed = (sender, e) =>
+            {
+                int caretIndex = textBox.CaretIndex;
+                textBox.Text = textBox.Text.Substring(0, caretIndex) + "\n" + textBox.Text.Substring(caretIndex);
+                textBox.CaretIndex = caretIndex + 1;
+                updateSize();
+                return true;
+            };
+
+            var localSet = getter(unsavedModdedCustomSounds);
+            textBox.ToolTip = resetButton.ToolTip = label.ToolTip = tooltip;
+            label.Text = labelText;
+            textBox.Text = JsonSerializer.Serialize(localSet, jsonOptions);
         }
         #endregion
 
@@ -2418,6 +2495,46 @@ namespace SoundproofWalls
 
             SpacerLabel(settingsFrame, TextManager.Get("spw_eavesdroppingcategoryvisuals"));
 
+            Tickbox(settingsFrame, FormatTextBoxLabel(
+                label: TextManager.Get("spw_eavesdroppingrevealsall"),
+                serverValue: ConfigManager.ServerConfig?.EavesdroppingRevealsAll ?? default,
+                formatter: BoolFormatter),
+                tooltip: TextManager.Get("spw_eavesdroppingrevealsalltooltip"),
+                currentValue: unsavedConfig.EavesdroppingRevealsAll,
+                setter: v => unsavedConfig.EavesdroppingRevealsAll = v);
+
+            Spacer(settingsFrame);
+
+            Label(settingsFrame, TextManager.Get("spw_eavesdroppingspritemaxsize"));
+            Slider(settingsFrame, (10, 10000), 10,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.EavesdroppingSpriteMaxSize ?? default,
+                    formatter: Centimeters),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.EavesdroppingSpriteMaxSize,
+                    vanillaValue: null),
+                currentValue: unsavedConfig.EavesdroppingSpriteMaxSize,
+                setter: v => unsavedConfig.EavesdroppingSpriteMaxSize = (int)v,
+                TextManager.Get("spw_eavesdroppingspritemaxsizetooltip")
+            );
+
+            Label(settingsFrame, TextManager.Get("spw_eavesdroppingspritesizemultiplier"));
+            Slider(settingsFrame, (0.01f, 2), 0.01f,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.EavesdroppingSpriteSizeMultiplier ?? default,
+                    formatter: Percentage),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.EavesdroppingSpriteSizeMultiplier,
+                    vanillaValue: null),
+                currentValue: unsavedConfig.EavesdroppingSpriteSizeMultiplier,
+                setter: v => unsavedConfig.EavesdroppingSpriteSizeMultiplier = v,
+                TextManager.Get("spw_eavesdroppingspritesizemultipliertooltip")
+            );
+
             Label(settingsFrame, TextManager.Get("spw_eavesdroppingspriteopacity"));
             Slider(settingsFrame, (0, 1), 0.01f,
                 labelFunc: localSliderValue =>
@@ -3434,6 +3551,21 @@ namespace SoundproofWalls
 
             SpacerLabel(settingsFrame, TextManager.Get("spw_advancedcategoryrules"));
 
+            foreach (var kvp in ConfigManager.ModdedCustomSounds)
+            {
+                ContentPackage mod = kvp.Key;
+                HashSet<CustomSound> customSounds = kvp.Value;
+                CreateModdedCustomSoundsJsonTextBox(
+                    parentListBox: settingsList,
+                    labelText: (LocalizedString)($"{mod.Name} " + TextManager.Get("spw_customsounds").Value),
+                    tooltip: TextManager.GetWithVariable("spw_moddedcustomsoundstooltip", "[modname]", mod.Name),
+                    getter: customSounds => customSounds[mod],
+                    setter: newSet => unsavedModdedCustomSounds[mod] = newSet
+                );
+
+                Spacer(settingsFrame);
+            }
+
             CreateJsonTextBox(
                 parentListBox: settingsList,
                 labelText: TextManager.Get("spw_customsounds"),
@@ -3621,10 +3753,22 @@ namespace SoundproofWalls
             Config oldConfig = ConfigManager.Config;
             ConfigManager.LocalConfig = ConfigManager.CloneConfig(unsavedConfig);
             ConfigManager.SaveConfig(ConfigManager.LocalConfig);
-            
+
+            // Update and apply changes to other mod's custom sound lists (local only).
+            if (Util.ShouldUpdateSoundInfo(unsavedModdedCustomSounds, ConfigManager.ModdedCustomSounds))
+            {
+                ConfigManager.ModdedCustomSounds = unsavedModdedCustomSounds.ToDictionary(
+                entry => entry.Key,
+                entry => new HashSet<CustomSound>(entry.Value.Select(sound => JsonSerializer.Deserialize<CustomSound>(JsonSerializer.Serialize(sound)))));
+                
+                SoundInfoManager.UpdateSoundInfoMap();
+            }
+
             ConfigManager.LocalConfig.EavesdroppingKeyOrMouse = ConfigManager.LocalConfig.ParseEavesdroppingBind(); // todo maybe unnecessary
 
-            if (GameMain.IsMultiplayer && (GameMain.Client.IsServerOwner || GameMain.Client.HasPermission(ClientPermissions.Ban)))
+            // Compare json strings and only upload if there are changes.
+            if (JsonSerializer.Serialize(ConfigManager.LocalConfig) != JsonSerializer.Serialize(oldConfig) && 
+                GameMain.IsMultiplayer && (GameMain.Client.IsServerOwner || GameMain.Client.HasPermission(ClientPermissions.Ban)))
             {
                 ConfigManager.UploadClientConfigToServer(manualUpdate: true);
             }

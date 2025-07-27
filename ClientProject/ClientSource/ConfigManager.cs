@@ -8,6 +8,11 @@ namespace SoundproofWalls
 {
     public static class ConfigManager
     {
+        public const string OVERRIDE_FILENAME = "spw_overrides.json";
+
+        public static Dictionary<ContentPackage, HashSet<CustomSound>> DefaultModdedCustomSounds = new Dictionary<ContentPackage, HashSet<CustomSound>>();
+        public static Dictionary<ContentPackage, HashSet<CustomSound>> ModdedCustomSounds = new Dictionary<ContentPackage, HashSet<CustomSound>>();
+
         public static readonly string ConfigPath = Path.Combine(SaveUtil.DefaultSaveFolder, "ModConfigs/SoundproofWalls_Config.json").Replace('\\', '/');
         private static Config _cachedConfig = LoadConfig();
 
@@ -28,8 +33,46 @@ namespace SoundproofWalls
 
         private static float lastRequestTime = 0;
 
+        public static void Setup()
+        {
+            ModdedCustomSounds.Clear();
+            DefaultModdedCustomSounds.Clear();
+
+            List<ContentPackage> enabledMods = ContentPackageManager.EnabledPackages.All.ToList();
+            //enabledMods.Reverse();
+            for (int i = 0; i < enabledMods.Count; i++)
+            {
+                ContentPackage mod = enabledMods[i];
+                string overrideDir = Path.Combine(mod.Dir, OVERRIDE_FILENAME).Replace('\\', '/');
+                if (File.Exists(overrideDir))
+                {
+                    try
+                    {
+                        string jsonContent = File.ReadAllText(overrideDir);
+                        var customSounds = JsonSerializer.Deserialize<HashSet<CustomSound>>(jsonContent);
+                        if (customSounds != null && customSounds.Count > 0)
+                        {
+                            ModdedCustomSounds[mod] = customSounds;
+                            LuaCsLogger.Log($"[SoundproofWalls] Loaded {customSounds.Count} custom sound settings from \"{mod.Name}\".");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LuaCsLogger.LogError($"[SoundproofWalls] Error loading custom sound settings from mod \"{mod.Name}\": {ex.Message}");
+                    }
+                }
+            }
+
+            DefaultModdedCustomSounds = ModdedCustomSounds.ToDictionary(
+                entry => entry.Key,
+                entry => new HashSet<CustomSound>(entry.Value.Select(sound => JsonSerializer.Deserialize<CustomSound>(JsonSerializer.Serialize(sound)))));
+
+        }
+
         public static void Update()
         {
+            ModStateManager.State.TimeSpentPlaying += Timing.Step;
+
             // Open a welcome popup on first launch. Included in the update loop so we can check if the player is in-game.
             if (ModStateManager.State.FirstLaunch && Util.RoundStarted)
             {

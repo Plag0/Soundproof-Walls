@@ -1,7 +1,9 @@
-﻿using Barotrauma.Extensions;
-using Barotrauma;
+﻿using Barotrauma;
+using Barotrauma.Extensions;
 using Barotrauma.Sounds;
+using FarseerPhysics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace SoundproofWalls
 {
@@ -47,6 +49,121 @@ namespace SoundproofWalls
 
                 ModStateManager.State.TimeSpentEavesdropping += Timing.Step;
             }
+        }
+
+        public static void Draw(SpriteBatch spriteBatch, Camera cam)
+        {
+            Character character = Character.Controlled;
+            if (character == null || cam == null) { return; }
+
+            // Eavesdropping vignette.
+            int vignetteOpacity = (int)(EavesdroppingTextAlpha * ConfigManager.Config.EavesdroppingVignetteOpacityMultiplier);
+            Vignette.Color = new Color(0, 0, 0, vignetteOpacity);
+            Vignette.Draw(spriteBatch);
+            Vignette.Draw(spriteBatch);
+            Vignette.Draw(spriteBatch);
+            Vignette.Draw(spriteBatch);
+            Vignette.Draw(spriteBatch);
+            Vignette.Draw(spriteBatch);
+            Vignette.Draw(spriteBatch);
+            Vignette.Draw(spriteBatch);
+            Vignette.Draw(spriteBatch);
+            Vignette.Draw(spriteBatch);
+            Vignette.Draw(spriteBatch);
+            Vignette.Draw(spriteBatch);
+            Vignette.Draw(spriteBatch); // Draw multiple times for extra darkness. Yeah this is pretty stupid.
+
+            DrawEavesdroppingOverlay(spriteBatch, cam);
+
+            // Eavesdropping text.
+            Limb limb = Util.GetCharacterHead(character);
+            Vector2 position = cam.WorldToScreen(limb.body.DrawPosition + new Vector2(0, 40));
+            LocalizedString text = TextManager.Get("spw_listening");
+            float size = 1.6f;
+            Color color = new Color(224, 214, 164, (int)EavesdropManager.EavesdroppingTextAlpha);
+            GUIFont font = GUIStyle.Font;
+            font.DrawString(spriteBatch, text, position, color, 0, Vector2.Zero,
+                cam.Zoom / size, 0, 0.001f, Alignment.Center);
+        }
+
+        private static void DrawEavesdroppingOverlay(SpriteBatch spriteBatch, Camera cam)
+        {
+            if (ConfigManager.Config.EavesdroppingSpriteOpacity <= 0 || Efficiency <= 0 || ChannelInfoManager.EavesdroppedChannels.Count == 0 || cam == null)
+            {
+                return;
+            }
+
+            spriteBatch.End();
+
+            float effectState = (float)Timing.TotalTime;
+            float pulse = 0.8f + MathF.Sin(effectState * 2.0f) * 0.2f; // Smooth pulse from 0.6 to 1.0
+            float colorIntensityBase = 0.65f; //Multiplies the overlay color by this amount, the higher the value, the more bright/vibrant the color.
+            float colorIntensityVariance = 0.05f; //The variance of the pulse effect affecting the color's brightness/vibrance 
+            GameMain.LightManager.SolidColorEffect.Parameters["color"].SetValue(Color.DarkSeaGreen.ToVector4() * (colorIntensityBase + pulse * colorIntensityVariance) * EavesdropManager.Efficiency * ConfigManager.Config.EavesdroppingSpriteOpacity);
+            GameMain.LightManager.SolidColorEffect.CurrentTechnique = GameMain.LightManager.SolidColorEffect.Techniques["SolidColorBlur"];
+            GameMain.LightManager.SolidColorEffect.Parameters["blurDistance"].SetValue(0.005f + pulse * 0.0025f);
+            GameMain.LightManager.SolidColorEffect.CurrentTechnique.Passes[0].Apply();
+
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, transformMatrix: cam.Transform, effect: GameMain.LightManager.SolidColorEffect);
+
+            Sprite glowSprite = GUIStyle.UIThermalGlow.Value.Sprite;
+
+            foreach (ChannelInfo channelInfo in ChannelInfoManager.EavesdroppedChannels)
+            {
+                if (!channelInfo.Channel.IsPlaying) { continue; }
+
+                float noise1;
+                float noise2;
+                Vector2 spriteScale;
+                Vector2 drawPos;
+
+                // Draw character body.
+                Character? c = channelInfo.ChannelCharacter;
+                if (c != null && !c.IsDead)
+                {
+                    foreach (Limb limb in channelInfo.ChannelCharacter!.AnimController.Limbs)
+                    {
+                        // Show legs for footsteps, and show upper body for voice.
+                        if (limb.Mass < 0.5f || (channelInfo.SpeakingClient != null ? limb.IsLowerBody : !limb.IsLeg)) { continue; }
+                        noise1 = PerlinNoise.GetPerlin((effectState + limb.Params.ID + c.ID) * 0.01f, (effectState + limb.Params.ID + c.ID) * 0.02f);
+                        noise2 = PerlinNoise.GetPerlin((effectState + limb.Params.ID + c.ID) * 0.01f, (effectState + limb.Params.ID + c.ID) * 0.008f);
+                        spriteScale = ConvertUnits.ToDisplayUnits(limb.body.GetSize()) / glowSprite.size * (noise1 * 0.5f + 2f);
+                        drawPos = new Vector2(limb.body.DrawPosition.X + (noise1 - 0.5f) * 100, -limb.body.DrawPosition.Y + (noise2 - 0.5f) * 100);
+                        glowSprite.Draw(spriteBatch, drawPos, 0.0f, scale: Math.Max(spriteScale.X, spriteScale.Y));
+                    }
+                }
+
+                int maxSpriteRange = ConfigManager.Config.EavesdroppingSpriteMaxSize;
+                float spriteSizeMult = ConfigManager.Config.EavesdroppingSpriteSizeMultiplier;
+                // If we're seeing a non-eavesdropped sound (reveal all is enabled) make it smaller using its muffle strength. 
+                if (!channelInfo.Eavesdropped) { spriteSizeMult *= 1 - channelInfo.MuffleStrength * 0.75f; }
+                float soundLifeMult = 1;
+                double? duration = channelInfo.Channel?.Sound?.DurationSeconds;
+                int? sampleRate = channelInfo.Channel?.Sound?.SampleRate;
+                if (duration != null && sampleRate != null && !channelInfo.Channel.Looping)
+                {
+                    soundLifeMult = 1 - Math.Clamp((float)channelInfo.PlaybackPosition / (float)(duration * sampleRate), 0f, 1f);
+                    soundLifeMult = (float)Math.Pow(soundLifeMult, ConfigManager.Config.EavesdroppingSpriteFadeCurve);
+                }
+
+                // Create a glow radius around the sound source.
+                uint sourceId = channelInfo.Channel.Sound.Owner.GetSourceFromIndex(channelInfo.Channel.Sound.SourcePoolIndex, channelInfo.Channel.ALSourceIndex);
+                noise1 = PerlinNoise.GetPerlin((effectState + sourceId) * 0.01f, (effectState + sourceId) * 0.02f);
+                noise2 = PerlinNoise.GetPerlin((effectState + sourceId) * 0.01f, (effectState + sourceId) * 0.008f);
+                spriteScale = new Vector2(Math.Min(channelInfo.Channel.Far * spriteSizeMult, maxSpriteRange)) / glowSprite.size * (noise1 * 0.5f + 2f);
+                spriteScale *= soundLifeMult;
+                drawPos = channelInfo.WorldPos;
+                Submarine? sub = channelInfo.ChannelHull?.Submarine;
+                if (sub != null)
+                {
+                    drawPos = channelInfo.LocalPos + sub.WorldPosition - sub.HiddenSubPosition;
+                }
+                drawPos = new Vector2(drawPos.X, -drawPos.Y);
+                glowSprite.Draw(spriteBatch, pos: drawPos, rotate: 0.0f, scale: Math.Max(spriteScale.X, spriteScale.Y), color: Color.White);
+            }
+
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied);
         }
 
         public static void Dispose()

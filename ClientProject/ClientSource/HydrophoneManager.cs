@@ -241,20 +241,20 @@ namespace SoundproofWalls
                         // This just prevents a crash.
                         sectorWidth = 0;
                     }
-                    LuaCsLogger.Log($"{info.ShortName} Case 1 - soundDistance {soundDistance} soundRadius {soundRadius} submarineRadius {submarineRadius} sectorWidth {sectorWidth}");
+                    //LuaCsLogger.Log($"{info.ShortName} Case 1 - soundDistance {soundDistance} soundRadius {soundRadius} submarineRadius {submarineRadius} sectorWidth {sectorWidth}");
                 }
                 // Case 2: Engulfed Sound (submarine is completely inside the sound).
                 else if (soundDistance <= soundRadius - submarineRadius)
                 {
                     sectorWidth = 360;
-                    LuaCsLogger.Log($"{info.ShortName} Case 2 - soundDistance {soundDistance} soundRadius {soundRadius} submarineRadius {submarineRadius} sectorWidth {sectorWidth}");
+                    //LuaCsLogger.Log($"{info.ShortName} Case 2 - soundDistance {soundDistance} soundRadius {soundRadius} submarineRadius {submarineRadius} sectorWidth {sectorWidth}");
                 }
                 // Case 3: Contained Sound (sound is completely inside the submarine's radius).
                 // Prevents the invalid Law of Cosines calculation.
                 else if (soundDistance + soundRadius < submarineRadius)
                 {
                     sectorWidth = 0;
-                    LuaCsLogger.Log($"{info.ShortName} Case 3 - soundDistance {soundDistance} soundRadius {soundRadius} submarineRadius {submarineRadius} sectorWidth {sectorWidth}");
+                    //LuaCsLogger.Log($"{info.ShortName} Case 3 - soundDistance {soundDistance} soundRadius {soundRadius} submarineRadius {submarineRadius} sectorWidth {sectorWidth}");
                 }
                 // Case 4: Intersecting Sound.
                 // Sounds can "wrap" around the submarine.
@@ -264,7 +264,7 @@ namespace SoundproofWalls
                     double halfAngleRadians = Math.Acos(MathHelper.Clamp((float)cosAngle, -1.0f, 1.0f));
                     double sectorWidthDegrees = 2 * halfAngleRadians * (180.0 / Math.PI);
                     sectorWidth = (int)Math.Round(sectorWidthDegrees);
-                    LuaCsLogger.Log($"{info.ShortName} Case 4 - cosAngle {cosAngle} halfAngleRadians {halfAngleRadians} sectorWidthDegrees {sectorWidthDegrees} soundDistance {soundDistance} soundRadius {soundRadius} submarineRadius {submarineRadius} sectorWidth {sectorWidth}");
+                    //LuaCsLogger.Log($"{info.ShortName} Case 4 - cosAngle {cosAngle} halfAngleRadians {halfAngleRadians} sectorWidthDegrees {sectorWidthDegrees} soundDistance {soundDistance} soundRadius {soundRadius} submarineRadius {submarineRadius} sectorWidth {sectorWidth}");
                 }
 
                 if (sectorWidth <= 0) continue;

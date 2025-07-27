@@ -290,10 +290,16 @@
 	<spw_eavesdroppingthresholdtooltip>The percentage of the fade transition that must play before the player starts hearing sounds on the opposite side of the door</spw_eavesdroppingthresholdtooltip>
 
 	<spw_eavesdroppingcategoryvisuals>Visuals</spw_eavesdroppingcategoryvisuals>
-	
-	<spw_eavesdroppingspriteopacity>Sprite Opacity</spw_eavesdroppingspriteopacity>
+
+	<spw_eavesdroppingrevealsall>Show All Sounds</spw_eavesdroppingrevealsall>
+	<spw_eavesdroppingrevealsalltooltip>Apply the glow effect to sounds without a path to the eavesdropped area. Sounds in the listener's hull are still ignored</spw_eavesdroppingrevealsalltooltip>
+	<spw_eavesdroppingspritemaxsize>Glow Max Size</spw_eavesdroppingspritemaxsize>
+	<spw_eavesdroppingspritemaxsizetooltip>The maximum size of the glow effect. Helpful for limiting the size of the effect on longer range sounds</spw_eavesdroppingspritemaxsizetooltip>
+	<spw_eavesdroppingspritesizemultiplier>Glow Size Multiplier</spw_eavesdroppingspritesizemultiplier>
+	<spw_eavesdroppingspritesizemultipliertooltip>The size of the glow effect relative to the range of the sound</spw_eavesdroppingspritesizemultipliertooltip>
+	<spw_eavesdroppingspriteopacity>Glow Opacity</spw_eavesdroppingspriteopacity>
 	<spw_eavesdroppingspriteopacitytooltip>The strength of the glow effect that emits from eavesdropped sounds</spw_eavesdroppingspriteopacitytooltip>
-	<spw_eavesdroppingspritefadecurve>Sprite Fade Curve</spw_eavesdroppingspritefadecurve>
+	<spw_eavesdroppingspritefadecurve>Glow Fade Curve</spw_eavesdroppingspritefadecurve>
 	<spw_eavesdroppingspritefadecurvetooltip>The exponent used to calculate the shape of the sprite fadeout curve. Values below one start slowly and decay more sharply towards the end. Values above one drop quickly and flatten out towards the end</spw_eavesdroppingspritefadecurvetooltip>
 	<spw_eavesdroppingzoom>Eavesdropping Camera Zoom</spw_eavesdroppingzoom>
 	<spw_eavesdroppingzoomtooltip>How far the camera should zoom in when eavesdropping</spw_eavesdroppingzoomtooltip>
@@ -491,6 +497,7 @@
 	
 	<spw_customsounds>Custom Sounds</spw_customsounds>
 	<spw_customsoundstooltip>Tweak the volume of any vanilla or modded sounds. Providing a sidechain multiplier above zero will mark the sound(s) for sidechaining, lowering the volume of other sounds by the amount specified (a value of 1 is equal to a 100% volume reduction). The release value controls how many seconds it takes for the sidechain multiplier to decay to back to zero after the sound plays. Sounds in the exclusion list are ignored, allowing for more selective group targeting.</spw_customsoundstooltip>
+	<spw_moddedcustomsoundstooltip>Custom sound values from [modname]. Takes override priority over the standard "Custom Sounds" list. This list is not synced with other players. If you edit the items in this list, the changes will apply locally but they will not be saved outside of the session. If you have issues with the contents of this list, please take it up with the mod author.</spw_moddedcustomsoundstooltip>
 	
 	<spw_ignoredsounds>Ignored Sounds</spw_ignoredsounds>
 	<spw_ignoredsoundstooltip>Sounds in this list are ignored by all processing except volume</spw_ignoredsoundstooltip>
@@ -581,11 +588,11 @@
 	<spw_popupbodysubheading8>• 100+ New Config Settings</spw_popupbodysubheading8>
 	<spw_popupbodysubtext8>Soundproof Walls has never been so customizable. 2.0 grants complete control over the properties and effects for every individual sound. The default settings are designed to be the most applicable to the general playerbase, but there is enormous potential for vastly different configuations and the ability to make whatever soundscape you desire. It's also possible to revert back to the Soundproof Walls 1.0 feel by switching to the classic effect processing mode</spw_popupbodysubtext8>
 	
-	<spw_popupbodyconclusion>I hope you enjoy the changes! Let me know if you have any questions or issues :)\nThanks - Plag</spw_popupbodyconclusion>
+	<spw_popupbodyconclusion>I hope you enjoy the changes! Let me know if you have any questions or issues :) - Plag</spw_popupbodyconclusion>
 
-	<spw_footertext1>Want to see patch notes?</spw_footertext1>
-	<spw_footertext2>Want to support me?</spw_footertext2>
-	<spw_footertext3>Want to see the code?</spw_footertext3>
+	<spw_footertext1>This is just the surface</spw_footertext1>
+	<spw_footertext2>Support me</spw_footertext2>
+	<spw_footertext3>Check out the code</spw_footertext3>
 	<spw_footerlink1>See the full changelog on Steam!</spw_footerlink1>
 	<spw_footerlink2>Buy me a coffee on KoFi!</spw_footerlink2>
 	<spw_footerlink3>Give the repo a star on GitHub!</spw_footerlink3>

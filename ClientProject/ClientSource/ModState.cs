@@ -11,6 +11,7 @@ namespace SoundproofWalls
         public string Version { get; set; } = "2.0";
         public bool FirstLaunch { get; set; } = true;
 
+        // Stat tracking for fun
         public long TimesInitialized { get; set; } = 0;
         public long LifetimeSoundsPlayed { get; set; } = 0;
         public double TimeSpentPlaying { get; set; } = 0;

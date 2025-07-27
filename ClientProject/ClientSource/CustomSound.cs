@@ -30,39 +30,46 @@ namespace SoundproofWalls
             MuffleInfluence = muffleInfluence;
             KeywordExclusions = new HashSet<string>(exclusions ?? Array.Empty<string>());
         }
-    }
 
-    public class ElementEqualityComparer : IEqualityComparer<CustomSound>
-    {
-        public bool Equals(CustomSound? x, CustomSound? y)
+        public override bool Equals(object? obj)
         {
-            if (x == null || y == null) return false;
-            
-            return x.Keyword == y.Keyword && 
-                   x.GainMult == y.GainMult &&
-                   x.RangeMult == y.RangeMult &&
-                   x.SidechainMult == y.SidechainMult && 
-                   x.SidechainRelease == y.SidechainRelease && 
-                   x.Distortion == y.Distortion &&
-                   x.PitchMult == y.PitchMult &&
-                   x.MuffleInfluence == y.MuffleInfluence &&
-                   x.KeywordExclusions.SetEquals(y.KeywordExclusions);
+            if (obj is not CustomSound other)
+            {
+                return false;
+            }
+
+            return this.Keyword == other.Keyword &&
+                   this.GainMult == other.GainMult &&
+                   this.RangeMult == other.RangeMult &&
+                   this.SidechainMult == other.SidechainMult &&
+                   this.SidechainRelease == other.SidechainRelease &&
+                   this.Distortion == other.Distortion &&
+                   this.PitchMult == other.PitchMult &&
+                   this.MuffleInfluence == other.MuffleInfluence &&
+                   this.KeywordExclusions.SetEquals(other.KeywordExclusions);
         }
 
-        public int GetHashCode(CustomSound obj)
+        public override int GetHashCode()
         {
-            if (obj == null) return 0;
-
             int hash = 17;
-            hash = hash * 31 + obj.Keyword.GetHashCode();
-            hash = hash * 31 + obj.GainMult.GetHashCode();
-            hash = hash * 31 + obj.RangeMult.GetHashCode();
-            hash = hash * 31 + obj.SidechainMult.GetHashCode();
-            hash = hash * 31 + obj.SidechainRelease.GetHashCode();
-            hash = hash * 31 + obj.Distortion.GetHashCode();
-            hash = hash * 31 + obj.PitchMult.GetHashCode();
-            hash = hash * 31 + obj.MuffleInfluence.GetHashCode();
-            hash = hash * 31 + obj.KeywordExclusions.GetHashCode();
+            hash = hash * 31 + (Keyword?.GetHashCode() ?? 0);
+            hash = hash * 31 + GainMult.GetHashCode();
+            hash = hash * 31 + RangeMult.GetHashCode();
+            hash = hash * 31 + SidechainMult.GetHashCode();
+            hash = hash * 31 + SidechainRelease.GetHashCode();
+            hash = hash * 31 + Distortion.GetHashCode();
+            hash = hash * 31 + PitchMult.GetHashCode();
+            hash = hash * 31 + MuffleInfluence.GetHashCode();
+
+            // Correctly calculate hash code based on the set's contents
+            int exclusionHash = 0;
+            foreach (string exclusion in KeywordExclusions.OrderBy(e => e))
+            {
+                // Use XOR to combine element hashes in an order-independent way
+                exclusionHash ^= exclusion.GetHashCode();
+            }
+            hash = hash * 31 + exclusionHash;
+
             return hash;
         }
     }
