@@ -2,6 +2,7 @@
 using Barotrauma.Items.Components;
 using Barotrauma.Networking;
 using Barotrauma.Sounds;
+using HarmonyLib;
 using Microsoft.Xna.Framework;
 using System.Reflection;
 using System.Text.Json;
@@ -87,13 +88,10 @@ namespace SoundproofWalls
                 if (!dict2.TryGetValue(key, out HashSet<CustomSound> set2) || 
                     JsonSerializer.Serialize(set1) != JsonSerializer.Serialize(set2))
                 {
-                    LuaCsLogger.Log("4");
                     return true;
                 }
             }
 
-            // If we get through the whole loop, they are equal.
-            LuaCsLogger.Log("5");
             return false;
         }
 
@@ -117,7 +115,7 @@ namespace SoundproofWalls
 
         private static bool ShouldSkipSound(Sound? sound, bool starting, bool stopping)
         {
-            if (sound == null)
+            if (sound == null || sound.Stream)
                 return true;
 
             bool isReduced = sound is ReducedOggSound;
@@ -133,40 +131,45 @@ namespace SoundproofWalls
 
             return false;
         }
-
-        private static void ReloadRoundSounds(Dictionary<string, Sound> updatedSounds, bool starting = false, bool stopping = false)
+        
+        private static Sound ReplaceAndMarkForDisposal(Sound oldSound, Dictionary<string, Sound> updatedSounds, List<Sound> soundsToDispose, ref int newBufferCounter)
         {
-            int t = 0;
-            int i = 0;
+            if (!updatedSounds.TryGetValue(oldSound.Filename, out Sound? newSound))
+            {
+                newSound = GetNewSound(oldSound);
+                updatedSounds.Add(oldSound.Filename, newSound);
+                newBufferCounter++;
+            }
+            soundsToDispose.Add(oldSound);
+            return newSound;
+        }
+
+        private static void ReloadRoundSounds(Dictionary<string, Sound> updatedSounds, List<Sound> soundsToDispose, bool starting = false, bool stopping = false)
+        {
+            int scannedSoundCount = 0;
+            int newSoundCount = 0;
+
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             sw.Start();
 
             foreach (RoundSound roundSound in RoundSound.roundSounds)
             {
-                i++;
+                scannedSoundCount++;
                 Sound? oldSound = roundSound.Sound;
 
                 if (ShouldSkipSound(oldSound, starting, stopping))
                     continue;
 
-                if (!updatedSounds.TryGetValue(oldSound.Filename, out Sound? newSound))
-                {
-                    newSound = GetNewSound(oldSound);
-                    updatedSounds.Add(oldSound.Filename, newSound);
-                    t++;
-                }
-
-                roundSound.Sound = newSound;
-                oldSound.Dispose();
+                roundSound.Sound = ReplaceAndMarkForDisposal(oldSound, updatedSounds, soundsToDispose, ref newSoundCount);
             }
 
             sw.Stop();
-            LuaCsLogger.Log($"[SoundproofWalls] Scanned {i} RoundSounds and created {t} new buffers. ({sw.ElapsedMilliseconds} ms)");
+            LuaCsLogger.Log($"[SoundproofWalls] Scanned {scannedSoundCount} RoundSounds and created {newSoundCount} new buffers. ({sw.ElapsedMilliseconds} ms)");
         }
-        private static void AllocateCharacterSounds(Dictionary<string, Sound> updatedSounds, bool starting = false, bool stopping = false)
+        private static void AllocateCharacterSounds(Dictionary<string, Sound> updatedSounds, List<Sound> soundsToDispose, bool starting = false, bool stopping = false)
         {
-            int t = 0;
-            int i = 0;
+            int scannedSoundCount = 0;
+            int newSoundCount = 0;
 
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             sw.Start();
@@ -176,31 +179,23 @@ namespace SoundproofWalls
                 if (character.IsDead) { continue; }
                 foreach (CharacterSound characterSound in character.sounds)
                 {
-                    i++;
+                    scannedSoundCount++;
                     Sound? oldSound = characterSound.roundSound.Sound;
 
                     if (ShouldSkipSound(oldSound, starting, stopping))
                         continue;
 
-                    if (!updatedSounds.TryGetValue(oldSound.Filename, out Sound? newSound))
-                    {
-                        newSound = GetNewSound(oldSound);
-                        updatedSounds.Add(oldSound.Filename, newSound);
-                        t++;
-                    }
-
-                    characterSound.roundSound.Sound = newSound;
-                    oldSound.Dispose();
+                    characterSound.roundSound.Sound = ReplaceAndMarkForDisposal(oldSound, updatedSounds, soundsToDispose, ref newSoundCount);
                 }
             }
             sw.Stop();
-            LuaCsLogger.Log($"[SoundproofWalls] Scanned {i} CharacterSounds and created {t} new buffers. ({sw.ElapsedMilliseconds} ms)");
+            LuaCsLogger.Log($"[SoundproofWalls] Scanned {scannedSoundCount} CharacterSounds and created {newSoundCount} new buffers. ({sw.ElapsedMilliseconds} ms)");
         }
 
-        private static void AllocateComponentSounds(Dictionary<string, Sound> updatedSounds, bool starting = false, bool stopping = false)
+        private static void AllocateComponentSounds(Dictionary<string, Sound> updatedSounds, List<Sound> soundsToDispose, bool starting = false, bool stopping = false)
         {
-            int t = 0;
-            int i = 0;
+            int scannedSoundCount = 0;
+            int newSoundCount = 0;
 
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             sw.Start();
@@ -214,33 +209,25 @@ namespace SoundproofWalls
                         itemComponent.StopSounds(kvp.Key);
                         foreach (ItemSound itemSound in kvp.Value)
                         {
-                            i++;
+                            scannedSoundCount++;
                             Sound? oldSound = itemSound.RoundSound.Sound;
 
                             if (ShouldSkipSound(oldSound, starting, stopping))
                                 continue;
 
-                            if (!updatedSounds.TryGetValue(oldSound.Filename, out Sound? newSound))
-                            {
-                                newSound = GetNewSound(oldSound);
-                                updatedSounds.Add(oldSound.Filename, newSound);
-                                t++;
-                            }
-
-                            itemSound.RoundSound.Sound = newSound;
-                            oldSound.Dispose();
+                            itemSound.RoundSound.Sound = ReplaceAndMarkForDisposal(oldSound, updatedSounds, soundsToDispose, ref newSoundCount);
                         }
                     }
                 }
             }
             sw.Stop();
-            LuaCsLogger.Log($"[SoundproofWalls] Scanned {i} ItemComponent sounds and created {t} new buffers. ({sw.ElapsedMilliseconds} ms)");
+            LuaCsLogger.Log($"[SoundproofWalls] Scanned {scannedSoundCount} ItemComponent sounds and created {newSoundCount} new buffers. ({sw.ElapsedMilliseconds} ms)");
         }
 
-        private static void AllocateStatusEffectSounds(Dictionary<string, Sound> updatedSounds, bool starting = false, bool stopping = false)
+        private static void AllocateStatusEffectSounds(Dictionary<string, Sound> updatedSounds, List<Sound> soundsToDispose, bool starting = false, bool stopping = false)
         {
-            int t = 0;
-            int i = 0;
+            int scannedSoundCount = 0;
+            int newSoundCount = 0;
 
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             sw.Start();
@@ -249,55 +236,40 @@ namespace SoundproofWalls
             {
                 foreach (RoundSound roundSound in statusEffect.Sounds)
                 {
-                    i++;
+                    scannedSoundCount++;
                     Sound? oldSound = roundSound.Sound;
 
                     if (ShouldSkipSound(oldSound, starting, stopping))
                         continue;
 
-                    if (!updatedSounds.TryGetValue(oldSound.Filename, out Sound? newSound))
-                    {
-                        newSound = GetNewSound(oldSound);
-                        updatedSounds.Add(oldSound.Filename, newSound);
-                        t++;
-                    }
-
-                    roundSound.Sound = newSound;
-                    oldSound.Dispose();
+                    roundSound.Sound = ReplaceAndMarkForDisposal(oldSound, updatedSounds, soundsToDispose, ref newSoundCount);
                 }
             }
             sw.Stop();
-            LuaCsLogger.Log($"[SoundproofWalls] Scanned {i} StatusEffect sounds and created {t} new buffers. ({sw.ElapsedMilliseconds} ms)");
+            LuaCsLogger.Log($"[SoundproofWalls] Scanned {scannedSoundCount} StatusEffect sounds and created {newSoundCount} new buffers. ({sw.ElapsedMilliseconds} ms)");
         }
 
-        private static void ReloadPrefabSounds(Dictionary<string, Sound> updatedSounds, bool starting = false, bool stopping = false)
+        private static void ReloadPrefabSounds(Dictionary<string, Sound> updatedSounds, List<Sound> soundsToDispose, bool starting = false, bool stopping = false)
         {
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             sw.Start();
 
-            int t = 0;
-            int i = 0;
+            int scannedSoundCount = 0;
+            int newSoundCount = 0;
+
             foreach (SoundPrefab soundPrefab in SoundPrefab.Prefabs)
             {
+                scannedSoundCount++;
                 Sound oldSound = soundPrefab.Sound;
-                i++;
 
                 if (ShouldSkipSound(oldSound, starting, stopping))
                     continue;
 
-                if (!updatedSounds.TryGetValue(oldSound.Filename, out Sound? newSound))
-                {
-                    newSound = GetNewSound(oldSound);
-                    updatedSounds.Add(oldSound.Filename, newSound);
-                    t++;
-                }
-
-                soundPrefab.Sound = newSound;
-                oldSound.Dispose();
+                soundPrefab.Sound = ReplaceAndMarkForDisposal(oldSound, updatedSounds, soundsToDispose, ref newSoundCount);
             }
 
             sw.Stop();
-            LuaCsLogger.Log($"[SoundproofWalls] Scanned {i} SoundPrefab sounds and created {t} new buffers. ({sw.ElapsedMilliseconds} ms)");
+            LuaCsLogger.Log($"[SoundproofWalls] Scanned {scannedSoundCount} SoundPrefab sounds and created {newSoundCount} new buffers. ({sw.ElapsedMilliseconds} ms)");
         }
 
         // Compatibility with ReSound.
@@ -336,7 +308,11 @@ namespace SoundproofWalls
                 {
                     for (int j = 0; j < GameMain.SoundManager.playingChannels[i].Length; j++)
                     {
-                        GameMain.SoundManager.playingChannels[i][j]?.Dispose();
+                        if (GameMain.SoundManager.playingChannels[i][j] != null)
+                        {
+                            GameMain.SoundManager.playingChannels[i][j].Dispose();
+                            GameMain.SoundManager.playingChannels[i][j] = null;
+                        }
                     }
                 }
             }
@@ -396,23 +372,30 @@ namespace SoundproofWalls
 
         public static void ReloadSounds(bool starting = false, bool stopping = false)
         {
-            LuaCsLogger.Log("[SoundproofWalls] Reloading sound buffers...");
+            LuaCsLogger.Log("[SoundproofWalls] Reloading sound buffers for non-streamed audio...");
 
             MoonSharp.Interpreter.DynValue Resound = GameMain.LuaCs.Lua.Globals.Get("Resound");
-            // ReSound has its own code to stop at the end of the round but it needs to happen here and now before SPW.
             StopResound(Resound);
 
-            ChannelInfoManager.ClearChannelInfo();
+            // Stop all channels to prevent them from using buffers while we swap them.
             StopPlayingChannels();
 
-            // Cache sounds that have already been updated.
+            List<Sound> soundsToDispose = new List<Sound>();
             Dictionary<string, Sound> updatedSounds = new Dictionary<string, Sound>();
 
-            ReloadRoundSounds(updatedSounds, starting, stopping);
-            ReloadPrefabSounds(updatedSounds, starting, stopping);
-            AllocateStatusEffectSounds(updatedSounds, starting, stopping);
-            AllocateCharacterSounds(updatedSounds, starting, stopping);
-            AllocateComponentSounds(updatedSounds, starting, stopping);
+            // Call the modified helpers.
+            ReloadRoundSounds(updatedSounds, soundsToDispose, starting, stopping);
+            ReloadPrefabSounds(updatedSounds, soundsToDispose, starting, stopping);
+            AllocateStatusEffectSounds(updatedSounds, soundsToDispose, starting, stopping);
+            AllocateCharacterSounds(updatedSounds, soundsToDispose, starting, stopping);
+            AllocateComponentSounds(updatedSounds, soundsToDispose, starting, stopping);
+
+            // Dispose of the old, now-unreferenced sounds.
+            LuaCsLogger.Log($"[SoundproofWalls] Disposing {soundsToDispose.Count} old sound buffers...");
+            foreach (Sound oldSound in soundsToDispose.Distinct())
+            {
+                oldSound.Dispose();
+            }
 
             StartResound(Resound);
 

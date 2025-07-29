@@ -824,6 +824,15 @@ namespace SoundproofWalls
                         }
                     }
                 }
+                if (config.MaxOcclusions > 0)
+                {
+                    numWallObstructions = Math.Min(numWallObstructions, config.MaxOcclusions);
+                }
+                // If both outside, treat any number of obstructions as just one - because the sound is going around
+                if (ChannelHull == null && Listener.FocusedHull == null)
+                {
+                    numWallObstructions = Math.Min(numWallObstructions, 1);
+                }
             }
 
             // 2. Propagate to the correct hull, updating wall obstructions. Propagation allows certain sounds near a wall to propagate to the opposite side.
@@ -908,8 +917,8 @@ namespace SoundproofWalls
 
                 for (int i = 0; i < numWallObstructions; i++)
                 {
-                    if (noPath || Channel?.Far < approximateDistance || topResults.Count <= 0 || !noDirectionalSounds) { AddObstruction(Obstruction.WallThick, "Occlusion - no path"); }
-                    else { AddObstruction(Obstruction.WallThin, "Occlusion - with path"); } // Wall occlusion isn't as strong if there's a path to the listener.
+                    if (!bothInWater && (noPath || Channel?.Far < approximateDistance || topResults.Count <= 0 || !noDirectionalSounds)) { AddObstruction(Obstruction.WallThick, "Occlusion - no path"); }
+                    else { AddObstruction(Obstruction.WallThin, "Occlusion - with path"); } // Wall occlusion isn't as strong if there's a path to the listener or they are both in the same body of water.
                 }
             }
             else

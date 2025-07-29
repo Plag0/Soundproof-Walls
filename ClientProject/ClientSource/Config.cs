@@ -51,6 +51,7 @@ namespace SoundproofWalls
 
         // DynamicFx
         public bool OccludeSounds { get; set; } = true; // Enable muffle strength from wall occlusion. Is still disabled for classicFx
+        public int MaxOcclusions { get; set; } = 0; // The maximum walls registered by occlusion. 0 is infinite
         public bool AutoAttenuateMuffledSounds { get; set; } = true; // Should the volume of the lower frequencies (not just the high freqs) be attenuated with muffle strength.
         public float DynamicMuffleStrengthMultiplier { get; set; } = 1.0f;
         public float DynamicMuffleTransitionFactor { get; set; } = 0f; // The max change of high frequency gain over the span of a second. Transitions the muffle effect on and off.
@@ -168,7 +169,7 @@ namespace SoundproofWalls
         public bool HydrophoneMuffleOwnSub { get; set; } = true;
         public bool HydrophoneMuffleAmbience { get; set; } = true;
         public bool HydrophoneLegacySwitch { get; set; } = false;
-        public int HydrophoneSoundRange { get; set; } = 11_000; // In cm.
+        public int HydrophoneSoundRange { get; set; } = 9_500; // In cm. Making this greater than 10k is problematic because you can hear if any creatures are in range of your sonar before pinging.
         public float HydrophoneVolumeMultiplier { get; set; } = 1.0f;
         public float HydrophonePitchMultiplier { get; set; } = 0.75f;
         public float HydrophoneAmbienceVolumeMultiplier { get; set; } = 1.0f;
@@ -237,7 +238,7 @@ namespace SoundproofWalls
         public bool UpdateNonLoopingSounds { get; set; } = true; // Updates the gain and pitch of non looping "single-shot" sounds every tick. Muffle is updated every NonLoopingSoundMuffleUpdateInterval.
         public float VoiceMuffleUpdateInterval { get; set; } = 0.2f;
         public float NonLoopingSoundMuffleUpdateInterval { get; set; } = 0.2f; // Only applied if UpdateNonLoopingSounds is enabled.
-        public float OpenALEffectsUpdateInterval { get; set; } = 0.2f;
+        public float OpenALEffectsUpdateInterval { get; set; } = 0.1f;
         public float ComponentMuffleUpdateInterval { get; set; } = 0.2f;
         public float StatusEffectMuffleUpdateInterval { get; set; } = 0.2f;
 
@@ -248,7 +249,7 @@ namespace SoundproofWalls
         public float AirReverbGainTransitionFactor { get; set; } = 0.6f;
         public float HydrophoneReverbGainTransitionFactor { get; set; } = 0.5f;
 
-        // Volume Attenuation
+            // Volume Attenuation
         public float LoopingComponentSoundNearMultiplier { get; set; } = 0.25f; // near = far * thisMult  |  "near" is the max range before volume falloff starts.
         public float MinDistanceFalloffVolume { get; set; } = 0.04f; // The minimum gain a sound being attenuated by approx dist can reach.
         public float SidechainMuffleInfluence { get; set; } = 0.75f;
@@ -373,7 +374,7 @@ namespace SoundproofWalls
             gainMultiplier: 3.0f,
             rangeMultiplier: 1.2f,
             sidechainMultiplier: 3.0f,
-            release: 7.0f,
+            release: 12.0f,
             distortion: true),
         new CustomSound("explosion",
             gainMultiplier: 3.0f,
@@ -490,7 +491,7 @@ namespace SoundproofWalls
             gainMultiplier: 0.7f,
             rangeMultiplier: 1.0f,
             sidechainMultiplier: 0.8f,
-            release: 8.0f,
+            release: 10.0f,
             distortion: false),
         };
 
@@ -498,7 +499,6 @@ namespace SoundproofWalls
         public HashSet<string> IgnoredSounds { get; set; } = new HashSet<string>
         {
             "barotrauma/content/sounds/ui",
-            "barotrauma/content/sounds/music",
             "barotrauma/content/sounds/dropitem",
             "barotrauma/content/sounds/pickitem"
         };
