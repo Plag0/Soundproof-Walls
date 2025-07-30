@@ -1328,6 +1328,21 @@ namespace SoundproofWalls
                 curveFactor: 0.4f
             );
 
+            Label(settingsFrame, TextManager.Get("spw_maxocclusions"));
+            Slider(settingsFrame, (0, 5), 1,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.MaxOcclusions ?? default,
+                    formatter: RawValue),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.MaxOcclusions,
+                    vanillaValue: null),
+                currentValue: unsavedConfig.MaxOcclusions,
+                setter: v => unsavedConfig.MaxOcclusions = (int)v,
+                TextManager.Get("spw_maxocclusionstooltip")
+            );
+
             Label(settingsFrame, TextManager.Get("spw_dynamicmuffletransitionfactor"));
             Slider(settingsFrame, (0, 5), 0.01f,
                 labelFunc: localSliderValue =>
@@ -1377,10 +1392,10 @@ namespace SoundproofWalls
                 setter: v => unsavedConfig.DynamicReverbWaterSubtractsArea = v);
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
-                label: TextManager.Get("spw_dynamicreverbradio"),
+                label: TextManager.Get("spw_dynamicreverblocal"),
                 serverValue: ConfigManager.ServerConfig?.DynamicReverbLocal ?? default,
                 formatter: BoolFormatter),
-                tooltip: TextManager.Get("spw_dynamicreverbradiotooltip"),
+                tooltip: TextManager.Get("spw_dynamicreverblocaltooltip"),
                 currentValue: unsavedConfig.DynamicReverbLocal,
                 setter: v => unsavedConfig.DynamicReverbLocal = v);
 
@@ -1713,14 +1728,6 @@ namespace SoundproofWalls
                 setter: v => unsavedConfig.TalkingRagdolls = v);
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
-                label: TextManager.Get("spw_drowningbubbles"),
-                serverValue: ConfigManager.ServerConfig?.DrowningBubblesEnabled ?? default,
-                formatter: BoolFormatter),
-                tooltip: TextManager.Get("spw_drowningbubblestooltip"),
-                currentValue: unsavedConfig.DrowningBubblesEnabled,
-                setter: v => unsavedConfig.DrowningBubblesEnabled = v);
-
-            Tickbox(settingsFrame, FormatTextBoxLabel(
                 label: TextManager.Get("spw_whispermode"),
                 serverValue: ConfigManager.ServerConfig?.WhisperMode ?? default,
                 formatter: BoolFormatter),
@@ -1750,14 +1757,14 @@ namespace SoundproofWalls
             Slider(settingsFrame, (0, 3), 0.01f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
-                    serverValue: ConfigManager.ServerConfig?.VoiceRangeMultiplier ?? default,
+                    serverValue: ConfigManager.ServerConfig?.VoiceLocalRangeMultiplier ?? default,
                     formatter: Percentage),
                 colorFunc: (localSliderValue, componentStyle) =>
                 GetSettingColor(localSliderValue, componentStyle,
-                    defaultValue: Menu.defaultConfig.VoiceRangeMultiplier,
+                    defaultValue: Menu.defaultConfig.VoiceLocalRangeMultiplier,
                     vanillaValue: 1.0f),
-                currentValue: unsavedConfig.VoiceRangeMultiplier,
-                setter: v => unsavedConfig.VoiceRangeMultiplier = v,
+                currentValue: unsavedConfig.VoiceLocalRangeMultiplier,
+                setter: v => unsavedConfig.VoiceLocalRangeMultiplier = v,
                 TextManager.Get("spw_voicerangetooltip")
             );
 
@@ -1765,15 +1772,102 @@ namespace SoundproofWalls
             Slider(settingsFrame, (0, 3), 0.01f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
-                    serverValue: ConfigManager.ServerConfig?.RadioRangeMultiplier ?? default,
+                    serverValue: ConfigManager.ServerConfig?.VoiceRadioRangeMultiplier ?? default,
                     formatter: Percentage),
                 colorFunc: (localSliderValue, componentStyle) =>
                 GetSettingColor(localSliderValue, componentStyle,
-                    defaultValue: Menu.defaultConfig.RadioRangeMultiplier,
+                    defaultValue: Menu.defaultConfig.VoiceRadioRangeMultiplier,
                     vanillaValue: 1.0f),
-                currentValue: unsavedConfig.RadioRangeMultiplier,
-                setter: v => unsavedConfig.RadioRangeMultiplier = v,
+                currentValue: unsavedConfig.VoiceRadioRangeMultiplier,
+                setter: v => unsavedConfig.VoiceRadioRangeMultiplier = v,
                 TextManager.Get("spw_radiorangetooltip")
+            );
+
+            Label(settingsFrame, TextManager.Get("spw_voicevolume"));
+            Slider(settingsFrame, (0, 3), 0.01f,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.VoiceLocalVolumeMultiplier ?? default,
+                    formatter: Percentage),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.VoiceLocalVolumeMultiplier,
+                    vanillaValue: 1.0f),
+                currentValue: unsavedConfig.VoiceLocalVolumeMultiplier,
+                setter: v => unsavedConfig.VoiceLocalVolumeMultiplier = v,
+                TextManager.Get("spw_voicevolumetooltip")
+            );
+
+            Label(settingsFrame, TextManager.Get("spw_radiovolume"));
+            Slider(settingsFrame, (0, 3), 0.01f,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.VoiceRadioVolumeMultiplier ?? default,
+                    formatter: Percentage),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.VoiceRadioVolumeMultiplier,
+                    vanillaValue: 1.0f),
+                currentValue: unsavedConfig.VoiceRadioVolumeMultiplier,
+                setter: v => unsavedConfig.VoiceRadioVolumeMultiplier = v,
+                TextManager.Get("spw_radiovolumetooltip")
+            );
+
+            SpacerLabel(settingsFrame, TextManager.Get("spw_voicecategorybubbles"));
+
+            Tickbox(settingsFrame, FormatTextBoxLabel(
+                label: TextManager.Get("spw_drowningbubbles"),
+                serverValue: ConfigManager.ServerConfig?.DrowningBubblesEnabled ?? default,
+                formatter: BoolFormatter),
+                tooltip: TextManager.Get("spw_drowningbubblestooltip"),
+                currentValue: unsavedConfig.DrowningBubblesEnabled,
+                setter: v => unsavedConfig.DrowningBubblesEnabled = v);
+
+            Spacer(settingsFrame);
+
+            Label(settingsFrame, TextManager.Get("spw_drowningbubbleslocalrange"));
+            Slider(settingsFrame, (0, 3), 0.01f,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.DrowningBubblesLocalRangeMultiplier ?? default,
+                    formatter: Percentage),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.DrowningBubblesLocalRangeMultiplier,
+                    vanillaValue: 1.0f),
+                currentValue: unsavedConfig.DrowningBubblesLocalRangeMultiplier,
+                setter: v => unsavedConfig.DrowningBubblesLocalRangeMultiplier = v,
+                TextManager.Get("spw_drowningbubbleslocalrangetooltip")
+            );
+
+            Label(settingsFrame, TextManager.Get("spw_drowningbubbleslocalvolume"));
+            Slider(settingsFrame, (0, 3), 0.01f,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.DrowningBubblesLocalVolumeMultiplier ?? default,
+                    formatter: Percentage),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.DrowningBubblesLocalVolumeMultiplier,
+                    vanillaValue: 1.0f),
+                currentValue: unsavedConfig.DrowningBubblesLocalVolumeMultiplier,
+                setter: v => unsavedConfig.DrowningBubblesLocalVolumeMultiplier = v,
+                TextManager.Get("spw_drowningbubbleslocalvolumetooltip")
+            );
+
+            Label(settingsFrame, TextManager.Get("spw_drowningbubblesradiovolume"));
+            Slider(settingsFrame, (0, 3), 0.01f,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.DrowningBubblesRadioVolumeMultiplier ?? default,
+                    formatter: Percentage),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.DrowningBubblesRadioVolumeMultiplier,
+                    vanillaValue: 1.0f),
+                currentValue: unsavedConfig.DrowningBubblesRadioVolumeMultiplier,
+                setter: v => unsavedConfig.DrowningBubblesRadioVolumeMultiplier = v,
+                TextManager.Get("spw_drowningbubblesradiovolumetooltip")
             );
 
             SpacerLabel(settingsFrame, TextManager.Get("spw_voicecategorycustomfilter"));
@@ -1800,7 +1894,8 @@ namespace SoundproofWalls
                     vanillaValue: ChannelInfoManager.VANILLA_VOIP_BANDPASS_FREQUENCY),
                 currentValue: unsavedConfig.RadioBandpassFrequency,
                 setter: v => unsavedConfig.RadioBandpassFrequency = (int)v,
-                TextManager.Get("spw_radiobandpassfrequencytooltip")
+                TextManager.Get("spw_radiobandpassfrequencytooltip"),
+                bannedValue: ChannelInfoManager.VANILLA_VOIP_BANDPASS_FREQUENCY
             );
 
             Label(settingsFrame, TextManager.Get("spw_radiobandpassqualityfactor"));
@@ -1818,23 +1913,38 @@ namespace SoundproofWalls
                 TextManager.Get("spw_radiobandpassqualityfactortooltip")
             );
 
-            Label(settingsFrame, TextManager.Get("spw_radiodistortion"));
+            Label(settingsFrame, TextManager.Get("spw_radiodistortiondrive"));
             Slider(settingsFrame, (0, 10), 0.01f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
-                    serverValue: ConfigManager.ServerConfig?.RadioDistortion ?? default,
+                    serverValue: ConfigManager.ServerConfig?.RadioDistortionDrive ?? default,
                     formatter: Percentage),
                 colorFunc: (localSliderValue, componentStyle) =>
                 GetSettingColor(localSliderValue, componentStyle,
-                    defaultValue: Menu.defaultConfig.RadioDistortion,
+                    defaultValue: Menu.defaultConfig.RadioDistortionDrive,
                     vanillaValue: null),
-                currentValue: unsavedConfig.RadioDistortion,
-                setter: v => unsavedConfig.RadioDistortion = v,
-                TextManager.Get("spw_radiodistortiontooltip")
+                currentValue: unsavedConfig.RadioDistortionDrive,
+                setter: v => unsavedConfig.RadioDistortionDrive = v,
+                TextManager.Get("spw_radiodistortiondrivetooltip")
+            );
+
+            Label(settingsFrame, TextManager.Get("spw_radiodistortionthreshold"));
+            Slider(settingsFrame, (0, 1), 0.01f,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.RadioDistortionThreshold ?? default,
+                    formatter: Percentage),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.RadioDistortionThreshold,
+                    vanillaValue: null),
+                currentValue: unsavedConfig.RadioDistortionThreshold,
+                setter: v => unsavedConfig.RadioDistortionThreshold = v,
+                TextManager.Get("spw_radiodistortionthresholdtooltip")
             );
 
             Label(settingsFrame, TextManager.Get("spw_radiostatic"));
-            Slider(settingsFrame, (0, 10), 0.01f,
+            Slider(settingsFrame, (0, 1.0f), 0.01f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.RadioStatic ?? default,
@@ -1849,7 +1959,7 @@ namespace SoundproofWalls
             );
 
             Label(settingsFrame, TextManager.Get("spw_radiocompressionthreshold"));
-            Slider(settingsFrame, (0, 10), 0.01f,
+            Slider(settingsFrame, (0, 1), 0.01f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.RadioCompressionThreshold ?? default,
@@ -1876,6 +1986,21 @@ namespace SoundproofWalls
                 currentValue: unsavedConfig.RadioCompressionRatio,
                 setter: v => unsavedConfig.RadioCompressionRatio = v,
                 TextManager.Get("spw_radiocompressionratiotooltip")
+            );
+
+            Label(settingsFrame, TextManager.Get("spw_radiopostfilterboost"));
+            Slider(settingsFrame, (0, 10), 0.01f,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.RadioPostFilterBoost ?? default,
+                    formatter: Percentage),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.RadioPostFilterBoost,
+                    vanillaValue: null),
+                currentValue: unsavedConfig.RadioPostFilterBoost,
+                setter: v => unsavedConfig.RadioPostFilterBoost = v,
+                TextManager.Get("spw_radiopostfilterboosttooltip")
             );
         }
 

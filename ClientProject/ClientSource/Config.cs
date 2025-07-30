@@ -86,20 +86,30 @@ namespace SoundproofWalls
         public int StaticReverbMinArea { get; set; } = 375_000; // The minimum area the listener has to be in for non-looping non-muffled sounds to use reverb buffers.
 
         // Voice
+            // General
         public bool TalkingRagdolls { get; set; } = true;
-        public bool DrowningBubblesEnabled { get; set; } = true;
         public bool WhisperMode { get; set; } = false;
         public int VoiceHeavyLowpassFrequency { get; set; } = 150; // Used when a player's voice is muffled heavily. Otherwise, uses medium or light.
-        public float VoiceRangeMultiplier { get; set; } = 1.4f;
-        public float RadioRangeMultiplier { get; set; } = 1.0f;
-
+        public float VoiceDynamicMuffleMultiplier { get; set; } = 1.1f;
+        public float VoiceLocalRangeMultiplier { get; set; } = 1.2f;
+        public float VoiceRadioRangeMultiplier { get; set; } = 1.0f;
+        public float VoiceLocalVolumeMultiplier { get; set; } = 1.0f; // TODO voice volume seems to be getting updated somewhere else, causing flickering when combined with this setting.
+        public float VoiceRadioVolumeMultiplier { get; set; } = 1.0f;
+            // Bubbles
+        public bool DrowningBubblesEnabled { get; set; } = true;
+        public float DrowningBubblesLocalRangeMultiplier { get; set; } = 1.2f; // in cm
+        public float DrowningBubblesLocalVolumeMultiplier { get; set; } = 1.0f;
+        public float DrowningBubblesRadioVolumeMultiplier { get; set; } = 0.6f;
+            // Custom Filter
         public bool RadioCustomFilterEnabled { get; set; } = true;
-        public int RadioBandpassFrequency { get; set; } = 2010;
-        public float RadioBandpassQualityFactor { get; set; } = 2.5f;
-        public float RadioDistortion { get; set; } = 0.0f;
+        public int RadioBandpassFrequency { get; set; } = 2800;
+        public float RadioBandpassQualityFactor { get; set; } = 3.7f;
+        public float RadioDistortionDrive { get; set; } = 2.0f;
+        public float RadioDistortionThreshold { get; set; } = 0.9f;
         public float RadioStatic { get; set; } = 0.0f;
-        public float RadioCompressionThreshold { get; set; } = 0.2f;
-        public float RadioCompressionRatio { get; set; } = 0.2f;
+        public float RadioCompressionThreshold { get; set; } = 0.7f;
+        public float RadioCompressionRatio { get; set; } = 1.5f;
+        public float RadioPostFilterBoost { get; set; } = 1.0f;
 
         // Muffle
         public bool MuffleDivingSuits { get; set; } = true; // Not available for Classic mode.
@@ -238,7 +248,7 @@ namespace SoundproofWalls
         public bool UpdateNonLoopingSounds { get; set; } = true; // Updates the gain and pitch of non looping "single-shot" sounds every tick. Muffle is updated every NonLoopingSoundMuffleUpdateInterval.
         public float VoiceMuffleUpdateInterval { get; set; } = 0.2f;
         public float NonLoopingSoundMuffleUpdateInterval { get; set; } = 0.2f; // Only applied if UpdateNonLoopingSounds is enabled.
-        public float OpenALEffectsUpdateInterval { get; set; } = 0.1f;
+        public float OpenALEffectsUpdateInterval { get; set; } = 0.01f;
         public float ComponentMuffleUpdateInterval { get; set; } = 0.2f;
         public float StatusEffectMuffleUpdateInterval { get; set; } = 0.2f;
 
@@ -250,8 +260,8 @@ namespace SoundproofWalls
         public float HydrophoneReverbGainTransitionFactor { get; set; } = 0.5f;
 
             // Volume Attenuation
-        public float LoopingComponentSoundNearMultiplier { get; set; } = 0.25f; // near = far * thisMult  |  "near" is the max range before volume falloff starts.
-        public float MinDistanceFalloffVolume { get; set; } = 0.04f; // The minimum gain a sound being attenuated by approx dist can reach.
+        public float LoopingComponentSoundNearMultiplier { get; set; } = 0.0f; // near = far * thisMult  |  "near" is the max range before volume falloff starts.
+        public float MinDistanceFalloffVolume { get; set; } = 0.0f; // The minimum gain a sound being attenuated by approx dist can reach.
         public float SidechainMuffleInfluence { get; set; } = 0.75f;
         
             // Sound Pathfinding

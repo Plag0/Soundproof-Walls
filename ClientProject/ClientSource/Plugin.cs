@@ -723,12 +723,9 @@ namespace SoundproofWalls
             client.Character.ShowTextlessSpeechBubble(1.25f, ChatMessage.MessageColor[(int)messageType]);
 
             // Range.
-            float localRangeMultiplier = 1 * Config.VoiceRangeMultiplier;
-            float radioRangeMultiplier = 1 * Config.RadioRangeMultiplier;
-            if (Config.WhisperMode)
-            {
-                localRangeMultiplier *= client.VoipSound.CurrentAmplitude;
-            }
+            float localRangeMultiplier = 1 * Config.VoiceLocalRangeMultiplier;
+            float radioRangeMultiplier = 1 * Config.VoiceRadioRangeMultiplier;
+            
             float speechImpedimentMultiplier = 1.0f - client.Character.SpeechImpediment / 100.0f;
             if (messageType == ChatMessageType.Radio)
             {
@@ -745,7 +742,24 @@ namespace SoundproofWalls
                 float baseRange = ChatMessage.SpeakRangeVOIP;
                 if (Listener.IsUsingHydrophones) { baseRange += Config.HydrophoneSoundRange; }
                 client.VoipSound.UsingRadio = false;
-                client.VoipSound.SetRange(baseRange * VoipClient.RangeNear * speechImpedimentMultiplier * localRangeMultiplier, baseRange * speechImpedimentMultiplier * localRangeMultiplier);
+
+                if (Config.WhisperMode)
+                {
+                    localRangeMultiplier *= client.VoipSound.CurrentAmplitude;
+                }
+
+                float targetNear = baseRange * speechImpedimentMultiplier * localRangeMultiplier * VoipClient.RangeNear;
+                float targetFar = baseRange * speechImpedimentMultiplier * localRangeMultiplier;
+
+                // Transition the range of voice channels smoothly when listen mode is enabled.
+                if (Config.WhisperMode)
+                {
+                    float maxStep = (float)(700 * Timing.Step); // 700 cm a second
+                    targetNear = Util.SmoothStep(client.VoipSound.soundChannel.Near, targetNear, maxStep);
+                    targetNear = Util.SmoothStep(client.VoipSound.soundChannel.Far, targetFar, maxStep);
+                }
+
+                client.VoipSound.SetRange(targetNear, targetFar);
             }
 
             // Sound Info stuff.
@@ -779,7 +793,7 @@ namespace SoundproofWalls
 
             float rangeFar = instance.VoipSound.Far;
             float rangeNear = instance.VoipSound.Near;
-            float maxAudibleRange = ChatMessage.SpeakRangeVOIP * Config.VoiceRangeMultiplier;
+            float maxAudibleRange = ChatMessage.SpeakRangeVOIP * Config.VoiceLocalRangeMultiplier;
             if (Listener.IsUsingHydrophones)
             {
                 maxAudibleRange += Config.HydrophoneSoundRange;
@@ -817,7 +831,7 @@ namespace SoundproofWalls
                 }
             }
             instance.VoipSound.SetPosition(position);
-            instance.VoipSound.Gain = gain;
+            //instance.VoipSound.Gain = gain;
             if (noiseGain > 0.0f)
             {
                 if (instance.radioNoiseChannel == null || !instance.radioNoiseChannel.IsPlaying)
@@ -842,7 +856,10 @@ namespace SoundproofWalls
         private static BiQuad voipLightMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, Config.LightLowpassFrequency);
         private static BiQuad voipMediumMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, Config.MediumLowpassFrequency);
         private static BiQuad voipHeavyMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, Config.VoiceHeavyLowpassFrequency);
-        private static RadioFilter voipCustomRadioFilter = new RadioFilter(VoipConfig.FREQUENCY, Config.RadioBandpassFrequency, Config.RadioBandpassQualityFactor, Config.RadioDistortion, Config.RadioStatic, Config.RadioCompressionThreshold, Config.RadioCompressionRatio);
+        private static RadioFilter voipCustomRadioFilter = new RadioFilter(VoipConfig.FREQUENCY, Config.RadioBandpassFrequency, 
+                                                                Config.RadioBandpassQualityFactor, Config.RadioDistortionDrive, 
+                                                                Config.RadioDistortionThreshold, Config.RadioStatic, 
+                                                                Config.RadioCompressionThreshold, Config.RadioCompressionRatio);
         private static BiQuad voipVanillaRadioFilter = new BandpassFilter(VoipConfig.FREQUENCY, ChannelInfoManager.VANILLA_VOIP_BANDPASS_FREQUENCY);
         public static bool SPW_VoipSound_ApplyFilters_Prefix(VoipSound __instance, ref short[] buffer, ref int readSamples)
         {
@@ -887,25 +904,28 @@ namespace SoundproofWalls
                 Config.RadioCustomFilterEnabled &&
                 (voipCustomRadioFilter.frequency != Config.RadioBandpassFrequency ||
                 voipCustomRadioFilter.q != Config.RadioBandpassQualityFactor ||
-                voipCustomRadioFilter.distortionAmount != Config.RadioDistortion ||
+                voipCustomRadioFilter.distortionDrive != Config.RadioDistortionDrive ||
+                voipCustomRadioFilter.distortionThreshold != Config.RadioDistortionThreshold ||
                 voipCustomRadioFilter.staticAmount != Config.RadioStatic ||
                 voipCustomRadioFilter.compressionThreshold != Config.RadioCompressionThreshold ||
                 voipCustomRadioFilter.compressionRatio != Config.RadioCompressionRatio))
             {
-                voipCustomRadioFilter = new RadioFilter(VoipConfig.FREQUENCY, Config.RadioBandpassFrequency, Config.RadioBandpassQualityFactor, Config.RadioDistortion, Config.RadioStatic, Config.RadioCompressionThreshold, Config.RadioCompressionRatio);
+                voipCustomRadioFilter = new RadioFilter(VoipConfig.FREQUENCY, Config.RadioBandpassFrequency, 
+                    Config.RadioBandpassQualityFactor, Config.RadioDistortionDrive, Config.RadioDistortionThreshold, 
+                    Config.RadioStatic, Config.RadioCompressionThreshold, Config.RadioCompressionRatio);
             }
 
             // Vanilla method & changes.
 
-            // Sets voipSound.gain to the raw volume without voice config settings applied (seems to be what it's for in vanilla)
-            // and updates the soundchannel gain with the voice config settings applied.
+            // This voipSound.Gain property applies Baro's CurrentConfig.Audio.VoiceChatVolume and client.VoiceVolume to channel.Gain.
+            // The soundInfo.Gain property returns channel.gain
             voipSound.Gain = soundInfo.Gain;
 
             for (int i = 0; i < readSamples; i++)
             {
                 float fVal = ToolBox.ShortAudioSampleToFloat(buffer[i]);
 
-                if (voipSound.UseMuffleFilter && !Config.DynamicFx) // DynamicFx processes muffle differently.
+                if (voipSound.UseMuffleFilter && !Config.DynamicFx) // DynamicFx processes muffle with OpenAL so we don't need to change the buffer.
                 {
                     fVal = muffleFilter.Process(fVal);
                 }
@@ -2150,7 +2170,7 @@ namespace SoundproofWalls
 
             updateWaterAmbience(SoundPlayer.waterAmbienceIn.Sound, ambienceVolume * (1.0f - movementSoundVolume) * insideSubFactor * SoundPlayer.waterAmbienceIn.Volume * Config.WaterAmbienceInVolumeMultiplier);
             updateWaterAmbience(SoundPlayer.waterAmbienceMoving.Sound, ambienceVolume * movementSoundVolume * insideSubFactor * SoundPlayer.waterAmbienceMoving.Volume * Config.WaterAmbienceMovingVolumeMultiplier);
-            updateWaterAmbience(SoundPlayer.waterAmbienceOut.Sound, (1.0f - insideSubFactor) * SoundPlayer.waterAmbienceOut.Volume * Config.WaterAmbienceOutVolumeMultiplier);
+            updateWaterAmbience(SoundPlayer.waterAmbienceOut.Sound, ambienceVolume * (1.0f - insideSubFactor) * SoundPlayer.waterAmbienceOut.Volume * Config.WaterAmbienceOutVolumeMultiplier);
 
             return false;
         }

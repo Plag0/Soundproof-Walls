@@ -3,7 +3,6 @@ using Barotrauma.Items.Components;
 using Barotrauma.Networking;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
-using System.Linq;
 using System.Reflection;
 
 namespace SoundproofWalls

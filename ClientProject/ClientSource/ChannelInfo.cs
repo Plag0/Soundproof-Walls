@@ -477,8 +477,11 @@ namespace SoundproofWalls
 
         private void UpdateVoice()
         {
-            voiceUseMuffleFilter = Muffled;
-            voiceUseRadioFilter = messageType == ChatMessageType.Radio && !GameSettings.CurrentConfig.Audio.DisableVoiceChatFilters;
+            if (SpeakingClient != null)
+            {
+                voiceUseMuffleFilter = Muffled && SpeakingClient.Character != null && !SpeakingClient.Character.IsDead;
+                voiceUseRadioFilter = messageType == ChatMessageType.Radio && !GameSettings.CurrentConfig.Audio.DisableVoiceChatFilters && SpeakingClient.Character != null && !SpeakingClient.Character.IsDead;
+            }
         }
 
         private void UpdateProperties()
@@ -1083,10 +1086,12 @@ namespace SoundproofWalls
             if (AudioIsRadioVoice)
             {
                 mult += MathHelper.Lerp(config.UnmuffledVoiceVolumeMultiplier, config.MuffledVoiceVolumeMultiplier, MuffleStrength) - 1;
+                mult += config.VoiceRadioVolumeMultiplier - 1;
             }
             else if (AudioIsLocalVoice)
             {
                 mult += MathHelper.Lerp(config.UnmuffledVoiceVolumeMultiplier, config.MuffledVoiceVolumeMultiplier, MuffleStrength) - 1;
+                mult += config.VoiceLocalVolumeMultiplier - 1;
                 if (bothInWater) mult += config.SubmergedVolumeMultiplier - 1;
                 else if (Eavesdropped) mult += config.EavesdroppingVoiceVolumeMultiplier - 1;
                 else if (Hydrophoned) { mult += config.HydrophoneVolumeMultiplier - 1; mult *= HydrophoneManager.HydrophoneEfficiency; }
@@ -1145,7 +1150,7 @@ namespace SoundproofWalls
             // Only do this if there's a noticable difference between the euclideanDistance that OpenAL uses and the approximate distance,
             // because crossing the max distance threshold rapidly is noticably less smooth when applied this way, despite using the same formula.
             bool ignoreGainFade = false;
-            if ((config.AttenuateWithApproximateDistance || isClone) && approximateDistance != null && MathF.Abs(Distance - EuclideanDistance) > 100)
+            if ((config.AttenuateWithApproximateDistance || isClone) && approximateDistance != null)
             {
                 rolloffFactor = 0; // Disable OpenAL distance attenuation.
                 rolloffFactorModified = true;
@@ -1358,7 +1363,17 @@ namespace SoundproofWalls
             if (AudioIsFlow) currentGain = Math.Max(SoundPlayer.flowVolumeRight[flowFireChannelIndex], SoundPlayer.flowVolumeLeft[flowFireChannelIndex]);
             else if (AudioIsFire) currentGain = Math.Max(SoundPlayer.fireVolumeRight[flowFireChannelIndex], SoundPlayer.fireVolumeLeft[flowFireChannelIndex]);
 
-            Gain = currentGain * mult;
+            float targetGain = currentGain * mult;
+            float transitionFactor = config.GainTransitionFactor;
+            if (transitionFactor > 0 && !isFirstIteration && Plugin.Sidechain.SidechainMultiplier <= 0)
+            {
+                float maxStep = (float)(transitionFactor * Timing.Step);
+                Gain = Util.SmoothStep(Gain, targetGain, maxStep);
+            }
+            else
+            {
+                Gain = targetGain;
+            }
         }
 
         private void UpdateFlowFirePitch()
@@ -1367,7 +1382,19 @@ namespace SoundproofWalls
             if (Listener.IsSubmerged) mult += config.SubmergedPitchMultiplier - 1;
             if (Listener.IsWearingDivingSuit) mult += config.DivingSuitPitchMultiplier - 1;
             if (Listener.IsUsingHydrophones) mult += config.HydrophonePitchMultiplier - 1;
-            Pitch = 1 * mult;
+
+            float targetPitch = 1 * mult;
+
+            float transitionFactor = config.PitchTransitionFactor;
+            if (transitionFactor > 0 && !isFirstIteration)
+            {
+                float maxStep = (float)(transitionFactor * Timing.Step);
+                Pitch = Util.SmoothStep(Pitch, targetPitch, maxStep);
+            }
+            else
+            {
+                Pitch = targetPitch;
+            }
         }
 
         private void AddObstruction(Obstruction obs, string debugContext)

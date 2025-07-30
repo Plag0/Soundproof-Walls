@@ -171,17 +171,25 @@ namespace SoundproofWalls
                 return;
             }
 
+            float localVolume = 1.0f * voiceChannel.CurrentAmplitude * ConfigManager.Config.DrowningBubblesLocalVolumeMultiplier;
+            float radioVolume = 1.0f * voiceChannel.CurrentAmplitude * ConfigManager.Config.DrowningBubblesRadioVolumeMultiplier * ConfigManager.Config.VoiceRadioVolumeMultiplier;
+            float localRange = voiceChannel.Far * ConfigManager.Config.DrowningBubblesLocalRangeMultiplier;
+
             if (isPlaying) // Continue playing.
             {
                 if (state == PlayerBubbleSoundState.PlayRadioBubbles) // Continue radio
                 {
                     currentBubbleChannel.Position = GameMain.SoundManager.ListenerPosition;
+                    currentBubbleChannel.Gain = radioVolume;
                     currentBubbleChannel.FrequencyMultiplier = MathHelper.Lerp(0.85f, 1.15f, MathUtils.InverseLerp(0, 2, player.CurrentSpeed));
                 }
                 else if (state == PlayerBubbleSoundState.PlayLocalBubbles) // Continue local
                 {
                     currentBubbleChannel.Position = new Vector3(playerHead.WorldPosition, 0);
-                    currentBubbleChannel.FrequencyMultiplier = MathHelper.Lerp(1, 4, MathUtils.InverseLerp(0, 2, player.CurrentSpeed));
+                    currentBubbleChannel.Gain = localVolume;
+                    currentBubbleChannel.FrequencyMultiplier = MathHelper.Lerp(0.8f, 2.0f, MathUtils.InverseLerp(0, 2, player.CurrentSpeed));
+                    currentBubbleChannel.Far = localRange;
+                    currentBubbleChannel.Near = localRange * ConfigManager.Config.LoopingComponentSoundNearMultiplier;
                 }
 
                 GameMain.ParticleManager.CreateParticle(
@@ -196,11 +204,11 @@ namespace SoundproofWalls
                 SoundChannel? newBubbleChannel = null;
                 if (state == PlayerBubbleSoundState.PlayRadioBubbles) // Start radio
                 {
-                    newBubbleChannel = SoundPlayer.PlaySound(RadioBubbleSound, new Vector2(GameMain.SoundManager.ListenerPosition.X, GameMain.SoundManager.ListenerPosition.Y), volume: 0.7f, freqMult: MathHelper.Lerp(0.85f, 1.15f, MathUtils.InverseLerp(0, 2, player.CurrentSpeed)), ignoreMuffling: true);
+                    newBubbleChannel = SoundPlayer.PlaySound(RadioBubbleSound, new Vector2(GameMain.SoundManager.ListenerPosition.X, GameMain.SoundManager.ListenerPosition.Y), volume: radioVolume, freqMult: MathHelper.Lerp(0.85f, 1.15f, MathUtils.InverseLerp(0, 2, player.CurrentSpeed)), ignoreMuffling: true);
                 }
                 else if (state == PlayerBubbleSoundState.PlayLocalBubbles) // Start local
                 {
-                    newBubbleChannel = SoundPlayer.PlaySound(BubbleSound, playerHead.WorldPosition, volume: 1, range: 350, freqMult: MathHelper.Lerp(1, 4, MathUtils.InverseLerp(0, 2, player.CurrentSpeed)), ignoreMuffling: true);
+                    newBubbleChannel = SoundPlayer.PlaySound(BubbleSound, playerHead.WorldPosition, volume: localVolume, range: localRange, freqMult: MathHelper.Lerp(0.8f, 2.0f, MathUtils.InverseLerp(0, 2, player.CurrentSpeed)), ignoreMuffling: true);
                 }
 
                 if (newBubbleChannel != null)

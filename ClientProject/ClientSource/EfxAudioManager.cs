@@ -359,7 +359,7 @@ namespace SoundproofWalls
                 LateReverbGain = lateReverbGain,
                 LateReverbDelay = lateReverbDelay,
                 AirAbsorptionGainHf = 0.994f, // Default value
-                RoomRolloffFactor = 0.0f, // Default value
+                RoomRolloffFactor = 1.1f,
                 DecayHfLimit = Al.True // Default value
             };
         }
