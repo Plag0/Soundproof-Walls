@@ -22,10 +22,14 @@ namespace SoundproofWalls
             // For adding/removing reduced buffers with the RemoveUnusedBuffers setting.
             bool oldReducedBuffersEnabled = oldConfig.DynamicFx && oldConfig.RemoveUnusedBuffers;
             bool newReducedBuffersEnabled = newConfig.DynamicFx && newConfig.RemoveUnusedBuffers;
-            bool shouldReloadReducedBuffers = oldReducedBuffersEnabled && !newReducedBuffersEnabled || !oldReducedBuffersEnabled && newReducedBuffersEnabled;
+            bool shouldReloadReducedBuffers = oldReducedBuffersEnabled != newReducedBuffersEnabled;
 
             // For adding/removing extended buffers.
-            bool shouldReloadExtendedBuffers = oldConfig.StaticFx && !newConfig.StaticFx || !oldConfig.StaticFx && newConfig.StaticFx;
+            bool changedReverbEffect = newConfig.StaticFx && newConfig.StaticReverbEnabled &&
+                (oldConfig.StaticReverbEnabled != newConfig.StaticReverbEnabled ||
+                oldConfig.StaticReverbDuration != newConfig.StaticReverbDuration ||
+                oldConfig.StaticReverbWetDryMix != newConfig.StaticReverbWetDryMix);
+            bool shouldReloadExtendedBuffers = oldConfig.StaticFx != newConfig.StaticFx || changedReverbEffect;
 
             // For frequency changes in static/classic mode.
             double vanillaFreq = SoundPlayer.MuffleFilterFrequency;

@@ -288,40 +288,37 @@ namespace SoundproofWalls
             float loudSoundGain = 0;
             for (int i = 0; i < playingChannels.Length; i++)
             {
-                if (playingChannels[i] != null && playingChannels[i].IsPlaying)
+                if (playingChannels[i] != null && playingChannels[i].IsPlaying && 
+                    ChannelInfoManager.TryGetChannelInfo(playingChannels[i], out ChannelInfo? info) && info != null && !info.Ignored)
                 {
-                    if (ChannelInfoManager.TryGetChannelInfo(playingChannels[i], out ChannelInfo? info) && info != null && !info.Ignored)
+                    if (playingChannels[i].Looping)
                     {
-                        if (playingChannels[i].Looping)
+                        float gain = playingChannels[i].Gain;
+                        if (!info.IsLoud)
                         {
-                            float gain = playingChannels[i].Gain;
-                            if (!info.IsLoud)
-                            {
-                                float sidechainMult = Plugin.Sidechain.SidechainMultiplier;
-                                if (sidechainMult >= 1) { sidechainMult = 0.99f; }
-                                if (gain <= 0) { gain = 0.01f; }
-                                gain /= 1 - sidechainMult; // Undo gain adjustments from sidechain multiplier for audio amplitude calculation.
-                            }
-                            float amplitude = playingChannels[i].CurrentAmplitude;
-
-                            float muffleMult = 1 - info.MuffleStrength;
-
-                            //LuaCsLogger.Log($"{Path.GetFileName(playingChannels[i].Sound.Filename)} gain: {gain} * amplitude {amplitude} * muffleMult {muffleMult} = totalAudioAmplitude {totalAudioAmplitude}");
-                            totalAudioAmplitude += amplitude * gain * muffleMult;
+                            float sidechainMult = Plugin.Sidechain.SidechainMultiplier;
+                            if (sidechainMult >= 1) { sidechainMult = 0.99f; }
+                            if (gain <= 0) { gain = 0.01f; }
+                            gain /= 1 - sidechainMult; // Undo gain adjustments from sidechain multiplier for audio amplitude calculation.
                         }
-                        else
-                        {
-                            if (info.IsLoud)
-                            {
-                                loudSoundGain += 0.2f;
-                            }
-                        }
+                        float amplitude = playingChannels[i].CurrentAmplitude;
+
+                        float muffleMult = 1 - info.MuffleStrength;
+
+                        //LuaCsLogger.Log($"{Path.GetFileName(playingChannels[i].Sound.Filename)} gain: {gain} * amplitude {amplitude} * muffleMult {muffleMult} = totalAudioAmplitude {totalAudioAmplitude}");
+                        totalAudioAmplitude += amplitude * gain * muffleMult;
                     }
+                    // Non looping sounds that are loud
+                    else if (info.IsLoud)
+                    {
+                        loudSoundGain += 0.12f; // Arbitrary magic number
+                    }
+
                 }
             }
             float amplitudeMult = 1f - MathUtils.InverseLerp(0.0f, 1.4f, totalAudioAmplitude);
             float submersionMult = Listener.IsSubmerged ? 1.3f : 1.0f;
-            float targetReverbGain = (ConfigManager.Config.DynamicReverbAirTargetGain * amplitudeMult * submersionMult) + (loudSoundGain * ConfigManager.Config.DynamicReverbAirTargetGain);
+            float targetReverbGain = ((amplitudeMult * submersionMult) + loudSoundGain) * ConfigManager.Config.DynamicReverbAirTargetGain;
 
             targetReverbGain = Math.Clamp(targetReverbGain, 0.0f, 1.0f);
 

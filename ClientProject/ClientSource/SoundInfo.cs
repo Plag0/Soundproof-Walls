@@ -113,7 +113,14 @@ namespace SoundproofWalls
 
             foreach (var sound in ConfigManager.Config.CustomSounds)
             {
+                if (sound.Keyword == null)
+                {
+                    LuaCsLogger.LogError("[SoundproofWalls] Warning: local config file contains null keyword for custom sound. Please remove this keyword or reset your config.");
+                    continue;
+                }
+
                 string keyword = sound.Keyword.ToLower();
+
                 if (filename.Contains(keyword))
                 {
                     bool excluded = false;
@@ -136,7 +143,14 @@ namespace SoundproofWalls
 
                 foreach (var sound in moddedCustomSounds)
                 {
+                    if (sound.Keyword == null)
+                    {
+                        LuaCsLogger.LogError($"[SoundproofWalls] Warning: the mod \"{mod.Name}\" has an spw_overrides.json file that contains a null keyword. Please remove this keyword or delete the file.");
+                        continue;
+                    }
+
                     string keyword = sound.Keyword.ToLower();
+
                     if (filename.Contains(keyword))
                     {
                         bool excluded = false;

@@ -1053,6 +1053,17 @@ namespace SoundproofWalls
             label.Text = diffCount > 0 ? $"{labelText} ({diffCount})" : labelText;
 
             textBox.Text = JsonSerializer.Serialize(localSet, jsonOptions);
+
+            // Delayed update to recalculate size. Without this, the text box is cut off at the top and bottom.
+            bool needsTextUpdate = true;
+            new GUICustomComponent(new RectTransform(Vector2.Zero, listBox.Content.RectTransform), onUpdate: (deltaTime, component) =>
+            {
+                if (needsTextUpdate)
+                {
+                    textBox.Text = textBox.Text;
+                    needsTextUpdate = false;
+                }
+            });
         }
 
         /// <summary>
@@ -1164,6 +1175,17 @@ namespace SoundproofWalls
             textBox.ToolTip = resetButton.ToolTip = label.ToolTip = tooltip;
             label.Text = labelText;
             textBox.Text = JsonSerializer.Serialize(localSet, jsonOptions);
+
+            // Delayed update to recalculate size.
+            bool needsTextUpdate = true;
+            new GUICustomComponent(new RectTransform(Vector2.Zero, listBox.Content.RectTransform), onUpdate: (deltaTime, component) =>
+            {
+                if (needsTextUpdate)
+                {
+                    textBox.Text = textBox.Text;
+                    needsTextUpdate = false;
+                }
+            });
         }
         #endregion
 

@@ -52,13 +52,6 @@ namespace SoundproofWalls
             return sample;
         }
 
-        /// <summary>
-        /// Applies a harsher distortion by driving the signal and then hard-clipping it.
-        /// </summary>
-        /// <param name="sample">The input audio sample.</param>
-        /// <param name="drive">How much to amplify the signal before clipping. Recommended: 1.0 to 10.0</param>
-        /// <param name="threshold">The level at which to clip. Recommended: 0.5 to 1.0</param>
-        /// <returns>The distorted sample.</returns>
         public float ApplyHardClipDistortion(float sample, float drive, float threshold)
         {
             // Amplify the signal
@@ -68,23 +61,16 @@ namespace SoundproofWalls
             return Math.Max(-threshold, Math.Min(drivenSample, threshold));
         }
 
-        /// <summary>
-        /// Adds filtered static noise to the signal for a more natural, less harsh sound.
-        /// </summary>
-        /// <param name="sample">The input audio sample.</param>
-        /// <param name="amount">The amount of static to add. Recommended: 0.0 to 0.2</param>
-        /// <returns>The sample with added static.</returns>
         public float AddFilteredStatic(float sample, float amount)
         {
             // Generate white noise
             float whiteNoise = (float)(random.NextDouble() * 2.0 - 1.0);
 
-            // Apply a simple low-pass filter to the noise to make it "brownish" and less harsh
+            // Apply a simple low-pass filter to the noise to make it "brownish"
             // This makes the static sound more like a rumble than a screech.
             float filteredNoise = (lastNoise + 0.08f * whiteNoise) / 1.08f;
             lastNoise = filteredNoise;
 
-            // Add the filtered noise to the sample
             return sample + filteredNoise * amount;
         }
     }
