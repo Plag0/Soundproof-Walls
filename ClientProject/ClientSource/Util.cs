@@ -77,9 +77,9 @@ namespace SoundproofWalls
 
         public static bool ShouldUpdateSoundInfo(Dictionary<ContentPackage, HashSet<CustomSound>> dict1, Dictionary<ContentPackage, HashSet<CustomSound>> dict2)
         {
-            if (dict1 == dict2) { LuaCsLogger.Log("1"); return false; }
-            if (dict1 == null || dict2 == null) { LuaCsLogger.Log("2"); return true; }
-            if (dict1.Count != dict2.Count) { LuaCsLogger.Log("3"); return true; }
+            if (dict1 == dict2) { return false; }
+            if (dict1 == null || dict2 == null) { return true; }
+            if (dict1.Count != dict2.Count) { return true; }
 
             // Check each key and its corresponding hash set.
             foreach (var kvp in dict1)
@@ -111,11 +111,11 @@ namespace SoundproofWalls
             }
         }
 
-        public static float SmoothStep(float current, float target, float maxStep)
-        {
-            float diff = target - current;
-            return current + (MathF.Abs(diff) < maxStep ? diff : MathF.Sign(diff) * maxStep);
-        }
+            public static float SmoothStep(float current, float target, float maxStep)
+            {
+                float diff = target - current;
+                return current + (MathF.Abs(diff) < maxStep ? diff : MathF.Sign(diff) * maxStep);
+            }
 
         private static bool ShouldSkipSound(Sound? sound, bool starting, bool stopping)
         {

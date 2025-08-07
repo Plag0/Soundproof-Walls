@@ -1,4 +1,7 @@
-﻿namespace SoundproofWalls
+﻿using Barotrauma;
+using System;
+
+namespace SoundproofWalls
 {
     public class SidechainProcessor
     {
@@ -24,6 +27,9 @@
         // Call this to start the release phase
         public void StartRelease(float rawStartingValue, float releaseTimeInSeconds, CustomSound? activeSoundGroup)
         {
+            // Invalid sidechain.
+            if (rawStartingValue <= 0 || releaseTimeInSeconds <= 0) { return; }
+
             // Only start a new release if it's more intense.
             if (rawStartingValue < SidechainRawStartValue * CompletionRatio) { return;}
             
@@ -44,17 +50,17 @@
             isReleasing = true;
         }
 
-        public float Update()
+        public void Update()
         {
             if (!isReleasing || sidechainRelease <= 0f)
             {
-                return 0;
+                return;
             }
 
             if (!ConfigManager.Config.SidechainingEnabled || !ConfigManager.Config.Enabled || !Util.RoundStarted)
             {
                 SidechainMultiplier = 0;
-                return 0;
+                return;
             }
 
             progress += frameTime / sidechainRelease;
@@ -64,16 +70,15 @@
                 progress = 1f;
                 isReleasing = false;
                 SidechainMultiplier = 0f;
-                return 0f;
+                return;
             }
 
             float exponent = ConfigManager.Config.SidechainReleaseCurve;
             CompletionRatio = (float)Math.Pow(1 - progress, exponent);
 
-            // Max out at 0.98 to prevent auto-disposing of SoundChannels unnecessarily.
-            SidechainMultiplier = Math.Clamp(sidechainStartingValue * CompletionRatio, 0, 0.98f);
-
-            return SidechainMultiplier;
+            // Cap at 0.99 to prevent auto-disposing of ItemComponent SoundChannels unnecessarily.
+            SidechainMultiplier = Math.Clamp(sidechainStartingValue * CompletionRatio, 0, 0.99f);
+            return;
         }
     }
 }

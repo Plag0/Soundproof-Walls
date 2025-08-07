@@ -4,7 +4,6 @@ using Barotrauma.Items.Components;
 using Barotrauma.Lights;
 using Barotrauma.Networking;
 using Barotrauma.Sounds;
-using FarseerPhysics;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -424,6 +423,8 @@ namespace SoundproofWalls
 
             // Cleans up any ExtendedOggSounds.
             Util.ReloadSounds(stopping: true);
+
+            Menu.Dispose();
         }
 
         public static void SPW_StartRound()
@@ -743,23 +744,23 @@ namespace SoundproofWalls
                 if (Listener.IsUsingHydrophones) { baseRange += Config.HydrophoneSoundRange; }
                 client.VoipSound.UsingRadio = false;
 
-                if (Config.WhisperMode)
-                {
-                    localRangeMultiplier *= client.VoipSound.CurrentAmplitude;
-                }
-
-                float targetNear = baseRange * speechImpedimentMultiplier * localRangeMultiplier * VoipClient.RangeNear;
                 float targetFar = baseRange * speechImpedimentMultiplier * localRangeMultiplier;
+                float targetNear = targetFar * VoipClient.RangeNear;
 
-                // Transition the range of voice channels smoothly when listen mode is enabled.
                 if (Config.WhisperMode)
                 {
-                    float maxStep = (float)(700 * Timing.Step); // 700 cm a second
-                    targetNear = Util.SmoothStep(client.VoipSound.soundChannel.Near, targetNear, maxStep);
-                    targetNear = Util.SmoothStep(client.VoipSound.soundChannel.Far, targetFar, maxStep);
-                }
+                    targetFar *= client.VoipSound.CurrentAmplitude;
+                    if (targetFar > ChannelInfoManager.WhisperModeTrailingRangeFar)
+                    {
+                        ChannelInfoManager.WhisperModeTrailingRangeFar = targetFar;
+                    }
 
+                    targetFar = ChannelInfoManager.WhisperModeTrailingRangeFar;
+                    targetNear = ChannelInfoManager.WhisperModeTrailingRangeFar * VoipClient.RangeNear;
+                }
                 client.VoipSound.SetRange(targetNear, targetFar);
+
+                //LuaCsLogger.Log($"CurrentAmplitude {client.VoipSound.CurrentAmplitude} localRangeMultiplier {localRangeMultiplier} targetNear: {targetNear} targetFar: {targetFar} channelFar {client.VoipSound.soundChannel.Far}");
             }
 
             // Sound Info stuff.
@@ -919,7 +920,7 @@ namespace SoundproofWalls
 
             // This voipSound.Gain property applies Baro's CurrentConfig.Audio.VoiceChatVolume and client.VoiceVolume to channel.Gain.
             // The soundInfo.Gain property returns channel.gain
-            voipSound.Gain = soundInfo.Gain;
+            //voipSound.Gain = soundInfo.Gain;
 
             for (int i = 0; i < readSamples; i++)
             {
@@ -931,14 +932,20 @@ namespace SoundproofWalls
                 }
                 if (voipSound.UseRadioFilter)
                 {
+                    fVal *= ConfigManager.Config.VoiceRadioVolumeMultiplier;
+
                     if (Config.RadioCustomFilterEnabled)
                     {
-                        fVal = Math.Clamp(voipCustomRadioFilter.Process(fVal), -1f, 1f);
+                        fVal = Math.Clamp(voipCustomRadioFilter.Process(fVal) * ConfigManager.Config.RadioPostFilterBoost, -1f, 1f);
                     }
                     else
                     {
                         fVal = Math.Clamp(voipVanillaRadioFilter.Process(fVal) * VoipSound.PostRadioFilterBoost, -1f, 1f);
                     }
+                }
+                else
+                {
+                    fVal *= ConfigManager.Config.VoiceLocalVolumeMultiplier;
                 }
                 buffer[i] = ToolBox.FloatToShortAudioSample(fVal);
             }
@@ -1890,8 +1897,11 @@ namespace SoundproofWalls
 
             void AddFireVolume(FireSource fs, Vector2 listenerPos)
             {
+                // Sometimes fire sizes can be negative values? Thank you baro devs
+                if (fs.Size.X < 0 || fs.Size.Y < 0) { return; }
+
                 // 1. Find the closest horizontal point on the fire's surface to the listener.
-                // This is key to fixing the vanilla bug. clamp the listener's X position to the fire's horizontal bounds.
+                // Clamp the listener's X position to the fire's horizontal bounds.
                 float fireLeftEdgeX = fs.WorldPosition.X;
                 float fireRightEdgeX = fs.WorldPosition.X + fs.Size.X;
                 float closestX = Math.Clamp(listenerPos.X, fireLeftEdgeX, fireRightEdgeX);
@@ -2151,6 +2161,7 @@ namespace SoundproofWalls
                     if (chn.Gain < 0.01f)
                     {
                         chn.FadeOutAndDispose();
+                        SoundPlayer.waterAmbienceChannels.Remove(chn);
                     }
                     if (Character.Controlled != null && Character.Controlled.PressureTimer > 0.0f && !Character.Controlled.IsDead)
                     {
@@ -2171,7 +2182,6 @@ namespace SoundproofWalls
             updateWaterAmbience(SoundPlayer.waterAmbienceIn.Sound, ambienceVolume * (1.0f - movementSoundVolume) * insideSubFactor * SoundPlayer.waterAmbienceIn.Volume * Config.WaterAmbienceInVolumeMultiplier);
             updateWaterAmbience(SoundPlayer.waterAmbienceMoving.Sound, ambienceVolume * movementSoundVolume * insideSubFactor * SoundPlayer.waterAmbienceMoving.Volume * Config.WaterAmbienceMovingVolumeMultiplier);
             updateWaterAmbience(SoundPlayer.waterAmbienceOut.Sound, ambienceVolume * (1.0f - insideSubFactor) * SoundPlayer.waterAmbienceOut.Volume * Config.WaterAmbienceOutVolumeMultiplier);
-
             return false;
         }
 

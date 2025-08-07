@@ -76,6 +76,20 @@ namespace SoundproofWalls
 #if CLIENT
             DisposeClient();
 #endif
+            harmony.UnpatchSelf();
+
+            LuaCsLogger.Log("[SoundproofWalls] Shut down successfully.");
+        }
+
+        // Called when disabling the mod from the Soundproof Walls setting menu.
+        // Unpatches and disposes everything EXCEPT the pause menu button patch.
+        public void PartialDispose()
+        {
+            LuaCsLogger.Log("[SoundproofWalls] Shutting down...");
+
+#if CLIENT
+            DisposeClient();
+#endif
             HarmonyUnpatchSelfExceptTogglePauseMenu();
 
             LuaCsLogger.Log("[SoundproofWalls] Shut down successfully.");

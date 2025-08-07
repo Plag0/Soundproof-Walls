@@ -21,8 +21,16 @@ namespace SoundproofWalls
         public static List<ChannelInfo> EavesdroppedChannels = new List<ChannelInfo>();
         public static List<ChannelInfo> HydrophonedChannels = new List<ChannelInfo>();
 
+        public static float WhisperModeTrailingRangeFar = 0;
+
         public static void Update()
         {
+            if (ConfigManager.Config.WhisperMode)
+            {
+                float changePerSecond = 350f;
+                WhisperModeTrailingRangeFar = Util.SmoothStep(WhisperModeTrailingRangeFar, 0, (float)(changePerSecond * Timing.Step));
+            }
+
             List<ChannelInfo> eavesdroppedChannels = new List<ChannelInfo>();
             List<ChannelInfo> hydrophonedChannels = new List<ChannelInfo>();
 

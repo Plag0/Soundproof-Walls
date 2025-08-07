@@ -54,6 +54,7 @@ namespace SoundproofWalls
         private float gainMultLF;
         private float trailingGainMultLF;
         private bool isFirstIteration;
+        private bool isLooseSound; // Sound that is not attached to anything. Has no item or character parent. We don't want these sounds updating their hull because they have no way to move.
         private Gap? ignoredGap = null;
         private List<Obstruction> obstructions = new List<Obstruction>();
         private List<ChannelInfo> clones = new List<ChannelInfo>();
@@ -273,7 +274,7 @@ namespace SoundproofWalls
         public ItemComponent? ItemComp = null;
         public Item? Item = null;
         public Client? SpeakingClient = null;
-        private ChatMessageType? messageType = null;
+        public ChatMessageType? MessageType = null;
 
         private bool voiceUseMuffleFilter 
         { 
@@ -349,7 +350,7 @@ namespace SoundproofWalls
             ItemComp = original.ItemComp;
             Item = original.Item;
             SpeakingClient = original.SpeakingClient;
-            messageType = original.messageType;
+            MessageType = original.MessageType;
     }
         public ChannelInfo CreateClone(Vector3 pos)
         {
@@ -361,7 +362,9 @@ namespace SoundproofWalls
             if (speakingClient != null && messageType == null) { messageType = Util.GetMessageType(speakingClient); }
             else if (itemComp != null && Item == null) { Item = itemComp.Item; }
             else if (statusEffect != null && Item == null) { Item = statusEffect.soundEmitter as Item; }
+
             if (Item != null && channelHull == null) { channelHull = Item.CurrentHull; }
+            else if (speakingClient?.Character != null && channelHull == null) { channelHull = speakingClient.Character.CurrentHull; }
 
             this.dontMuffle = dontMuffle;
             this.dontPitch = dontPitch;
@@ -372,11 +375,11 @@ namespace SoundproofWalls
             startGain = channel.Gain;
             startPitch = channel.FrequencyMultiplier;
             isFirstIteration = true;
-            this.ChannelHull = channelHull;
-            this.ItemComp = itemComp;
-            this.StatusEffect = statusEffect;
-            this.SpeakingClient = speakingClient;
-            this.messageType = messageType;
+            ChannelHull = channelHull;
+            ItemComp = itemComp;
+            StatusEffect = statusEffect;
+            SpeakingClient = speakingClient;
+            MessageType = messageType;
 
             SoundInfo = SoundInfoManager.EnsureGetSoundInfo(channel.Sound);
 
@@ -425,7 +428,7 @@ namespace SoundproofWalls
             ModStateManager.State.LifetimeSoundsPlayed++;
         }
 
-        // TODO This method takes arguments because sometimes the constructor is called without any of this info available (created from soundchannel ctor with no contex, should I even do this or allow the different types to make themselves later? pretty sure it caused popping previously.)
+        // This method takes arguments because sometimes the constructor is called without any of this info available (created from soundchannel ctor with no contex)
         public void Update(Hull? soundHull = null, StatusEffect? statusEffect = null, ItemComponent? itemComp = null, Client? speakingClient = null, ChatMessageType? messageType = null)
         {
             if (Channel == null) { return; }
@@ -437,6 +440,7 @@ namespace SoundproofWalls
             else if (isClone)
             {
                 UpdateMuffle();
+                UpdateDynamicFx();
                 UpdateGain();
                 UpdatePitch();
                 return;
@@ -445,13 +449,18 @@ namespace SoundproofWalls
             if (speakingClient != null && messageType == null) { messageType = Util.GetMessageType(speakingClient); }
             else if (itemComp != null && Item == null) { Item = itemComp.Item; }
             else if (statusEffect != null && Item == null) { Item = statusEffect.soundEmitter as Item; }
+            
             if (Item != null && soundHull == null) { soundHull = Item.CurrentHull; }
+            else if (speakingClient?.Character != null && soundHull == null) { soundHull = speakingClient.Character.CurrentHull; }
 
-            ChannelHull = soundHull ?? ChannelHull;
-            this.ItemComp = itemComp;
-            this.StatusEffect = statusEffect;
-            this.SpeakingClient = speakingClient;
-            this.messageType = messageType;
+            // Only update the channel hull for sounds that have a parent like an item or character
+            isLooseSound = !isFirstIteration && Item == null && SpeakingClient == null;
+            if (!isLooseSound) { ChannelHull = soundHull; }
+
+            ItemComp = itemComp;
+            StatusEffect = statusEffect;
+            SpeakingClient = speakingClient;
+            MessageType = messageType;
 
             if (Ignored)
             {
@@ -470,6 +479,7 @@ namespace SoundproofWalls
                 UpdateMuffle();
             }
 
+            UpdateDynamicFx();
             UpdateGain();
             UpdatePitch();
             UpdateVoice();
@@ -480,7 +490,7 @@ namespace SoundproofWalls
             if (SpeakingClient != null)
             {
                 voiceUseMuffleFilter = Muffled && SpeakingClient.Character != null && !SpeakingClient.Character.IsDead;
-                voiceUseRadioFilter = messageType == ChatMessageType.Radio && !GameSettings.CurrentConfig.Audio.DisableVoiceChatFilters && SpeakingClient.Character != null && !SpeakingClient.Character.IsDead;
+                voiceUseRadioFilter = MessageType == ChatMessageType.Radio && !GameSettings.CurrentConfig.Audio.DisableVoiceChatFilters && SpeakingClient.Character != null && !SpeakingClient.Character.IsDead;
             }
         }
 
@@ -490,9 +500,9 @@ namespace SoundproofWalls
             // Currently this is important to do every update because some of this information might not be present on the first update
             // Potentially I could do something like: if (Type == Unknown && !IsFirstIteration)
             DynamicType = SoundInfo.StaticType;
-            if (SpeakingClient != null && messageType != null)
+            if (SpeakingClient != null && MessageType != null)
             {
-                DynamicType = (messageType == ChatMessageType.Radio) ? SoundInfo.AudioType.RadioVoice : SoundInfo.AudioType.LocalVoice;
+                DynamicType = (MessageType == ChatMessageType.Radio) ? SoundInfo.AudioType.RadioVoice : SoundInfo.AudioType.LocalVoice;
             }
             else if ((flowFireChannelIndex = Array.IndexOf(SoundPlayer.flowSoundChannels, Channel)) >= 0)
             {
@@ -501,11 +511,6 @@ namespace SoundproofWalls
             else if ((flowFireChannelIndex = Array.IndexOf(SoundPlayer.fireSoundChannels, Channel)) >= 0)
             {
                 DynamicType = SoundInfo.AudioType.FireSound;
-            }
-
-            if (AudioIsFromDoor && ignoredGap == null)
-            {
-                ignoredGap = Util.GetDoorSoundGap(ChannelHull, LocalPos);
             }
 
             Character? speakerCharacter = null;
@@ -522,12 +527,26 @@ namespace SoundproofWalls
             // Note: all looping sounds are considered non-looping for their first update if their ChannelInfo instance was created early enough, e.g, from the SoundChannel ctor. That's why I have the default comparison.
             if (Channel.Looping || LocalPos == default || speakerCharacter != null)
             {
+
                 WorldPos = speakerMouth?.WorldPosition ?? Util.GetSoundChannelWorldPos(Channel);
                 ChannelHull = ChannelHull ?? Hull.FindHull(WorldPos, speakerCharacter?.CurrentHull ?? Listener.CurrentHull);
                 LocalPos = Util.LocalizePosition(WorldPos, ChannelHull);
                 SimPos = LocalPos / 100;
             }
 
+            // Put door sounds at the top of the gap instead of the middle
+            if (AudioIsFromDoor && ignoredGap == null)
+            {
+                ignoredGap = Util.GetDoorSoundGap(ChannelHull, LocalPos);
+                if (ignoredGap != null && ignoredGap.ConnectedDoor != null)
+                {
+                    Item door = ignoredGap.ConnectedDoor.Item;
+                    WorldPos = new Vector2(door.WorldPosition.X, door.WorldPosition.Y + door.WorldRect.Height * 0.4f);
+                    LocalPos = Util.LocalizePosition(WorldPos, ChannelHull);
+                    SimPos = LocalPos / 100;
+                }
+            }
+            
             inWater = Util.SoundInWater(LocalPos, ChannelHull);
             inContainer = Item != null && !SoundInfo.IgnoreContainer && IsContainedWithinContainer(Item);
             EuclideanDistance = Vector2.Distance(Listener.WorldPos, WorldPos); // euclidean distance
@@ -570,7 +589,11 @@ namespace SoundproofWalls
             // Calculate muffle strength based on obstructions.
             float gainMultHf = 1;
             float total = 0;
-            float mult = config.DynamicFx ? config.DynamicMuffleStrengthMultiplier : 1;
+            float mult = 1;
+            if (config.DynamicFx) 
+            {
+                mult = AudioIsVoice ? config.VoiceDynamicMuffleMultiplier : config.DynamicMuffleStrengthMultiplier;
+            }
             mult *= SoundInfo.MuffleInfluence;
             for (int i = 0; i < obstructions.Count; i++)
             {
@@ -584,11 +607,7 @@ namespace SoundproofWalls
             gainMultHF = Math.Clamp(gainMultHf, 0, 1);
             gainMultLF = Math.Clamp(gainMultLf, 0.1f, 1);
 
-            if (config.DynamicFx)
-            {
-                UpdateDynamicFx();
-            }
-            else if ((config.StaticFx || AudioIsVoice) && MuffleStrength >= config.StaticMinLightMuffleThreshold)
+            if (!config.DynamicFx && (config.StaticFx || AudioIsVoice) && MuffleStrength >= config.StaticMinLightMuffleThreshold)
             {
                 type = MuffleType.Light;
                 shouldMuffle = true;
@@ -621,12 +640,12 @@ namespace SoundproofWalls
 
         private void UpdateDynamicFx()
         {
-            if (Plugin.EffectsManager == null) return;
+            if (!config.DynamicFx || Plugin.EffectsManager == null) return;
 
             float transitionFactor = AudioIsFlow || AudioIsFire ? config.DynamicMuffleFlowFireTransitionFactor : config.DynamicMuffleTransitionFactor;
             if (IsInUpdateLoop && !isFirstIteration && transitionFactor > 0)
             {
-                float maxStep = (float)(transitionFactor * muffleUpdateInterval);
+                float maxStep = (float)(transitionFactor * Timing.Step);
                 trailingGainMultHF = Util.SmoothStep(trailingGainMultHF, gainMultHF, maxStep);
                 trailingGainMultLF = Util.SmoothStep(trailingGainMultLF, gainMultLF, maxStep);
             }
@@ -662,16 +681,16 @@ namespace SoundproofWalls
             {
                 if (BubbleManager.ShouldPlayBubbles(SpeakingClient.Character))
                 {
-                    AddObstruction(Obstruction.WaterSurface, "Drowning");
+                    AddObstruction(Obstruction.WallThin, "Drowning");
                 }
 
                 // Return because radio comms aren't muffled under any other circumstances.
-                dontReverb = !config.DynamicReverbRadio;
+                dontReverb = !config.VoiceRadioReverb;
                 return;
             }
             else if (AudioIsLocalVoice && SpeakingClient != null)
             {
-                dontReverb = !config.DynamicReverbLocal;
+                dontReverb = !config.VoiceLocalReverb;
             }
 
             // Mildly muffle sounds in containers. Don't return yet because the container could be submerged with the sound inside.
@@ -1086,12 +1105,10 @@ namespace SoundproofWalls
             if (AudioIsRadioVoice)
             {
                 mult += MathHelper.Lerp(config.UnmuffledVoiceVolumeMultiplier, config.MuffledVoiceVolumeMultiplier, MuffleStrength) - 1;
-                mult += config.VoiceRadioVolumeMultiplier - 1;
             }
             else if (AudioIsLocalVoice)
             {
                 mult += MathHelper.Lerp(config.UnmuffledVoiceVolumeMultiplier, config.MuffledVoiceVolumeMultiplier, MuffleStrength) - 1;
-                mult += config.VoiceLocalVolumeMultiplier - 1;
                 if (bothInWater) mult += config.SubmergedVolumeMultiplier - 1;
                 else if (Eavesdropped) mult += config.EavesdroppingVoiceVolumeMultiplier - 1;
                 else if (Hydrophoned) { mult += config.HydrophoneVolumeMultiplier - 1; mult *= HydrophoneManager.HydrophoneEfficiency; }
@@ -1105,7 +1122,9 @@ namespace SoundproofWalls
                 else if (Hydrophoned) { mult += config.HydrophoneVolumeMultiplier - 1; mult *= HydrophoneManager.HydrophoneEfficiency; }
 
                 // Tweak for vanilla exosuit volume.
-                if (Item != null && Item.HasTag(new Identifier("deepdivinglarge")) && LongName.EndsWith("WEAPONS_chargeUp.ogg")) { mult *= config.VanillaExosuitVolumeMultiplier; }
+                if (Item != null && Item.HasTag(new Identifier("deepdivinglarge")) && LongName.EndsWith("weapons_chargeup.ogg")) { mult *= config.VanillaExosuitVolumeMultiplier; }
+                // Disable diving suit ambience when not in water.
+                if (!inWater && Item != null && Item.HasTag(new Identifier("deepdiving")) && ShortName.Contains("divingsuitloop")) { mult *= 0; }
             }
             // Single (non-looping sound).
             else
@@ -1135,6 +1154,7 @@ namespace SoundproofWalls
             {
                 float overpowerMult = Math.Clamp(1 - (globalSidechainStartingStrength - thisSidechainStartingStrength), 0f, 1f);
                 mult *= MathHelper.Lerp(1, overpowerMult, Plugin.Sidechain.CompletionRatio);
+                //LuaCsLogger.Log($"{ShortName} overpowered by {Plugin.Sidechain.ActiveSoundGroup.Keyword} overpowerMult {overpowerMult} globalSidechainStartingStrength {globalSidechainStartingStrength} thisSidechainStartingStrength {thisSidechainStartingStrength}");
             }
 
             // Start sidechain release for loud sounds.

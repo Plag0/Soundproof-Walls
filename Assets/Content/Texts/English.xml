@@ -6,8 +6,8 @@
 	<spw_openpopuphelp>Opens the Soundproof Walls welcome popup.</spw_openpopuphelp>
 	<spw_openworkshophelp>Opens the Soundproof Walls workshop page in your browser.</spw_openworkshophelp>
 
-	<initmessage>Welcome to Soundproof Walls v[version]!</initmessage>
-	<initmessagefollowup>  • Open the settings menu by typing "spw".\n  • Print your stats by typing "spw_stats".\n  • Have a question? Open the workshop page by typing "spw_workshop" and leave a comment.\n  • Re-open the welcome popup by typing "spw_welcome".</initmessagefollowup>
+	<initmessage>Finished loading Soundproof Walls v[version]</initmessage>
+	<initmessagefollowup>  > Open the settings menu by typing "spw".\n  > Print your stats by typing "spw_stats".\n  > Have a question? Open the workshop page by typing "spw_workshop" and leave a comment.\n  > Re-open the welcome popup by typing "spw_welcome".</initmessagefollowup>
 	
 	<!-- Info Panel -->
 	<spw_syncingenabled>Syncing Enabled!\nYou are using a config uploaded to the server by [name]. Values from this config are shown in parentheses next to yours.</spw_syncingenabled>
@@ -89,6 +89,8 @@
 	<spw_dynamicreverbairtargetgaintooltip>The base gain of the reverb effect when inside a hull</spw_dynamicreverbairtargetgaintooltip>
 	<spw_dynamicreverbwatertargetgain>Reverb Strength (Outside)</spw_dynamicreverbwatertargetgain>
 	<spw_dynamicreverbwatertargetgaintooltip>The base gain of the reverb effect when outside</spw_dynamicreverbwatertargetgaintooltip>
+	<spw_dynamicreverbairamplitudethreshold>Reverb Amplitude Requirement (Inside)</spw_dynamicreverbairamplitudethreshold>
+	<spw_dynamicreverbairamplitudethresholdtooltip>The minimum audio amplitude required for a sound to echo when inside</spw_dynamicreverbairamplitudethresholdtooltip>
 	<spw_dynamicreverbwateramplitudethreshold>Reverb Amplitude Requirement (Outside)</spw_dynamicreverbwateramplitudethreshold>
 	<spw_dynamicreverbwateramplitudethresholdtooltip>The minimum audio amplitude required for a sound to echo when outside</spw_dynamicreverbwateramplitudethresholdtooltip>
 
@@ -146,8 +148,12 @@
 	<spw_talkingragdollstooltip>Hear players speak when they are ragdolled as long as they're not stunned</spw_talkingragdollstooltip>
 	<spw_whispermode>Whisper Mode</spw_whispermode>
 	<spw_whispermodetooltip>The range of player voices are proportional to the amplitude of their signal (i.e., speaking softly decreases the range of your voice)</spw_whispermodetooltip>
+	<spw_whispermodetransitionfactor>Whisper Range Transition Factor</spw_whispermodetransitionfactor>
+	<spw_whispermodetransitionfactortooltip>Requires "Whisper Mode" to be enabled.\nThe maximum distance that the range of player voices can change within one second to reflect the latest voice amplitude. Setting this value to zero will result in an instant transition</spw_whispermodetransitionfactortooltip>
+	<spw_voicedynamicmufflemultiplier>Dynamic Muffle Strength</spw_voicedynamicmufflemultiplier>
+	<spw_voicedynamicmufflemultipliertooltip>Requires the "Dynamic" effect processing mode.\nThe strength of muffle effects applied to player voices</spw_voicedynamicmufflemultipliertooltip>
 	<spw_voicelowpassfrequency>Voice Heavy Lowpass Frequency</spw_voicelowpassfrequency>
-	<spw_voicelowpassfrequencytooltip>This setting is exclusive to the "Classic" and "Static" effect processing modes.\nThe corner frequency used to muffle player voices that are obstructed enough to meet the "(Static) Heavy Muffle Threshold" in the Muffle tab. If less obstructed, the Static tab's light or medium lowpass frequencies will be used instead (even when using "Classic" mode)</spw_voicelowpassfrequencytooltip>
+	<spw_voicelowpassfrequencytooltip>Requires the "Classic" or "Static" effect processing mode.\nThe corner frequency used to muffle player voices that are obstructed enough to meet the "(Static) Heavy Muffle Threshold" in the Muffle tab. If less obstructed, the Static tab's light or medium lowpass frequencies will be used instead (even when using "Classic" mode)</spw_voicelowpassfrequencytooltip>
 	<spw_voicerange>Voice Range (Local)</spw_voicerange>
 	<spw_voicerangetooltip>The maximum range of player voices</spw_voicerangetooltip>
 	<spw_radiorange>Voice Range (Radio)</spw_radiorange>

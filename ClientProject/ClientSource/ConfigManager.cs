@@ -109,7 +109,7 @@ namespace SoundproofWalls
 
             if (shouldResizeSourcePool) { Plugin.ResizeSoundManagerPools(newConfig.MaxSourceCount); }
 
-            if (shouldStop) { Plugin.Instance?.Dispose(); }
+            if (shouldStop) { Plugin.Instance?.PartialDispose(); }
             else if (shouldStart) { Plugin.Instance?.Initialize(); }
             else if (shouldReloadSounds) { Util.ReloadSounds(); }
             else if (shouldUpdateSoundInfo) { SoundInfoManager.UpdateSoundInfoMap(); }

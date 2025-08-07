@@ -28,6 +28,7 @@ namespace SoundproofWalls
 
         private static readonly Config defaultConfig = new Config();
         private static readonly JsonSerializerOptions jsonOptions = new JsonSerializerOptions { WriteIndented = true };
+        private static GUIButton? menuButton = null;
         public static Menu? Instance { get; private set; }
         // Keeps track of the last tab the user was on and how scrolled down it they were.
         private static Tab lastTab = Tab.General;
@@ -278,7 +279,7 @@ namespace SoundproofWalls
                 if (!buttonExists)
                 {
                     string buttonText = TextManager.Get("spw_settings").Value;
-                    new GUIButton(new RectTransform(new Vector2(1f, 0.1f), pauseMenuList.RectTransform), buttonText, Alignment.Center, "GUIButtonSmall")
+                    menuButton = new GUIButton(new RectTransform(new Vector2(1f, 0.1f), pauseMenuList.RectTransform), buttonText, Alignment.Center, "GUIButtonSmall")
                     {
                         UserData = "SoundproofWallsSettings",
                         OnClicked = (sender, args) =>
@@ -294,6 +295,15 @@ namespace SoundproofWalls
                 // PAUSE MENU IS CLOSING
                 Instance?.Close();
             }
+        }
+
+        public static void Dispose()
+        {
+            if (menuButton?.Parent != null)
+            {
+                menuButton.Parent.RemoveChild(menuButton);
+            }
+            menuButton = null;
         }
 
         public static List<GUIComponent> GetChildren(GUIComponent comp)
@@ -359,7 +369,7 @@ namespace SoundproofWalls
 
             // Info Text (middle, fills remaining space)
             var infoTextContainer = new GUIFrame(new RectTransform(new Vector2(1.0f, 0.45f), leftColumn.RectTransform), style: null);
-            new GUITextBlock(new RectTransform(new Vector2(1.0f, 0.95f), infoTextContainer.RectTransform, Anchor.Center), GetInfoPanelText(), wrap: true, textAlignment: Alignment.TopLeft) { CanBeFocused = false };
+            new GUITextBlock(new RectTransform(new Vector2(1.0f, 0.95f), infoTextContainer.RectTransform, Anchor.Center), GetInfoPanelText(), wrap: true, textAlignment: Alignment.TopLeft, font: GUIStyle.SmallFont) { CanBeFocused = false };
             
             var linksContainer = new GUILayoutGroup(new RectTransform(new Vector2(1.0f, 0.05f), leftColumn.RectTransform), isHorizontal: true)
             {
@@ -1413,22 +1423,6 @@ namespace SoundproofWalls
                 currentValue: unsavedConfig.DynamicReverbWaterSubtractsArea,
                 setter: v => unsavedConfig.DynamicReverbWaterSubtractsArea = v);
 
-            Tickbox(settingsFrame, FormatTextBoxLabel(
-                label: TextManager.Get("spw_dynamicreverblocal"),
-                serverValue: ConfigManager.ServerConfig?.DynamicReverbLocal ?? default,
-                formatter: BoolFormatter),
-                tooltip: TextManager.Get("spw_dynamicreverblocaltooltip"),
-                currentValue: unsavedConfig.DynamicReverbLocal,
-                setter: v => unsavedConfig.DynamicReverbLocal = v);
-
-            Tickbox(settingsFrame, FormatTextBoxLabel(
-                label: TextManager.Get("spw_dynamicreverbradio"),
-                serverValue: ConfigManager.ServerConfig?.DynamicReverbRadio ?? default,
-                formatter: BoolFormatter),
-                tooltip: TextManager.Get("spw_dynamicreverbradiotooltip"),
-                currentValue: unsavedConfig.DynamicReverbRadio,
-                setter: v => unsavedConfig.DynamicReverbRadio = v);
-
             Spacer(settingsFrame);
 
             Label(settingsFrame, TextManager.Get("spw_dynamicreverbminarea"));
@@ -1506,8 +1500,23 @@ namespace SoundproofWalls
                 TextManager.Get("spw_dynamicreverbwatertargetgaintooltip")
             );
 
+            Label(settingsFrame, TextManager.Get("spw_dynamicreverbairamplitudethreshold"));
+            Slider(settingsFrame, (0, 1), 0.01f,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.DyanmicReverbAirAmplitudeThreshold ?? default,
+                    formatter: RawValue),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.DyanmicReverbAirAmplitudeThreshold,
+                    vanillaValue: null),
+                currentValue: unsavedConfig.DyanmicReverbAirAmplitudeThreshold,
+                setter: v => unsavedConfig.DyanmicReverbAirAmplitudeThreshold = v,
+                TextManager.Get("spw_dynamicreverbairamplitudethresholdtooltip")
+            );
+
             Label(settingsFrame, TextManager.Get("spw_dynamicreverbwateramplitudethreshold"));
-            Slider(settingsFrame, (0, 3), 0.01f,
+            Slider(settingsFrame, (0, 1), 0.01f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.DyanmicReverbWaterAmplitudeThreshold ?? default,
@@ -1750,6 +1759,22 @@ namespace SoundproofWalls
                 setter: v => unsavedConfig.TalkingRagdolls = v);
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
+                label: TextManager.Get("spw_dynamicreverblocal"),
+                serverValue: ConfigManager.ServerConfig?.VoiceLocalReverb ?? default,
+                formatter: BoolFormatter),
+                tooltip: TextManager.Get("spw_dynamicreverblocaltooltip"),
+                currentValue: unsavedConfig.VoiceLocalReverb,
+                setter: v => unsavedConfig.VoiceLocalReverb = v);
+
+            Tickbox(settingsFrame, FormatTextBoxLabel(
+                label: TextManager.Get("spw_dynamicreverbradio"),
+                serverValue: ConfigManager.ServerConfig?.VoiceRadioReverb ?? default,
+                formatter: BoolFormatter),
+                tooltip: TextManager.Get("spw_dynamicreverbradiotooltip"),
+                currentValue: unsavedConfig.VoiceRadioReverb,
+                setter: v => unsavedConfig.VoiceRadioReverb = v);
+
+            Tickbox(settingsFrame, FormatTextBoxLabel(
                 label: TextManager.Get("spw_whispermode"),
                 serverValue: ConfigManager.ServerConfig?.WhisperMode ?? default,
                 formatter: BoolFormatter),
@@ -1758,6 +1783,21 @@ namespace SoundproofWalls
                 setter: v => unsavedConfig.WhisperMode = v);
 
             Spacer(settingsFrame);
+
+            Label(settingsFrame, TextManager.Get("spw_voicedynamicmufflemultiplier"));
+            Slider(settingsFrame, (0, 3), 0.01f,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.VoiceDynamicMuffleMultiplier ?? default,
+                    formatter: Percentage),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.VoiceDynamicMuffleMultiplier,
+                    vanillaValue: null),
+                currentValue: unsavedConfig.VoiceDynamicMuffleMultiplier,
+                setter: v => unsavedConfig.VoiceDynamicMuffleMultiplier = v,
+                TextManager.Get("spw_voicedynamicmufflemultipliertooltip")
+            );
 
             Label(settingsFrame, TextManager.Get("spw_voicelowpassfrequency"));
             PowerSlider(settingsFrame, (10, 3200), 10,
@@ -1806,7 +1846,7 @@ namespace SoundproofWalls
             );
 
             Label(settingsFrame, TextManager.Get("spw_voicevolume"));
-            Slider(settingsFrame, (0, 3), 0.01f,
+            Slider(settingsFrame, (0, 5), 0.01f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.VoiceLocalVolumeMultiplier ?? default,
@@ -1821,7 +1861,7 @@ namespace SoundproofWalls
             );
 
             Label(settingsFrame, TextManager.Get("spw_radiovolume"));
-            Slider(settingsFrame, (0, 3), 0.01f,
+            Slider(settingsFrame, (0, 5), 0.01f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.VoiceRadioVolumeMultiplier ?? default,

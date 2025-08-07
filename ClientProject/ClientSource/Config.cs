@@ -58,13 +58,12 @@ namespace SoundproofWalls
         public float DynamicMuffleFlowFireTransitionFactor { get; set; } = 3.5f;
         public bool DynamicReverbEnabled { get; set; } = true;
         public bool DynamicReverbWaterSubtractsArea { get; set; } = true;
-        public bool DynamicReverbLocal { get; set; } = true;
-        public bool DynamicReverbRadio { get; set; } = false;
         public int DynamicReverbMinArea { get; set; } = 0;
         public float DynamicReverbAreaSizeMultiplier { get; set; } = 1.0f;
         public float DynamicReverbWetRoomAreaSizeMultiplier { get; set; } = 3.0f;
         public float DynamicReverbAirTargetGain { get; set; } = 0.32f;
         public float DynamicReverbWaterTargetGain { get; set; } = 0.55f;
+        public float DyanmicReverbAirAmplitudeThreshold { get; set; } = 0.15f;
         public float DyanmicReverbWaterAmplitudeThreshold { get; set; } = 0.75f; // The necessary amplitude * gain needed for a non "loud" source to have reverb applied in water.
         public bool LoudSoundDistortionEnabled { get; set; } = true; // Warning: CAN make loud sounds extremely loud.
         public float LoudSoundDistortionTargetGain { get; set; } = 0.10f;
@@ -88,12 +87,14 @@ namespace SoundproofWalls
         // Voice
             // General
         public bool TalkingRagdolls { get; set; } = true;
+        public bool VoiceLocalReverb { get; set; } = true;
+        public bool VoiceRadioReverb { get; set; } = false;
         public bool WhisperMode { get; set; } = false;
+        public float VoiceDynamicMuffleMultiplier { get; set; } = 1.02f;
         public int VoiceHeavyLowpassFrequency { get; set; } = 150; // Used when a player's voice is muffled heavily. Otherwise, uses medium or light.
-        public float VoiceDynamicMuffleMultiplier { get; set; } = 1.1f;
         public float VoiceLocalRangeMultiplier { get; set; } = 1.2f;
         public float VoiceRadioRangeMultiplier { get; set; } = 1.0f;
-        public float VoiceLocalVolumeMultiplier { get; set; } = 1.0f; // TODO voice volume seems to be getting updated somewhere else, causing flickering when combined with this setting.
+        public float VoiceLocalVolumeMultiplier { get; set; } = 1.0f;
         public float VoiceRadioVolumeMultiplier { get; set; } = 1.0f;
             // Bubbles
         public bool DrowningBubblesEnabled { get; set; } = true;
@@ -106,10 +107,10 @@ namespace SoundproofWalls
         public float RadioBandpassQualityFactor { get; set; } = 3.7f;
         public float RadioDistortionDrive { get; set; } = 2.0f;
         public float RadioDistortionThreshold { get; set; } = 0.9f;
-        public float RadioStatic { get; set; } = 0.0f;
+        public float RadioStatic { get; set; } = 0.00f;
         public float RadioCompressionThreshold { get; set; } = 0.7f;
         public float RadioCompressionRatio { get; set; } = 1.5f;
-        public float RadioPostFilterBoost { get; set; } = 1.0f;
+        public float RadioPostFilterBoost { get; set; } = 1.1f;
 
         // Muffle
         public bool MuffleDivingSuits { get; set; } = true; // Not available for Classic mode.
@@ -283,6 +284,10 @@ namespace SoundproofWalls
             gainMultiplier: 0.75f,
             rangeMultiplier: 0.8f,
             muffleInfluence: 1.1f),
+        new CustomSound("divingsuitloop",
+            gainMultiplier: 0.75f,
+            rangeMultiplier: 0.9f,
+            muffleInfluence: 1.2f),
         new CustomSound("door",
             gainMultiplier: 0.9f,
             rangeMultiplier: 1.3f),
@@ -510,7 +515,8 @@ namespace SoundproofWalls
         {
             "barotrauma/content/sounds/ui",
             "barotrauma/content/sounds/dropitem",
-            "barotrauma/content/sounds/pickitem"
+            "barotrauma/content/sounds/pickitem",
+            "barotrauma/content/sounds/water/waterambience"
         };
 
         // Sounds that don't treat the surface of the water like another wall and can pass in and out freely.
@@ -519,7 +525,6 @@ namespace SoundproofWalls
             "barotrauma/content/sounds/water/splash",
             "barotrauma/content/items/pump",
             "footstep", // Prevents footsteps from being muffled when standing in an inch of water.
-            "door", // These entries are more ambiguous to allow for mods that may replace rhese sounds.
         };
 
         // Submerged sounds that can freely travel through their body of water without it being treated like a wall.
@@ -600,6 +605,7 @@ namespace SoundproofWalls
 
         public HashSet<string> AirReverbIgnoredSounds { get; set; } = new HashSet<string> // Sounds that are not reverbed by static or dynamic processing modes.
         {
+            "content/items/medical/item_cigarette"
         };
 
         public HashSet<string> WaterReverbIgnoredSounds { get; set; } = new HashSet<string> // Sounds that are not reverbed by static or dynamic processing modes.

@@ -388,7 +388,6 @@ namespace SoundproofWalls
 
         private ReverbConfiguration CalculateHydrophoneReverbConfiguration()
         {
-            Vector2 averagePosition = Vector2.Zero;
             Vector2 submarinePosition = Listener.CurrentHull?.Submarine?.WorldPosition ?? Vector2.Zero;
             float gainMult = 1;
             float maxRange = Math.Abs(ConfigManager.Config.HydrophoneSoundRange) + 1; // Avoid division by zero.
@@ -399,7 +398,7 @@ namespace SoundproofWalls
                 {
                     sumOfPositions += Util.GetSoundChannelWorldPos(channelInfo.Channel); // Using channelInfo.WorldPos is too outdated.
                 }
-                averagePosition = sumOfPositions / ChannelInfoManager.HydrophonedChannels.Count;
+                Vector2 averagePosition = sumOfPositions / ChannelInfoManager.HydrophonedChannels.Count;
 
                 float distance = Vector2.Distance(averagePosition, submarinePosition);
                 gainMult = Math.Clamp(distance / maxRange, 0f, 1f);
@@ -668,17 +667,16 @@ namespace SoundproofWalls
             if (currentReverb == ReverbType.None) { return INVALID_ID; }
 
             bool sourceInHull = channelInfo.ChannelHull != null;
+            float amplitude = channelInfo.Channel.CurrentAmplitude * channelInfo.Gain;
             if (currentReverb == ReverbType.Inside)
             {
-                if (sourceInHull && Listener.ConnectedArea >= ConfigManager.Config.DynamicReverbMinArea)
-                {
-                    return reverbSlotId;
-                }
-                else { return INVALID_ID; }
+                bool shouldReverbAir = sourceInHull &&
+                                       !channelInfo.IgnoreAirReverb &&
+                                       (channelInfo.IsLoud || channelInfo.SoundInfo.ForceReverb || amplitude >= ConfigManager.Config.DyanmicReverbAirAmplitudeThreshold && Listener.ConnectedArea >= ConfigManager.Config.DynamicReverbMinArea);
+                return shouldReverbAir ? reverbSlotId : INVALID_ID;
             }
             else if (currentReverb == ReverbType.Outside)
             {
-                float amplitude = channelInfo.Channel.CurrentAmplitude * channelInfo.Gain;
                 bool shouldReverbWater = !sourceInHull &&
                                          !channelInfo.IgnoreWaterReverb &&
                                          (channelInfo.IsLoud || channelInfo.SoundInfo.ForceReverb || amplitude >= ConfigManager.Config.DyanmicReverbWaterAmplitudeThreshold);

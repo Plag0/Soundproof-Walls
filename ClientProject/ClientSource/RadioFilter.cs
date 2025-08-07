@@ -41,13 +41,11 @@ namespace SoundproofWalls
 
         public float Process(float sample)
         {
-            sample = AddFilteredStatic(sample, staticAmount);
             sample = ApplyHardClipDistortion(sample, distortionDrive, distortionThreshold);
             sample = bandpassFilter.Process(sample);
             sample *= qCompensation;
+            sample = AddFilteredStatic(sample, staticAmount);
             sample = compressor.Process(sample);
-
-            sample *= ConfigManager.Config.RadioPostFilterBoost;
 
             return sample;
         }
