@@ -27,6 +27,8 @@ namespace SoundproofWalls
         public static SidechainProcessor Sidechain = new SidechainProcessor();
         public static EfxAudioManager? EffectsManager;
 
+        public static double LastUpdateTime = 0;
+
         public enum SoundPath
         {
             EavesdroppingActivation1,
@@ -407,6 +409,8 @@ namespace SoundproofWalls
         {
             ModStateManager.SaveState(ModStateManager.State); // Save stats
 
+            ResizeSoundManagerPools(SoundManager.SourceCount); // Reset to default source count.
+
             // Unpatch these earlier to stop custom sound types from being created when reloading sounds
             // (this shouldn't be necessary but there was weird behaviour with the early return that SHOULD handle this inside the LoadSound functions.
             harmony.Unpatch(typeof(SoundManager).GetMethod(nameof(SoundManager.LoadSound), BindingFlags.Instance | BindingFlags.Public, new Type[] { typeof(string), typeof(bool) }), HarmonyPatchType.Prefix);
@@ -459,6 +463,7 @@ namespace SoundproofWalls
             ChannelInfoManager.Update();
             Sidechain.Update();
             EffectsManager?.Update();
+            PerformanceProfiler.Instance.Update();
         }
 
         public static IEnumerable<CodeInstruction> SoundManager_Constructor_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
@@ -623,6 +628,7 @@ namespace SoundproofWalls
         public static bool SPW_Draw(ref Camera cam, ref SpriteBatch spriteBatch)
         {
             EavesdropManager.Draw(spriteBatch, cam);
+            PerformanceProfiler.Instance.Draw(spriteBatch);
             return true;
         }
 
@@ -1532,9 +1538,9 @@ namespace SoundproofWalls
                 return false;
             }
 
-            // Verify playback pos for sounds that are using an elongated reverb buffer
-            // as they may have had their buffer size changed mid-play.
-            if (soundInfo.StaticIsUsingReverbBuffer && (instance.Looping || Config.UpdateNonLoopingSounds))
+            // Verify playback pos for sounds that are using a reverb buffer.
+            // Reverb buffers are longer. Taking the playback pos and applying it to the shorter muffle buffer can cause errors if not handled here.
+            if (Config.StaticFx && Config.StaticReverbEnabled && (instance.Looping || Config.UpdateNonLoopingSounds))
             {
                 bool foundPos = false;
                 long maxIterations = extendedSound.TotalSamples + (long)(extendedSound.SampleRate * Config.StaticReverbDuration);
@@ -1558,8 +1564,7 @@ namespace SoundproofWalls
             alError = Al.GetError();
             if (alError != Al.NoError)
             {
-                // This error still happens for StaticFx reverb buffers despite the above solutions of moving the playbackpos... I'm just turning it off because it doesn't actually matter anyway.
-                if (!Config.StaticFx) { DebugConsole.LogError("Failed to reset playback position: " + instance.debugName + ", " + Al.GetErrorString(alError)); }
+                DebugConsole.LogError("Failed to reset playback position: " + instance.debugName + ", " + Al.GetErrorString(alError));
                 return false;
             }
 
@@ -2055,6 +2060,10 @@ namespace SoundproofWalls
             if (Config.FocusTargetAudio && LightManager.ViewTarget != null && LightManager.ViewTarget.Position != Character.Controlled.Position)
             {
                 GameMain.SoundManager.ListenerPosition = new Vector3(__instance.TargetPos.X, __instance.TargetPos.Y, -(100 / __instance.Zoom));
+            }
+            else if (Listener.IsCharacter)
+            {
+                GameMain.SoundManager.ListenerPosition = new Vector3(Listener.WorldPos.X, Listener.WorldPos.Y, 0);
             }
         }
 

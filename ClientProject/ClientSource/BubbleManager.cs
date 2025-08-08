@@ -26,8 +26,11 @@ namespace SoundproofWalls
 
         public static void Update()
         {
-            // Bubble sound stuff.
-            if (GameMain.IsMultiplayer && Timing.TotalTime > lastBubbleUpdateTime + bubbleUpdateInterval)
+            if (!GameMain.IsMultiplayer) { return; }
+
+            PerformanceProfiler.Instance.StartTimingEvent(ProfileEvents.BubblesUpdate);
+
+            if (Timing.TotalTime > lastBubbleUpdateTime + bubbleUpdateInterval)
             {
                 lastBubbleUpdateTime = (float)Timing.TotalTime;
 
@@ -63,6 +66,8 @@ namespace SoundproofWalls
                     rotation: 0,
                     limbHull);
             }
+
+            PerformanceProfiler.Instance.StopTimingEvent();
         }
         public static void Dispose()
         {

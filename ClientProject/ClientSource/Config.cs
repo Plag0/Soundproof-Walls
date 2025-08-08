@@ -63,7 +63,7 @@ namespace SoundproofWalls
         public float DynamicReverbWetRoomAreaSizeMultiplier { get; set; } = 3.0f;
         public float DynamicReverbAirTargetGain { get; set; } = 0.32f;
         public float DynamicReverbWaterTargetGain { get; set; } = 0.55f;
-        public float DyanmicReverbAirAmplitudeThreshold { get; set; } = 0.15f;
+        public float DyanmicReverbAirAmplitudeThreshold { get; set; } = 0.0f; // Zero to avoid audio pops
         public float DyanmicReverbWaterAmplitudeThreshold { get; set; } = 0.75f; // The necessary amplitude * gain needed for a non "loud" source to have reverb applied in water.
         public bool LoudSoundDistortionEnabled { get; set; } = true; // Warning: CAN make loud sounds extremely loud.
         public float LoudSoundDistortionTargetGain { get; set; } = 0.10f;
@@ -238,10 +238,11 @@ namespace SoundproofWalls
         public float UnmuffledVoicePitchMultiplier { get; set; } = 1f;
 
         // Advanced settings
+        public bool ShowPerformance { get; set; } = false;
+        public bool ShowPlayingSounds { get; set; } = false; // See all playing sounds and their filenames.
+        public bool ShowChannelInfo { get; set; } = false; // See what is obstructing all audio with console output.
         public bool HideSettingsButton { get; set; } = false;
         public bool RememberMenuTabAndScroll { get; set; } = true;
-        public bool DebugObstructions { get; set; } = false; // See what is obstructing all audio with console output.
-        public bool DebugPlayingSounds { get; set; } = false; // See all playing sounds and their filenames.
         public int MaxSourceCount { get; set; } = 128; // How many sounds can be playing at once. Vanilla is 32 (cite SoundManager.cs)
         public int MaxSimultaneousInstances { get; set; } = 64; // How many instances of the same sound clip can be playing at the same time. Vanilla is 5 (cite Sound.cs)
 
@@ -456,7 +457,7 @@ namespace SoundproofWalls
             sidechainMultiplier: 0.0f,
             release: 0.0f,
             distortion: false,
-            pitchMultiplier: 0.45f),
+            pitchMultiplier: 0.5f),
         new CustomSound("barotrauma/content/sounds/damage/creak",
             gainMultiplier: 1.0f,
             rangeMultiplier: 1.0f,
@@ -545,16 +546,18 @@ namespace SoundproofWalls
         public HashSet<string> PropagatingSounds { get; set; } = new HashSet<string>
         {
             "damage/structure",
-            "damage/creak",
             "damage/glass",
             "damage/damage_alienruins",
             "doorbreak",
             "electricaldischarge",
         };
 
-        // Alarms/sirens should be able to be heard across the ship regardless of walls (still affected by water).
-        public HashSet<string> PathIgnoredSounds { get; set; } = new HashSet<string>
+        // These sounds pass through walls, doors, and water surfaces unobstructed and ignore occlusion.
+        public HashSet<string> BarrierIgnoredSounds { get; set; } = new HashSet<string>
         {
+            "barotrauma/content/sounds/ambient",
+            "barotrauma/content/sounds/damage/creak",
+            "barotrauma/content/sounds/hull",
         };
 
         public HashSet<string> PitchIgnoredSounds { get; set; } = new HashSet<string>
@@ -591,9 +594,6 @@ namespace SoundproofWalls
 
         public HashSet<string> LowpassIgnoredSounds { get; set; } = new HashSet<string>
         {
-            "barotrauma/content/sounds/ambient",
-            "barotrauma/content/sounds/damage/creak",
-            "barotrauma/content/sounds/hull",
             "tinnitus",
             "sonarambience" // Real Sonar entry.
         };

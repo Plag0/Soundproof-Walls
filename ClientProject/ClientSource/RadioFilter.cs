@@ -41,11 +41,18 @@ namespace SoundproofWalls
 
         public float Process(float sample)
         {
+            PerformanceProfiler.Instance.StartTimingEvent(ProfileEvents.RadioFilterUpdate);
             sample = ApplyHardClipDistortion(sample, distortionDrive, distortionThreshold);
+            PerformanceProfiler.Instance.StopTimingEvent();
+
+            // Vanilla bandpass filter.
             sample = bandpassFilter.Process(sample);
+
+            PerformanceProfiler.Instance.StartTimingEvent(ProfileEvents.RadioFilterUpdate);
             sample *= qCompensation;
             sample = AddFilteredStatic(sample, staticAmount);
             sample = compressor.Process(sample);
+            PerformanceProfiler.Instance.StopTimingEvent();
 
             return sample;
         }

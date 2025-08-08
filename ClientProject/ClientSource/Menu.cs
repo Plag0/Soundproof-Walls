@@ -3400,6 +3400,30 @@ namespace SoundproofWalls
             GUIFrame settingsFrame = settingsList.Content;
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
+                label: TextManager.Get("spw_debugperformance"),
+                serverValue: ConfigManager.ServerConfig?.ShowPerformance ?? default,
+                formatter: BoolFormatter),
+                tooltip: TextManager.Get("spw_debugperformancetooltip"),
+                currentValue: unsavedConfig.ShowPerformance,
+                setter: v => unsavedConfig.ShowPerformance = v);
+
+            Tickbox(settingsFrame, FormatTextBoxLabel(
+                label: TextManager.Get("spw_debugplayingsounds"),
+                serverValue: ConfigManager.ServerConfig?.ShowPlayingSounds ?? default,
+                formatter: BoolFormatter),
+                tooltip: TextManager.Get("spw_debugplayingsoundstooltip"),
+                currentValue: unsavedConfig.ShowPlayingSounds,
+                setter: v => unsavedConfig.ShowPlayingSounds = v);
+
+            Tickbox(settingsFrame, FormatTextBoxLabel(
+                label: TextManager.Get("spw_debugchannelinfo"),
+                serverValue: ConfigManager.ServerConfig?.ShowChannelInfo ?? default,
+                formatter: BoolFormatter),
+                tooltip: TextManager.Get("spw_debugchannelinfotooltip"),
+                currentValue: unsavedConfig.ShowChannelInfo,
+                setter: v => unsavedConfig.ShowChannelInfo = v);
+
+            Tickbox(settingsFrame, FormatTextBoxLabel(
                 label: TextManager.Get("spw_hidesettings"),
                 serverValue: ConfigManager.ServerConfig?.HideSettingsButton ?? default,
                 formatter: BoolFormatter),
@@ -3414,22 +3438,6 @@ namespace SoundproofWalls
                 tooltip: TextManager.Get("spw_remembermenutabandscrolltooltip"),
                 currentValue: unsavedConfig.RememberMenuTabAndScroll,
                 setter: v => unsavedConfig.RememberMenuTabAndScroll = v);
-
-            Tickbox(settingsFrame, FormatTextBoxLabel(
-                label: TextManager.Get("spw_debugobstructions"),
-                serverValue: ConfigManager.ServerConfig?.DebugObstructions ?? default,
-                formatter: BoolFormatter),
-                tooltip: TextManager.Get("spw_debugobstructionstooltip"),
-                currentValue: unsavedConfig.DebugObstructions,
-                setter: v => unsavedConfig.DebugObstructions = v);
-
-            Tickbox(settingsFrame, FormatTextBoxLabel(
-                label: TextManager.Get("spw_debugplayingsounds"),
-                serverValue: ConfigManager.ServerConfig?.DebugPlayingSounds ?? default,
-                formatter: BoolFormatter),
-                tooltip: TextManager.Get("spw_debugplayingsoundstooltip"),
-                currentValue: unsavedConfig.DebugPlayingSounds,
-                setter: v => unsavedConfig.DebugPlayingSounds = v);
 
             Spacer(settingsFrame);
 
@@ -3810,10 +3818,10 @@ namespace SoundproofWalls
 
             CreateJsonTextBox(
                 parentListBox: settingsList,
-                labelText: TextManager.Get("spw_pathignoredsounds"),
-                tooltip: TextManager.Get("spw_pathignoredsoundstooltip"),
-                getter: config => config.PathIgnoredSounds,
-                setter: newSet => unsavedConfig.PathIgnoredSounds = newSet,
+                labelText: TextManager.Get("spw_barrierignoredsounds"),
+                tooltip: TextManager.Get("spw_barrierignoredsoundstooltip"),
+                getter: config => config.BarrierIgnoredSounds,
+                setter: newSet => unsavedConfig.BarrierIgnoredSounds = newSet,
                 itemFormatter: s => s
             );
 

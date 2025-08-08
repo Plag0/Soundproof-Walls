@@ -18,7 +18,7 @@ namespace SoundproofWalls
         public float MuffleInfluence = 1;
         public bool IsLoud = false;
 
-        public bool IgnorePath = false;
+        public bool IgnoreBarriers = false;
         public bool IgnoreSurface = false;
         public bool IgnoreSubmersion = false;
         public bool IgnorePitch = false;
@@ -48,6 +48,8 @@ namespace SoundproofWalls
 
         public SoundInfo(Sound sound)
         {
+            PerformanceProfiler.Instance.StartTimingEvent(ProfileEvents.SoundInfoCtor);
+
             Sound = sound;
 
             Config config = ConfigManager.Config;
@@ -65,7 +67,7 @@ namespace SoundproofWalls
                 IgnoreAirReverb = Util.StringHasKeyword(filename, config.AirReverbIgnoredSounds);
                 IgnoreWaterReverb = Util.StringHasKeyword(filename, config.WaterReverbIgnoredSounds);
                 ForceReverb = Util.StringHasKeyword(filename, config.ReverbForcedSounds);
-                IgnorePath = IgnoreLowpass || Util.StringHasKeyword(filename, config.PathIgnoredSounds);
+                IgnoreBarriers = IgnoreLowpass || Util.StringHasKeyword(filename, config.BarrierIgnoredSounds);
                 IgnoreSurface = IgnoreLowpass || !config.MuffleWaterSurface || Util.StringHasKeyword(filename, config.SurfaceIgnoredSounds);
                 IgnoreSubmersion = IgnoreLowpass || Util.StringHasKeyword(filename, config.SubmersionIgnoredSounds, exclude: "Barotrauma/Content/Characters/Human/");
                 IgnoreContainer = IgnoreLowpass || Util.StringHasKeyword(filename, config.ContainerIgnoredSounds);
@@ -103,6 +105,8 @@ namespace SoundproofWalls
             {
                 StaticType = AudioType.AmbientSound;
             }
+
+            PerformanceProfiler.Instance.StopTimingEvent();
         }
 
         private static CustomSound? GetCustomSound(string filename)

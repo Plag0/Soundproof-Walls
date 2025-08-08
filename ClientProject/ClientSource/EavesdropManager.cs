@@ -26,6 +26,8 @@ namespace SoundproofWalls
 
         public static void Update()
         {
+            PerformanceProfiler.Instance.StartTimingEvent(ProfileEvents.EavesdroppingUpdate);
+
             bool shouldFadeOut = Listener.EavesdroppedHull == null || !ConfigManager.Config.Enabled;
 
             UpdateEavesdroppingSounds();
@@ -49,12 +51,16 @@ namespace SoundproofWalls
 
                 ModStateManager.State.TimeSpentEavesdropping += Timing.Step;
             }
+
+            PerformanceProfiler.Instance.StopTimingEvent();
         }
 
         public static void Draw(SpriteBatch spriteBatch, Camera cam)
         {
             Character character = Character.Controlled;
-            if (character == null || cam == null) { return; }
+            if (EavesdroppingTextAlpha <= 0 || character == null || cam == null) { return; }
+
+            PerformanceProfiler.Instance.StartTimingEvent(ProfileEvents.EavesdroppingUpdate);
 
             // Eavesdropping vignette.
             int vignetteOpacity = (int)(EavesdroppingTextAlpha * ConfigManager.Config.EavesdroppingVignetteOpacityMultiplier);
@@ -80,10 +86,12 @@ namespace SoundproofWalls
             Vector2 position = cam.WorldToScreen(limb.body.DrawPosition + new Vector2(0, 40));
             LocalizedString text = TextManager.Get("spw_listening");
             float size = 1.6f;
-            Color color = new Color(224, 214, 164, (int)EavesdropManager.EavesdroppingTextAlpha);
+            Color color = new Color(224, 214, 164, (int)EavesdroppingTextAlpha);
             GUIFont font = GUIStyle.Font;
             font.DrawString(spriteBatch, text, position, color, 0, Vector2.Zero,
                 cam.Zoom / size, 0, 0.001f, Alignment.Center);
+
+            PerformanceProfiler.Instance.StopTimingEvent();
         }
 
         private static void DrawEavesdroppingOverlay(SpriteBatch spriteBatch, Camera cam)

@@ -63,6 +63,8 @@ namespace SoundproofWalls
                 return;
             }
 
+            PerformanceProfiler.Instance.StartTimingEvent(ProfileEvents.SidechainUpdate);
+
             progress += frameTime / sidechainRelease;
 
             if (progress >= 1f)
@@ -78,7 +80,8 @@ namespace SoundproofWalls
 
             // Cap at 0.99 to prevent auto-disposing of ItemComponent SoundChannels unnecessarily.
             SidechainMultiplier = Math.Clamp(sidechainStartingValue * CompletionRatio, 0, 0.99f);
-            return;
+
+            PerformanceProfiler.Instance.StopTimingEvent();
         }
     }
 }

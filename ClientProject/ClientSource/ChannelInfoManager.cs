@@ -21,10 +21,14 @@ namespace SoundproofWalls
         public static List<ChannelInfo> EavesdroppedChannels = new List<ChannelInfo>();
         public static List<ChannelInfo> HydrophonedChannels = new List<ChannelInfo>();
 
+        public static IEnumerable<ChannelInfo> ActiveChannelInfos => channelInfoMap.Values.Where(info => info.Channel != null && info.Channel.IsPlaying);
+
         public static float WhisperModeTrailingRangeFar = 0;
 
         public static void Update()
         {
+            PerformanceProfiler.Instance.StartTimingEvent(ProfileEvents.ChannelInfoManagerUpdate);
+
             if (ConfigManager.Config.WhisperMode)
             {
                 float changePerSecond = 350f;
@@ -79,21 +83,7 @@ namespace SoundproofWalls
             EavesdroppedChannels = eavesdroppedChannels;
             HydrophonedChannels = hydrophonedChannels;
 
-            if (ConfigManager.LocalConfig.DebugPlayingSounds)
-            {
-                int i = 1;
-                string newLines = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
-                LuaCsLogger.Log($"{newLines}[Soundproof Walls] DebugPlayingSounds enabled.\nCurrently playing channels:");
-                foreach (ChannelInfo info in channelInfoMap.Values)
-                {
-                    if (info.Channel.IsPlaying)
-                    { 
-                        // TODO could add more info like soundInfo exclusions and muffle level etc
-                        LuaCsLogger.Log($"          {i}. {info.LongName}");
-                        i++;
-                    }
-                }
-            }
+            PerformanceProfiler.Instance.StopTimingEvent();
         }
 
         // "Thin" versions are used when the Thick version is penetrated or eavesdropped.

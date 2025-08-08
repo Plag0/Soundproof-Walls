@@ -155,6 +155,8 @@ namespace SoundproofWalls
         {
             if (!Config.DynamicFx) { return; }
 
+            PerformanceProfiler.Instance.StartTimingEvent(ProfileEvents.EffectsManagerUpdate);
+
             if (Timing.TotalTime < LastEffectUpdateTime + Config.OpenALEffectsUpdateInterval) { return; }
             LastEffectUpdateTime = Timing.TotalTime;
 
@@ -166,6 +168,8 @@ namespace SoundproofWalls
             {
                 UpdateNormalEffects();
             }
+
+            PerformanceProfiler.Instance.StopTimingEvent();
         }
 
         private void UpdateNormalEffects()
@@ -605,6 +609,8 @@ namespace SoundproofWalls
 
         public void UpdateSource(ChannelInfo channelInfo, float gainHf, float gainLf = 1)
         {
+            PerformanceProfiler.Instance.StartTimingEvent(ProfileEvents.EffectsManagerUpdate);
+
             uint sourceId = channelInfo.Channel.Sound.Owner.GetSourceFromIndex(channelInfo.Channel.Sound.SourcePoolIndex, channelInfo.Channel.ALSourceIndex);
 
             if (!IsInitialized || !_sourceFilters.TryGetValue(sourceId, out uint filterId)) { return; }
@@ -618,6 +624,8 @@ namespace SoundproofWalls
             UpdateSourceFilter(sourceId, filterId, gainHf, gainLf, channelInfo);
             RouteSourceToEffectSlot(REVERB_SEND, sourceId, DetermineReverbEffectSlot(channelInfo), filterId);
             RouteSourceToEffectSlot(DISTORTION_SEND, sourceId, DetermineDistortionEffectSlot(channelInfo), filterId);
+
+            PerformanceProfiler.Instance.StopTimingEvent();
         }
 
         private void UpdateSourceFilter(uint sourceId, uint filterId, float gainHf, float gainLf, ChannelInfo channelInfo)

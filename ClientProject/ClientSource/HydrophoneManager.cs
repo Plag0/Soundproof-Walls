@@ -133,6 +133,8 @@ namespace SoundproofWalls
 
         public static void Update()
         {
+            PerformanceProfiler.Instance.StartTimingEvent(ProfileEvents.HydrophonesUpdate);
+
             UpdateHydrophoneSwitches();
 
             // If hydrophones are off, stop all sounds and do nothing.
@@ -156,6 +158,8 @@ namespace SoundproofWalls
             UpdateAllSectorSounds(); // Update sounds every tick.
 
             ModStateManager.State.TimeSpentHydrophones += Timing.Step;
+
+            PerformanceProfiler.Instance.StopTimingEvent();
         }
 
         public static void Dispose()
@@ -185,6 +189,8 @@ namespace SoundproofWalls
 
         public static void DrawHydrophoneSprites(Sonar __instance, SpriteBatch spriteBatch, Rectangle rect)
         {
+            PerformanceProfiler.Instance.StartTimingEvent(ProfileEvents.HydrophonesUpdate);
+
             Submarine sub = Listener.CurrentHull?.Submarine;
 
             if (sub == null || 
@@ -300,6 +306,8 @@ namespace SoundproofWalls
 
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied);
+
+            PerformanceProfiler.Instance.StopTimingEvent();
         }
 
         public static bool DrawSonarBlips()

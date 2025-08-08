@@ -451,17 +451,20 @@
 	<!-- Advanced -->
 	<spw_advancedtab>Advanced</spw_advancedtab>
 
+	<spw_debugperformance>Show Performance</spw_debugperformance>
+	<spw_debugperformancetooltip>Display detailed performance information for Soundproof Walls.\nThis setting is not synced with other players</spw_debugperformancetooltip>
+
+	<spw_debugplayingsounds>Show Playing Sounds</spw_debugplayingsounds>
+	<spw_debugplayingsoundstooltip>Display all actively playing sounds registered by Soundproof Walls.\nThis setting is not synced with other players</spw_debugplayingsoundstooltip>
+
+	<spw_debugchannelinfo>Show Channel Info</spw_debugchannelinfo>
+	<spw_debugchannelinfotooltip>Display the gain, pitch, range, distance, muffle, and obstructions for all actively playing sounds. If "Show Playing Sounds" is disabled this information is logged in the Barotrauma console.\nThis setting is not synced with other players</spw_debugchannelinfotooltip>
+
 	<spw_hidesettings>Hide Menu Button</spw_hidesettings>
 	<spw_hidesettingstooltip>Remove the "Soundproof Walls" button from the pause menu. The Soundproof Walls settings menu can still be opened by typing "spw" in the console.\nThis setting is not synced with other players</spw_hidesettingstooltip>
 
 	<spw_remembermenutabandscroll>Remember Menu Position</spw_remembermenutabandscroll>
 	<spw_remembermenutabandscrolltooltip>Opens the menu at the last scroll position and tab visited.\nThis setting is not synced with other players</spw_remembermenutabandscrolltooltip>
-
-	<spw_debugobstructions>Debug Obstructions</spw_debugobstructions>
-	<spw_debugobstructionstooltip>Output all obstructions applied in the Barotrauma console</spw_debugobstructionstooltip>
-
-	<spw_debugplayingsounds>Debug Playing Sounds</spw_debugplayingsounds>
-	<spw_debugplayingsoundstooltip>Output all actively playing sounds in the Barotrauma console</spw_debugplayingsoundstooltip>
 
 	<spw_maxsourcecount>Max Playing Sounds</spw_maxsourcecount>
 	<spw_maxsourcecounttooltip>How many sounds can be playing at the same time. Higher values may impact performance</spw_maxsourcecounttooltip>
@@ -547,8 +550,8 @@
 	<spw_waterreverbignoredsounds>Water Reverb Ignored Sounds</spw_waterreverbignoredsounds>
 	<spw_waterreverbignoredsoundstooltip>Exclusive to the "Dynamic" effect mode. Sounds in this list never receive the reverb effect</spw_waterreverbignoredsoundstooltip>
 	
-	<spw_pathignoredsounds>Wall Ignored Sounds</spw_pathignoredsounds>
-	<spw_pathignoredsoundstooltip>Sounds in this list are unable to be muffled by walls or doors</spw_pathignoredsoundstooltip>
+	<spw_barrierignoredsounds>Barrier Ignored Sounds</spw_barrierignoredsounds>
+	<spw_barrierignoredsoundstooltip>Sounds in this list are unable to be muffled by occlusion, walls, doors, or water surfaces</spw_barrierignoredsoundstooltip>
 	
 	<spw_lowpassforcedsounds>Lowpass Forced Sounds</spw_lowpassforcedsounds>+
 	<spw_lowpassforcedsoundstooltip>This list is intended for sounds marked internally with the "dontmuffle" tag or similar properties. Sounds in this list will always be evaluated for muffling.</spw_lowpassforcedsoundstooltip>

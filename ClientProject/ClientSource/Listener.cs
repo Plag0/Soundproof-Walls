@@ -31,6 +31,8 @@ namespace SoundproofWalls
 
         public static void Update()
         {
+            PerformanceProfiler.Instance.StartTimingEvent(ProfileEvents.ListenerUpdate);
+
             Character character = Character.Controlled;
 
             IsSpectating = character == null || character.IsDead || LightManager.ViewTarget == null;
@@ -86,6 +88,8 @@ namespace SoundproofWalls
             LocalPos = IsCharacter ? head.Position : LightManager.ViewTarget?.Position ?? Vector2.Zero;
             WorldPos = IsCharacter ? head.WorldPosition : LightManager.ViewTarget?.WorldPosition ?? new Vector2(GameMain.SoundManager.ListenerPosition.X, GameMain.SoundManager.ListenerPosition.Y);
             SimPos = Util.LocalizePosition(WorldPos, CurrentHull) / 100;
+
+            PerformanceProfiler.Instance.StopTimingEvent();
         }
 
         private static Hull? GetListenerHull()

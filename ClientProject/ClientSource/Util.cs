@@ -63,7 +63,7 @@ namespace SoundproofWalls
                     !oldConfig.SurfaceIgnoredSounds.SetEquals(newConfig.SurfaceIgnoredSounds) ||
                     !oldConfig.SubmersionIgnoredSounds.SetEquals(newConfig.SubmersionIgnoredSounds) ||
                     !oldConfig.PropagatingSounds.SetEquals(newConfig.PropagatingSounds) ||
-                    !oldConfig.PathIgnoredSounds.SetEquals(newConfig.PathIgnoredSounds) ||
+                    !oldConfig.BarrierIgnoredSounds.SetEquals(newConfig.BarrierIgnoredSounds) ||
                     !oldConfig.PitchIgnoredSounds.SetEquals(newConfig.PitchIgnoredSounds) ||
                     !oldConfig.LowpassForcedSounds.SetEquals(newConfig.LowpassForcedSounds) ||
                     !oldConfig.LowpassIgnoredSounds.SetEquals(newConfig.LowpassIgnoredSounds) ||

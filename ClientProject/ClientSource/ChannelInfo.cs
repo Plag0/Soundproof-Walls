@@ -6,6 +6,7 @@ using Barotrauma.Sounds;
 using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
 using OpenAL;
+using static Iced.Intel.DecoderInternal.OpCodeHandler_MandatoryPrefix3;
 
 namespace SoundproofWalls
 {
@@ -43,8 +44,8 @@ namespace SoundproofWalls
         public string LongName;
         public string ShortName;
 
-        private int debugObstructionsCount = 0;
-        private string debugObstructionsList = "";
+        public int DebugObstructionsCount = 0;
+        public string DebugObstructionsList = "          Ignored\n";
 
         public float MuffleStrength;
         private float startGain;
@@ -359,6 +360,8 @@ namespace SoundproofWalls
 
         public ChannelInfo(SoundChannel channel, Hull? channelHull = null, StatusEffect? statusEffect = null, ItemComponent? itemComp = null, Client? speakingClient = null, ChatMessageType? messageType = null, bool dontMuffle = false, bool dontPitch = false)
         {
+            PerformanceProfiler.Instance.StartTimingEvent(ProfileEvents.ChannelInfoUpdate);
+
             if (speakingClient != null && messageType == null) { messageType = Util.GetMessageType(speakingClient); }
             else if (itemComp != null && Item == null) { Item = itemComp.Item; }
             else if (statusEffect != null && Item == null) { Item = statusEffect.soundEmitter as Item; }
@@ -426,11 +429,15 @@ namespace SoundproofWalls
             isFirstIteration = false;
 
             ModStateManager.State.LifetimeSoundsPlayed++;
+
+            PerformanceProfiler.Instance.StopTimingEvent();
         }
 
         // This method takes arguments because sometimes the constructor is called without any of this info available (created from soundchannel ctor with no contex)
         public void Update(Hull? soundHull = null, StatusEffect? statusEffect = null, ItemComponent? itemComp = null, Client? speakingClient = null, ChatMessageType? messageType = null)
         {
+            PerformanceProfiler.Instance.StartTimingEvent(ProfileEvents.ChannelInfoUpdate);
+
             if (Channel == null) { return; }
 
             if (!isClone)
@@ -483,6 +490,8 @@ namespace SoundproofWalls
             UpdateGain();
             UpdatePitch();
             UpdateVoice();
+
+            PerformanceProfiler.Instance.StopTimingEvent();
         }
 
         private void UpdateVoice()
@@ -568,21 +577,21 @@ namespace SoundproofWalls
             if (!isClone)
             {
                 // Start debug log.
-                debugObstructionsList = "";
-                debugObstructionsCount = 0;
-                if (ConfigManager.LocalConfig.DebugObstructions)
+                DebugObstructionsList = "";
+                DebugObstructionsCount = 0;
+                if (ConfigManager.LocalConfig.ShowChannelInfo && !ConfigManager.LocalConfig.ShowPlayingSounds)
                 {
                     string firstIterText = isFirstIteration ? " (NEW)" : "";
-                    LuaCsLogger.Log($"Obstructions for \"{ShortName}\"{firstIterText}:", color: isFirstIteration ? Color.LightSeaGreen : Color.LightSkyBlue);
+                    LuaCsLogger.Log($"Info for \"{ShortName}\"{firstIterText}:", color: isFirstIteration ? Color.LightSeaGreen : Color.LightSkyBlue);
                 }
 
                 UpdateObstructions();
 
                 // Finish debug log.
-                if (ConfigManager.LocalConfig.DebugObstructions)
+                if (ConfigManager.LocalConfig.ShowChannelInfo)
                 {
-                    if (debugObstructionsCount <= 0 || debugObstructionsList.IsNullOrEmpty()) { debugObstructionsList += "          None\n"; }
-                    LuaCsLogger.Log(debugObstructionsList);
+                    if (DebugObstructionsCount <= 0 || DebugObstructionsList.IsNullOrEmpty()) { DebugObstructionsList += "          None\n"; }
+                    if (!ConfigManager.LocalConfig.ShowPlayingSounds) { LuaCsLogger.Log($"Gain: {MathF.Round(Gain, 2)}    Pitch: {MathF.Round(Pitch, 2)}    Range: {MathF.Round(Channel.Far)}    Distance: {MathF.Round(Distance)}    Muffle: {MathF.Round(MuffleStrength, 3)}    Obstructions:\n{DebugObstructionsList}"); }
                 }
             }
 
@@ -590,7 +599,7 @@ namespace SoundproofWalls
             float gainMultHf = 1;
             float total = 0;
             float mult = 1;
-            if (config.DynamicFx) 
+            if (config.DynamicFx)
             {
                 mult = AudioIsVoice ? config.VoiceDynamicMuffleMultiplier : config.DynamicMuffleStrengthMultiplier;
             }
@@ -696,7 +705,7 @@ namespace SoundproofWalls
             // Mildly muffle sounds in containers. Don't return yet because the container could be submerged with the sound inside.
             if (inContainer)
             {
-                AddObstruction(Obstruction.DoorThick, "In Container");
+                AddObstruction(Obstruction.DoorThin, "In Container");
             }
 
             // Early return for spectators.
@@ -789,7 +798,7 @@ namespace SoundproofWalls
             }
 
             // Separated by water surface.
-            if (soundInWater != earsInWater)
+            if (soundInWater != earsInWater && !SoundInfo.IgnoreBarriers)
             {
                 Obstruction obstruction = Obstruction.WaterSurface;
                 if (SoundInfo.PropagateWalls && !propagated) { obstruction = Obstruction.WallThin; }
@@ -814,14 +823,14 @@ namespace SoundproofWalls
             Hull? listenerHull = Listener.FocusedHull;
             HashSet<Hull> listenerConnectedHulls = Listener.ConnectedHulls;
 
-            noPath = listenerHull != soundHull && (listenerHull == null || soundHull == null || !listenerConnectedHulls.Contains(soundHull!));
+            noPath = !SoundInfo.IgnoreBarriers && listenerHull != soundHull && (listenerHull == null || soundHull == null || !listenerConnectedHulls.Contains(soundHull!));
 
             int numWallObstructions = 0;
             int numDoorObstructions = 0;
             int numWaterSurfaceObstructions = 0;
 
             // 1. Get occlusion obstructions. Ray cast to check how many walls are between the sound and the listener.
-            if (config.OccludeSounds)
+            if (config.OccludeSounds && !SoundInfo.IgnoreBarriers)
             {
                 IEnumerable<Body> bodies;
                 // Voice ray casts are performed on the main thread and sent to VoiceOcclusions.
@@ -858,7 +867,7 @@ namespace SoundproofWalls
             }
 
             // 2. Propagate to the correct hull, updating wall obstructions. Propagation allows certain sounds near a wall to propagate to the opposite side.
-            if (!SoundInfo.IgnorePath && SoundInfo.PropagateWalls && noPath)
+            if (SoundInfo.PropagateWalls && noPath)
             {
                 foreach (Hull hull in listenerConnectedHulls)
                 {
@@ -892,13 +901,12 @@ namespace SoundproofWalls
             }
 
             // 4. Update obstructions and remove approximate distance for sounds that ignore pathing.
-            if (SoundInfo.IgnorePath)
+            if (SoundInfo.IgnoreBarriers)
             {
                 approximateDistance = null;
-                AddObstruction(Obstruction.Suit, "Ignored path"); // Add a slight muffle to these sounds.
                 numWallObstructions = 0;
                 numDoorObstructions = 0;
-                // Probably shouldn't reset water surfaces.
+                numWaterSurfaceObstructions = 0;
             }
 
             // 5. Assign 'eavesdropped' variable and add obstruction.
@@ -1002,8 +1010,8 @@ namespace SoundproofWalls
                 //Al.Source3f(sourceId, Al.Position, direction.X, direction.Y, 0.0f);
                 //if ((alError = Al.GetError()) != Al.NoError) { DebugConsole.NewMessage($"[SoundproofWalls] Failed to set clone direction, {Al.GetErrorString(alError)}"); return; }
 
-                clone.debugObstructionsCount = 0;
-                clone.debugObstructionsList = ""; // We don't even do clone debugging but I'm leaving this here in case we ever do
+                clone.DebugObstructionsCount = 0;
+                clone.DebugObstructionsList = "          None\n"; // We don't even do clone debugging but I'm leaving this here in case we ever do
 
                 clone.obstructions = new List<Obstruction>(clonedObstructions);
                 for (int j = 0; j < topResults[i].ClosedDoorCount; j++) { clone.AddObstruction(Obstruction.DoorThick, "Clone - passing through door"); }
@@ -1024,7 +1032,7 @@ namespace SoundproofWalls
 
             if (!AudioIsFromDoor) // Check if there's a path to the sound.
             {
-                noPath = listenerHull != soundHull && (listenerHull == null || soundHull == null || !listenerConnectedHulls.Contains(soundHull!));
+                noPath = !SoundInfo.IgnoreBarriers && listenerHull != soundHull && (listenerHull == null || soundHull == null || !listenerConnectedHulls.Contains(soundHull!));
             }
             else // Exception for door opening/closing sounds - must check hulls while ignorning the doorway gap.
             {
@@ -1043,12 +1051,9 @@ namespace SoundproofWalls
 
             bool exceedsRange = Distance >= Channel.Far; // Refers to the range being greater than the approx dist NOT the euclidean distance because then the sound wouldn't be playing.
 
-            // Allow certain sounds near a wall to be faintly heard on the opposite side.
-            // Sounds outside the sub can propagate in, but sounds sounds inside cannot propagate out.
-            if (SoundInfo.IgnorePath)
+            if (SoundInfo.IgnoreBarriers)
             {
                 approximateDistance = null; // Null this so the Distance property defaults to euclidean dist.
-                AddObstruction(Obstruction.Suit, "Ignored path"); // Add a slight muffle to these sounds.
             }
             else if (noPath || exceedsRange) // One extra feature the simple obstruction function has is allowing sounds to propagate when out of range.
             {
@@ -1185,7 +1190,7 @@ namespace SoundproofWalls
                 }
 
                 float distance = newModel == DistanceModel.Euclidean ? EuclideanDistance : Distance;
-                float distMult = CalculateLinearDistanceClampedMult(distance, Channel.Near, Channel.Far);
+                float distMult = CalculateLinearDistanceClampedMult(MathF.Round(distance), Channel.Near, Channel.Far);
 
                 if (shouldUseEuclideanDistance) // Fade to euclidean distance
                 {
@@ -1420,13 +1425,13 @@ namespace SoundproofWalls
         private void AddObstruction(Obstruction obs, string debugContext)
         {
             obstructions.Add(obs);
-            if (config.DebugObstructions) { DebugObstructions(debugContext); }
+            if (ConfigManager.LocalConfig.ShowChannelInfo) { DebugObstructions(debugContext); }
         }
 
         private void DebugObstructions(string reason)
         {
-            debugObstructionsList += $"          {debugObstructionsCount + 1}. {obstructions[debugObstructionsCount]} {obstructions[debugObstructionsCount].GetStrength() * SoundInfo.MuffleInfluence * (config.DynamicFx ? config.DynamicMuffleStrengthMultiplier : 1)} ({reason})\n";
-            debugObstructionsCount++;
+            DebugObstructionsList += $"          {DebugObstructionsCount + 1}. {obstructions[DebugObstructionsCount]} {obstructions[DebugObstructionsCount].GetStrength() * SoundInfo.MuffleInfluence * (config.DynamicFx ? config.DynamicMuffleStrengthMultiplier : 1)} ({reason})\n";
+            DebugObstructionsCount++;
         }
 
         public static float CalculateLinearDistanceClampedMult(float distance, float near, float far, float rolloffFactor = 1)
