@@ -23,7 +23,7 @@ namespace SoundproofWalls
         public bool IgnoreSubmersion = false;
         public bool IgnorePitch = false;
         public bool IgnoreLowpass = false;
-        public bool ForceLowpass = false;
+        public bool IgnoreXML = false;
         public bool IgnoreAirReverb = false;
         public bool IgnoreWaterReverb = false;
         public bool ForceReverb = false;
@@ -32,6 +32,8 @@ namespace SoundproofWalls
         public bool PropagateWalls = false;
         public bool IgnoreHydrophoneVisuals = false;
         public bool IgnoreHydrophoneMuffle = false;
+
+        public bool IsChargeSound = false;
 
         public enum AudioType
         {
@@ -62,7 +64,7 @@ namespace SoundproofWalls
             else
             {
                 IgnoreLowpass = Util.StringHasKeyword(filename, config.LowpassIgnoredSounds);
-                ForceLowpass = Util.StringHasKeyword(filename, config.LowpassForcedSounds);
+                IgnoreXML = Util.StringHasKeyword(filename, config.XMLIgnoredSounds);
                 IgnorePitch = Util.StringHasKeyword(filename, config.PitchIgnoredSounds);
                 IgnoreAirReverb = Util.StringHasKeyword(filename, config.AirReverbIgnoredSounds);
                 IgnoreWaterReverb = Util.StringHasKeyword(filename, config.WaterReverbIgnoredSounds);
@@ -99,11 +101,27 @@ namespace SoundproofWalls
             {
                 StaticType = AudioType.DoorSound;
             }
+            else if (lower.Contains("content/sounds/water/flow"))
+            {
+                StaticType = AudioType.FlowSound;
+            }
+            else if (lower.Contains("content/sounds/fire"))
+            {
+                StaticType = AudioType.FireSound;
+            }
+            else if (Sound is VoipSound)
+            {
+                StaticType = AudioType.LocalVoice;
+            }
             else if (lower.Contains("barotrauma/content/sounds/ambient") || 
                      lower.Contains("barotrauma/content/sounds/damage/creak") || 
                      lower.Contains("barotrauma/content/sounds/hull"))
             {
                 StaticType = AudioType.AmbientSound;
+            }
+            else if (lower.Contains("chargeup"))
+            {
+                IsChargeSound = true;
             }
 
             PerformanceProfiler.Instance.StopTimingEvent();

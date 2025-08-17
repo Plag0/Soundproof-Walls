@@ -74,7 +74,7 @@ namespace SoundproofWalls
             LuaCsLogger.Log("[SoundproofWalls] Shutting down...");
 
 #if CLIENT
-            DisposeClient();
+            DisposeClient(true);
 #endif
             harmony.UnpatchSelf();
 

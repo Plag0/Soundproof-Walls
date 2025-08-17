@@ -25,7 +25,7 @@ namespace SoundproofWalls
             { 
                 serverConfig = value; 
                 // Refresh menu if it's open.
-                if (Menu.Instance != null) { Menu.Create(); } 
+                if (Menu.Instance != null) { Menu.Create(startAtUnsavedValues: true); } 
             } 
         }
         public static Client? ServerConfigUploader = null;
@@ -87,34 +87,51 @@ namespace SoundproofWalls
                 IWriteMessage message = GameMain.LuaCs.Networking.Start(Plugin.SERVER_SEND_CONFIG);
                 message.WriteByte(GameMain.Client.SessionId);
                 GameMain.LuaCs.Networking.Send(message);
-
             }
         }
 
         public static void UpdateConfig(Config newConfig, Config oldConfig, bool isServerConfigEnabled = false, bool manualUpdate = false, byte configSenderId = 0)
         {
-            bool shouldStop = oldConfig.Enabled && !newConfig.Enabled;
-            bool shouldStart = !oldConfig.Enabled && newConfig.Enabled;
-            bool shouldReloadSounds = Util.ShouldReloadSounds(newConfig: newConfig, oldConfig: oldConfig);
-            bool shouldUpdateAITarget = !GameMain.IsMultiplayer && oldConfig.AITargetSoundRangeMultiplierMaster != newConfig.AITargetSoundRangeMultiplierMaster;
-            bool shouldUpdateSoundInfo = Util.ShouldUpdateSoundInfo(newConfig, oldConfig: oldConfig);
-            bool shouldStartAlEffects = !shouldStart && !oldConfig.DynamicFx && newConfig.DynamicFx;
-            bool shouldStopAlEffects = !shouldStop && oldConfig.DynamicFx && !newConfig.DynamicFx;
-            bool shouldResizeSourcePool = oldConfig.MaxSourceCount != newConfig.MaxSourceCount;
-
             ServerConfig = isServerConfigEnabled ? newConfig : null;
 
-            if (shouldStartAlEffects) { Plugin.InitDynamicFx(); }
-            else if (shouldStopAlEffects) { Plugin.DisposeDynamicFx(); }
+            bool isDisabling = oldConfig.Enabled && !newConfig.Enabled;
+            bool isEnabling = !oldConfig.Enabled && newConfig.Enabled;
 
-            if (shouldResizeSourcePool) { Plugin.ResizeSoundManagerPools(newConfig.MaxSourceCount); }
+            if (isDisabling) // Stopping from disabling the mod via menu.
+            { 
+                Plugin.Instance?.TriggerShutdown(
+                    partial: true,
+                    reloadBuffers: BufferManager.ShouldReloadBuffers(newConfig, oldConfig)); 
+            }
+            else if (isEnabling) // Starting from enabling the mod via menu.
+            { 
+                Plugin.Instance?.Initialize();
+            }
+            else // Standard mid-round update from changing menu options.
+            {
+                if (!oldConfig.DynamicFx && newConfig.DynamicFx) { Plugin.InitDynamicFx(); }
+                else if (oldConfig.DynamicFx && !newConfig.DynamicFx) { Plugin.DisposeDynamicFx(); }
 
-            if (shouldStop) { Plugin.Instance?.PartialDispose(); }
-            else if (shouldStart) { Plugin.Instance?.Initialize(); }
-            else if (shouldReloadSounds) { Util.ReloadSounds(); }
-            else if (shouldUpdateSoundInfo) { SoundInfoManager.UpdateSoundInfoMap(); }
+                if (oldConfig.MaxSourceCount != newConfig.MaxSourceCount) 
+                { 
+                    Util.ResizeSoundManagerPools(newConfig.MaxSourceCount); 
+                }
 
-            if (shouldUpdateAITarget) { Util.UpdateAITarget(); }
+                if (BufferManager.ShouldReloadBuffers(newConfig, oldConfig))
+                {
+                    BufferManager.TriggerBufferReload();
+                }
+
+                if (SoundInfoManager.ShouldUpdateSoundInfo(newConfig, oldConfig))
+                { 
+                    SoundInfoManager.UpdateSoundInfoMap(); 
+                }
+
+                if (Util.ShouldUpdateAITarget(newConfig, oldConfig))
+                {
+                    Util.UpdateAITarget();
+                }
+            }
 
             if (manualUpdate && configSenderId != 0)
             {
@@ -122,11 +139,11 @@ namespace SoundproofWalls
                 string uploaderName = ServerConfigUploader?.Name ?? "unknown";
                 if (isServerConfigEnabled)
                 {
-                    LuaCsLogger.Log($"Soundproof Walls: \"{uploaderName}\" {TextManager.Get("spw_updateserverconfig").Value}", Color.LimeGreen);
+                    LuaCsLogger.Log($"[SoundproofWalls] \"{uploaderName}\" {TextManager.Get("spw_updateserverconfig").Value}", Color.LimeGreen);
                 }
                 else
                 {
-                    LuaCsLogger.Log($"Soundproof Walls: \"{uploaderName}\" {TextManager.Get("spw_disableserverconfig").Value}", Color.MonoGameOrange);
+                    LuaCsLogger.Log($"[SoundproofWalls] \"{uploaderName}\" {TextManager.Get("spw_disableserverconfig").Value}", Color.MonoGameOrange);
                 }
             }
         }

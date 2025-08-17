@@ -196,8 +196,7 @@ namespace SoundproofWalls
             {
                 EavesdroppingAmbienceDryRoomSound = GameMain.SoundManager.LoadSound(Plugin.CustomSoundPaths[Plugin.SoundPath.EavesdroppingAmbienceDry]);
                 EavesdroppingAmbienceWetRoomSound = GameMain.SoundManager.LoadSound(Plugin.CustomSoundPaths[Plugin.SoundPath.EavesdroppingAmbienceWet]);
-                EavesdroppingActivationSounds.Add(GameMain.SoundManager.LoadSound(Plugin.CustomSoundPaths[Plugin.SoundPath.EavesdroppingActivation1]));
-                EavesdroppingActivationSounds.Add(GameMain.SoundManager.LoadSound(Plugin.CustomSoundPaths[Plugin.SoundPath.EavesdroppingActivation2]));
+                EavesdroppingActivationSounds.Add(GameMain.SoundManager.LoadSound(Plugin.CustomSoundPaths[Plugin.SoundPath.EavesdroppingActivation]));
             }
             catch (Exception ex)
             {

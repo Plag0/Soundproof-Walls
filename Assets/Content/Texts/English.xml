@@ -1,13 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <infotexts language="English" nowhitespace="false" translatedname="English">
 
-	<spw_settings>Soundproof Walls</spw_settings>
+	<spw_modname>Soundproof Walls [version]</spw_modname>
 	<spw_openmenuhelp>Opens the Soundproof Walls settings menu.</spw_openmenuhelp>
 	<spw_openpopuphelp>Opens the Soundproof Walls welcome popup.</spw_openpopuphelp>
 	<spw_openworkshophelp>Opens the Soundproof Walls workshop page in your browser.</spw_openworkshophelp>
+	<spw_guidehelp>Opens the Soundproof Walls Configuration Guide page in your browser.</spw_guidehelp>
+	<spw_reporthelp>Opens the Soundproof Walls Report Bugs page in your browser.</spw_reporthelp>
 
 	<initmessage>Finished loading Soundproof Walls v[version]</initmessage>
-	<initmessagefollowup>  > Open the settings menu by typing "spw".\n  > Print your stats by typing "spw_stats".\n  > Have a question? Open the workshop page by typing "spw_workshop" and leave a comment.\n  > Re-open the welcome popup by typing "spw_welcome".</initmessagefollowup>
+	<initmessagefollowup>  > Open the settings menu by typing "spw".\n  > Print your stats by typing "spw_stats".\n  > Have a question? Open the workshop page by typing "spw_workshop" and leave a comment.\n  > Found a bug? type "spw_report" to open the discussion page and make a post.\n  > Learn more about the config options with "spw_help".\n  > Re-open the first-time launch popup by typing "spw_welcome".</initmessagefollowup>
 	
 	<!-- Info Panel -->
 	<spw_syncingenabled>Syncing Enabled!\nYou are using a config uploaded to the server by [name]. Values from this config are shown in parentheses next to yours.</spw_syncingenabled>
@@ -75,10 +77,6 @@
 	<spw_dynamicreverbtooltip>Sounds dynamically reverberate based on the size and aggregate audio amplitude of their environment (i.e., echos are stronger in larger and quieter spaces)</spw_dynamicreverbtooltip>
 	<spw_dynamicreverbwatersubtractsarea>Subtract Water/Air Area</spw_dynamicreverbwatersubtractsarea>
 	<spw_dynamicreverbwatersubtractsareatooltip>Use the area of the air in a hull if the listener is not submerged, otherwise use the area of the water.</spw_dynamicreverbwatersubtractsareatooltip>
-	<spw_dynamicreverblocal>Reverb Local Voice</spw_dynamicreverblocal>
-	<spw_dynamicreverblocaltooltip>Requires "Simulate Reverb" to be enabled.\nAllows reverb to be applied to player voices when speaking locally</spw_dynamicreverblocaltooltip>
-	<spw_dynamicreverbradio>Reverb Radio</spw_dynamicreverbradio>
-	<spw_dynamicreverbradiotooltip>Requires "Simulate Reverb" to be enabled.\nAllows reverb to be applied to player voices heard over the radio</spw_dynamicreverbradiotooltip>
 	<spw_dynamicreverbminarea>Reverb Area Requirement</spw_dynamicreverbminarea>
 	<spw_dynamicreverbminareatooltip>The minimum total area of the connected rooms inhabited by the listener required for sounds to become reverberated</spw_dynamicreverbminareatooltip>
 	<spw_dynamicreverbareasizemultiplier>Reverb Size Master</spw_dynamicreverbareasizemultiplier>
@@ -94,11 +92,16 @@
 	<spw_dynamicreverbwateramplitudethreshold>Reverb Amplitude Requirement (Outside)</spw_dynamicreverbwateramplitudethreshold>
 	<spw_dynamicreverbwateramplitudethresholdtooltip>The minimum audio amplitude required for a sound to echo when outside</spw_dynamicreverbwateramplitudethresholdtooltip>
 
-	<spw_dynamiccategoryloudsounddistortion>Loud Sound Distortion</spw_dynamiccategoryloudsounddistortion>
-	<spw_loudsounddistortion>Distort Loud Sounds</spw_loudsounddistortion>
-	<spw_loudsounddistortiontooltip>Applies a distortion effect to sounds in the "Custom Sounds" list with a sidechain multiplier greater than zero</spw_loudsounddistortiontooltip>
+	<spw_dynamiccategoryloudsounddistortionair>Loud Sound Distortion (Unsubmerged)</spw_dynamiccategoryloudsounddistortionair>
+	<spw_dynamiccategoryloudsounddistortionwater>Loud Sound Distortion (Submerged)</spw_dynamiccategoryloudsounddistortionwater>
+
+	<spw_loudsounddistortionair>Enable Unsubmerged Distortion</spw_loudsounddistortionair>
+	<spw_loudsounddistortionwater>Enable Submerged Distortion</spw_loudsounddistortionwater>
+	<spw_loudsounddistortiontooltip>Applies a distortion effect to sounds in the "Custom Sounds" list with distortion enabled</spw_loudsounddistortiontooltip>
+	<spw_loudsounddistortionmaxmuffle>Distortion Muffle Requirement</spw_loudsounddistortionmaxmuffle>
+	<spw_loudsounddistortionmaxmuffletooltip>The maximum muffle strength a sound can have before distortion is disabled</spw_loudsounddistortionmaxmuffletooltip>
 	<spw_loudsounddistortiontargetgain>Distortion Gain</spw_loudsounddistortiontargetgain>
-	<spw_loudsounddistortiontargetgaintooltip>The overall volume of the loud sound distortion effect</spw_loudsounddistortiontargetgaintooltip>
+	<spw_loudsounddistortiontargetgaintooltip>The overall volume of the distortion effect</spw_loudsounddistortiontargetgaintooltip>
 	<spw_loudsounddistortiontargetedge>Distortion Edge</spw_loudsounddistortiontargetedge>
 	<spw_loudsounddistortiontargetedgetooltip>The harshness of the loud sound distortion effect. A higher value results in more high-frequency harmonics</spw_loudsounddistortiontargetedgetooltip>
 	<spw_loudsounddistortiontargetfrequency>Distortion Frequency</spw_loudsounddistortiontargetfrequency>
@@ -107,16 +110,9 @@
 	<spw_loudsounddistortionlowpassfrequencytooltip>A lowpass filter is applied to the distorted signal in post. This is the corner frequency used by that lowpass filter.</spw_loudsounddistortionlowpassfrequencytooltip>
 
 	<spw_dynamiccategoryexperimental>Experimental</spw_dynamiccategoryexperimental>
-	<spw_simulatesounddirection>Simulate Sound Direction</spw_simulatesounddirection>
-	<spw_simulatesounddirectiontooltip>An alternative to euclidean directions. Sounds play from the direction travelled to reach the listener</spw_simulatesounddirectiontooltip>
-	<spw_maxsounddirections>Max Sound Directions</spw_maxsounddirections>
-	<spw_maxsounddirectionstooltip>Requires "Simulate Sound Direction" to be enabled.\nThe number of additional directions a sound can be heard from. High values may impact performance</spw_maxsounddirectionstooltip>
-
-	<spw_highfidelitymuffling>Extreme Muffling</spw_highfidelitymuffling>
-	<spw_highfidelitymuffling>An alternative to the limited lowpass filter used by the Dynamic effect processing mode. Applies a more heavy duty EQ effect to each source, only available for systems with access to three auxiliary sends</spw_highfidelitymuffling>
-
+	
 	<spw_removeunusedbuffers>Cleanup Unused Buffers</spw_removeunusedbuffers>
-	<spw_removeunusedbufferstooltip>Load sounds without their vanilla muffle buffer to save ~100MB of memory and reduce level loading time by ~1 second. Disabled by default due to compatibility concerns.\nNote: updating this value while playing will briefly freeze the game as new buffers are loaded</spw_removeunusedbufferstooltip>
+	<spw_removeunusedbufferstooltip>Load sounds without their vanilla muffle buffer to save ~100MB of memory and reduce level loading time by ~1 second over vanilla. Disabled by default due to concerns of potential compatibility issues with other mods that interact with sound objects on a low level. But in the vast majority of cases, this setting is a free boost.\nNote: updating this value while playing will briefly freeze the game as new buffers are loaded</spw_removeunusedbufferstooltip>
 
 
 	<!-- StaticFx -->
@@ -144,24 +140,41 @@
 
 	<!-- Voice -->
 	<spw_voicetab>Voice</spw_voicetab>
+
+	<spw_voicecategorygeneral>General</spw_voicecategorygeneral>
+	
 	<spw_talkingragdolls>Talking Ragdolls</spw_talkingragdolls>
 	<spw_talkingragdollstooltip>Hear players speak when they are ragdolled as long as they're not stunned</spw_talkingragdollstooltip>
-	<spw_whispermode>Whisper Mode</spw_whispermode>
-	<spw_whispermodetooltip>The range of player voices are proportional to the amplitude of their signal (i.e., speaking softly decreases the range of your voice)</spw_whispermodetooltip>
-	<spw_whispermodetransitionfactor>Whisper Range Transition Factor</spw_whispermodetransitionfactor>
-	<spw_whispermodetransitionfactortooltip>Requires "Whisper Mode" to be enabled.\nThe maximum distance that the range of player voices can change within one second to reflect the latest voice amplitude. Setting this value to zero will result in an instant transition</spw_whispermodetransitionfactortooltip>
-	<spw_voicedynamicmufflemultiplier>Dynamic Muffle Strength</spw_voicedynamicmufflemultiplier>
-	<spw_voicedynamicmufflemultipliertooltip>Requires the "Dynamic" effect processing mode.\nThe strength of muffle effects applied to player voices</spw_voicedynamicmufflemultipliertooltip>
 	<spw_voicelowpassfrequency>Voice Heavy Lowpass Frequency</spw_voicelowpassfrequency>
 	<spw_voicelowpassfrequencytooltip>Requires the "Classic" or "Static" effect processing mode.\nThe corner frequency used to muffle player voices that are obstructed enough to meet the "(Static) Heavy Muffle Threshold" in the Muffle tab. If less obstructed, the Static tab's light or medium lowpass frequencies will be used instead (even when using "Classic" mode)</spw_voicelowpassfrequencytooltip>
-	<spw_voicerange>Voice Range (Local)</spw_voicerange>
+	<spw_voicerange>Local Range</spw_voicerange>
 	<spw_voicerangetooltip>The maximum range of player voices</spw_voicerangetooltip>
-	<spw_radiorange>Voice Range (Radio)</spw_radiorange>
+	<spw_radiorange>Radio Range</spw_radiorange>
 	<spw_radiorangetooltip>The maximum range of player radio transmissions</spw_radiorangetooltip>
-	<spw_voicevolume>Voice Volume (Local)</spw_voicevolume>
+	<spw_voicevolume>Local Volume</spw_voicevolume>
 	<spw_voicevolumetooltip>The volume of local voice chat. Behaves independently of Barotrauma's voice chat volume slider</spw_voicevolumetooltip>
-	<spw_radiovolume>Voice Volume (Radio)</spw_radiovolume>
+	<spw_radiovolume>Radio Volume</spw_radiovolume>
 	<spw_radiovolumetooltip>The volume of radio voice chat. Behaves independently of Barotrauma's voice chat volume slider</spw_radiovolumetooltip>
+
+	<spw_voicecategoryscreammode>Dynamic Voice Range</spw_voicecategoryscreammode>
+	
+	<spw_screammode>Scream Mode</spw_screammode>
+	<spw_screammodetooltip>The range of player voices become proportional to the amplitude of their signal (i.e., yelling will transmit your voice further)\nNote: for this setting to work as expected it's recommended to tweak your Barotrauma voice settings so that the volume bar has room to expand when receiving loud input</spw_screammodetooltip>
+	<spw_screammodemaxrange>Scream Mode Max Range</spw_screammodemaxrange>
+	<spw_screammodemaxrangetooltip>Requires "Scream Mode" to be enabled.\nThe range player voices can be heard from when speaking at max amplitude</spw_screammodemaxrangetooltip>
+	<spw_screammodeminrange>Scream Mode Min Range</spw_screammodeminrange>
+	<spw_screammodeminrangetooltip>Requires "Scream Mode" to be enabled.\nThe minimum range player voices can be reduced to when speaking at low amplitudes</spw_screammodeminrangetooltip>
+	<spw_screammodereleaserate>Scream Mode Release Rate</spw_screammodereleaserate>
+	<spw_screammodereleaseratetooltip>Requires "Scream Mode" to be enabled.\nThe distance that player voices decay in range per second when their range is no longer supported by their amplitude</spw_screammodereleaseratetooltip>
+
+	<spw_voicecategorydynamicfx>Dynamic Mode Exclusive</spw_voicecategorydynamicfx>
+
+	<spw_dynamicreverblocal>Reverb Local Voice</spw_dynamicreverblocal>
+	<spw_dynamicreverblocaltooltip>Requires "Simulate Reverb" to be enabled.\nAllows reverb to be applied to player voices when speaking locally</spw_dynamicreverblocaltooltip>
+	<spw_dynamicreverbradio>Reverb Radio</spw_dynamicreverbradio>
+	<spw_dynamicreverbradiotooltip>Requires "Simulate Reverb" to be enabled.\nAllows reverb to be applied to player voices heard over the radio</spw_dynamicreverbradiotooltip>
+	<spw_voicedynamicmufflemultiplier>Dynamic Muffle Strength</spw_voicedynamicmufflemultiplier>
+	<spw_voicedynamicmufflemultipliertooltip>Requires the "Dynamic" effect processing mode.\nThe strength of muffle effects applied to player voices</spw_voicedynamicmufflemultipliertooltip>
 	
 	<spw_voicecategorybubbles>Drowning</spw_voicecategorybubbles>
 	
@@ -228,7 +241,9 @@
 	<spw_obstructiondoorthintooltip>The muffle strength applied when a sound pierces through a door (e.g., eavesdropping). Stacks multiplicatively with other obstructions</spw_obstructiondoorthintooltip>
 	<spw_obstructionsuit>Diving Suit</spw_obstructionsuit>
 	<spw_obstructionsuittooltip>The muffle strength applied when a sound passes through a diving suit. Stacks multiplicatively with other obstructions</spw_obstructionsuittooltip>
-
+	<spw_obstructiondrowning>Player Drowning</spw_obstructiondrowning>
+	<spw_obstructiondrowningtooltip>The muffle strength applied to a player's voice when they speak while drowning. Stacks multiplicatively with other obstructions</spw_obstructiondrowningtooltip>
+	
 	<spw_classicmufflethreshold>(Classic) Muffle Threshold</spw_classicmufflethreshold>
 	<spw_classicmufflethresholdtooltip>The minimum aggregate obstruction level required to trigger the heavy lowpass filter when using classic mode</spw_classicmufflethresholdtooltip>
 
@@ -276,7 +291,7 @@
 	<spw_muffledloopingvolumetooltip>Volume of fully muffled looping sounds. A looping sound is any sound that automatically repeats itself (e.g., the ventilation, reactor, or engine sounds). Blends with "Unmuffled Looping Volume" based on muffle strength (e.g., at 0.75 muffle strength, this is 75% applied)</spw_muffledloopingvolumetooltip>
 	<spw_unmuffledloopingvolume>Unmuffled Looping Volume</spw_unmuffledloopingvolume>
 	<spw_unmuffledloopingvolumetooltip>Volume of unmuffled looping sounds. A looping sound is any sound that automatically repeats itself. Blends with "Muffled Looping Volume" based on muffle strength</spw_unmuffledloopingvolumetooltip>
-	<spw_submergedvolume>Submerged Volume</spw_submergedvolume>
+	<spw_submergedvolume>Submerged Together Volume</spw_submergedvolume>
 	<spw_submergedvolumetooltip>Volume of sounds submerged in the same body of water as the listener. Stacks multiplicatively with other volume multipliers</spw_submergedvolumetooltip>
 	<spw_flowsoundvolume>Flow Sound Volume</spw_flowsoundvolume>
 	<spw_flowsoundvolumetooltip>The volume of flowing water caused by leaks in the submarine</spw_flowsoundvolumetooltip>
@@ -428,6 +443,8 @@
 	<spw_pitchtab>Pitch</spw_pitchtab>
 	<spw_pitchenabled>Enable Pitch</spw_pitchenabled>
 	<spw_pitchenabledtooltip>Globally toggles all pitch effects. May be helpful as a quick fix for weird pitch interactions with sounds from other mods</spw_pitchenabledtooltip>
+	<spw_pitchstatuseffectsounds>Pitch Status Effect Sounds</spw_pitchstatuseffectsounds>
+	<spw_pitchstatuseffectsoundstooltip>Toggles pitching for sounds played by XML status effects</spw_pitchstatuseffectsoundstooltip>
 	<spw_pitchwithdistance>Pitch With Distance</spw_pitchwithdistance>
 	<spw_pitchwithdistancetooltip>Dynamically lower the pitch of non-looping sounds based on their distance ratio and muffle strength. Stacks additively with other pitch effects</spw_pitchwithdistancetooltip>
 	<spw_divingsuitpitch>Diving Suit Pitch</spw_divingsuitpitch>
@@ -523,7 +540,7 @@
 	<spw_advancedcategoryrules>Sound Rules</spw_advancedcategoryrules>
 	
 	<spw_customsounds>Custom Sounds</spw_customsounds>
-	<spw_customsoundstooltip>Tweak the volume of any vanilla or modded sounds. Providing a sidechain multiplier above zero will mark the sound(s) for sidechaining, lowering the volume of other sounds by the amount specified (a value of 1 is equal to a 100% volume reduction). The release value controls how many seconds it takes for the sidechain multiplier to decay to back to zero after the sound plays. Sounds in the exclusion list are ignored, allowing for more selective group targeting.</spw_customsoundstooltip>
+	<spw_customsoundstooltip>Apply custom values and effects to specific sounds.\n\n"Keyword": Part of the target sound's file name. Case insensitive.\n\n"GainMult": Volume multiplier. Stacks additively.\n\n"RangeMult": Base range multiplier. Stacks multiplicatively.\n\n"SidechainMult": Volume that other sounds are reduced by when this sound plays.\n\n"SidechainRelease": The duration that the previous volume reduction lasts for.\n\n"Distortion": Toggles the distortion effect for this sound. Dynamic mode only.\n\n"PitchMult": Speed multiplier for the sound. Slow down for lower pitch.\n\n"MuffleInfluence": How affected the sound is from muffle effects. Lower values mean less affected.\n\n"KeywordExclusions": Sounds that share the provided keyword but are not wanted. For example, a keyword of "shot" would also register a sound called "shotgun" - to avoid this without using a more specific keyword, you would place "shotgun" in this list. Case insensitive.</spw_customsoundstooltip>
 	<spw_moddedcustomsoundstooltip>Custom sound values from [modname]. Takes override priority over the standard "Custom Sounds" list. This list is not synced with other players. If you edit the items in this list, the changes will apply locally but they will not be saved outside of the session. If you have issues with the contents of this list, please take it up with the mod author.</spw_moddedcustomsoundstooltip>
 	
 	<spw_ignoredsounds>Ignored Sounds</spw_ignoredsounds>
@@ -553,8 +570,8 @@
 	<spw_barrierignoredsounds>Barrier Ignored Sounds</spw_barrierignoredsounds>
 	<spw_barrierignoredsoundstooltip>Sounds in this list are unable to be muffled by occlusion, walls, doors, or water surfaces</spw_barrierignoredsoundstooltip>
 	
-	<spw_lowpassforcedsounds>Lowpass Forced Sounds</spw_lowpassforcedsounds>+
-	<spw_lowpassforcedsoundstooltip>This list is intended for sounds marked internally with the "dontmuffle" tag or similar properties. Sounds in this list will always be evaluated for muffling.</spw_lowpassforcedsoundstooltip>
+	<spw_xmlignoredsounds>XML Ignored Sounds</spw_xmlignoredsounds>+
+	<spw_xmlignoredsoundstooltip>This list is intended for sounds marked internally with the "dontmuffle" tag or similar properties. Sounds in this list will always be evaluated for muffling.</spw_xmlignoredsoundstooltip>
 	
 	<spw_lowpassignoredsounds>Lowpass Ignored Sounds</spw_lowpassignoredsounds>
 	<spw_lowpassignoredsoundstooltip>Sounds in this list will never receive muffle effects</spw_lowpassignoredsoundstooltip>
@@ -571,6 +588,7 @@
 	<spw_hydrophonemonitoring>Monitor Hydrophones</spw_hydrophonemonitoring>
 	<spw_serverdiffheader>The active server config has [count] changes from your local config:</spw_serverdiffheader>
 	<spw_listening>Listening...</spw_listening>
+	<spw_loading>Loading audio buffers...</spw_loading>
 	<spw_invalidinput>Invalid Input</spw_invalidinput>
 	<spw_enabled>Enabled</spw_enabled>
 	<spw_disabled>Disabled</spw_disabled>
@@ -589,31 +607,31 @@
 	<spw_popupheader>Welcome to Soundproof Walls 2.0</spw_popupheader>
 	<spw_popupheadersubtext>Soundproof Walls 2.0 is a fully rewritten and expanded version of the original mod and stands as a complete audio system overhaul for Barotrauma.</spw_popupheadersubtext>
 
-	<spw_popupbodyheader>Major Changes (NOTE: ALL THIS TEXT IS A WIP DRAFT)</spw_popupbodyheader>
+	<spw_popupbodyheader>Major Changes</spw_popupbodyheader>
 	
 	<spw_popupbodysubheading1>• Environmentally Simulated Reverb</spw_popupbodysubheading1>
-	<spw_popupbodysubtext1>Sounds and player voices echo realistically in large or quiet spaces depending on the size and soundscape of the room. Outside the submarine, loud sounds can be heard echoing for miles as the soundwaves bounce off the icy surface of Europa.</spw_popupbodysubtext1>
+	<spw_popupbodysubtext1>Sounds and player voices echo realistically based on the size and volume of the room. Outside the submarine, loud sounds can be heard echoing for miles as the soundwaves bounce off the icy surface of Europa.</spw_popupbodysubtext1>
 
 	<spw_popupbodysubheading2>• Sidechain Compression System</spw_popupbodysubheading2>
-	<spw_popupbodysubtext2>Loud sounds, like gunshots or explosions, feel more powerful as they crush other audio in the mix by dipping their volume.</spw_popupbodysubtext2>
+	<spw_popupbodysubtext2>Sounds like gunshots or explosions are louder and more impactful. This new dynamic range creates a feeling of power behind every shot as quieter sounds are left behind.</spw_popupbodysubtext2>
 
 	<spw_popupbodysubheading3>• Dynamic Lowpass Frequency</spw_popupbodysubheading3>
-	<spw_popupbodysubtext3>Sounds are no longer limited to being muffled at one set strength and will now dynamically adapt based on how many layers of obstructions are in the way.</spw_popupbodysubtext3>
+	<spw_popupbodysubtext3>Sounds are no longer limited to being muffled at one set strength and will now dynamically adapt based on the situation and how many obstructions are in the way.</spw_popupbodysubtext3>
 
 	<spw_popupbodysubheading4>• Sound Occlusion</spw_popupbodysubheading4>
 	<spw_popupbodysubtext4>Sounds are muffled by the shape of the surrounding level geometry as they explore their path to the player's ears.</spw_popupbodysubtext4>
 
 	<spw_popupbodysubheading5>• Powerful Distortion</spw_popupbodysubheading5>
-	<spw_popupbodysubtext5>Gunshots, explosions, and other loud sounds distort violently. By default this effect is somewhat subtle, but I wouldn't recommend increasing the edge or gain too high; if you don't believe me, just remember I'm the guy who made Real Sonar.</spw_popupbodysubtext5>
+	<spw_popupbodysubtext5>Gunshots, explosions, and other loud sounds distort violently. By default this effect is subtle, but I wouldn't recommend increasing the distortion gain too high.</spw_popupbodysubtext5>
 
-	<spw_popupbodysubheading6>• Vanilla Improvements</spw_popupbodysubheading6>
-	<spw_popupbodysubtext6>Water flow and fire sounds are finally muffled by walls and other obstructions. Additionally the maximum concurrent sound count has been increased to prevent many sounds being skipped (e.g., when firing a fully automatic gun).</spw_popupbodysubtext6>
+	<spw_popupbodysubheading6>• Better Voice Chat</spw_popupbodysubheading6>
+	<spw_popupbodysubtext6>Choose how clear your radio sounds with the custom radio filter or try out the new local voice system that dynamically adjusts how far your voice travels based on how loud you're yelling.</spw_popupbodysubtext6>
+	
+	<spw_popupbodysubheading7>• Overhauled Systems</spw_popupbodysubheading7>
+	<spw_popupbodysubtext7>The eavesdropping and hydrophone systems from 1.0 have been received a full makeover with new visuals and sound effects. Vanilla systems have also been improved, with water flow sounds finally being muffled by walls and a key fix for sounds occasionally not playing.</spw_popupbodysubtext7>
 
-	<spw_popupbodysubheading7>• Sound Propagation</spw_popupbodysubheading7>
-	<spw_popupbodysubtext7>Certain sounds are better at piercing through nearby walls and doors, allowing them to be heard clearer on the other side. By default this applies to structural damage sounds, explosions, and turrets.</spw_popupbodysubtext7>
-
-	<spw_popupbodysubheading8>• 100+ New Config Settings</spw_popupbodysubheading8>
-	<spw_popupbodysubtext8>Soundproof Walls has never been so customizable. 2.0 grants complete control over the properties and effects for every individual sound. The default settings are designed to be the most applicable to the general playerbase, but there is enormous potential for vastly different configuations and the ability to make whatever soundscape you desire. It's also possible to revert back to the Soundproof Walls 1.0 feel by switching to the classic effect processing mode</spw_popupbodysubtext8>
+	<spw_popupbodysubheading8>• Absolute Control</spw_popupbodysubheading8>
+	<spw_popupbodysubtext8>With 150+ new config options and a brand new settings menu, you have complete control over the properties and effects of every individual sound, allowing for many unique configurations</spw_popupbodysubtext8>
 	
 	<spw_popupbodyconclusion>I hope you enjoy the changes! Let me know if you have any questions or issues :) - Plag</spw_popupbodyconclusion>
 

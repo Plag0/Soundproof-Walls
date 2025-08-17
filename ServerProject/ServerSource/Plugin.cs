@@ -16,7 +16,7 @@ namespace SoundproofWalls
 
         public void InitServer()
         {
-            GameMain.LuaCs.Networking.Receive(SERVER_RECEIVE_CONFIG, (object[] args) => 
+            GameMain.LuaCs.Networking.Receive(SERVER_RECEIVE_CONFIG, (object[] args) =>
             {
                 // Unpack message.
                 IReadMessage msg = (IReadMessage)args[0];
@@ -61,9 +61,6 @@ namespace SoundproofWalls
                 Client? requesterClient = Client.ClientList.FirstOrDefault(client => client.SessionId == requesterId);
 
                 if (requesterClient == null) { return; }
-
-                bool finishedDownloading = GameMain.Server.FileSender.ActiveTransfers.Find(t => t.Connection == requesterClient.Connection) == null;
-                if (!finishedDownloading) { return; }
 
                 // No config has been uploaded yet.
                 if (HasNotReceivedConfigYet)

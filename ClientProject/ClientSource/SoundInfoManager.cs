@@ -1,6 +1,7 @@
 ﻿using Barotrauma;
 using Barotrauma.Sounds;
 using System.Collections.Concurrent;
+using System.Text.Json;
 
 namespace SoundproofWalls
 {
@@ -37,6 +38,49 @@ namespace SoundproofWalls
             {
                 CreateSoundInfo(loadedSounds[i]);
             }
+        }
+
+        public static bool ShouldUpdateSoundInfo(Config newConfig, Config oldConfig = null)
+        {
+            return !oldConfig.CustomSounds.SetEquals(newConfig.CustomSounds) ||
+                    !oldConfig.IgnoredSounds.SetEquals(newConfig.IgnoredSounds) ||
+                    !oldConfig.SurfaceIgnoredSounds.SetEquals(newConfig.SurfaceIgnoredSounds) ||
+                    !oldConfig.SubmersionIgnoredSounds.SetEquals(newConfig.SubmersionIgnoredSounds) ||
+                    !oldConfig.PropagatingSounds.SetEquals(newConfig.PropagatingSounds) ||
+                    !oldConfig.BarrierIgnoredSounds.SetEquals(newConfig.BarrierIgnoredSounds) ||
+                    !oldConfig.PitchIgnoredSounds.SetEquals(newConfig.PitchIgnoredSounds) ||
+                    !oldConfig.XMLIgnoredSounds.SetEquals(newConfig.XMLIgnoredSounds) ||
+                    !oldConfig.LowpassIgnoredSounds.SetEquals(newConfig.LowpassIgnoredSounds) ||
+                    !oldConfig.ReverbForcedSounds.SetEquals(newConfig.ReverbForcedSounds) ||
+                    !oldConfig.WaterReverbIgnoredSounds.SetEquals(newConfig.WaterReverbIgnoredSounds) ||
+                    !oldConfig.AirReverbIgnoredSounds.SetEquals(newConfig.AirReverbIgnoredSounds) ||
+                    !oldConfig.ContainerIgnoredSounds.SetEquals(newConfig.ContainerIgnoredSounds) ||
+                    !oldConfig.HydrophoneMuffleIgnoredSounds.SetEquals(newConfig.HydrophoneMuffleIgnoredSounds) ||
+                    !oldConfig.HydrophoneVisualIgnoredSounds.SetEquals(newConfig.HydrophoneVisualIgnoredSounds);
+        }
+
+        public static bool ShouldUpdateSoundInfo(Dictionary<ContentPackage, HashSet<CustomSound>> dict1, Dictionary<ContentPackage, HashSet<CustomSound>> dict2)
+        {
+            if (dict1 == dict2) { return false; }
+            if (dict1 == null || dict2 == null) { return true; }
+            if (dict1.Count != dict2.Count) { return true; }
+
+            // Check each key and its corresponding hash set.
+            foreach (var kvp in dict1)
+            {
+                ContentPackage key = kvp.Key;
+                HashSet<CustomSound> set1 = kvp.Value;
+
+                // Check if the second dictionary has the same key.
+                // If not, or if the hash sets don't match, they're not equal.
+                if (!dict2.TryGetValue(key, out HashSet<CustomSound> set2) ||
+                    JsonSerializer.Serialize(set1) != JsonSerializer.Serialize(set2))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private static void CreateSoundInfo(Sound sound, bool onlyUnique = true)

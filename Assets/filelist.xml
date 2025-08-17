@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<contentpackage name="Soundproof Walls" steamworkshopid="3153737715" corepackage="false" modversion="1.0.1" gameversion="1.2.8.0" installtime="1">
+<contentpackage name="Soundproof Walls 2.0" steamworkshopid="3153737715" corepackage="false" modversion="1.0.1" gameversion="1.2.8.0" installtime="1">
 	<Text file="%ModDir%/Content/Texts/BrazilianPortuguese.xml" />
 	<Text file="%ModDir%/Content/Texts/CastilianSpanish.xml" />
 	<Text file="%ModDir%/Content/Texts/English.xml" />

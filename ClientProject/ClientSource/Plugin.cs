@@ -12,6 +12,7 @@ using System.Data;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Text.Json;
+using System.Threading.Channels;
 
 namespace SoundproofWalls
 {
@@ -27,12 +28,16 @@ namespace SoundproofWalls
         public static SidechainProcessor Sidechain = new SidechainProcessor();
         public static EfxAudioManager? EffectsManager;
 
-        public static double LastUpdateTime = 0;
+        public static ShutdownRequest? ActiveShutdownRequest = null;
+
+        public struct ShutdownRequest
+        {
+            public bool Partial;
+        }
 
         public enum SoundPath
         {
-            EavesdroppingActivation1,
-            EavesdroppingActivation2,
+            EavesdroppingActivation,
             EavesdroppingAmbienceDry,
             EavesdroppingAmbienceWet,
 
@@ -41,12 +46,9 @@ namespace SoundproofWalls
             HydrophoneAmbienceAphoticPlateau,
             HydrophoneAmbienceGreatSea,
             HydrophoneAmbienceHydrothermalWastes,
-            HydrophoneMovementSmall1,
-            HydrophoneMovementSmall2,
-            HydrophoneMovementMedium1,
-            HydrophoneMovementMedium2,
-            HydrophoneMovementLarge1,
-            HydrophoneMovementLarge2,
+            HydrophoneMovementSmall,
+            HydrophoneMovementMedium,
+            HydrophoneMovementLarge,
 
             BubbleLocal,
             BubbleRadio,
@@ -54,8 +56,7 @@ namespace SoundproofWalls
         public static string ModPath = Util.GetModDirectory();
         public static readonly Dictionary<SoundPath, string> CustomSoundPaths = new Dictionary<SoundPath, string>
         {
-            { SoundPath.EavesdroppingActivation1, Path.Combine(ModPath, "Content/Sounds/SPW_EavesdroppingActivation1.ogg") },
-            { SoundPath.EavesdroppingActivation2, Path.Combine(ModPath, "Content/Sounds/SPW_EavesdroppingActivation2.ogg") },
+            { SoundPath.EavesdroppingActivation, Path.Combine(ModPath, "Content/Sounds/SPW_EavesdroppingActivation.ogg") },
             { SoundPath.EavesdroppingAmbienceDry, Path.Combine(ModPath, "Content/Sounds/SPW_EavesdroppingAmbienceDryRoom.ogg") },
             { SoundPath.EavesdroppingAmbienceWet, Path.Combine(ModPath, "Content/Sounds/SPW_EavesdroppingAmbienceWetRoom.ogg") },
 
@@ -65,8 +66,9 @@ namespace SoundproofWalls
             { SoundPath.HydrophoneAmbienceGreatSea, Path.Combine(ModPath, "Content/Sounds/SPW_HydrophoneAmbienceGreatSea.ogg") },
             { SoundPath.HydrophoneAmbienceHydrothermalWastes, Path.Combine(ModPath, "Content/Sounds/SPW_HydrophoneAmbienceHydrothermalWastes.ogg") },
 
-            { SoundPath.HydrophoneMovementSmall1, Path.Combine(ModPath, "Content/Sounds/SPW_HydrophoneMovementSmall1.ogg") },
-            { SoundPath.HydrophoneMovementSmall2, Path.Combine(ModPath, "Content/Sounds/SPW_HydrophoneMovementSmall2.ogg") },
+            { SoundPath.HydrophoneMovementSmall, Path.Combine(ModPath, "Content/Sounds/SPW_HydrophoneMovementSmall.ogg") },
+            { SoundPath.HydrophoneMovementMedium, Path.Combine(ModPath, "Content/Sounds/SPW_HydrophoneMovementMedium.ogg") },
+            { SoundPath.HydrophoneMovementLarge, Path.Combine(ModPath, "Content/Sounds/SPW_HydrophoneMovementLarge.ogg") },
 
             { SoundPath.BubbleLocal, Path.Combine(ModPath, "Content/Sounds/SPW_BubblesLoopMono.ogg") },
             { SoundPath.BubbleRadio, Path.Combine(ModPath, "Content/Sounds/SPW_RadioBubblesLoopStereo.ogg") },
@@ -102,6 +104,16 @@ namespace SoundproofWalls
             {
                 ModStateManager.SaveState(ModStateManager.State);
                 ModStateManager.PrintStats();
+            });
+
+            GameMain.LuaCs.Game.AddCommand("spw_help", TextManager.Get("spw_guidehelp").Value, args =>
+            {
+                ToolBox.OpenFileWithShell("https://steamcommunity.com/workshop/filedetails/discussion/3153737715/4204742223861734474");
+            });
+
+            GameMain.LuaCs.Game.AddCommand("spw_report", TextManager.Get("spw_reporthelp").Value, args =>
+            {
+                ToolBox.OpenFileWithShell("https://steamcommunity.com/workshop/filedetails/discussion/3153737715/4204742223861924530");
             });
 
             GameMain.LuaCs.Game.AddCommand("spw_workshop", TextManager.Get("spw_openworkshophelp").Value, args =>
@@ -228,6 +240,12 @@ namespace SoundproofWalls
                 typeof(ItemComponent).GetMethod(nameof(ItemComponent.UpdateSounds), BindingFlags.Instance | BindingFlags.Public),
                 new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_ItemComponent_UpdateSounds))));
 
+            // Turret UpdateProjSpecific postfix.
+            // Updates the volume of turret moving and stopping sounds.
+            harmony.Patch(
+                typeof(Turret).GetMethod(nameof(Turret.UpdateProjSpecific), BindingFlags.Instance | BindingFlags.NonPublic),
+                postfix: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_Turret_UpdateProjSpecific))));
+
             // StatusEffect UpdateAllProjSpecific prefix REPLACEMENT.
             // Updates muffle and other attributes of StatusEffect sounds.
             harmony.Patch(
@@ -273,13 +291,16 @@ namespace SoundproofWalls
                 null,
                 new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_MoveCamera))));
 
-            // Draw prefix.
+            // Draw postfix.
             // Displays the eavesdropping text, eavesdropping vignette, and eavesdropping sprite overlay
             // Bug note: a line in this method causes MonoMod to crash on Linux due to an unmanaged PAL_SEHException https://github.com/dotnet/runtime/issues/78271
             // Bug note update: from my testing this doesn't seem to apply anymore as of June 2025
             harmony.Patch(
                 typeof(GUI).GetMethod(nameof(GUI.Draw)),
-                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_Draw))));
+                prefix: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_Draw_Prefix))));
+            harmony.Patch(
+                typeof(GUI).GetMethod(nameof(GUI.Draw)),
+                postfix: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_Draw_Postfix))));
 
             // Sonar_Draw postfix.
             // Displays active hydrophone sectors.
@@ -362,14 +383,14 @@ namespace SoundproofWalls
             // Ensure all sounds have been loaded with the correct muffle buffer.
             if (Config.Enabled)
             { 
-                Util.ReloadSounds(starting: true);
+                BufferManager.TriggerBufferReload(starting: true);
                 SoundInfoManager.UpdateSoundInfoMap();
 
-                ResizeSoundManagerPools(Config.MaxSourceCount);
+                Util.ResizeSoundManagerPools(Config.MaxSourceCount);
             }
 
-            LuaCsLogger.Log(TextManager.GetWithVariable("initmessage", "[version]", ModStateManager.State.Version).Value, color: Menu.ConsolePrimaryColor);
-            LuaCsLogger.Log(TextManager.Get("initmessagefollowup").Value, color: Menu.ConsoleSecondaryColor);
+            LuaCsLogger.Log(TextManager.GetWithVariable("initmessage", "[version]", ModStateManager.State.Version).Value, color: Color.LimeGreen);
+            LuaCsLogger.Log(TextManager.Get("initmessagefollowup").Value, color: Color.LightBlue);
             
             ModStateManager.State.TimesInitialized++;
             ModStateManager.SaveState(ModStateManager.State);
@@ -405,11 +426,26 @@ namespace SoundproofWalls
             AlEffects.Cleanup();
         }
 
-        public void DisposeClient()
+        public void TriggerShutdown(bool partial = false, bool reloadBuffers = false)
+        {
+            if (ActiveShutdownRequest.HasValue) return;
+
+            if (reloadBuffers)
+            {
+                BufferManager.TriggerBufferReload();
+            }
+
+            ActiveShutdownRequest = new ShutdownRequest
+            {
+                Partial = partial
+            };
+        }
+
+        public void DisposeClient(bool fullStop = false)
         {
             ModStateManager.SaveState(ModStateManager.State); // Save stats
 
-            ResizeSoundManagerPools(SoundManager.SourceCount); // Reset to default source count.
+            Util.ResizeSoundManagerPools(SoundManager.SourceCount); // Reset to default source count.
 
             // Unpatch these earlier to stop custom sound types from being created when reloading sounds
             // (this shouldn't be necessary but there was weird behaviour with the early return that SHOULD handle this inside the LoadSound functions.
@@ -425,8 +461,12 @@ namespace SoundproofWalls
 
             DisposeDynamicFx();
 
-            // Cleans up any ExtendedOggSounds.
-            Util.ReloadSounds(stopping: true);
+            // If we're quitting to menu we don't have time to wait for the reload request and instead call directly.
+            // This should ONLY be called when fully stopping the mod. Otherwise ReloadBuffers has already called.
+            if (fullStop)
+            {
+                BufferManager.ReloadBuffers(new BufferManager.ReloadRequest() { Stopping = true }); ;
+            }
 
             Menu.Dispose();
         }
@@ -454,16 +494,27 @@ namespace SoundproofWalls
 
         public static void SPW_Update()
         {
-            if (GameMain.Instance.Paused || !Config.Enabled) return;
-            ConfigManager.Update();
-            Listener.Update();
-            HydrophoneManager.Update();
-            EavesdropManager.Update();
-            BubbleManager.Update();
-            ChannelInfoManager.Update();
-            Sidechain.Update();
-            EffectsManager?.Update();
-            PerformanceProfiler.Instance.Update();
+            if (!GameMain.Instance.Paused && Config.Enabled)
+            {
+                ConfigManager.Update();
+                Listener.Update();
+                HydrophoneManager.Update();
+                EavesdropManager.Update();
+                BubbleManager.Update();
+                ChannelInfoManager.Update();
+                Sidechain.Update();
+                EffectsManager?.Update();
+                PerformanceProfiler.Instance.Update();
+            }
+
+            BufferManager.Update();
+
+            if (ActiveShutdownRequest.HasValue && !BufferManager.ActiveReloadRequest.HasValue)
+            {
+                if (ActiveShutdownRequest.Value.Partial) { Instance.PartialDispose(); }
+                else { Instance.Dispose(); }
+                ActiveShutdownRequest = null;
+            }
         }
 
         public static IEnumerable<CodeInstruction> SoundManager_Constructor_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
@@ -487,32 +538,6 @@ namespace SoundproofWalls
             }
 
             return codes.AsEnumerable();
-        }
-
-        public static void ResizeSoundManagerPools(int newSize)
-        {
-            SoundManager soundManager = GameMain.SoundManager;
-            var playingChannelsField = AccessTools.Field(typeof(SoundManager), "playingChannels");
-            var sourcePoolsField = AccessTools.Field(typeof(SoundManager), "sourcePools");
-            var playingChannels = (SoundChannel[][])playingChannelsField.GetValue(soundManager);
-            var sourcePools = (SoundSourcePool[])sourcePoolsField.GetValue(soundManager);
-
-            SoundChannel[] defaultChannels = playingChannels[(int)SoundManager.SourcePoolIndex.Default];
-            lock (defaultChannels)
-            {
-                for (int i = 0; i < defaultChannels.Length; i++)
-                {
-                    defaultChannels[i]?.Dispose();
-                    defaultChannels[i] = null;
-                }
-            }
-            sourcePools[(int)SoundManager.SourcePoolIndex.Default]?.Dispose();
-
-            ChannelInfoManager.SourceCount = newSize;
-
-            // Re-initialize the arrays with the new size
-            playingChannels[(int)SoundManager.SourcePoolIndex.Default] = new SoundChannel[newSize];
-            sourcePools[(int)SoundManager.SourcePoolIndex.Default] = new SoundSourcePool(newSize);
         }
 
         public static bool SPW_LoadCustomOggSound(SoundManager __instance, string filename, bool stream, ref Sound __result)
@@ -625,11 +650,16 @@ namespace SoundproofWalls
             __instance.globalZoomScale = zoomAmount;
         }
 
-        public static bool SPW_Draw(ref Camera cam, ref SpriteBatch spriteBatch)
+        public static bool SPW_Draw_Prefix(ref Camera cam, ref SpriteBatch spriteBatch)
         {
             EavesdropManager.Draw(spriteBatch, cam);
-            PerformanceProfiler.Instance.Draw(spriteBatch);
             return true;
+        }
+
+        public static void SPW_Draw_Postfix(ref Camera cam, ref SpriteBatch spriteBatch)
+        {
+            PerformanceProfiler.Instance.Draw(spriteBatch);
+            BufferManager.DrawBufferReloadText(spriteBatch);
         }
 
         // Workaround for ignoring sounds with "dontmuffle" in their XML. 
@@ -730,14 +760,11 @@ namespace SoundproofWalls
             client.Character.ShowTextlessSpeechBubble(1.25f, ChatMessage.MessageColor[(int)messageType]);
 
             // Range.
-            float localRangeMultiplier = 1 * Config.VoiceLocalRangeMultiplier;
-            float radioRangeMultiplier = 1 * Config.VoiceRadioRangeMultiplier;
-            
             float speechImpedimentMultiplier = 1.0f - client.Character.SpeechImpediment / 100.0f;
             if (messageType == ChatMessageType.Radio)
             {
                 client.VoipSound.UsingRadio = true;
-                client.VoipSound.SetRange(senderRadio.Range * VoipClient.RangeNear * speechImpedimentMultiplier * radioRangeMultiplier, senderRadio.Range * speechImpedimentMultiplier * radioRangeMultiplier);
+                client.VoipSound.SetRange(senderRadio.Range * VoipClient.RangeNear * speechImpedimentMultiplier * Config.VoiceRadioRangeMultiplier, senderRadio.Range * speechImpedimentMultiplier * Config.VoiceRadioRangeMultiplier);
                 if (distanceFactor > VoipClient.RangeNear && !spectating)
                 {
                     //noise starts increasing exponentially after 40% range
@@ -746,23 +773,25 @@ namespace SoundproofWalls
             }
             else
             {
-                float baseRange = ChatMessage.SpeakRangeVOIP;
-                if (Listener.IsUsingHydrophones) { baseRange += Config.HydrophoneSoundRange; }
                 client.VoipSound.UsingRadio = false;
-
-                float targetFar = baseRange * speechImpedimentMultiplier * localRangeMultiplier;
+                float rangeMult = Config.VoiceLocalRangeMultiplier;
+                float baseRange = ChatMessage.SpeakRangeVOIP;
+                float hydrophoneAddedRange = Listener.IsUsingHydrophones ? Config.HydrophoneSoundRange : 0;
+                float targetFar = (baseRange + hydrophoneAddedRange) * speechImpedimentMultiplier * rangeMult;
                 float targetNear = targetFar * VoipClient.RangeNear;
 
-                if (Config.WhisperMode)
+                if (Config.ScreamMode)
                 {
-                    targetFar *= client.VoipSound.CurrentAmplitude;
-                    if (targetFar > ChannelInfoManager.WhisperModeTrailingRangeFar)
+                    float maxRange = Config.ScreamModeMaxRange * rangeMult;
+                    targetFar = maxRange * client.VoipSound.CurrentAmplitude;
+                    targetFar = Math.Max(targetFar, Config.ScreamModeMinRange);
+                    if (targetFar > ChannelInfoManager.ScreamModeTrailingRangeFar)
                     {
-                        ChannelInfoManager.WhisperModeTrailingRangeFar = targetFar;
+                        ChannelInfoManager.ScreamModeTrailingRangeFar = targetFar;
                     }
 
-                    targetFar = ChannelInfoManager.WhisperModeTrailingRangeFar;
-                    targetNear = ChannelInfoManager.WhisperModeTrailingRangeFar * VoipClient.RangeNear;
+                    targetFar = (ChannelInfoManager.ScreamModeTrailingRangeFar + hydrophoneAddedRange) * speechImpedimentMultiplier;
+                    targetNear = ChannelInfoManager.ScreamModeTrailingRangeFar * VoipClient.RangeNear;
                 }
                 client.VoipSound.SetRange(targetNear, targetFar);
 
@@ -970,8 +999,15 @@ namespace SoundproofWalls
             {
                 if (channel.mutex != null) { Monitor.Enter(channel.mutex); }
 
-                uint sourceId = channel.Sound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
-                EffectsManager?.UnregisterSource(sourceId);
+                if (channel.Sound != null)
+                {
+                    uint sourceId = channel.Sound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
+                    EffectsManager?.UnregisterSource(sourceId);
+                }
+                else
+                {
+                    LuaCsLogger.LogError($"[SoundproofWalls] Warning: \"{channel.debugName}\" was missing a Sound object and may not have been disposed correctly.");
+                }
 
                 ChannelInfoManager.RemoveChannelInfo(channel);
                 ChannelInfoManager.RemovePitchedChannel(channel);
@@ -1047,6 +1083,11 @@ namespace SoundproofWalls
                     __instance.loopingSoundChannel = SoundPlayer.PlaySound(__instance.loopingSound.RoundSound, position, volume: 0.01f, hullGuess: __instance.item.CurrentHull);
                     if (__instance.loopingSoundChannel != null)
                     {
+                        if (__instance.loopingSoundChannel.Sound == null)
+                        {
+                            __instance.loopingSoundChannel.Dispose();
+                            return false;
+                        }
                         __instance.loopingSoundChannel.Looping = true;
                         __instance.loopingSoundChannel.Near = range * Config.LoopingComponentSoundNearMultiplier;
                         __instance.loopingSoundChannel.Far = range;
@@ -1448,6 +1489,13 @@ namespace SoundproofWalls
 
         public static bool SPW_SoundChannel_SetMuffled_Prefix(SoundChannel __instance, bool value)
         {
+            // Don't try to set buffers while waiting for them to be reloaded. In most cases this doesn't matter, but
+            // if the user was on Dynamic mode + reduced buffers, switching to another mode will crash the game as we apply buffers that don't exist yet
+            if (BufferManager.ActiveReloadRequest.HasValue)
+            {
+                return false;
+            }
+
             SoundChannel instance = __instance;
 
             // Hand over control to default setter if sound is not extended or has no sound info.
@@ -1670,10 +1718,11 @@ namespace SoundproofWalls
 
         public static bool SPW_SoundChannel_Prefix(SoundChannel __instance, Sound sound, float gain, Vector3? position, float freqMult, float near, float far, Identifier category, bool muffle)
         {
-            if (!Config.StaticFx && sound is ExtendedOggSound ||
+            if (!BufferManager.ActiveReloadRequest.HasValue && (
+                !Config.StaticFx && sound is ExtendedOggSound ||
                 !Config.DynamicFx && sound is ReducedOggSound ||
                 Config.ClassicFx && (sound is ExtendedOggSound || sound is ReducedOggSound) ||
-                !Config.Enabled && (sound is ExtendedOggSound || sound is ReducedOggSound))
+                !Config.Enabled && (sound is ExtendedOggSound || sound is ReducedOggSound)))
             {
                 sound.Dispose();
                 return false;
@@ -2003,6 +2052,22 @@ namespace SoundproofWalls
             return false;
         }
 
+        public static void SPW_Turret_UpdateProjSpecific(Turret __instance)
+        {   
+            if (!Config.Enabled) { return; }
+
+            if (__instance.moveSoundChannel != null)
+            {
+                __instance.moveSoundChannel.Position = new Vector3(__instance.Item.WorldPosition, 0);
+                ChannelInfoManager.EnsureUpdateChannelInfo(__instance.moveSoundChannel, soundHull: __instance.Item.CurrentHull);
+            }
+            if (__instance.chargeSoundChannel != null)
+            {
+                __instance.chargeSoundChannel.Position = new Vector3(__instance.Item.WorldPosition, 0);
+                ChannelInfoManager.EnsureUpdateChannelInfo(__instance.chargeSoundChannel, soundHull: __instance.Item.CurrentHull);
+            }
+        }
+
         public static bool SPW_StatusEffect_UpdateAllProjSpecific()
         {
             if (!Config.Enabled) { return true; }
@@ -2024,7 +2089,7 @@ namespace SoundproofWalls
                 {
                     // Changes
                     SoundChannel channel = statusEffect.soundChannel;
-                    ChannelInfoManager.EnsureUpdateChannelInfo(channel, statusEffect: statusEffect, dontMuffle: statusEffect.ignoreMuffling, dontPitch: true);
+                    ChannelInfoManager.EnsureUpdateChannelInfo(channel, statusEffect: statusEffect, dontMuffle: statusEffect.ignoreMuffling);
                     statusEffect.soundChannel.Position = new Vector3(statusEffect.soundEmitter.WorldPosition, 0.0f);
                 }
             }
@@ -2057,13 +2122,17 @@ namespace SoundproofWalls
         {
             if (!Config.Enabled || !Util.RoundStarted || Character.Controlled == null) { return; }
 
-            if (Config.FocusTargetAudio && LightManager.ViewTarget != null && LightManager.ViewTarget.Position != Character.Controlled.Position)
-            {
-                GameMain.SoundManager.ListenerPosition = new Vector3(__instance.TargetPos.X, __instance.TargetPos.Y, -(100 / __instance.Zoom));
-            }
-            else if (Listener.IsCharacter)
+            if (Listener.IsCharacter)
             {
                 GameMain.SoundManager.ListenerPosition = new Vector3(Listener.WorldPos.X, Listener.WorldPos.Y, 0);
+            }
+            else if (Config.FocusTargetAudio && LightManager.ViewTarget != null)
+            {
+                GameMain.SoundManager.ListenerPosition = new Vector3(Listener.WorldPos.X, Listener.WorldPos.Y, -(100 / __instance.Zoom));
+            }
+            else
+            {
+                GameMain.SoundManager.ListenerPosition = new Vector3(__instance.TargetPos.X, __instance.TargetPos.Y, -(100 / __instance.Zoom));
             }
         }
 
@@ -2150,6 +2219,11 @@ namespace SoundproofWalls
                     chn = sound.Play(volume, SoundManager.SoundCategoryWaterAmbience);
                     if (chn != null)
                     {
+                        if (chn.Sound == null)
+                        {
+                            chn.Dispose();
+                            return;
+                        }
                         chn.Looping = true;
                         SoundPlayer.waterAmbienceChannels.Add(chn);
                     }

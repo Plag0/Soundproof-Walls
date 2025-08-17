@@ -119,7 +119,13 @@ namespace SoundproofWalls
             return false;
         }
 
-        public static bool ShouldPlayBubbles(Character character)
+        public static bool IsClientDrowning(Client? client)
+        {
+            if (client == null) { return false; }
+            return clientBubbleChannels.TryGetValue(client, out var _);
+        }
+
+        private static bool ShouldPlayBubbles(Character character)
         {
             if (character == null) return false;
 

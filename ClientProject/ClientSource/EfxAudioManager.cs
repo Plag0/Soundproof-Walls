@@ -29,7 +29,8 @@ namespace SoundproofWalls
         private enum DistortionType
         {
             None,
-            Loud,
+            Inside,
+            Outside,
             Hydrophone
         }
         private DistortionType currentDistortion = DistortionType.None;
@@ -175,10 +176,16 @@ namespace SoundproofWalls
         private void UpdateNormalEffects()
         {
             // --- Distortion ---
-            if (Config.LoudSoundDistortionEnabled)
+            if (Config.LoudSoundDistortionAirEnabled && !Listener.IsSubmerged)
             {
-                ApplyDistortionConfiguration(CalculateLoudDistortionConfiguration());
-                currentDistortion = DistortionType.Loud;
+
+                ApplyDistortionConfiguration(CalculateAirDistortionConfiguration());
+                currentDistortion = DistortionType.Inside;
+            }
+            else if (Config.LoudSoundDistortionWaterEnabled && Listener.IsSubmerged)
+            {
+                ApplyDistortionConfiguration(CalculateWaterDistortionConfiguration());
+                currentDistortion = DistortionType.Outside;
             }
             else
             {
@@ -298,15 +305,7 @@ namespace SoundproofWalls
                     if (playingChannels[i].Looping)
                     {
                         float gain = playingChannels[i].Gain;
-                        if (!info.IsLoud)
-                        {
-                            float sidechainMult = Plugin.Sidechain.SidechainMultiplier;
-                            if (sidechainMult >= 1) { sidechainMult = 0.99f; }
-                            if (gain <= 0) { gain = 0.01f; }
-                            gain /= 1 - sidechainMult; // Undo gain adjustments from sidechain multiplier for audio amplitude calculation.
-                        }
                         float amplitude = playingChannels[i].CurrentAmplitude;
-
                         float muffleMult = 1 - info.MuffleStrength;
 
                         //LuaCsLogger.Log($"{Path.GetFileName(playingChannels[i].Sound.Filename)} gain: {gain} * amplitude {amplitude} * muffleMult {muffleMult} = totalAudioAmplitude {totalAudioAmplitude}");
@@ -315,7 +314,7 @@ namespace SoundproofWalls
                     // Non looping sounds that are loud
                     else if (info.IsLoud)
                     {
-                        loudSoundGain += 0.12f; // Arbitrary magic number
+                        loudSoundGain += 0.09f; // Arbitrary magic number
                     }
 
                 }
@@ -400,7 +399,7 @@ namespace SoundproofWalls
                 Vector2 sumOfPositions = Vector2.Zero;
                 foreach (var channelInfo in ChannelInfoManager.HydrophonedChannels)
                 {
-                    sumOfPositions += Util.GetSoundChannelWorldPos(channelInfo.Channel); // Using channelInfo.WorldPos is too outdated.
+                    sumOfPositions += Util.GetSoundChannelWorldPos(channelInfo.Channel); // Using channelInfo.WorldPos can be outdated.
                 }
                 Vector2 averagePosition = sumOfPositions / ChannelInfoManager.HydrophonedChannels.Count;
 
@@ -448,23 +447,30 @@ namespace SoundproofWalls
             };
         }
 
-        private DistortionConfiguration CalculateLoudDistortionConfiguration()
+        private DistortionConfiguration CalculateAirDistortionConfiguration()
         {
-            // Each loud sound playing linearly increases the gain/edge mult based on their custom set gain mult.
-            SoundChannel[] playingChannels = GameMain.SoundManager.playingChannels[0];
-            float combinedGainMult = 1;
-            for (int i = 0; i < playingChannels.Length; i++)
-            {
-                if (playingChannels[i] != null && playingChannels[i].IsPlaying && ChannelInfoManager.TryGetChannelInfo(playingChannels[i], out ChannelInfo? info) && info != null && !info.Ignored && info.IsLoud && info.SoundInfo.GainMult > 1)
-                {
-                    combinedGainMult += (info.SoundInfo.GainMult - 1) / 75; // Divide by x to make less impactful
-                }
-            }
+            float edge = Math.Clamp(ConfigManager.Config.LoudSoundDistortionAirTargetEdge, 0.0f, 1.0f);
+            float gain = Math.Clamp(ConfigManager.Config.LoudSoundDistortionAirTargetGain, 0.01f, 1f);
+            int lowpass = Math.Clamp(ConfigManager.Config.LoudSoundDistortionAirLowpassFrequency, 80, 24000);
+            int eqCenter = Math.Clamp(ConfigManager.Config.LoudSoundDistortionAirTargetFrequency, 80, 24000);
+            int eqBandwidth = 1500;
 
-            float edge = Math.Clamp(ConfigManager.Config.LoudSoundDistortionTargetEdge, 0.0f, 1.0f);
-            float gain = Math.Clamp(ConfigManager.Config.LoudSoundDistortionTargetGain, 0.01f, 1f);
-            int lowpass = Math.Clamp(ConfigManager.Config.LoudSoundDistortionLowpassFrequency, 80, 24000);
-            int eqCenter = Math.Clamp(ConfigManager.Config.LoudSoundDistortionTargetFrequency, 80, 24000);
+            return new DistortionConfiguration()
+            {
+                Edge = edge,
+                Gain = gain,
+                LowpassCutoff = lowpass,
+                EqCenter = eqCenter,
+                EqBandwidth = eqBandwidth
+            };
+        }
+
+        private DistortionConfiguration CalculateWaterDistortionConfiguration()
+        {
+            float edge = Math.Clamp(ConfigManager.Config.LoudSoundDistortionWaterTargetEdge, 0.0f, 1.0f);
+            float gain = Math.Clamp(ConfigManager.Config.LoudSoundDistortionWaterTargetGain, 0.01f, 1f);
+            int lowpass = Math.Clamp(ConfigManager.Config.LoudSoundDistortionWaterLowpassFrequency, 80, 24000);
+            int eqCenter = Math.Clamp(ConfigManager.Config.LoudSoundDistortionWaterTargetFrequency, 80, 24000);
             int eqBandwidth = 1500;
 
             return new DistortionConfiguration()
@@ -702,11 +708,22 @@ namespace SoundproofWalls
         {
             if (currentDistortion == DistortionType.None) { return INVALID_ID; }
 
-            if (currentDistortion == DistortionType.Loud)
+            if (currentDistortion == DistortionType.Inside)
             {
                 bool shouldDistort = !channelInfo.Hydrophoned &&
                                       channelInfo.SoundInfo.Distortion &&
-                                      channelInfo.MuffleStrength <= 0.5f;
+                                      channelInfo.MuffleStrength <= Config.LoudSoundDistortionAirMaxMuffleThreshold 
+                                      ||
+                                      BubbleManager.IsClientDrowning(channelInfo.SpeakingClient);
+                return shouldDistort ? distortionSlotId : INVALID_ID;
+            }
+            else if (currentDistortion == DistortionType.Outside)
+            {
+                bool shouldDistort = !channelInfo.Hydrophoned &&
+                                      channelInfo.SoundInfo.Distortion &&
+                                      channelInfo.MuffleStrength <= Config.LoudSoundDistortionWaterMaxMuffleThreshold
+                                      ||
+                                      BubbleManager.IsClientDrowning(channelInfo.SpeakingClient);
                 return shouldDistort ? distortionSlotId : INVALID_ID;
             }
             else if (currentDistortion == DistortionType.Hydrophone)

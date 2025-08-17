@@ -17,6 +17,7 @@ namespace SoundproofWalls
 
         public static readonly HydrophoneSector[] Sectors = new HydrophoneSector[NumSectors];
         public static readonly Dictionary<Sonar, HydrophoneSwitch> HydrophoneSwitches = new Dictionary<Sonar, HydrophoneSwitch>();
+        private static Vector2 LastResolution = (GameMain.GraphicsWidth, GameMain.GraphicsHeight);
         private static readonly Dictionary<Size, List<Sound>> HydrophoneSounds = new Dictionary<Size, List<Sound>>()
         {
             { Size.Small, new List<Sound>() },
@@ -34,6 +35,7 @@ namespace SoundproofWalls
             { 1, new Sprite(Path.Combine(Plugin.ModPath, SectorSpriteAtlasPath), sourceRectangle: new Rectangle(768, 512, 256, 512), origin: (0, 1)) }
         };
 
+        private static string LastBiomeId;
         private static Sound? AmbienceSound;
         private static SoundChannel? AmbienceChannel;
 
@@ -96,33 +98,9 @@ namespace SoundproofWalls
         {
             try
             {
-                string targetSoundPath = Plugin.CustomSoundPaths[Plugin.SoundPath.HydrophoneAmbienceGreatSea];
-                string currentBiomeId = GameMain.GameSession?.LevelData?.Biome.Identifier.ToString() ?? string.Empty;
-                switch (currentBiomeId)
-                {
-                    case "coldcaverns":
-                        targetSoundPath = Plugin.CustomSoundPaths[Plugin.SoundPath.HydrophoneAmbienceColdCaverns];
-                        break;
-
-                    case "europanridge":
-                        targetSoundPath = Plugin.CustomSoundPaths[Plugin.SoundPath.HydrophoneAmbienceEuropanRidge];
-                        break;
-
-                    case "theaphoticplateau":
-                        targetSoundPath = Plugin.CustomSoundPaths[Plugin.SoundPath.HydrophoneAmbienceAphoticPlateau];
-                        break;
-
-                    case "thegreatsea":
-                        targetSoundPath = Plugin.CustomSoundPaths[Plugin.SoundPath.HydrophoneAmbienceGreatSea];
-                        break;
-
-                    case "hydrothermalwastes":
-                        targetSoundPath = Plugin.CustomSoundPaths[Plugin.SoundPath.HydrophoneAmbienceHydrothermalWastes];
-                        break;
-                }
-                AmbienceSound = GameMain.SoundManager.LoadSound(targetSoundPath);
-                HydrophoneSounds[Size.Small].Add(GameMain.SoundManager.LoadSound(Plugin.CustomSoundPaths[Plugin.SoundPath.HydrophoneMovementSmall1]));
-                HydrophoneSounds[Size.Small].Add(GameMain.SoundManager.LoadSound(Plugin.CustomSoundPaths[Plugin.SoundPath.HydrophoneMovementSmall2]));
+                HydrophoneSounds[Size.Small].Add(GameMain.SoundManager.LoadSound(Plugin.CustomSoundPaths[Plugin.SoundPath.HydrophoneMovementSmall]));
+                HydrophoneSounds[Size.Medium].Add(GameMain.SoundManager.LoadSound(Plugin.CustomSoundPaths[Plugin.SoundPath.HydrophoneMovementMedium]));
+                HydrophoneSounds[Size.Large].Add(GameMain.SoundManager.LoadSound(Plugin.CustomSoundPaths[Plugin.SoundPath.HydrophoneMovementLarge]));
                 // Add more here.
             }
             catch (Exception ex)
@@ -136,6 +114,7 @@ namespace SoundproofWalls
             PerformanceProfiler.Instance.StartTimingEvent(ProfileEvents.HydrophonesUpdate);
 
             UpdateHydrophoneSwitches();
+            LoadAppropriateAmbience(); // Load correct ambience before using hydrophones.
 
             // If hydrophones are off, stop all sounds and do nothing.
             if (!ConfigManager.Config.Enabled || !Listener.IsUsingHydrophones)
@@ -207,10 +186,6 @@ namespace SoundproofWalls
             float submarineRadius = sub.Borders.Height / 2;
 
             spriteBatch.End();
-            //GameMain.LightManager.SolidColorEffect.Parameters["color"].SetValue(Color.DarkRed.ToVector4() * HydrophoneEfficiency);
-            //GameMain.LightManager.SolidColorEffect.CurrentTechnique = GameMain.LightManager.SolidColorEffect.Techniques["SolidColorBlur"];
-            //GameMain.LightManager.SolidColorEffect.Parameters["blurDistance"].SetValue(0.005f);
-            //GameMain.LightManager.SolidColorEffect.CurrentTechnique.Passes[0].Apply();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
 
             foreach (ChannelInfo info in ChannelInfoManager.HydrophonedChannels)
@@ -293,8 +268,8 @@ namespace SoundproofWalls
                             color: color,
                             origin: sprite.Origin,
                             rotate: currentAngle,
-                            scale: 1,
-                            spriteEffect: SpriteEffects.None
+                            scale: (rect.Height / sprite.size.Y) / 2,
+                            spriteEffect: SpriteEffects.None    
                         );
 
                         // Advance the angle for the next sprite
@@ -359,6 +334,52 @@ namespace SoundproofWalls
             }
         }
 
+        private static void LoadAppropriateAmbience()
+        {
+            // Default to the great sea because it sounds cool
+            string currentBiomeId = GameMain.GameSession?.LevelData?.Biome.Identifier.ToString() ?? "thegreatsea";
+
+            if (currentBiomeId == LastBiomeId) { return; }
+
+            string targetSoundPath = Plugin.CustomSoundPaths[Plugin.SoundPath.HydrophoneAmbienceGreatSea];
+            switch (currentBiomeId)
+            {
+                case "coldcaverns":
+                    targetSoundPath = Plugin.CustomSoundPaths[Plugin.SoundPath.HydrophoneAmbienceColdCaverns];
+                    break;
+
+                case "europanridge":
+                    targetSoundPath = Plugin.CustomSoundPaths[Plugin.SoundPath.HydrophoneAmbienceEuropanRidge];
+                    break;
+
+                case "theaphoticplateau":
+                    targetSoundPath = Plugin.CustomSoundPaths[Plugin.SoundPath.HydrophoneAmbienceAphoticPlateau];
+                    break;
+
+                case "thegreatsea":
+                    targetSoundPath = Plugin.CustomSoundPaths[Plugin.SoundPath.HydrophoneAmbienceGreatSea];
+                    break;
+
+                case "hydrothermalwastes":
+                    targetSoundPath = Plugin.CustomSoundPaths[Plugin.SoundPath.HydrophoneAmbienceHydrothermalWastes];
+                    break;
+            }
+
+            try
+            {
+                AmbienceSound?.Dispose();
+                AmbienceSound = GameMain.SoundManager.LoadSound(targetSoundPath);
+            }
+            catch (Exception ex)
+            {
+                LuaCsLogger.LogError($"[SoundproofWalls] Failed to load hydrophone ambience sound \"{targetSoundPath}\", {ex}");
+            }
+            finally
+            {
+                LastBiomeId = currentBiomeId;
+            }
+        }
+
         private static void UpdateAmbience()
         {
             if (AmbienceSound == null) { return; }
@@ -398,7 +419,6 @@ namespace SoundproofWalls
                 }
                 AmbienceChannel.Gain = 1 * HydrophoneEfficiency * ConfigManager.Config.HydrophoneAmbienceVolumeMultiplier;
                 AmbienceChannel.FrequencyMultiplier = 1 * freqMult;
-                AmbienceChannel.Gain = MathHelper.Lerp(0.1f, 1, Math.Clamp(HydrophoneEfficiency * 3, 0, 1));
             }
         }
 
@@ -427,21 +447,21 @@ namespace SoundproofWalls
             Vector2 medianPosition = new Vector2(GetMedian(xPositions), GetMedian(yPositions));
 
             // Gain. Base range + hydrophone range.
-            float range = ConfigManager.Config.HydrophoneSoundRange;
-            float gain = ChannelInfo.CalculateLinearDistanceClampedMult(
+            float range = 500 + ConfigManager.Config.HydrophoneSoundRange;
+            float targetGain = ChannelInfo.CalculateLinearDistanceClampedMult(
                 distance: Vector2.Distance(Listener.WorldPos, medianPosition), 
                 near: range * ConfigManager.Config.LoopingComponentSoundNearMultiplier, 
                 far: range) * 
                 HydrophoneEfficiency * 
                 ConfigManager.Config.HydrophoneMovementVolumeMultiplier;
 
-            // Pitch. // TODO make pitch based on speed, mass, and charactersInSector.
+            // Pitch.
             var speeds = sector.CharactersInSector.Select(c => c.CurrentSpeed).ToList();
             float medianSpeed = GetMedian(speeds);
             float minSpeed = 0f;
             float maxSpeed = 12f;
             float clampedSpeed = Math.Clamp(medianSpeed, minSpeed, maxSpeed);
-            float targetPitch = MathHelper.Lerp(0.25f, 4f, clampedSpeed / maxSpeed);
+            float targetPitch = MathHelper.Lerp(0.4f, 2.8f, clampedSpeed / maxSpeed);
 
             // Movement type.
             Size currentSize = sector.Size;
@@ -462,7 +482,7 @@ namespace SoundproofWalls
                     int randomIndex = Random.Next(soundList.Count);
                     Sound soundToPlay = soundList[randomIndex];
 
-                    sector.ActiveSoundChannel = soundToPlay?.Play(gain, range, targetPitch, medianPosition, muffle: true); // Muffle must be true so the sound gets a Hydrophoned flag
+                    sector.ActiveSoundChannel = soundToPlay?.Play(0.01f, range, targetPitch, medianPosition, muffle: true); // Muffle must be true so the sound gets a Hydrophoned flag
                     if (sector.ActiveSoundChannel != null)
                     {
                         sector.ActiveSoundChannel.Looping = true;
@@ -473,14 +493,18 @@ namespace SoundproofWalls
             else
             {
                 // Sound is already playing, just update its properties.
-                sector.ActiveSoundChannel.Gain = gain;
-                sector.ActiveSoundChannel.Position = new Vector3(medianPosition, 0f);
+                float transitionFactor = 1;
+                float maxStep = (float)(transitionFactor * Timing.Step);
+
+                // Smooth gain changes
+                float currentGain = sector.ActiveSoundChannel.Gain;
+                sector.ActiveSoundChannel.Gain = Util.SmoothStep(currentGain, targetGain, maxStep);
 
                 // Smooth pitch changes
-                float transitionFactor = 1;
                 float currentPitch = sector.ActiveSoundChannel.FrequencyMultiplier;
-                float maxStep = (float)(transitionFactor * Timing.Step);
                 sector.ActiveSoundChannel.FrequencyMultiplier = Util.SmoothStep(currentPitch, targetPitch, maxStep);
+
+                sector.ActiveSoundChannel.Position = new Vector3(medianPosition, 0f);
             }
         }
 
@@ -503,6 +527,7 @@ namespace SoundproofWalls
             {
                 ChannelInfoManager.RemovePitchedChannel(sector.ActiveSoundChannel); // TODO do I need this?
 
+                //sector.ActiveSoundChannel.FadeOutAndDispose();
                 sector.ActiveSoundChannel.Looping = false;
                 sector.ActiveSoundChannel.Gain = 0;
                 sector.ActiveSoundChannel.Dispose();
@@ -593,6 +618,13 @@ namespace SoundproofWalls
             // Don't update if spectating.
             if (Character.Controlled == null || LightManager.ViewTarget == null) return;
 
+            Vector2 currentResolution = (GameMain.GraphicsWidth, GameMain.GraphicsHeight);
+            if (LastResolution != currentResolution)
+            {
+                SetupHydrophoneSwitches(firstStartup: true);
+                LastResolution = currentResolution;
+            }
+
             if (ConfigManager.Config.HydrophoneLegacySwitch)
             {
                 UpdateHydrophoneSwitchesLegacy();
@@ -663,7 +695,6 @@ namespace SoundproofWalls
                 }
                 return;
             }
-
 
             if (instance.CurrentMode == Sonar.Mode.Active)
             {

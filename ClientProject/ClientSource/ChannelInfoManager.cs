@@ -23,16 +23,16 @@ namespace SoundproofWalls
 
         public static IEnumerable<ChannelInfo> ActiveChannelInfos => channelInfoMap.Values.Where(info => info.Channel != null && info.Channel.IsPlaying);
 
-        public static float WhisperModeTrailingRangeFar = 0;
+        public static float ScreamModeTrailingRangeFar = ConfigManager.Config.ScreamModeMinRange;
 
         public static void Update()
         {
             PerformanceProfiler.Instance.StartTimingEvent(ProfileEvents.ChannelInfoManagerUpdate);
 
-            if (ConfigManager.Config.WhisperMode)
+            if (ConfigManager.Config.ScreamMode)
             {
-                float changePerSecond = 350f;
-                WhisperModeTrailingRangeFar = Util.SmoothStep(WhisperModeTrailingRangeFar, 0, (float)(changePerSecond * Timing.Step));
+                float changePerSecond = ConfigManager.Config.ScreamModeReleaseRate;
+                ScreamModeTrailingRangeFar = Util.SmoothStep(ScreamModeTrailingRangeFar, ConfigManager.Config.ScreamModeMinRange, (float)(changePerSecond * Timing.Step));
             }
 
             List<ChannelInfo> eavesdroppedChannels = new List<ChannelInfo>();
@@ -99,6 +99,7 @@ namespace SoundproofWalls
                 Obstruction.DoorThick => config.ObstructionDoorThick,
                 Obstruction.DoorThin => config.ObstructionDoorThin,
                 Obstruction.Suit => config.ObstructionSuit,
+                Obstruction.Drowning => config.ObstructionDrowning,
                 _ => 0f
             };
         }
@@ -110,7 +111,7 @@ namespace SoundproofWalls
             uint sourceId = channel.Sound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
             if (!channelInfoMap.TryGetValue(sourceId, out ChannelInfo? info))
             {
-                info = new ChannelInfo(channel, soundHull, null, null, speakingClient, messageType, false, false);
+                info = new ChannelInfo(channel, soundHull, null, null, speakingClient, messageType, false);
                 channelInfoMap[sourceId] = info;
             }
             else
@@ -119,30 +120,15 @@ namespace SoundproofWalls
             }
         }
 
-        // Updates an existing ChannelInfo object.
-        public static bool UpdateChannelInfo(SoundChannel channel)
-        {
-            if (channel == null) { return false; }
-
-            uint sourceId = channel.Sound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
-            if (channelInfoMap.TryGetValue(sourceId, out ChannelInfo? info))
-            {
-                info.Update();
-                return true;
-            }
-
-            return false;
-        }
-
         // Updates or creates a ChannelInfo object.
-        public static ChannelInfo EnsureUpdateChannelInfo(SoundChannel channel, Hull? soundHull = null, ItemComponent? itemComp = null, StatusEffect? statusEffect = null, Client? speakingClient = null, ChatMessageType? messageType = null, bool dontMuffle = false, bool dontPitch = false)
+        public static ChannelInfo EnsureUpdateChannelInfo(SoundChannel channel, Hull? soundHull = null, ItemComponent? itemComp = null, StatusEffect? statusEffect = null, Client? speakingClient = null, ChatMessageType? messageType = null, bool dontMuffle = false)
         {
             if (channel == null) { return null; }
 
             uint sourceId = channel.Sound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
             if (!channelInfoMap.TryGetValue(sourceId, out ChannelInfo? info))
             {
-                info = new ChannelInfo(channel, soundHull, statusEffect, itemComp, speakingClient, messageType, dontMuffle, dontPitch);
+                info = new ChannelInfo(channel, soundHull, statusEffect, itemComp, speakingClient, messageType, dontMuffle);
                 channelInfoMap[sourceId] = info;
             }
             else
@@ -172,11 +158,9 @@ namespace SoundproofWalls
         }
         public static bool RemoveChannelInfo(SoundChannel channel)
         {
-            if (channel == null) { return false; }
+            if (channel == null || channel.Sound == null) { return false; }
 
             uint sourceId = channel.Sound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
-            channelInfoMap.TryGetValue(sourceId, out ChannelInfo? info);
-            if (info != null) { info.DisposeClones(); }
             bool success = channelInfoMap.TryRemove(sourceId, out _);
 
             return success;
