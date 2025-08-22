@@ -111,25 +111,29 @@ namespace SoundproofWalls
             bool toggledReverbEffect = newConfig.Enabled && newConfig.StaticFx && (oldConfig.StaticReverbEnabled != newConfig.StaticReverbEnabled);
             bool changedReverbEffect = newConfig.Enabled && newConfig.StaticFx && newConfig.StaticReverbEnabled &&
                 (oldConfig.StaticReverbDuration != newConfig.StaticReverbDuration ||
-                oldConfig.StaticReverbWetDryMix != newConfig.StaticReverbWetDryMix);
+                oldConfig.StaticReverbWetDryMix != newConfig.StaticReverbWetDryMix ||
+                oldConfig.StaticReverbDamping != newConfig.StaticReverbDamping);
             bool shouldReloadExtendedBuffers = newConfig.Enabled && (oldConfig.StaticFx != newConfig.StaticFx || changedReverbEffect || toggledReverbEffect);
 
             // Frequency changes.
             double vanillaFreq = SoundPlayer.MuffleFilterFrequency;
 
-            bool oldStaticFx = oldConfig.Enabled && oldConfig.StaticFx;
-            bool newStaticFx = newConfig.Enabled && newConfig.StaticFx;
-
             bool oldUsingMuffleBuffer = oldConfig.Enabled && (!oldConfig.DynamicFx || oldConfig.DynamicFx && !oldConfig.RemoveUnusedBuffers);
             bool newUsingMuffleBuffer = newConfig.Enabled && (!newConfig.DynamicFx || newConfig.DynamicFx && !newConfig.RemoveUnusedBuffers);
 
-            double oldHeavyFreq = oldUsingMuffleBuffer ? oldConfig.HeavyLowpassFrequency : vanillaFreq;
-            double oldMediumFreq = oldStaticFx ? oldConfig.MediumLowpassFrequency : vanillaFreq;
-            double oldLightFreq = oldStaticFx ? oldConfig.LightLowpassFrequency : vanillaFreq;
+            bool oldUsingStaticMuffleBuffer = oldConfig.Enabled && oldConfig.StaticFx;
+            bool newUsingStaticMuffleBuffer = newConfig.Enabled && newConfig.StaticFx;
 
-            double newHeavyFreq = newUsingMuffleBuffer ? newConfig.HeavyLowpassFrequency : vanillaFreq;
-            double newMediumFreq = newStaticFx ? newConfig.MediumLowpassFrequency : vanillaFreq;
-            double newLightFreq = newStaticFx ? newConfig.LightLowpassFrequency : vanillaFreq;
+            int oldHeavyLowpassFrequency = !oldConfig.StaticFx ? oldConfig.ClassicMuffleFrequency : oldConfig.HeavyLowpassFrequency;
+            int newHeavyLowpassFrequency = !oldConfig.StaticFx ? newConfig.ClassicMuffleFrequency : newConfig.HeavyLowpassFrequency;
+
+            double oldHeavyFreq = oldUsingMuffleBuffer ? oldHeavyLowpassFrequency : vanillaFreq;
+            double oldMediumFreq = oldUsingStaticMuffleBuffer ? oldConfig.MediumLowpassFrequency : vanillaFreq;
+            double oldLightFreq = oldUsingStaticMuffleBuffer ? oldConfig.LightLowpassFrequency : vanillaFreq;
+
+            double newHeavyFreq = newUsingMuffleBuffer ? newHeavyLowpassFrequency : vanillaFreq;
+            double newMediumFreq = newUsingStaticMuffleBuffer ? newConfig.MediumLowpassFrequency : vanillaFreq;
+            double newLightFreq = newUsingStaticMuffleBuffer ? newConfig.LightLowpassFrequency : vanillaFreq;
 
             return shouldReloadExtendedBuffers || 
                    shouldReloadReducedBuffers ||

@@ -168,7 +168,7 @@ namespace SoundproofWalls
 
         static float[] GetReverbBuffer(float[] buffer, int sampleRate)
         {
-            var filter = new ReverbFilter(sampleRate, ConfigManager.Config.StaticReverbDuration, ConfigManager.Config.StaticReverbWetDryMix);
+            var filter = new ReverbFilter(sampleRate, ConfigManager.Config.StaticReverbDuration, ConfigManager.Config.StaticReverbDamping, ConfigManager.Config.StaticReverbWetDryMix);
             return filter.ProcessBufferWithTail(buffer, sampleRate);
         }
 

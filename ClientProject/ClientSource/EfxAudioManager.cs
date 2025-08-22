@@ -337,14 +337,12 @@ namespace SoundproofWalls
             }
 
             // Influences decay and delay times.
-            float roomSizeFactor = (Listener.ConnectedArea * ConfigManager.Config.DynamicReverbAreaSizeMultiplier) / 180000; // Arbitrary magic number that seems to work well.
-
-            //LuaCsLogger.Log($" targetReverbGain: {targetReverbGain} actualReverbGain: {AirReverbGain} playingChannelMult: {amplitudeMult} totalAudioAmplitude: {totalAudioAmplitude} loudSoundGain {loudSoundGain}");
+            float roomSizeFactor = (Listener.ConnectedArea * ConfigManager.Config.DynamicReverbAreaSizeMultiplier) / 200_000; // Arbitrary magic number that seems to work well.
 
             float decayTime = 3.1f + (roomSizeFactor * 1.0f);
-            float reflectionsDelay = 0.025f + (roomSizeFactor * 0.010f); // Base 25ms + up to 20ms more
-            float lateReverbGain = trailingAirReverbGain * 1.8f; // Make tail prominent relative to overall gain
-            float lateReverbDelay = 0.040f + (roomSizeFactor * 0.015f); // Base 40ms + up to 30ms more
+            float reflectionsDelay = 0.025f + (roomSizeFactor * 0.010f);
+            float lateReverbGain = trailingAirReverbGain * 1.8f;
+            float lateReverbDelay = 0.040f + (roomSizeFactor * 0.015f);
 
             return new ReverbConfiguration
             {
@@ -402,7 +400,8 @@ namespace SoundproofWalls
                     sumOfPositions += Util.GetSoundChannelWorldPos(channelInfo.Channel); // Using channelInfo.WorldPos can be outdated.
                 }
                 Vector2 averagePosition = sumOfPositions / ChannelInfoManager.HydrophonedChannels.Count;
-
+                
+                // Increase reverb strength for distant sounds
                 float distance = Vector2.Distance(averagePosition, submarinePosition);
                 gainMult = Math.Clamp(distance / maxRange, 0f, 1f);
             }

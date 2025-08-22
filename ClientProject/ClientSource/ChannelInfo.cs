@@ -548,24 +548,27 @@ namespace SoundproofWalls
             
             // Calculate muffle strength based on obstructions.
             float gainMultHf = 1;
-            float total = 0;
+            float gainMultLf = 1;
+            float linearTotal = 0;
             float mult = 1;
             if (config.DynamicFx)
             {
                 mult = AudioIsVoice ? config.VoiceDynamicMuffleMultiplier : config.DynamicMuffleStrengthMultiplier;
             }
             mult *= SoundInfo.MuffleInfluence;
+
             for (int i = 0; i < obstructions.Count; i++)
             {
                 float strength = obstructions[i].GetStrength() * mult;
-                total += strength;
-                gainMultHf *= 1 - strength; // Exponential muffling
+                linearTotal += strength;
+                gainMultHf *= 1 - strength; // Exponential decay
             }
+
+            if (config.OverMuffle) { gainMultLf -= (linearTotal - 1) * config.OverMuffleStrengthMultiplier; }
+
             MuffleStrength = Math.Clamp(1 - gainMultHf, 0, 1);
-            float gainMultLf = 1 - total / 4; // Arbitrary value. When total reaches 4 even low frequencies gain is 0.
-            if (!config.AutoAttenuateMuffledSounds) { gainMultLf = 1; }
             gainMultHF = Math.Clamp(gainMultHf, 0, 1);
-            gainMultLF = Math.Clamp(gainMultLf, 0.1f, 1);
+            gainMultLF = Math.Clamp(gainMultLf, 0, 1);
 
             if (!config.DynamicFx && (config.StaticFx || AudioIsVoice) && MuffleStrength >= config.StaticMinLightMuffleThreshold)
             {
@@ -604,7 +607,7 @@ namespace SoundproofWalls
         {
             if (!config.DynamicFx || Plugin.EffectsManager == null) return;
 
-            float transitionFactor = AudioIsFlow || AudioIsFire ? config.DynamicMuffleFlowFireTransitionFactor : config.DynamicMuffleTransitionFactor;
+            float transitionFactor = (AudioIsFlow || AudioIsFire) ? config.DynamicMuffleFlowFireTransitionFactor : config.DynamicMuffleTransitionFactor;
             if (IsInUpdateLoop && !isFirstIteration && transitionFactor > 0)
             {
                 float maxStep = (float)(transitionFactor * Timing.Step);
@@ -984,6 +987,8 @@ namespace SoundproofWalls
             float mult = 1;
             float currentGain = ItemComp?.GetSoundVolume(ItemComp.loopingSound) ?? startGain;
 
+            if (SoundInfo.IsChargeSound) { currentGain = 1; }
+
             mult += SoundInfo.GainMult - 1;
 
             // Radio can only be muffled when the sender is drowning.
@@ -1031,10 +1036,8 @@ namespace SoundproofWalls
             }
 
             float sidechainMult = 1;
-            float mEfficiency = config.SidechainMuffleInfluence;
-            float curvedMuffle = (float)Math.Pow(MuffleStrength, 10f);
-            float thisSidechainRelease = SoundInfo.SidechainRelease * (1 - curvedMuffle * mEfficiency) + config.SidechainReleaseMaster;
-            float thisSidechainStartingStrength = SoundInfo.SidechainMult * (1 - curvedMuffle * mEfficiency) * config.SidechainIntensityMaster;
+            float thisSidechainRelease = SoundInfo.SidechainRelease + config.SidechainReleaseMaster;
+            float thisSidechainStartingStrength = SoundInfo.SidechainMult * config.SidechainIntensityMaster * (1 - (float)Math.Pow(MuffleStrength, config.SidechainMufflePower));
             float globalSidechainStartingStrength = Plugin.Sidechain.SidechainRawStartValue;
             // If a more powerful loud sound is playing than the current loud sound.
             if (IsLoud && Plugin.Sidechain.ActiveSoundGroup != SoundInfo.CustomSound && globalSidechainStartingStrength > thisSidechainStartingStrength)
@@ -1056,8 +1059,6 @@ namespace SoundproofWalls
             if (!AudioIsRadioVoice || config.SidechainRadio) { mult *= sidechainMult; }
 
             // Replace OpenAL's distance attenuation using the approximate distance gathered from traversing gaps.
-            // Only do this if there's a noticable difference between the euclideanDistance that OpenAL uses and the approximate distance,
-            // because crossing the max distance threshold rapidly is noticably less smooth when applied this way, despite using the same formula.
             bool ignoreGainFade = false;
             if (config.AttenuateWithApproximateDistance && approximateDistance != null)
             {
@@ -1254,10 +1255,8 @@ namespace SoundproofWalls
                 else if (Eavesdropped) { mult *= Math.Clamp(eavesdropEfficiency * (1 / config.EavesdroppingThreshold) - 1, 0.1f, 1); }
             }
 
-            float mEfficiency = config.SidechainMuffleInfluence;
-            float curvedMuffle = (float)Math.Pow(MuffleStrength, 10f);
-            float thisSidechainRelease = SoundInfo.SidechainRelease * (1 - curvedMuffle * mEfficiency) + config.SidechainReleaseMaster;
-            float thisSidechainStartingStrength = SoundInfo.SidechainMult * (1 - curvedMuffle * mEfficiency) * config.SidechainIntensityMaster;
+            float thisSidechainRelease = SoundInfo.SidechainRelease + config.SidechainReleaseMaster;
+            float thisSidechainStartingStrength = SoundInfo.SidechainMult * config.SidechainIntensityMaster * (1 - (float)Math.Pow(MuffleStrength, config.SidechainMufflePower));
             float globalSidechainStartingStrength = Plugin.Sidechain.SidechainRawStartValue;
             // If a more powerful loud sound is playing than the current loud sound.
             if (IsLoud && Plugin.Sidechain.ActiveSoundGroup != SoundInfo.CustomSound && globalSidechainStartingStrength > thisSidechainStartingStrength)

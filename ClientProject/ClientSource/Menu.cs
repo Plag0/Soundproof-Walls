@@ -683,6 +683,8 @@ namespace SoundproofWalls
         }
 
         private string RawValue(float v) => $"{MathF.Round(v, 2)}";
+        private string RawValueZeroInfinity(float v) => $"{(v == 0 ? "∞" : MathF.Round(v, 2))}";
+        private string RawValueZeroInstant(float v) => $"{(v == 0 ? TextManager.Get("spw_instant") : MathF.Round(v, 2))}";
         private string RawValuePrecise(float v) => $"{MathF.Round(v, 3)}";
         private string Percentage(float v)
         {
@@ -692,6 +694,7 @@ namespace SoundproofWalls
         }
         private string Hertz(float v) => $"{MathF.Round(v).ToString("N0", CultureInfo.CurrentUICulture)} Hz";
         private string Seconds(float v) => $"{MathF.Round(v, 2)} {TextManager.Get("spw_seconds")}"; // Custom localization for seconds, e.g., English is 15s but Russian is 15с.
+        private string SecondsOneTick(float v) => $"{( v > Timing.Step ? $"{MathF.Round(v, 2)} {TextManager.Get("spw_seconds")}" : $"{TextManager.Get("spw_pertick")}")}";
         private string PlusSeconds(float v) => $"+{MathF.Round(v, 2)} {TextManager.Get("spw_seconds")}";
         private string Centimeters(float v) => $"{MathF.Round(v).ToString("N0", CultureInfo.CurrentUICulture)} cm";
         private string CentimetersSq(float v) => $"{MathF.Round(v).ToString("N0", CultureInfo.CurrentUICulture)} cm²";
@@ -1286,23 +1289,8 @@ namespace SoundproofWalls
 
             Spacer(settingsFrame);
 
-            Label(settingsFrame, TextManager.Get("spw_heavylowpassfrequency"));
-            PowerSlider(settingsFrame, (10, 3200), 10,
-                labelFunc: localSliderValue =>
-                FormatSettingText(localSliderValue,
-                    serverValue: ConfigManager.ServerConfig?.HeavyLowpassFrequency ?? default,
-                    formatter: Hertz),
-                colorFunc: (localSliderValue, componentStyle) =>
-                GetSettingColor(localSliderValue, componentStyle,
-                    defaultValue: Menu.defaultConfig.HeavyLowpassFrequency,
-                    vanillaValue: SoundPlayer.MuffleFilterFrequency),
-                currentValue: unsavedConfig.HeavyLowpassFrequency,
-                setter: v => unsavedConfig.HeavyLowpassFrequency = (int)v,
-                tooltip: TextManager.Get("spw_heavylowpassfrequencytooltip")
-            );
-
             Label(settingsFrame, TextManager.Get("spw_soundrange"));
-            Slider(settingsFrame, (0, 5), 0.01f,
+            Slider(settingsFrame, (0, 4), 0.01f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue, 
                     serverValue: ConfigManager.ServerConfig?.SoundRangeMultiplierMaster ?? default,
@@ -1317,7 +1305,7 @@ namespace SoundproofWalls
             );
 
             Label(settingsFrame, TextManager.Get("spw_loopingsoundrange"));
-            Slider(settingsFrame, (0, 5), 0.01f,
+            Slider(settingsFrame, (0, 4), 0.01f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.LoopingSoundRangeMultiplierMaster ?? default,
@@ -1339,7 +1327,7 @@ namespace SoundproofWalls
             var content = GetTabContentFrame(Tab.DynamicFx);
             GUIFrame settingsFrame = NewListContent(content);
 
-            SpacerLabel(settingsFrame, TextManager.Get("spw_dynamiccategorymuffling"));
+            SpacerLabel(settingsFrame, TextManager.Get("spw_categorymuffle"));
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
                 label: TextManager.Get("spw_occludesounds"),
@@ -1351,13 +1339,13 @@ namespace SoundproofWalls
                 setter: v => unsavedConfig.OccludeSounds = v);
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
-                label: TextManager.Get("spw_autoattenuatemuffledsounds"),
-                localValue: unsavedConfig.AutoAttenuateMuffledSounds, 
-                serverValue: ConfigManager.ServerConfig?.AutoAttenuateMuffledSounds ?? default,
+                label: TextManager.Get("spw_overmuffle"),
+                localValue: unsavedConfig.OverMuffle, 
+                serverValue: ConfigManager.ServerConfig?.OverMuffle ?? default,
                 formatter: BoolFormatter),
-                tooltip: TextManager.Get("spw_autoattenuatemuffledsoundstooltip"),
-                currentValue: unsavedConfig.AutoAttenuateMuffledSounds,
-                setter: v => unsavedConfig.AutoAttenuateMuffledSounds = v);
+                tooltip: TextManager.Get("spw_overmuffletooltip"),
+                currentValue: unsavedConfig.OverMuffle,
+                setter: v => unsavedConfig.OverMuffle = v);
 
             Spacer(settingsFrame);
 
@@ -1366,7 +1354,7 @@ namespace SoundproofWalls
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.DynamicMuffleStrengthMultiplier ?? default,
-                    formatter: RawValue),
+                    formatter: Percentage),
                 colorFunc: (localSliderValue, componentStyle) =>
                 GetSettingColor(localSliderValue, componentStyle,
                     defaultValue: Menu.defaultConfig.DynamicMuffleStrengthMultiplier,
@@ -1377,12 +1365,27 @@ namespace SoundproofWalls
                 curveFactor: 0.4f
             );
 
+            Label(settingsFrame, TextManager.Get("spw_overmufflestrength"));
+            Slider(settingsFrame, (0, 1), 0.01f,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.OverMuffleStrengthMultiplier ?? default,
+                    formatter: Percentage),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.OverMuffleStrengthMultiplier,
+                    vanillaValue: null),
+                currentValue: unsavedConfig.OverMuffleStrengthMultiplier,
+                setter: v => unsavedConfig.OverMuffleStrengthMultiplier = v,
+                tooltip: TextManager.Get("spw_overmufflestrengthtooltip")
+            );
+
             Label(settingsFrame, TextManager.Get("spw_maxocclusions"));
             Slider(settingsFrame, (0, 5), 1,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.MaxOcclusions ?? default,
-                    formatter: RawValue),
+                    formatter: RawValueZeroInfinity),
                 colorFunc: (localSliderValue, componentStyle) =>
                 GetSettingColor(localSliderValue, componentStyle,
                     defaultValue: Menu.defaultConfig.MaxOcclusions,
@@ -1392,37 +1395,7 @@ namespace SoundproofWalls
                 TextManager.Get("spw_maxocclusionstooltip")
             );
 
-            Label(settingsFrame, TextManager.Get("spw_dynamicmuffletransitionfactor"));
-            Slider(settingsFrame, (0, 5), 0.01f,
-                labelFunc: localSliderValue =>
-                FormatSettingText(localSliderValue,
-                    serverValue: ConfigManager.ServerConfig?.DynamicMuffleTransitionFactor ?? default,
-                    formatter: RawValue),
-                colorFunc: (localSliderValue, componentStyle) =>
-                GetSettingColor(localSliderValue, componentStyle,
-                    defaultValue: Menu.defaultConfig.DynamicMuffleTransitionFactor,
-                    vanillaValue: null),
-                currentValue: unsavedConfig.DynamicMuffleTransitionFactor,
-                setter: v => unsavedConfig.DynamicMuffleTransitionFactor = v,
-                TextManager.Get("spw_dynamicmuffletransitionfactortooltip")
-            );
-
-            Label(settingsFrame, TextManager.Get("spw_dynamicmuffletransitionfactorflowfire"));
-            Slider(settingsFrame, (0, 5), 0.01f,
-                labelFunc: localSliderValue =>
-                FormatSettingText(localSliderValue,
-                    serverValue: ConfigManager.ServerConfig?.DynamicMuffleFlowFireTransitionFactor ?? default,
-                    formatter: RawValue),
-                colorFunc: (localSliderValue, componentStyle) =>
-                GetSettingColor(localSliderValue, componentStyle,
-                    defaultValue: Menu.defaultConfig.DynamicMuffleFlowFireTransitionFactor,
-                    vanillaValue: null),
-                currentValue: unsavedConfig.DynamicMuffleFlowFireTransitionFactor,
-                setter: v => unsavedConfig.DynamicMuffleFlowFireTransitionFactor = v,
-                TextManager.Get("spw_dynamicmuffletransitionfactorflowfiretooltip")
-            );
-
-            SpacerLabel(settingsFrame, TextManager.Get("spw_dynamiccategoryreverb"));
+            SpacerLabel(settingsFrame, TextManager.Get("spw_categoryreverb"));
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
                 label: TextManager.Get("spw_dynamicreverb"),
@@ -1460,7 +1433,7 @@ namespace SoundproofWalls
             );
 
             Label(settingsFrame, TextManager.Get("spw_dynamicreverbareasizemultiplier"));
-            Slider(settingsFrame, (0, 5), 0.01f,
+            Slider(settingsFrame, (0, 4), 0.01f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.DynamicReverbAreaSizeMultiplier ?? default,
@@ -1475,7 +1448,7 @@ namespace SoundproofWalls
             );
 
             Label(settingsFrame, TextManager.Get("spw_dynamicreverbwetroomareasizemultiplier"));
-            Slider(settingsFrame, (0, 5), 0.01f,
+            Slider(settingsFrame, (0, 4), 0.01f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.DynamicReverbWetRoomAreaSizeMultiplier ?? default,
@@ -1488,6 +1461,8 @@ namespace SoundproofWalls
                 setter: v => unsavedConfig.DynamicReverbWetRoomAreaSizeMultiplier = v,
                 TextManager.Get("spw_dynamicreverbwetroomareasizemultipliertooltip")
             );
+
+            Spacer(settingsFrame);
 
             Label(settingsFrame, TextManager.Get("spw_dynamicreverbairtargetgain"));
             Slider(settingsFrame, (0, 1), 0.01f,
@@ -1519,6 +1494,8 @@ namespace SoundproofWalls
                 TextManager.Get("spw_dynamicreverbwatertargetgaintooltip")
             );
 
+            Spacer(settingsFrame);
+
             Label(settingsFrame, TextManager.Get("spw_dynamicreverbairamplitudethreshold"));
             Slider(settingsFrame, (0, 1), 0.01f,
                 labelFunc: localSliderValue =>
@@ -1549,14 +1526,14 @@ namespace SoundproofWalls
                 TextManager.Get("spw_dynamicreverbwateramplitudethresholdtooltip")
             );
 
-            SpacerLabel(settingsFrame, TextManager.Get("spw_dynamiccategoryloudsounddistortionair"));
+            SpacerLabel(settingsFrame, TextManager.Get("spw_categoryloudsounddistortionair"));
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
                 label: TextManager.Get("spw_loudsounddistortionair"),
                 localValue: unsavedConfig.LoudSoundDistortionAirEnabled,
                 serverValue: ConfigManager.ServerConfig?.LoudSoundDistortionAirEnabled ?? default,
                 formatter: BoolFormatter),
-                tooltip: TextManager.Get("spw_loudsounddistortiontooltip"),
+                tooltip: TextManager.Get("spw_loudsounddistortiontooltipair"),
                 currentValue: unsavedConfig.LoudSoundDistortionAirEnabled,
                 setter: v => unsavedConfig.LoudSoundDistortionAirEnabled = v);
 
@@ -1637,14 +1614,14 @@ namespace SoundproofWalls
                 tooltip: TextManager.Get("spw_loudsounddistortionlowpassfrequencytooltip")
             );
 
-            SpacerLabel(settingsFrame, TextManager.Get("spw_dynamiccategoryloudsounddistortionwater"));
+            SpacerLabel(settingsFrame, TextManager.Get("spw_categoryloudsounddistortionwater"));
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
                 label: TextManager.Get("spw_loudsounddistortionwater"),
                 localValue: unsavedConfig.LoudSoundDistortionWaterEnabled,
                 serverValue: ConfigManager.ServerConfig?.LoudSoundDistortionWaterEnabled ?? default,
                 formatter: BoolFormatter),
-                tooltip: TextManager.Get("spw_loudsounddistortiontooltip"),
+                tooltip: TextManager.Get("spw_loudsounddistortiontooltipwater"),
                 currentValue: unsavedConfig.LoudSoundDistortionWaterEnabled,
                 setter: v => unsavedConfig.LoudSoundDistortionWaterEnabled = v);
 
@@ -1725,7 +1702,7 @@ namespace SoundproofWalls
                 tooltip: TextManager.Get("spw_loudsounddistortionlowpassfrequencytooltip")
             );
 
-            SpacerLabel(settingsFrame, TextManager.Get("spw_dynamiccategoryexperimental"));
+            SpacerLabel(settingsFrame, TextManager.Get("spw_categoryexperimental"));
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
                 label: TextManager.Get("spw_removeunusedbuffers"),
@@ -1744,7 +1721,22 @@ namespace SoundproofWalls
             var content = GetTabContentFrame(Tab.StaticFx);
             GUIFrame settingsFrame = NewListContent(content);
 
-            SpacerLabel(settingsFrame, TextManager.Get("spw_staticcategorymuffle"));
+            SpacerLabel(settingsFrame, TextManager.Get("spw_categorymuffle"));
+
+            Label(settingsFrame, TextManager.Get("spw_heavylowpassfrequency"));
+            PowerSlider(settingsFrame, (10, 3200), 10,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.HeavyLowpassFrequency ?? default,
+                    formatter: Hertz),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.HeavyLowpassFrequency,
+                    vanillaValue: SoundPlayer.MuffleFilterFrequency),
+                currentValue: unsavedConfig.HeavyLowpassFrequency,
+                setter: v => unsavedConfig.HeavyLowpassFrequency = (int)v,
+                tooltip: TextManager.Get("spw_heavylowpassfrequencytooltip")
+            );
 
             Label(settingsFrame, TextManager.Get("spw_mediumlowpassfrequency"));
             PowerSlider(settingsFrame, (10, 3200), 10,
@@ -1776,7 +1768,7 @@ namespace SoundproofWalls
                 tooltip: TextManager.Get("spw_lightlowpassfrequencytooltip")
             );
 
-            SpacerLabel(settingsFrame, TextManager.Get("spw_staticcategoryreverb"));
+            SpacerLabel(settingsFrame, TextManager.Get("spw_categoryreverb"));
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
                 label: TextManager.Get("spw_staticreverb"),
@@ -1828,6 +1820,21 @@ namespace SoundproofWalls
                 TextManager.Get("spw_staticreverbwetdrymixtooltip")
             );
 
+            Label(settingsFrame, TextManager.Get("spw_staticreverbdamping"));
+            Slider(settingsFrame, (0, 1), 0.01f,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.StaticReverbDamping ?? default,
+                    formatter: Percentage),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.StaticReverbDamping,
+                    vanillaValue: null),
+                currentValue: unsavedConfig.StaticReverbDamping,
+                setter: v => unsavedConfig.StaticReverbDamping = v,
+                TextManager.Get("spw_staticreverbdampingtooltip")
+            );
+
             Label(settingsFrame, TextManager.Get("spw_staticreverbminarea"));
             Slider(settingsFrame, (0, 1_000_000), 10_000,
                 labelFunc: localSliderValue =>
@@ -1852,7 +1859,7 @@ namespace SoundproofWalls
             GUIListBox settingsList = NewList(content);
             GUIFrame settingsFrame = settingsList.Content;
 
-            SpacerLabel(settingsFrame, TextManager.Get("spw_voicecategorygeneral"));
+            SpacerLabel(settingsFrame, TextManager.Get("spw_categorygeneral"));
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
                 label: TextManager.Get("spw_talkingragdolls"),
@@ -1862,24 +1869,6 @@ namespace SoundproofWalls
                 tooltip: TextManager.Get("spw_talkingragdollstooltip"),
                 currentValue: unsavedConfig.TalkingRagdolls,
                 setter: v => unsavedConfig.TalkingRagdolls = v);
-
-            Spacer(settingsFrame);
-
-            Label(settingsFrame, TextManager.Get("spw_voicelowpassfrequency"));
-            PowerSlider(settingsFrame, (10, 3200), 10,
-                labelFunc: localSliderValue =>
-                FormatSettingText(localSliderValue,
-                    serverValue: ConfigManager.ServerConfig?.VoiceHeavyLowpassFrequency ?? default,
-                    formatter: Hertz),
-                colorFunc: (localSliderValue, componentStyle) =>
-                GetSettingColor(localSliderValue, componentStyle,
-                    defaultValue: Menu.defaultConfig.VoiceHeavyLowpassFrequency,
-                    vanillaValue: ChannelInfoManager.VANILLA_VOIP_LOWPASS_FREQUENCY),
-                currentValue: unsavedConfig.VoiceHeavyLowpassFrequency,
-                setter: v => unsavedConfig.VoiceHeavyLowpassFrequency = (int)v,
-                TextManager.Get("spw_voicelowpassfrequencytooltip"),
-                bannedValue: SoundPlayer.MuffleFilterFrequency
-            );
 
             Spacer(settingsFrame);
 
@@ -1916,7 +1905,7 @@ namespace SoundproofWalls
             Spacer(settingsFrame);
 
             Label(settingsFrame, TextManager.Get("spw_voicevolume"));
-            Slider(settingsFrame, (0, 5), 0.01f,
+            Slider(settingsFrame, (0, 4), 0.01f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.VoiceLocalVolumeMultiplier ?? default,
@@ -1931,7 +1920,7 @@ namespace SoundproofWalls
             );
 
             Label(settingsFrame, TextManager.Get("spw_radiovolume"));
-            Slider(settingsFrame, (0, 5), 0.01f,
+            Slider(settingsFrame, (0, 4), 0.01f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.VoiceRadioVolumeMultiplier ?? default,
@@ -1945,7 +1934,7 @@ namespace SoundproofWalls
                 TextManager.Get("spw_radiovolumetooltip")
             );
 
-            SpacerLabel(settingsFrame, TextManager.Get("spw_voicecategorydynamicfx"));
+            SpacerLabel(settingsFrame, TextManager.Get("spw_categorydynamicfx"));
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
                 label: TextManager.Get("spw_dynamicreverblocal"),
@@ -1982,7 +1971,57 @@ namespace SoundproofWalls
                 TextManager.Get("spw_voicedynamicmufflemultipliertooltip")
             );
 
-            SpacerLabel(settingsFrame, TextManager.Get("spw_voicecategoryscreammode"));
+            SpacerLabel(settingsFrame, TextManager.Get("spw_categorymuffle"));
+
+            Label(settingsFrame, TextManager.Get("spw_voiceheavylowpassfrequency"));
+            PowerSlider(settingsFrame, (10, 3200), 10,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.VoiceHeavyLowpassFrequency ?? default,
+                    formatter: Hertz),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.VoiceHeavyLowpassFrequency,
+                    vanillaValue: ChannelInfoManager.VANILLA_VOIP_LOWPASS_FREQUENCY),
+                currentValue: unsavedConfig.VoiceHeavyLowpassFrequency,
+                setter: v => unsavedConfig.VoiceHeavyLowpassFrequency = (int)v,
+                TextManager.Get("spw_voiceheavylowpassfrequencytooltip"),
+                bannedValue: SoundPlayer.MuffleFilterFrequency
+            );
+
+            Label(settingsFrame, TextManager.Get("spw_voicemediumlowpassfrequency"));
+            PowerSlider(settingsFrame, (10, 3200), 10,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.VoiceMediumLowpassFrequency ?? default,
+                    formatter: Hertz),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.VoiceMediumLowpassFrequency,
+                    vanillaValue: null),
+                currentValue: unsavedConfig.VoiceMediumLowpassFrequency,
+                setter: v => unsavedConfig.VoiceMediumLowpassFrequency = (int)v,
+                TextManager.Get("spw_voicemediumlowpassfrequencytooltip"),
+                bannedValue: SoundPlayer.MuffleFilterFrequency
+            );
+
+            Label(settingsFrame, TextManager.Get("spw_voicelightlowpassfrequency"));
+            PowerSlider(settingsFrame, (10, 3200), 10,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.VoiceLightLowpassFrequency ?? default,
+                    formatter: Hertz),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.VoiceLightLowpassFrequency,
+                    vanillaValue: null),
+                currentValue: unsavedConfig.VoiceLightLowpassFrequency,
+                setter: v => unsavedConfig.VoiceLightLowpassFrequency = (int)v,
+                TextManager.Get("spw_voicelightlowpassfrequencytooltip"),
+                bannedValue: SoundPlayer.MuffleFilterFrequency
+            );
+
+            SpacerLabel(settingsFrame, TextManager.Get("spw_categoryscreammode"));
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
                 label: TextManager.Get("spw_screammode"),
@@ -2040,7 +2079,7 @@ namespace SoundproofWalls
                 TextManager.Get("spw_screammodereleaseratetooltip")
             );
 
-            SpacerLabel(settingsFrame, TextManager.Get("spw_voicecategorybubbles"));
+            SpacerLabel(settingsFrame, TextManager.Get("spw_categorybubbles"));
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
                 label: TextManager.Get("spw_drowningbubbles"),
@@ -2077,7 +2116,7 @@ namespace SoundproofWalls
                 colorFunc: (localSliderValue, componentStyle) =>
                 GetSettingColor(localSliderValue, componentStyle,
                     defaultValue: Menu.defaultConfig.DrowningBubblesLocalVolumeMultiplier,
-                    vanillaValue: 1.0f),
+                    vanillaValue: null),
                 currentValue: unsavedConfig.DrowningBubblesLocalVolumeMultiplier,
                 setter: v => unsavedConfig.DrowningBubblesLocalVolumeMultiplier = v,
                 TextManager.Get("spw_drowningbubbleslocalvolumetooltip")
@@ -2092,7 +2131,7 @@ namespace SoundproofWalls
                 colorFunc: (localSliderValue, componentStyle) =>
                 GetSettingColor(localSliderValue, componentStyle,
                     defaultValue: Menu.defaultConfig.DrowningBubblesRadioVolumeMultiplier,
-                    vanillaValue: 1.0f),
+                    vanillaValue: null),
                 currentValue: unsavedConfig.DrowningBubblesRadioVolumeMultiplier,
                 setter: v => unsavedConfig.DrowningBubblesRadioVolumeMultiplier = v,
                 TextManager.Get("spw_drowningbubblesradiovolumetooltip")
@@ -2109,7 +2148,7 @@ namespace SoundproofWalls
 
             Spacer(settingsFrame);
 
-            SpacerLabel(settingsFrame, TextManager.Get("spw_voicecategorycustomfilter"));
+            SpacerLabel(settingsFrame, TextManager.Get("spw_categorycustomfilter"));
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
                 label: TextManager.Get("spw_radiocustomfilter"),
@@ -2314,7 +2353,24 @@ namespace SoundproofWalls
                 currentValue: unsavedConfig.MuffleFireSounds,
                 setter: v => unsavedConfig.MuffleFireSounds = v);
 
-            SpacerLabel(settingsFrame, TextManager.Get("spw_mufflecategoryobstructions"));
+            Spacer(settingsFrame);
+
+            Label(settingsFrame, TextManager.Get("spw_classiclowpassfrequency"));
+            PowerSlider(settingsFrame, (10, 3200), 10,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.ClassicMuffleFrequency ?? default,
+                    formatter: Hertz),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.ClassicMuffleFrequency,
+                    vanillaValue: SoundPlayer.MuffleFilterFrequency),
+                currentValue: unsavedConfig.ClassicMuffleFrequency,
+                setter: v => unsavedConfig.ClassicMuffleFrequency = (int)v,
+                tooltip: TextManager.Get("spw_classiclowpassfrequencytooltip")
+            );
+
+            SpacerLabel(settingsFrame, TextManager.Get("spw_categoryobstructions"));
 
             Label(settingsFrame, TextManager.Get("spw_obstructionwatersurface"));
             Slider(settingsFrame, (0, 1), 0.001f,
@@ -2436,7 +2492,7 @@ namespace SoundproofWalls
                 TextManager.Get("spw_obstructiondrowningtooltip")
             );
 
-            SpacerLabel(settingsFrame, TextManager.Get("spw_mufflecategorythresholds"));
+            SpacerLabel(settingsFrame, TextManager.Get("spw_categorythresholds"));
 
             Label(settingsFrame, TextManager.Get("spw_classicmufflethreshold"));
             Slider(settingsFrame, (0, 2), 0.01f,
@@ -2507,7 +2563,7 @@ namespace SoundproofWalls
             var content = GetTabContentFrame(Tab.Volume);
             GUIFrame settingsFrame = NewListContent(content);
 
-            SpacerLabel(settingsFrame, TextManager.Get("spw_volumecategorysidechaining"));
+            SpacerLabel(settingsFrame, TextManager.Get("spw_categorysidechaining"));
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
                 label: TextManager.Get("spw_sidechaining"),
@@ -2574,6 +2630,21 @@ namespace SoundproofWalls
                 TextManager.Get("spw_sidechainreleasecurvetooltip")
             );
 
+            Label(settingsFrame, TextManager.Get("spw_sidechainmufflepower"));
+            Slider(settingsFrame, (1, 10), 0.1f,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.SidechainMufflePower ?? default,
+                    formatter: RawValue),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.SidechainMufflePower,
+                    vanillaValue: null),
+                currentValue: unsavedConfig.SidechainMufflePower,
+                setter: v => unsavedConfig.SidechainMufflePower = v,
+                TextManager.Get("spw_sidechainmufflepowertooltip")
+            );
+
             Label(settingsFrame, TextManager.Get("spw_sidechainmusicmultiplier"));
             Slider(settingsFrame, (0, 1), 0.01f,
                 labelFunc: localSliderValue =>
@@ -2589,7 +2660,7 @@ namespace SoundproofWalls
                 TextManager.Get("spw_sidechainmusicmultipliertooltip")
             );
 
-            SpacerLabel(settingsFrame, TextManager.Get("spw_volumecategorygain"));
+            SpacerLabel(settingsFrame, TextManager.Get("spw_categorygain"));
 
             Label(settingsFrame, TextManager.Get("spw_muffledsoundvolume"));
             Slider(settingsFrame, (0, 3), 0.01f,
@@ -2732,6 +2803,8 @@ namespace SoundproofWalls
                 TextManager.Get("spw_firesoundvolumetooltip")
             );
 
+            SpacerLabel(settingsFrame, TextManager.Get("spw_categoryadvanced"));
+
             Label(settingsFrame, TextManager.Get("spw_vanillaexosuitvolume"));
             Slider(settingsFrame, (0, 3), 0.01f,
                 labelFunc: localSliderValue =>
@@ -2745,6 +2818,36 @@ namespace SoundproofWalls
                 currentValue: unsavedConfig.VanillaExosuitVolumeMultiplier,
                 setter: v => unsavedConfig.VanillaExosuitVolumeMultiplier = v,
                 TextManager.Get("spw_vanillaexosuitvolumetooltip")
+            );
+
+            Label(settingsFrame, TextManager.Get("spw_mindistancefalloffvolume"));
+            Slider(settingsFrame, (0, 1), 0.01f,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.MinDistanceFalloffVolume ?? default,
+                    formatter: Percentage),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.MinDistanceFalloffVolume,
+                    vanillaValue: 0.1f),
+                currentValue: unsavedConfig.MinDistanceFalloffVolume,
+                setter: v => unsavedConfig.MinDistanceFalloffVolume = v,
+                TextManager.Get("spw_mindistancefalloffvolumetooltip")
+            );
+
+            Label(settingsFrame, TextManager.Get("spw_loopingcomponentsoundnearmultiplier"));
+            Slider(settingsFrame, (0, 1), 0.01f,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.LoopingComponentSoundNearMultiplier ?? default,
+                    formatter: Percentage),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.LoopingComponentSoundNearMultiplier,
+                    vanillaValue: 0.3f),
+                currentValue: unsavedConfig.LoopingComponentSoundNearMultiplier,
+                setter: v => unsavedConfig.LoopingComponentSoundNearMultiplier = v,
+                TextManager.Get("spw_loopingcomponentsoundnearmultipliertooltip")
             );
         }
 
@@ -2892,7 +2995,7 @@ namespace SoundproofWalls
                 TextManager.Get("spw_eavesdroppingthresholdtooltip")
             );
 
-            SpacerLabel(settingsFrame, TextManager.Get("spw_eavesdroppingcategoryvisuals"));
+            SpacerLabel(settingsFrame, TextManager.Get("spw_categoryvisuals"));
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
                 label: TextManager.Get("spw_eavesdroppingrevealsall"),
@@ -3126,7 +3229,7 @@ namespace SoundproofWalls
                 TextManager.Get("spw_hydrophonemovementvolumetooltip")
             );
 
-            SpacerLabel(settingsFrame, TextManager.Get("spw_hydrophonecategoryvisuals"));
+            SpacerLabel(settingsFrame, TextManager.Get("spw_categoryvisuals"));
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
                 label: TextManager.Get("spw_hydrophonevisualfeedbackenabled"),
@@ -3187,7 +3290,7 @@ namespace SoundproofWalls
                 TextManager.Get("spw_hydrophonevisualfeedbackopacitymultipliertooltip")
             );
 
-            SpacerLabel(settingsFrame, TextManager.Get("spw_hydrophonecategorydynamicfx"));
+            SpacerLabel(settingsFrame, TextManager.Get("spw_categorydynamicfx"));
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
             label: TextManager.Get("spw_hydrophonereverb"),
@@ -3301,7 +3404,7 @@ namespace SoundproofWalls
                 TextManager.Get("spw_hydrophonebandpassfilterlfgaintooltip")
             );
 
-            SpacerLabel(settingsFrame, TextManager.Get("spw_hydrophonecategoryadvanced"));
+            SpacerLabel(settingsFrame, TextManager.Get("spw_categoryadvanced"));
 
             CreateJsonTextBox(
                 parentListBox: settingsList,
@@ -3338,7 +3441,7 @@ namespace SoundproofWalls
                 currentValue: unsavedConfig.DisableWhiteNoise,
                 setter: v => unsavedConfig.DisableWhiteNoise = v);
 
-            SpacerLabel(settingsFrame, TextManager.Get("spw_ambiencecategorytrack"));
+            SpacerLabel(settingsFrame, TextManager.Get("spw_categorytrack"));
 
             Label(settingsFrame, TextManager.Get("spw_waterambienceinvolume"));
             Slider(settingsFrame, (0, 3), 0.01f,
@@ -3385,7 +3488,7 @@ namespace SoundproofWalls
                 TextManager.Get("spw_waterambiencemovingvolumetooltip")
             );
 
-            SpacerLabel(settingsFrame, TextManager.Get("spw_ambiencecategoryenvironment"));
+            SpacerLabel(settingsFrame, TextManager.Get("spw_categoryenvironment"));
 
             Label(settingsFrame, TextManager.Get("spw_unsubmergednosuitwaterambiencevolume"));
             Slider(settingsFrame, (0, 3), 0.01f,
@@ -3711,7 +3814,7 @@ namespace SoundproofWalls
                 TextManager.Get("spw_maxsimultaneousinstancestooltip")
             );
 
-            SpacerLabel(settingsFrame, TextManager.Get("spw_advancedcategoryintervals"));
+            SpacerLabel(settingsFrame, TextManager.Get("spw_categoryintervals"));
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
                 label: TextManager.Get("spw_updatenonloopingsounds"),
@@ -3729,7 +3832,7 @@ namespace SoundproofWalls
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.NonLoopingSoundMuffleUpdateInterval ?? default,
-                    formatter: Seconds),
+                    formatter: SecondsOneTick),
                 colorFunc: (localSliderValue, componentStyle) =>
                 GetSettingColor(localSliderValue, componentStyle,
                     defaultValue: Menu.defaultConfig.NonLoopingSoundMuffleUpdateInterval,
@@ -3744,7 +3847,7 @@ namespace SoundproofWalls
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.OpenALEffectsUpdateInterval ?? default,
-                    formatter: Seconds),
+                    formatter: SecondsOneTick),
                 colorFunc: (localSliderValue, componentStyle) =>
                 GetSettingColor(localSliderValue, componentStyle,
                     defaultValue: Menu.defaultConfig.OpenALEffectsUpdateInterval,
@@ -3759,7 +3862,7 @@ namespace SoundproofWalls
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.VoiceMuffleUpdateInterval ?? default,
-                    formatter: Seconds),
+                    formatter: SecondsOneTick),
                 colorFunc: (localSliderValue, componentStyle) =>
                 GetSettingColor(localSliderValue, componentStyle,
                     defaultValue: Menu.defaultConfig.VoiceMuffleUpdateInterval,
@@ -3774,7 +3877,7 @@ namespace SoundproofWalls
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.ComponentMuffleUpdateInterval ?? default,
-                    formatter: Seconds),
+                    formatter: SecondsOneTick),
                 colorFunc: (localSliderValue, componentStyle) =>
                 GetSettingColor(localSliderValue, componentStyle,
                     defaultValue: Menu.defaultConfig.ComponentMuffleUpdateInterval,
@@ -3789,7 +3892,7 @@ namespace SoundproofWalls
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.StatusEffectMuffleUpdateInterval ?? default,
-                    formatter: Seconds),
+                    formatter: SecondsOneTick),
                 colorFunc: (localSliderValue, componentStyle) =>
                 GetSettingColor(localSliderValue, componentStyle,
                     defaultValue: Menu.defaultConfig.StatusEffectMuffleUpdateInterval,
@@ -3799,7 +3902,7 @@ namespace SoundproofWalls
                 TextManager.Get("spw_statuseffectmuffleupdateintervaltooltip")
             );
 
-            SpacerLabel(settingsFrame, TextManager.Get("spw_advancedcategorytransitions"));
+            SpacerLabel(settingsFrame, TextManager.Get("spw_categorytransitions"));
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
                 label: TextManager.Get("spw_disablevanillafadeout"),
@@ -3813,11 +3916,11 @@ namespace SoundproofWalls
             Spacer(settingsFrame);
 
             Label(settingsFrame, TextManager.Get("spw_gaintransitionfactor"));
-            Slider(settingsFrame, (0, 10), 0.01f,
+            Slider(settingsFrame, (0, 10), 0.1f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.GainTransitionFactor ?? default,
-                    formatter: RawValue),
+                    formatter: RawValueZeroInstant),
                 colorFunc: (localSliderValue, componentStyle) =>
                 GetSettingColor(localSliderValue, componentStyle,
                     defaultValue: Menu.defaultConfig.GainTransitionFactor,
@@ -3828,11 +3931,11 @@ namespace SoundproofWalls
             );
 
             Label(settingsFrame, TextManager.Get("spw_pitchtransitionfactor"));
-            Slider(settingsFrame, (0, 10), 0.01f,
+            Slider(settingsFrame, (0, 10), 0.1f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.PitchTransitionFactor ?? default,
-                    formatter: RawValue),
+                    formatter: RawValueZeroInstant),
                 colorFunc: (localSliderValue, componentStyle) =>
                 GetSettingColor(localSliderValue, componentStyle,
                     defaultValue: Menu.defaultConfig.PitchTransitionFactor,
@@ -3842,54 +3945,67 @@ namespace SoundproofWalls
                 TextManager.Get("spw_pitchtransitionfactortooltip")
             );
 
-            SpacerLabel(settingsFrame, TextManager.Get("spw_advancedcategoryattenuation"));
-
-            Label(settingsFrame, TextManager.Get("spw_loopingcomponentsoundnearmultiplier"));
-            Slider(settingsFrame, (0, 1), 0.01f,
+            Label(settingsFrame, TextManager.Get("spw_airreverbgaintransitionfactor"));
+            Slider(settingsFrame, (0, 10), 0.1f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
-                    serverValue: ConfigManager.ServerConfig?.LoopingComponentSoundNearMultiplier ?? default,
-                    formatter: Percentage),
+                    serverValue: ConfigManager.ServerConfig?.AirReverbGainTransitionFactor ?? default,
+                    formatter: RawValueZeroInstant),
                 colorFunc: (localSliderValue, componentStyle) =>
                 GetSettingColor(localSliderValue, componentStyle,
-                    defaultValue: Menu.defaultConfig.LoopingComponentSoundNearMultiplier,
-                    vanillaValue: 0.3f),
-                currentValue: unsavedConfig.LoopingComponentSoundNearMultiplier,
-                setter: v => unsavedConfig.LoopingComponentSoundNearMultiplier = v,
-                TextManager.Get("spw_loopingcomponentsoundnearmultipliertooltip")
-            );
-
-            Label(settingsFrame, TextManager.Get("spw_mindistancefalloffvolume"));
-            Slider(settingsFrame, (0, 1), 0.01f,
-                labelFunc: localSliderValue =>
-                FormatSettingText(localSliderValue,
-                    serverValue: ConfigManager.ServerConfig?.MinDistanceFalloffVolume ?? default,
-                    formatter: Percentage),
-                colorFunc: (localSliderValue, componentStyle) =>
-                GetSettingColor(localSliderValue, componentStyle,
-                    defaultValue: Menu.defaultConfig.MinDistanceFalloffVolume,
-                    vanillaValue: 0.1f),
-                currentValue: unsavedConfig.MinDistanceFalloffVolume,
-                setter: v => unsavedConfig.MinDistanceFalloffVolume = v,
-                TextManager.Get("spw_mindistancefalloffvolumetooltip")
-            );
-
-            Label(settingsFrame, TextManager.Get("spw_sidechainmuffleinfluence"));
-            Slider(settingsFrame, (0, 1), 0.01f,
-                labelFunc: localSliderValue =>
-                FormatSettingText(localSliderValue,
-                    serverValue: ConfigManager.ServerConfig?.SidechainMuffleInfluence ?? default,
-                    formatter: Percentage),
-                colorFunc: (localSliderValue, componentStyle) =>
-                GetSettingColor(localSliderValue, componentStyle,
-                    defaultValue: Menu.defaultConfig.SidechainMuffleInfluence,
+                    defaultValue: Menu.defaultConfig.AirReverbGainTransitionFactor,
                     vanillaValue: null),
-                currentValue: unsavedConfig.SidechainMuffleInfluence,
-                setter: v => unsavedConfig.SidechainMuffleInfluence = v,
-                TextManager.Get("spw_sidechainmuffleinfluencetooltip")
+                currentValue: unsavedConfig.AirReverbGainTransitionFactor,
+                setter: v => unsavedConfig.AirReverbGainTransitionFactor = v,
+                TextManager.Get("spw_airreverbgaintransitionfactortooltip")
             );
 
-            SpacerLabel(settingsFrame, TextManager.Get("spw_advancedcategorypathfinding"));
+            Label(settingsFrame, TextManager.Get("spw_hydrophonereverbgaintransitionfactor"));
+            Slider(settingsFrame, (0, 10), 0.1f,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.HydrophoneReverbGainTransitionFactor ?? default,
+                    formatter: RawValueZeroInstant),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.HydrophoneReverbGainTransitionFactor,
+                    vanillaValue: null),
+                currentValue: unsavedConfig.HydrophoneReverbGainTransitionFactor,
+                setter: v => unsavedConfig.HydrophoneReverbGainTransitionFactor = v,
+                TextManager.Get("spw_hydrophonereverbgaintransitionfactortooltip")
+            );
+
+            Label(settingsFrame, TextManager.Get("spw_dynamicmuffletransitionfactor"));
+            Slider(settingsFrame, (0, 10), 0.1f,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.DynamicMuffleTransitionFactor ?? default,
+                    formatter: RawValueZeroInstant),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.DynamicMuffleTransitionFactor,
+                    vanillaValue: null),
+                currentValue: unsavedConfig.DynamicMuffleTransitionFactor,
+                setter: v => unsavedConfig.DynamicMuffleTransitionFactor = v,
+                TextManager.Get("spw_dynamicmuffletransitionfactortooltip")
+            );
+
+            Label(settingsFrame, TextManager.Get("spw_dynamicmuffletransitionfactorflowfire"));
+            Slider(settingsFrame, (0, 10), 0.1f,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.DynamicMuffleFlowFireTransitionFactor ?? default,
+                    formatter: RawValueZeroInstant),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.DynamicMuffleFlowFireTransitionFactor,
+                    vanillaValue: null),
+                currentValue: unsavedConfig.DynamicMuffleFlowFireTransitionFactor,
+                setter: v => unsavedConfig.DynamicMuffleFlowFireTransitionFactor = v,
+                TextManager.Get("spw_dynamicmuffletransitionfactorflowfiretooltip")
+            );
+
+            SpacerLabel(settingsFrame, TextManager.Get("spw_categorypathfinding"));
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
                 label: TextManager.Get("spw_traversewaterducts"),
@@ -3956,10 +4072,10 @@ namespace SoundproofWalls
                 TextManager.Get("spw_soundpropagationrangetooltip")
             );
 
-            SpacerLabel(settingsFrame, TextManager.Get("spw_advancedcategoryai"));
+            SpacerLabel(settingsFrame, TextManager.Get("spw_categoryai"));
 
             Label(settingsFrame, TextManager.Get("spw_aitargetsoundrange"));
-            Slider(settingsFrame, (0, 5), 0.01f,
+            Slider(settingsFrame, (0, 4), 0.01f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.AITargetSoundRangeMultiplierMaster ?? default,
@@ -3974,7 +4090,7 @@ namespace SoundproofWalls
             );
 
             Label(settingsFrame, TextManager.Get("spw_aitargetsightrange"));
-            Slider(settingsFrame, (0, 5), 0.01f,
+            Slider(settingsFrame, (0, 4), 0.01f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.AITargetSightRangeMultiplierMaster ?? default,
@@ -3988,7 +4104,7 @@ namespace SoundproofWalls
                 TextManager.Get("spw_aitargetsightrangetooltip")
             );
 
-            SpacerLabel(settingsFrame, TextManager.Get("spw_advancedcategoryrules"));
+            SpacerLabel(settingsFrame, TextManager.Get("spw_categoryrules"));
 
             foreach (var kvp in ConfigManager.ModdedCustomSounds)
             {

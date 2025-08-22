@@ -889,8 +889,8 @@ namespace SoundproofWalls
             return false;
         }
 
-        private static BiQuad voipLightMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, Config.LightLowpassFrequency);
-        private static BiQuad voipMediumMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, Config.MediumLowpassFrequency);
+        private static BiQuad voipLightMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, Config.VoiceLightLowpassFrequency);
+        private static BiQuad voipMediumMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, Config.VoiceMediumLowpassFrequency);
         private static BiQuad voipHeavyMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, Config.VoiceHeavyLowpassFrequency);
         private static RadioFilter voipCustomRadioFilter = new RadioFilter(VoipConfig.FREQUENCY, Config.RadioBandpassFrequency, 
                                                                 Config.RadioBandpassQualityFactor, Config.RadioDistortionDrive, 
@@ -920,13 +920,13 @@ namespace SoundproofWalls
                 {
                     voipHeavyMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, Config.VoiceHeavyLowpassFrequency);
                 }
-                if (voipLightMuffleFilter._frequency != Config.LightLowpassFrequency)
+                if (voipLightMuffleFilter._frequency != Config.VoiceLightLowpassFrequency)
                 {
-                    voipLightMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, Config.LightLowpassFrequency);
+                    voipLightMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, Config.VoiceLightLowpassFrequency);
                 }
-                if (voipMediumMuffleFilter._frequency != Config.MediumLowpassFrequency)
+                if (voipMediumMuffleFilter._frequency != Config.VoiceMediumLowpassFrequency)
                 {
-                    voipMediumMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, Config.MediumLowpassFrequency);
+                    voipMediumMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, Config.VoiceMediumLowpassFrequency);
                 }
             }
 
@@ -1461,18 +1461,25 @@ namespace SoundproofWalls
         {
             if (!Config.Enabled) { return; };
 
-            // If frequency == vanilla default, we're processing a normal sound, so we replace it with the HeavyLowpassFrequency.
-            // Otherwise, it's probably a player's voice meaning it's already at the correct frequency.
-            // Note: To avoid an edge case, I made it impossible in the menu for the user to make their voice lowpass freq == vanilla default.
-            if (__instance.GetType() == typeof(LowpassFilter) && !Config.StaticFx && frequency == SoundPlayer.MuffleFilterFrequency)
+            if (__instance.GetType() == typeof(LowpassFilter))
             {
-                frequency = Config.HeavyLowpassFrequency;
+                // It's not possible for the user to make their voice lowpass freq == vanilla default.
+                bool constructedByVoice = frequency != SoundPlayer.MuffleFilterFrequency;
+                // Apply the ClassicMuffleFrequency on Classic and Dynamic mode. Dynamic mode doesn't need it but it makes switching to classic instant.
+                if (!Config.StaticFx && !constructedByVoice)
+                {
+                    frequency = Config.ClassicMuffleFrequency;
+                }
             }
 
             // We don't want to modify anything if the vanilla game is constructing a filter.
-            else if (Config.RadioCustomFilterEnabled && __instance.GetType() == typeof(BandpassFilter) && frequency != ChannelInfoManager.VANILLA_VOIP_BANDPASS_FREQUENCY)
+            else if (__instance.GetType() == typeof(BandpassFilter))
             {
-                q = Config.RadioBandpassQualityFactor;
+                bool constructedByMod = frequency != ChannelInfoManager.VANILLA_VOIP_BANDPASS_FREQUENCY;
+                if (Config.RadioCustomFilterEnabled && constructedByMod) 
+                {
+                    q = Config.RadioBandpassQualityFactor;
+                }
             }
 
             return;
