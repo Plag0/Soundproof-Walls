@@ -304,7 +304,7 @@ namespace SoundproofWalls
             }
         }
 
-        private static Config config { get { return ConfigManager.Config; } }
+        private static Config config => ConfigManager.Config;
 
         public ChannelInfo(SoundChannel channel, Hull? channelHull = null, StatusEffect? statusEffect = null, ItemComponent? itemComp = null, Client? speakingClient = null, ChatMessageType? messageType = null, bool dontMuffle = false)
         {
@@ -377,13 +377,13 @@ namespace SoundproofWalls
 
             ModStateManager.State.LifetimeSoundsPlayed++;
 
-            if (Channel.Sound is not VoipSound) { PerformanceProfiler.Instance.StopTimingEvent(); }
+            if (channel.Sound is not VoipSound) { PerformanceProfiler.Instance.StopTimingEvent(); }
         }
 
         // This method takes arguments because sometimes the constructor is called without any of this info available (created from soundchannel ctor with no contex)
         public void Update(Hull? soundHull = null, StatusEffect? statusEffect = null, ItemComponent? itemComp = null, Client? speakingClient = null, ChatMessageType? messageType = null)
         {
-            if (Channel.Sound is not VoipSound) { PerformanceProfiler.Instance.StartTimingEvent(ProfileEvents.ChannelInfoUpdate); }
+            if (!AudioIsVoice) { PerformanceProfiler.Instance.StartTimingEvent(ProfileEvents.ChannelInfoUpdate); }
 
             if (Channel == null) { return; }
 
@@ -403,6 +403,8 @@ namespace SoundproofWalls
             SpeakingClient = speakingClient;
             MessageType = messageType;
 
+            UpdateProperties();
+
             if (Ignored)
             {
                 EuclideanDistance = Vector2.Distance(Listener.WorldPos, WorldPos);
@@ -412,8 +414,6 @@ namespace SoundproofWalls
                 UpdateVoice();
                 return;
             }
-
-            UpdateProperties();
 
             if (!ShouldSkipMuffleUpdate() || isFirstIteration)
             {
@@ -425,7 +425,7 @@ namespace SoundproofWalls
             UpdatePitch();
             UpdateVoice();
 
-            if (Channel.Sound is not VoipSound) { PerformanceProfiler.Instance.StopTimingEvent(); }
+            if (!AudioIsVoice) { PerformanceProfiler.Instance.StopTimingEvent(); }
         }
 
         private void UpdateVoice()
@@ -588,6 +588,10 @@ namespace SoundproofWalls
                 type = MuffleType.Heavy;
                 shouldMuffle = true;
             }
+            else if (config.DynamicFx && MuffleStrength > 0 && AudioIsVoice)
+            {
+                shouldMuffle = true;
+            }
 
             bool isLooping = Channel.Looping || ItemComp?.loopingSoundChannel == Channel;
 
@@ -720,6 +724,13 @@ namespace SoundproofWalls
                         AddObstruction(Obstruction.WaterSurface, "Hydrophones - other");
                     }
                 }
+            }
+
+            // Do simple on-thread obstruction checks until we receive the first advanced obstruction check from the main thread.
+            if (config.DynamicFx && AudioIsVoice && LastVoiceMainThreadUpdateTime == 0)
+            {
+                UpdatePathObstructionsSimple();
+                return;
             }
 
             if (config.DynamicFx) { UpdatePathObstructionsAdvanced(); }
@@ -870,7 +881,7 @@ namespace SoundproofWalls
             // Saves a snapshot of the current obstructions to be applied to any clones.
             List<Obstruction> clonedObstructions = new List<Obstruction>(obstructions);
 
-            // 7. Add obstructions. TODO this works but is dreadful.
+            // 7. Add obstructions. TODO this does what I want it to do but is it's hideous
             float totalDoorPathResistance = 0;
             float totalWallPathResistance = 0;
             for (int i = 0; i < numWallObstructions; i++) { totalWallPathResistance += Obstruction.WallThick.GetStrength(); }
@@ -987,8 +998,6 @@ namespace SoundproofWalls
             float mult = 1;
             float currentGain = ItemComp?.GetSoundVolume(ItemComp.loopingSound) ?? startGain;
 
-            if (SoundInfo.IsChargeSound) { currentGain = 1; }
-
             mult += SoundInfo.GainMult - 1;
 
             // Radio can only be muffled when the sender is drowning.
@@ -1012,7 +1021,7 @@ namespace SoundproofWalls
                 else if (Hydrophoned) { mult += config.HydrophoneVolumeMultiplier - 1; mult *= HydrophoneManager.HydrophoneEfficiency; }
 
                 // Tweak for vanilla exosuit volume.
-                if (Item != null && Item.HasTag(new Identifier("deepdivinglarge")) && LongName.EndsWith("weapons_chargeup.ogg")) { mult *= config.VanillaExosuitVolumeMultiplier; }
+                if (Item != null && Item.HasTag(new Identifier("deepdivinglarge")) && LongName.EndsWith("barotrauma/content/items/weapons/weapons_chargeup.ogg")) { mult *= config.VanillaExosuitVolumeMultiplier; }
                 // Disable diving suit ambience when not in water.
                 if (!inWater && Item != null && Item.HasTag(new Identifier("deepdiving")) && ShortName.Contains("divingsuitloop")) { mult *= 0; }
             }
@@ -1094,6 +1103,12 @@ namespace SoundproofWalls
             }
 
             float targetGain = currentGain * mult;
+
+            if (SoundInfo.IsTurretMovementSound || SoundInfo.IsChargeSound)
+            {
+                targetGain = Math.Clamp(targetGain, 0, 1);
+            }
+
             // Only transition audio levels if there's no active sidechaining, the sound is consistently updated, and this isn't its first update.
             float transitionFactor = config.GainTransitionFactor;
             if (transitionFactor > 0 && !ignoreGainFade && IsInUpdateLoop && !isFirstIteration && Plugin.Sidechain.SidechainMultiplier <= 0)

@@ -4,6 +4,7 @@ using Barotrauma.Networking;
 using Barotrauma.Sounds;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System.Reflection;
 
 namespace SoundproofWalls
@@ -61,6 +62,68 @@ namespace SoundproofWalls
             }
 
             return Vector2.Normalize(delta);
+        }
+
+        public static double GetCompensatedBiquadFrequency(double muffleStrength, double minFrequency, double sampleRate = 48000.0)
+        {
+            double onePoleFrequency = GetEffectiveLowpassFrequency(muffleStrength, sampleRate);
+
+            double nyquist = sampleRate / 2.0;
+
+            // No muffling.
+            if (onePoleFrequency >= nyquist)
+            {
+                return nyquist;
+            }
+
+            double originalRange = nyquist - 1.0;
+            double newRange = nyquist - minFrequency;
+
+            // Avoid division by zero if range is invalid.
+            if (originalRange <= 0)
+            {
+                return nyquist;
+            }
+
+            // Calculate how far into the original range our value is as a percentage.
+            double normalizedValue = (onePoleFrequency - 1.0) / originalRange;
+
+            // Apply that percentage to the new range to get the remapped frequency.
+            double remappedFrequency = minFrequency + (normalizedValue * newRange);
+
+            double compensatedFrequency = remappedFrequency * Math.Sqrt(2);
+
+            // Ensure the final frequency does not exceed the Nyquist frequency.
+            return Math.Min(compensatedFrequency, nyquist);
+        }
+
+        public static double GetEffectiveLowpassFrequency(double muffleStrength, double sampleRate = 48000.0)
+        {
+            muffleStrength = Math.Clamp(muffleStrength, 0, 1);
+
+            // Convert MuffleStrength to the equivalent GAINHF value.
+            double gainHf = 1.0 - muffleStrength;
+
+            // No muffle.
+            if (gainHf >= 1.0)
+            {
+                return sampleRate / 2.0;
+            }
+
+            if (gainHf <= 0.0)
+            {
+                return 1.0;
+            }
+
+            // Calculate filter coefficient.
+            double alpha = (1.0 - gainHf) / (1.0 + gainHf);
+
+            // Calculate cutoff frequency from coefficient.
+            double arccosArg = (2.0 * alpha) / (1.0 + alpha * alpha);
+            arccosArg = Math.Max(-1.0, Math.Min(1.0, arccosArg));
+            double cutoffFrequency = (sampleRate / (2.0 * Math.PI)) * Math.Acos(arccosArg);
+
+            return cutoffFrequency;
         }
 
         // Get a client's messageType (same implementation seen in VoipClient_Read method).
@@ -203,7 +266,7 @@ namespace SoundproofWalls
         {
             string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "";
 
-            while (!path.EndsWith("3153737715") && !path.EndsWith("Soundproof Walls"))
+            while (!path.EndsWith("3153737715") && !path.EndsWith("Soundproof Walls 2.0"))
             {
                 path = Directory.GetParent(path)?.FullName ?? "";
                 if (path == "") break;

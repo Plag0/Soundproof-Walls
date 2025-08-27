@@ -1,109 +1,657 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <infotexts language="Russian" nowhitespace="false" translatedname="Русский">
 
-	<spw_settings>Soundproof Walls</spw_settings>
+	<spw_modname>Soundproof Walls [version]</spw_modname>
+	<spw_openmenuhelp>Открывает меню настроек мода «Soundproof Walls».</spw_openmenuhelp>
+	<spw_openpopuphelp>Открывает приветственное окно мода «Soundproof Walls».</spw_openpopuphelp>
+	<spw_openworkshophelp>Открывает страницу мода «Soundproof Walls» в мастерской Steam.</spw_openworkshophelp>
+	<spw_guidehelp>Открывает руководство по настройке мода «Soundproof Walls» в вашем браузере.</spw_guidehelp>
+	<spw_reporthelp>Открывает страницу для сообщений об ошибках мода «Soundproof Walls» в вашем браузере.</spw_reporthelp>
 
-	<spw_generalsettings>Основные настройки</spw_generalsettings>
-	<spw_enabled>Включено</spw_enabled>
-	<spw_disabled>Выключено</spw_disabled>
-	<spw_enabledtooltip>Включить весь функционал мода</spw_enabledtooltip>
-	<spw_syncsettings>Синхронизация настроек</spw_syncsettings>
-	<spw_syncsettingstooltip>Включает синхронизацию настроек клиента и сервера</spw_syncsettingstooltip>
-	<spw_syncsettingsalert>Внимание: на этом сервере включена синхронизация - все игроки будут использовать настройки сервера (со значениями в скобках)</spw_syncsettingsalert>
-	<spw_focustargetaudio>Приоритет звука удаленных объектов</spw_focustargetaudio>
-	<spw_focustargetaudiotooltip>Проигрывать звуки с точки зрения выбранной цели (например, турели или камеры)</spw_focustargetaudiotooltip>
-	<spw_talkingragdolls>Включить ГЧ в режиме тряп. куклы</spw_talkingragdolls>
-	<spw_talkingragdollstooltip>Позволяет игрокам разговаривать, когда они в режиме тряпичной куклы (кроме оглушения)</spw_talkingragdollstooltip>
-	<spw_lowpassfrequency>Грань фильтра нижних частот (lowpass)</spw_lowpassfrequency>
-	<spw_lowpassfrequencytooltip>Частота, используемая для приглушения звуков (при изменении во время раунда могут появиться фризы)</spw_lowpassfrequencytooltip>
-	<spw_voicelowpassfrequency>Грань фильтра нижних частот (lowpass) для голоса игроков</spw_voicelowpassfrequency>
-	<spw_voicelowpassfrequencytooltip>Частота, используемая для приглушения голосового чата</spw_voicelowpassfrequencytooltip>
-	<spw_soundrange>Дальность звуков</spw_soundrange>
-	<spw_soundrangetooltip>Дальность звуков, не созданных компонентами корабля</spw_soundrangetooltip>
-	<spw_voicerange>Дальность голоса</spw_voicerange>
-	<spw_radiorange>Дальность радио</spw_radiorange>
-
-	<spw_volumesettings>Настройки громкости</spw_volumesettings>
-	<spw_muffledvoicevolume>Громкость приглушенного ГЧ</spw_muffledvoicevolume>
-	<spw_muffledvoicevolumetooltip>Громкость приглушенных стеной/водой игроков</spw_muffledvoicevolumetooltip>
-	<spw_muffledsoundvolume>Громкость приглушенных звуков</spw_muffledsoundvolume>
-	<spw_muffledsoundvolumetooltip>Громкость приглушенных стеной/водой разовых звуков</spw_muffledsoundvolumetooltip>
-	<spw_muffledcomponentvolume>Громкость приглушенных компонентов</spw_muffledcomponentvolume>
-	<spw_muffledcomponentvolumetooltip>Громкость приглушенных стеной/водой компонентов, издающих постоянные звуки (например, реакторы)</spw_muffledcomponentvolumetooltip>
-	<spw_unmuffledcomponentvolume>Громкость компонентов</spw_unmuffledcomponentvolume>
-	<spw_submergedvolume>Громкость звуков под водой</spw_submergedvolume>
-	<spw_submergedvolumetooltip>Громкость подводных звуков в том же подводном пространстве, что и слушатель</spw_submergedvolumetooltip>
-
-	<spw_eavesdroppingsettings>Настройки подслушивания</spw_eavesdroppingsettings>
-	<spw_eavesdroppingbind>Подслушивать</spw_eavesdroppingbind>
-	<spw_eavesdroppingsoundvolume>Громкость звуков при подслушивании</spw_eavesdroppingsoundvolume>
-	<spw_eavesdroppingvoicevolume>Громкость голоса при подслушивании</spw_eavesdroppingvoicevolume>
-	<spw_eavesdroppingpitch>Тон звука при подслушивании</spw_eavesdroppingpitch>
-	<spw_eavesdroppingmaxdistance>Дальность подслушивания</spw_eavesdroppingmaxdistance>
-	<spw_eavesdroppingmaxdistancetooltip>Максимальное расстояние головы игрока от двери для подслушивания</spw_eavesdroppingmaxdistancetooltip>
-
-	<spw_hydrophonesettings>Настройки гидрофона</spw_hydrophonesettings>
-	<spw_hydrophonerange>Дальность гидрофона</spw_hydrophonerange>
-	<spw_hydrophonerangetooltip>Дальность звуков движения под водой, а также дополнительная дальность добавленная всем звукам вне подлодки</spw_hydrophonerangetooltip>
-	<spw_hydrophonevolume>Громкость гидрофона</spw_hydrophonevolume>
-	<spw_hydrophonepitch>Тон гидрофона</spw_hydrophonepitch>
-	<spw_hydrophonelegacyswitch>Старая версия переключателя гидрофона</spw_hydrophonelegacyswitch>
-	<spw_hydrophonelegacyswitchtooltip>Старая логика переключения гидрофона (гидрофон выключается при использовании активного сонара)</spw_hydrophonelegacyswitchtooltip>
-	<spw_hydrophoneswitchenabled>Включить переключатель гидрофона</spw_hydrophoneswitchenabled>
-	<spw_hydrophoneswitchenabledtooltip>Переключает наличие переключателя гидрофона (требует перезапуска раунда)</spw_hydrophoneswitchenabledtooltip>
+	<initmessage>Загрузка «Звуконепроницаемых Стен» v[version] завершена</initmessage>
+	<initmessagefollowup>Команды:  > Открыть меню настроек: введите «spw».\n  > Показать вашу статистику: введите «spw_stats».\n  > Есть вопрос? Откройте страницу в мастерской («spw_workshop») и оставьте комментарий.\n  > Нашли ошибку? Введите «spw_report», чтобы открыть страницу обсуждений и создать тему.\n  > Узнать больше о настройках: введите «spw_help».\n  > Снова открыть приветственное окно: введите «spw_welcome».</initmessagefollowup>
 	
-	<spw_ambiencesettings>Настройки эмбиента</spw_ambiencesettings>
-	<spw_unsubmergedwaterambiencevolume>Громкость эмбиента воды (без погружения)</spw_unsubmergedwaterambiencevolume>
-	<spw_submergedwaterambiencevolume>Громкость эмбиента воды (при погружении)</spw_submergedwaterambiencevolume>
-	<spw_hydrophonewaterambiencevolume>Громкость эмбиента воды (гидрофон)</spw_hydrophonewaterambiencevolume>
+	<!-- Info Panel -->
+	<spw_syncingenabled>Синхронизация включена!\nВы используете настройки, загруженные на сервер игроком [name]. Значения из этих настроек показаны в скобках рядом с вашими.</spw_syncingenabled>
+	<spw_syncingenableduploader>Синхронизация включена!\nВаши настройки загружены на сервер и используются всеми игроками.</spw_syncingenableduploader>
+	<spw_syncingdisabled>Синхронизация отключена!\nНа сервере нет загруженных настроек. Вы используете ваши локальные настройки.</spw_syncingdisabled>
+	<spw_offlinemode>Значения по умолчанию — синие.\nПользовательские значения — жёлтые.\nСтандартные (Vanilla) значения — белые.\n\nИщете файл конфигурации?\nОн находится по адресу:\n[path]</spw_offlinemode>
+
+	<spw_editpermissionhost>Права на редактирование:\nВы являетесь хостом. Изменения будут загружены на сервер и применены ко всем игрокам.</spw_editpermissionhost>
+	<spw_editpermissionadmin>Права на редактирование:\nВы являетесь администратором. Изменения будут загружены на сервер и применены ко всем игрокам.</spw_editpermissionadmin>
+	<spw_editpermissionnothost>Права на редактирование:\nВы не являетесь хостом. Изменения сохранятся локально, но не будут применяться, пока на сервере включена синхронизация.</spw_editpermissionnothost>
+	<spw_editpermissionnotadmin>Права на редактирование:\nВы не являетесь администратором. Изменения сохранятся локально, но не будут применяться, пока на сервере включена синхронизация.</spw_editpermissionnotadmin>
+
+	<spw_categorymuffle>Приглушение</spw_categorymuffle>
+	<spw_categorygain>Громкость</spw_categorygain>
+	<spw_categoryreverb>Реверберация</spw_categoryreverb>
+	<spw_categorygeneral>Общие</spw_categorygeneral>
+	<spw_categoryvisuals>Визуальные эффекты</spw_categoryvisuals>
+
+	<!-- General -->
+	<spw_generaltab>Общие</spw_generaltab>
+
+	<spw_enablemod>Включить мод</spw_enablemod>
+	<spw_enablemodtooltip>Включает или отключает все функции мода.</spw_enablemodtooltip>
+	<spw_syncsettings>Синхронизация настроек</spw_syncsettings>
+	<spw_syncsettingstooltip>Включает или отключает синхронизацию настроек между игроками.\n\nЕсли включено, хост автоматически загружает свои настройки на сервер для всех игроков. Загрузка происходит один раз в начале сессии или при изменении настроек. Игроки будут вынуждены использовать эти настройки, но их локальные файлы останутся без изменений.</spw_syncsettingstooltip>
+
+	<spw_effectprocessingmode>Режим обработки эффектов</spw_effectprocessingmode>
+	<spw_effectprocessingmodetooltip>Способ обработки звуковых эффектов. Рекомендуется динамический режим.\n\nПримечание: изменение этой настройки во время игры может ненадолго заморозить игру на время загрузки буферов.</spw_effectprocessingmodetooltip>
+
+	<spw_vanillafx>Классический</spw_vanillafx>
+	<spw_vanillafxtooltip>Приглушение в стиле оригинальной игры с одним пресетом (низкочастотный фильтр для сильного приглушения). Минимальное использование ресурсов.</spw_vanillafxtooltip>
+	<spw_staticfx>Статический</spw_staticfx>
+	<spw_staticfxtooltip>Добавляет пресеты слабого и среднего приглушения, а также опциональную реверберацию. Немного увеличивает время загрузки и использование памяти (~250 МБ).</spw_staticfxtooltip>
+	<spw_dynamicfx>Динамический</spw_dynamicfx>
+	<spw_dynamicfxtooltip>Продвинутые эффекты в реальном времени через OpenAL. Наиболее реалистичный звук с симуляцией реверберации, искажения и продвинутого приглушения ценой повышенной нагрузки на ЦП.\n\nПримечание: если вас беспокоит производительность, включите «Показывать производительность» на вкладке «Продвинутые», чтобы увидеть подробную статистику.</spw_dynamicfxtooltip>
+
+	<spw_focustargetaudio>Фокус звука на цели</spw_focustargetaudio>
+	<spw_focustargetaudiotooltip>Симулирует звук с точки зрения текущей цели камеры (т. е. вы слышите то, что слышит турель).</spw_focustargetaudiotooltip>
+	<spw_attenuatewithapproximatedistance>Реалистичное затухание звука</spw_attenuatewithapproximatedistance>
+	<spw_attenuatewithapproximatedistancetooltip>Рассчитывает затухание громкости, используя путь звука до слушателя. Если отключено, используется простое расстояние по прямой (евклидово).</spw_attenuatewithapproximatedistancetooltip>
+	<spw_soundrange>Общая дальность звуков</spw_soundrange>
+	<spw_soundrangetooltip>Общий множитель дальности для всех незацикленных звуков.\n\nПримечание: перемножается с множителем дальности для конкретных звуков из списка «Пользовательские звуки» на вкладке «Продвинутые».</spw_soundrangetooltip>
+	<spw_loopingsoundrange>Общая дальность зацикленных звуков</spw_loopingsoundrange>
+	<spw_loopingsoundrangetooltip>Общий множитель дальности для всех зацикленных звуков.\n\nПримечание: перемножается с множителем дальности для конкретных звуков из списка «Пользовательские звуки» на вкладке «Продвинутые».</spw_loopingsoundrangetooltip>
+
+
+	<!-- Dynamic -->
+	<spw_dynamicfxtab>Динамический режим</spw_dynamicfxtab>
+
+	<spw_occludesounds>Окклюзия звука</spw_occludesounds>
+	<spw_occludesoundstooltip>Приглушает звуки, которые не имеют прямой видимости до ушей игрока из-за стен.</spw_occludesoundstooltip>
+	<spw_maxocclusions>Макс. окклюзий</spw_maxocclusions>
+	<spw_maxocclusionstooltip>Максимальное количество слоёв стен, которыми может быть перекрыт звук.\n\nПримечание: ограничение окклюзии может привести к более стабильному приглушению в нестандартных конфигурациях стен. Значение 0 отключает ограничение.</spw_maxocclusionstooltip>
+	
+	<spw_overmuffle>Сверх-приглушение</spw_overmuffle>
+	<spw_overmuffletooltip>Динамически уменьшает громкость звуков, сила приглушения которых близка к максимальной (1.0) или превышает её.</spw_overmuffletooltip>
+
+	<spw_dynamicmufflestrengthmaster>Общая сила приглушения</spw_dynamicmufflestrengthmaster>
+	<spw_dynamicmufflestrengthmastertooltip>Общая сила эффекта динамического приглушения.</spw_dynamicmufflestrengthmastertooltip>
+
+	<spw_overmufflestrength>Сила сверх-приглушения</spw_overmufflestrength>
+	<spw_overmufflestrengthtooltip>Насколько сильно высокие значения приглушения влияют на уменьшение громкости звука.</spw_overmufflestrengthtooltip>
+	
+	<spw_dynamicreverb>Включить реверберацию</spw_dynamicreverb>
+	<spw_dynamicreverbtooltip>Включает эффекты реверберации внутри и снаружи. Если включено, звуки динамически отражаются в зависимости от размера и общей громкости окружения (т. е. эхо сильнее в больших и тихих пространствах).</spw_dynamicreverbtooltip>
+	<spw_dynamicreverbwatersubtractsarea>Область динамической реверберации</spw_dynamicreverbwatersubtractsarea>
+	<spw_dynamicreverbwatersubtractsareatooltip>Рассчитывает реверберацию, используя площадь воздуха над водой или площадь воды под водой. Если отключено, используется общая площадь.</spw_dynamicreverbwatersubtractsareatooltip>
+	<spw_dynamicreverbminarea>Минимальная область реверберации</spw_dynamicreverbminarea>
+	<spw_dynamicreverbminareatooltip>Минимальная общая площадь соединённых помещений вокруг слушателя, необходимая для применения реверберации.</spw_dynamicreverbminareatooltip>
+	<spw_dynamicreverbareasizemultiplier>Масштаб области реверберации</spw_dynamicreverbareasizemultiplier>
+	<spw_dynamicreverbareasizemultipliertooltip>Масштабирует эффективную площадь текущего внутреннего окружения. Большие значения увеличивают время затухания и задержку отражений, делая пространство звучащим больше.</spw_dynamicreverbareasizemultipliertooltip>
+	<spw_dynamicreverbwetroomareasizemultiplier>Масштаб реверберации в затопленных отсеках</spw_dynamicreverbwetroomareasizemultiplier>
+	<spw_dynamicreverbwetroomareasizemultipliertooltip>Умножает эффективную площадь балластных танков и шлюзов, когда слушатель находится внутри, делая эти помещения звучащими больше и с более сильной реверберацией.</spw_dynamicreverbwetroomareasizemultipliertooltip>
+	<spw_dynamicreverbairtargetgain>Сила реверберации в помещениях</spw_dynamicreverbairtargetgain>
+	<spw_dynamicreverbairtargetgaintooltip>Базовое усиление эффекта реверберации при нахождении внутри корпуса.</spw_dynamicreverbairtargetgaintooltip>
+	<spw_dynamicreverbwatertargetgain>Сила реверберации снаружи</spw_dynamicreverbwatertargetgain>
+	<spw_dynamicreverbwatertargetgaintooltip>Базовое усиление эффекта реверберации при нахождении снаружи.</spw_dynamicreverbwatertargetgaintooltip>
+	<spw_dynamicreverbairamplitudethreshold>Порог реверберации в помещениях</spw_dynamicreverbairamplitudethreshold>
+	<spw_dynamicreverbairamplitudethresholdtooltip>Минимальная амплитуда звука, необходимая для создания реверберации, когда слушатель находится в помещении.</spw_dynamicreverbairamplitudethresholdtooltip>
+	<spw_dynamicreverbwateramplitudethreshold>Порог реверберации снаружи</spw_dynamicreverbwateramplitudethreshold>
+	<spw_dynamicreverbwateramplitudethresholdtooltip>Минимальная амплитуда звука, необходимая для создания реверберации, когда слушатель находится снаружи.</spw_dynamicreverbwateramplitudethresholdtooltip>
+
+	<spw_categoryloudsounddistortionair>Искажение на суше</spw_categoryloudsounddistortionair>
+	<spw_categoryloudsounddistortionwater>Искажение под водой</spw_categoryloudsounddistortionwater>
+
+	<spw_loudsounddistortionair>Включить искажение на суше</spw_loudsounddistortionair>
+	<spw_loudsounddistortionwater>Включить искажение под водой</spw_loudsounddistortionwater>
+	<spw_loudsounddistortiontooltipair>Если слушатель не под водой, применяет эффект искажения к звукам из списка «Пользовательские звуки» (вкладка «Продвинутые»), у которых искажение включено.</spw_loudsounddistortiontooltipair>
+	<spw_loudsounddistortiontooltipwater>Если слушатель под водой, применяет эффект искажения к звукам из списка «Пользовательские звуки» (вкладка «Продвинутые»), у которых искажение включено.</spw_loudsounddistortiontooltipwater>
+	<spw_loudsounddistortionmaxmuffle>Требование приглушения для искажения</spw_loudsounddistortionmaxmuffle>
+	<spw_loudsounddistortionmaxmuffletooltip>Максимальная сила приглушения, при которой искажение звука ещё будет работать.</spw_loudsounddistortionmaxmuffletooltip>
+	<spw_loudsounddistortiontargetgain>Усиление искажения</spw_loudsounddistortiontargetgain>
+	<spw_loudsounddistortiontargetgaintooltip>Громкость искажения.</spw_loudsounddistortiontargetgaintooltip>
+	<spw_loudsounddistortiontargetedge>Жёсткость искажения</spw_loudsounddistortiontargetedge>
+	<spw_loudsounddistortiontargetedgetooltip>Жёсткость искажения. Более высокое значение даёт более интенсивный эффект.</spw_loudsounddistortiontargetedgetooltip>
+	<spw_loudsounddistortiontargetfrequency>Частота искажения</spw_loudsounddistortiontargetfrequency>
+	<spw_loudsounddistortiontargetfrequencytooltip>Центральная частота эквалайзера для искажения. Частоты, близкие к этому значению, будут сильнее затронуты эффектом.</spw_loudsounddistortiontargetfrequencytooltip>
+	<spw_loudsounddistortionlowpassfrequency>Частота НЧ-фильтра искажения</spw_loudsounddistortionlowpassfrequency>
+	<spw_loudsounddistortionlowpassfrequencytooltip>К искажённому сигналу применяется НЧ-фильтр. Это пороговая частота этого фильтра.</spw_loudsounddistortionlowpassfrequencytooltip>
+
+	<spw_categoryexperimental>Экспериментальное</spw_categoryexperimental>
+	
+	<spw_removeunusedbuffers>Очистка неиспользуемых буферов</spw_removeunusedbuffers>
+	<spw_removeunusedbufferstooltip>Загружает звуки без стандартного буфера приглушения, чтобы сэкономить ~100 МБ памяти по сравнению с оригиналом. По умолчанию отключено из-за возможных проблем совместимости с другими модами, которые взаимодействуют со звуковыми объектами на низком уровне. Однако в большинстве случаев эта настройка — бесплатный бонус.\n\nПримечание: изменение этой настройки во время игры может ненадолго заморозить игру на время загрузки буферов.</spw_removeunusedbufferstooltip>
+
+
+	<!-- StaticFx -->
+	<spw_staticfxtab>Статический режим</spw_staticfxtab>
+	<spw_heavylowpassfrequency>Частота сильного приглушения (НЧ)</spw_heavylowpassfrequency>
+	<spw_heavylowpassfrequencytooltip>Пороговая частота для приглушения сильно заблокированных звуков. Порог для применения этого фильтра настраивается на вкладке «Приглушение».\n\nПримечание: не применяется к голосовому чату. См. ползунки частот НЧ-фильтра на вкладке «Голос».\n\nПримечание: изменение этой настройки во время игры может ненадолго заморозить игру на время загрузки буферов.</spw_heavylowpassfrequencytooltip>
+	<spw_mediumlowpassfrequency>Частота среднего приглушения (НЧ)</spw_mediumlowpassfrequency>
+	<spw_mediumlowpassfrequencytooltip>Пороговая частота для приглушения умеренно заблокированных звуков. Порог для применения этого фильтра настраивается на вкладке «Приглушение».\n\nПримечание: не применяется к голосовому чату. См. ползунки частот НЧ-фильтра на вкладке «Голос».\n\nПримечание: изменение этой настройки во время игры может ненадолго заморозить игру на время загрузки буферов.</spw_mediumlowpassfrequencytooltip>
+	<spw_lightlowpassfrequency>Частота слабого приглушения (НЧ)</spw_lightlowpassfrequency>
+	<spw_lightlowpassfrequencytooltip>Пороговая частота для приглушения слабо заблокированных звуков. Порог для применения этого фильтра настраивается на вкладке «Приглушение».\n\nПримечание: не применяется к голосовому чату. См. ползунки частот НЧ-фильтра на вкладке «Голос».\n\nПримечание: изменение этой настройки во время игры может ненадолго заморозить игру на время загрузки буферов.</spw_lightlowpassfrequencytooltip>
+
+	<spw_staticreverb>Включить буферы реверберации</spw_staticreverb>
+	<spw_staticreverbtooltip>Загружает звуки с дополнительным буфером, пропущенным через фильтр реверберации. Эта функция применяется только к незацикленным и неприглушённым звукам.\n\nПримечание: использует ~100 МБ памяти и увеличивает время загрузки буферов (тем сильнее, чем дольше звук).\n\nПримечание: изменение этой настройки во время игры может ненадолго заморозить игру на время загрузки буферов.</spw_staticreverbtooltip>
+	<spw_staticreverbalwaysloudsounds>Всегда реверберировать громкие звуки</spw_staticreverbalwaysloudsounds>
+	<spw_staticreverbalwaysloudsoundstooltip>Звуки из списка «Пользовательские звуки» (вкладка «Продвинутые») с множителем сайдчейна больше единицы игнорируют требование к минимальной области реверберации.</spw_staticreverbalwaysloudsoundstooltip>
+	<spw_staticreverbduration>Длительность реверберации</spw_staticreverbduration>
+	<spw_staticreverbdurationtooltip>Время затухания и размер реверберации. Увеличение этого значения приводит к большему использованию памяти и времени загрузки буферов.</spw_staticreverbdurationtooltip>
+	<spw_staticreverbwetdrymix>Микс реверберации</spw_staticreverbwetdrymix>
+	<spw_staticreverbwetdrymixtooltip>Соотношение чистого/обработанного сигнала реверберации. Более высокое значение даёт более сильный эффект.</spw_staticreverbwetdrymixtooltip>
+	<spw_staticreverbdamping>Демпфирование реверберации</spw_staticreverbdamping>
+	<spw_staticreverbdampingtooltip>Сила НЧ-фильтра, применяемого к обратной связи реверберации.</spw_staticreverbdampingtooltip>
+	<spw_staticreverbminarea>Минимальная область реверберации</spw_staticreverbminarea>
+	<spw_staticreverbminareatooltip>Минимальная общая площадь соединённых помещений вокруг слушателя, необходимая для применения реверберации к незацикленным и неприглушённым звукам.</spw_staticreverbminareatooltip>
+
+	<!-- Voice -->
+	<spw_voicetab>Голос</spw_voicetab>
+
+	<spw_talkingragdolls>Говорящие рэгдоллы</spw_talkingragdolls>
+	<spw_talkingragdollstooltip>Слышать речь не оглушённых игроков, когда они находятся в состоянии рэгдолла.</spw_talkingragdollstooltip>
+	
+	<spw_voicerange>Локальная дальность</spw_voicerange>
+	<spw_voicerangetooltip>Дальность локального голосового чата.</spw_voicerangetooltip>
+	<spw_radiorange>Дальность рации</spw_radiorange>
+	<spw_radiorangetooltip>Дальность голосового чата по рации.</spw_radiorangetooltip>
+	<spw_voicevolume>Локальная громкость</spw_voicevolume>
+	<spw_voicevolumetooltip>Громкость локального голосового чата.\n\nПримечание: эта настройка не зависит от ползунка громкости голосового чата в Barotrauma.</spw_voicevolumetooltip>
+	<spw_radiovolume>Громкость рации</spw_radiovolume>
+	<spw_radiovolumetooltip>Громкость голосового чата по рации.\n\nПримечание: эта настройка не зависит от ползунка громкости голосового чата в Barotrauma.</spw_radiovolumetooltip>
+
+	<spw_categorydynamicfx>Только в динамическом режиме</spw_categorydynamicfx>
+
+	<spw_dynamicreverblocal>Реверберация (локально)</spw_dynamicreverblocal>
+	<spw_dynamicreverblocaltooltip>Позволяет применять реверберацию к локальному голосовому чату.\n\nПримечание: требует включения эффекта реверберации в динамическом режиме.</spw_dynamicreverblocaltooltip>
+	<spw_dynamicreverbradio>Реверберация (рация)</spw_dynamicreverbradio>
+	<spw_dynamicreverbradiotooltip>Позволяет применять реверберацию к голосовому чату по рации.\n\nПримечание: требует включения эффекта реверберации в динамическом режиме.</spw_dynamicreverbradiotooltip>
+	<spw_voicedynamicmufflemultiplier>Сила динамического приглушения</spw_voicedynamicmufflemultiplier>
+	<spw_voicedynamicmufflemultipliertooltip>Сила эффекта приглушения, применяемого к голосам игроков при использовании динамического режима.</spw_voicedynamicmufflemultipliertooltip>
+
+	<spw_voiceheavylowpassfrequency>Частота сильного приглушения голоса (НЧ)</spw_voiceheavylowpassfrequency>
+	<spw_voiceheavylowpassfrequencytooltip>Пороговая частота для приглушения сильно заблокированных голосов. Порог для применения этого фильтра настраивается на вкладке «Приглушение».</spw_voiceheavylowpassfrequencytooltip>
+	<spw_voicemediumlowpassfrequency>Частота среднего приглушения голоса (НЧ)</spw_voicemediumlowpassfrequency>
+	<spw_voicemediumlowpassfrequencytooltip>Пороговая частота для приглушения умеренно заблокированных голосов. Порог для применения этого фильтра настраивается на вкладке «Приглушение».</spw_voicemediumlowpassfrequencytooltip>
+	<spw_voicelightlowpassfrequency>Частота слабого приглушения голоса (НЧ)</spw_voicelightlowpassfrequency>
+	<spw_voicelightlowpassfrequencytooltip>Пороговая частота для приглушения слабо заблокированных голосов. Порог для применения этого фильтра настраивается на вкладке «Приглушение».</spw_voicelightlowpassfrequencytooltip>
+
+	<spw_categoryscreammode>Режим крика</spw_categoryscreammode>
+
+	<spw_screammode>Режим крика</spw_screammode>
+	<spw_screammodetooltip>Дальность локального голосового чата зависит от громкости вашего голоса (крик слышно дальше).\n\nПримечание: для лучших результатов настройте громкость микрофона в Barotrauma так, чтобы индикатор активности голоса не зашкаливал. Чем больше динамический диапазон вашего микрофона, тем лучше.</spw_screammodetooltip>
+	<spw_screammodemaxrange>Макс. дальность крика</spw_screammodemaxrange>
+	<spw_screammodemaxrangetooltip>Максимальная дальность локального голосового чата при разговоре на полной громкости с включённым «Режимом крика».\n\nПримечание: на эту настройку влияет множитель «Локальная дальность».</spw_screammodemaxrangetooltip>
+	<spw_screammodeminrange>Мин. дальность крика</spw_screammodeminrange>
+	<spw_screammodeminrangetooltip>Минимальная дальность локального голосового чата с включённым «Режимом крика».</spw_screammodeminrangetooltip>
+	<spw_screammodereleaserate>Скорость затухания крика</spw_screammodereleaserate>
+	<spw_screammodereleaseratetooltip>Скорость, с которой дальность голоса уменьшается в секунду, когда громкость перестаёт её поддерживать.</spw_screammodereleaseratetooltip>
+	
+	<spw_categorybubbles>Утопление</spw_categorybubbles>
+	
+	<spw_drowningbubbles>Пузыри при утоплении</spw_drowningbubbles>
+	<spw_drowningbubblestooltip>Игроки, говорящие под водой без кислорода, испускают видимые пузыри, которые можно услышать локально или по рации.</spw_drowningbubblestooltip>
+	<spw_drowningbubbleslocalrange>Локальная дальность пузырей</spw_drowningbubbleslocalrange>
+	<spw_drowningbubbleslocalrangetooltip>Слышимая дальность звука локальных пузырей.</spw_drowningbubbleslocalrangetooltip>
+	<spw_drowningbubbleslocalvolume>Локальная громкость пузырей</spw_drowningbubbleslocalvolume>
+	<spw_drowningbubbleslocalvolumetooltip>Громкость звука локальных пузырей.</spw_drowningbubbleslocalvolumetooltip>
+	<spw_drowningbubblesradiovolume>Громкость пузырей по рации</spw_drowningbubblesradiovolume>
+	<spw_drowningbubblesradiovolumetooltip>Громкость звука пузырей по рации.</spw_drowningbubblesradiovolumetooltip>
+	
+	<spw_categorycustomfilter>Фильтр рации</spw_categorycustomfilter>
+
+	<spw_radiocustomfilter>Пользовательский фильтр рации</spw_radiocustomfilter>
+	<spw_radiocustomfiltertooltip>Обрабатывает голосовой чат по рации с помощью пользовательского фильтра, включающего настраиваемую компрессию, искажение и шумовые эффекты.</spw_radiocustomfiltertooltip>
+	<spw_radiobandpassfrequency>Частота полосового фильтра рации</spw_radiobandpassfrequency>
+	<spw_radiobandpassfrequencytooltip>Центральная частота полосового фильтра. Пропускаются только частоты, близкие к этому значению.\n\nПримечание: ширина диапазона задаётся параметром «Q-фактор полосового фильтра рации» ниже.</spw_radiobandpassfrequencytooltip>
+	<spw_radiobandpassqualityfactor>Q-фактор полосового фильтра рации</spw_radiobandpassqualityfactor>
+	<spw_radiobandpassqualityfactortooltip>Насколько узок полосовой фильтр вокруг своей центральной частоты. Более высокие значения создают более узкий и выраженный эффект.</spw_radiobandpassqualityfactortooltip>
+	<spw_radiodistortiondrive>Драйв искажения рации</spw_radiodistortiondrive>
+	<spw_radiodistortiondrivetooltip>Усиливает голосовой сигнал перед клиппингом. Более высокие значения увеличивают интенсивность искажения.</spw_radiodistortiondrivetooltip>
+	<spw_radiodistortionthreshold>Порог искажения рации</spw_radiodistortionthreshold>
+	<spw_radiodistortionthresholdtooltip>Максимально допустимый уровень. Сэмплы, превышающие этот предел, подвергаются жёсткому клиппингу.</spw_radiodistortionthresholdtooltip>
+	<spw_radiostatic>Статические помехи рации</spw_radiostatic>
+	<spw_radiostatictooltip>Интенсивность статического шума, добавляемого к радиопередачам.</spw_radiostatictooltip>
+	<spw_radiocompressionthreshold>Порог компрессии рации</spw_radiocompressionthreshold>
+	<spw_radiocompressionthresholdtooltip>Уровень входного сигнала, при котором начинается компрессия. Звуки ниже этого уровня не затрагиваются.</spw_radiocompressionthresholdtooltip>
+	<spw_radiocompressionratio>Коэффициент компрессии рации</spw_radiocompressionratio>
+	<spw_radiocompressionratiotooltip>Насколько сильно уменьшается громкость выше порога. Более высокие коэффициенты означают более сильную компрессию и меньший динамический диапазон.</spw_radiocompressionratiotooltip>
+	<spw_radiopostfilterboost>Усиление после фильтра</spw_radiopostfilterboost>
+	<spw_radiopostfilterboosttooltip>Общий уровень выходного сигнала после фильтрации рации.</spw_radiopostfilterboosttooltip>
+	
+	<!-- Muffle -->
+	<spw_muffletab>Приглушение</spw_muffletab>
+	<spw_muffledivingsuit>Приглушение в водолазных костюмах</spw_muffledivingsuit>
+	<spw_muffledivingsuittooltip>Применяет преграду «Водолазный костюм» ко всем звукам, когда надет водолазный костюм.</spw_muffledivingsuittooltip>
+	<spw_mufflesubmergedplayer>Приглушение под водой (игрок)</spw_mufflesubmergedplayer>
+	<spw_mufflesubmergedplayertooltip>Применяет преграду «Толща воды» к звукам, находящимся в той же воде, что и голова игрока.</spw_mufflesubmergedplayertooltip>
+	<spw_mufflesubmergedviewtarget>Приглушение под водой (цель)</spw_mufflesubmergedviewtarget>
+	<spw_mufflesubmergedviewtargettooltip>Применяет преграду «Толща воды» к звукам, находящимся в той же воде, что и цель обзора.\n\nПримечание: требует включения «Фокус звука на цели» (вкладка «Общие»).</spw_mufflesubmergedviewtargettooltip>
+	<spw_mufflewatersurface>Приглушение поверхностью воды</spw_mufflewatersurface>
+	<spw_mufflewatersurfacetooltip>Применяет преграду «Поверхность воды» к звукам с противоположной стороны границы вода-воздух.</spw_mufflewatersurfacetooltip>
+	<spw_muffleflowfirepath>Приглушение путей потоков и огня</spw_muffleflowfirepath>
+	<spw_muffleflowfirepathtooltip>Приглушает звуки потоков воды и огня, если у них нет пути к слушателю.\n\nПримечание: эта функция использует систему предсказания, которая может быть неточной в некоторых ситуациях.</spw_muffleflowfirepathtooltip>
+	<spw_muffleflowsounds>Приглушение звуков потоков</spw_muffleflowsounds>
+	<spw_muffleflowsoundstooltip>Включает приглушение звуков потоков воды из всех источников.</spw_muffleflowsoundstooltip>
+	<spw_mufflefiresounds>Приглушение звуков огня</spw_mufflefiresounds>
+	<spw_mufflefiresoundstooltip>Включает приглушение звуков огня из всех источников.</spw_mufflefiresoundstooltip>
+	<spw_classiclowpassfrequency>Классическая частота приглушения (НЧ)</spw_classiclowpassfrequency>
+	<spw_classiclowpassfrequencytooltip>Пороговая частота для приглушения звуков в классическом режиме. Порог для применения этого фильтра настраивается на вкладке «Приглушение».\n\nПримечание: не применяется к голосовому чату. См. ползунки частот НЧ-фильтра на вкладке «Голос».\n\nПримечание: изменение этой настройки во время игры может ненадолго заморозить игру на время загрузки буферов.</spw_classiclowpassfrequencytooltip>
+
+	<spw_categoryobstructions>Сила приглушения преградами</spw_categoryobstructions>
+
+	<spw_obstructionwatersurface>Поверхность воды</spw_obstructionwatersurface>
+	<spw_obstructionwatersurfacetooltip>Сила приглушения, применяемая, когда звук пересекает границу вода-воздух.\n\nПримечание: эффекты перемножаются (с убывающей отдачей).</spw_obstructionwatersurfacetooltip>
+	<spw_obstructionwaterbody>Толща воды</spw_obstructionwaterbody>
+	<spw_obstructionwaterbodytooltip>Сила приглушения, применяемая, когда звук проходит через воду, чтобы достичь слушателя, не пересекая границу вода-воздух (т. е. звук начинается и заканчивается в одной и той же толще воды).\n\nПримечание: эффекты перемножаются (с убывающей отдачей).</spw_obstructionwaterbodytooltip>
+	<spw_obstructionwallthick>Толстая стена</spw_obstructionwallthick>
+	<spw_obstructionwallthicktooltip>Сила приглушения, применяемая, когда звук проходит через стену обычным образом.\n\nПримечание: эффекты перемножаются (с убывающей отдачей).</spw_obstructionwallthicktooltip>
+	<spw_obstructionwallthin>Тонкая стена</spw_obstructionwallthin>
+	<spw_obstructionwallthintooltip>Сила приглушения, применяемая, когда звук проходит сквозь стену (распространение или гидрофонные конструкции) или имеет частичный путь к слушателю (окклюзия).\n\nПримечание: эффекты перемножаются (с убывающей отдачей).</spw_obstructionwallthintooltip>
+	<spw_obstructiondoorthick>Толстая дверь</spw_obstructiondoorthick>
+	<spw_obstructiondoorthicktooltip>Сила приглушения, применяемая, когда звук проходит через дверь обычным образом.\n\nПримечание: эффекты перемножаются (с убывающей отдачей).</spw_obstructiondoorthicktooltip>
+	<spw_obstructiondoorthin>Тонкая дверь</spw_obstructiondoorthin>
+	<spw_obstructiondoorthintooltip>Сила приглушения, применяемая, когда звук проходит сквозь дверь (подслушивание, распространение или внутри контейнера).\n\nПримечание: эффекты перемножаются (с убывающей отдачей).</spw_obstructiondoorthintooltip>
+	<spw_obstructionsuit>Водолазный костюм</spw_obstructionsuit>
+	<spw_obstructionsuittooltip>Сила приглушения, применяемая, когда звук проходит через водолазный костюм.\n\nПримечание: также применяется к звукам снаружи подлодки при использовании гидрофонов.\n\nПримечание: эффекты перемножаются (с убывающей отдачей).</spw_obstructionsuittooltip>
+	<spw_obstructiondrowning>Утопление игрока</spw_obstructiondrowning>
+	<spw_obstructiondrowningtooltip>Сила приглушения, применяемая к голосу игрока, когда он говорит во время утопления.\n\nПримечание: эффекты перемножаются (с убывающей отдачей).</spw_obstructiondrowningtooltip>
+	
+	<spw_classicmufflethreshold>Порог приглушения (классич.)</spw_classicmufflethreshold>
+	<spw_classicmufflethresholdtooltip>Минимальный общий уровень преград, необходимый для того, чтобы звуки использовали «Классическую частоту приглушения (НЧ)» (вкладка «Приглушение»).</spw_classicmufflethresholdtooltip>
+
+	<spw_staticlightmufflethreshold>Порог слабого приглушения (статич.)</spw_staticlightmufflethreshold>
+	<spw_staticlightmufflethresholdtooltip>Минимальный общий уровень преград, необходимый для того, чтобы звуки и голоса использовали «Частоту слабого приглушения (НЧ)» (вкладка «Статический») или «Частоту слабого приглушения голоса (НЧ)» (вкладка «Голос»).</spw_staticlightmufflethresholdtooltip>
+
+	<spw_staticmediummufflethreshold>Порог среднего приглушения (статич.)</spw_staticmediummufflethreshold>
+	<spw_staticmediummufflethresholdtooltip>Минимальный общий уровень преград, необходимый для того, чтобы звуки и голоса использовали «Частоту среднего приглушения (НЧ)» (вкладка «Статический») или «Частоту среднего приглушения голоса (НЧ)» (вкладка «Голос»).</spw_staticmediummufflethresholdtooltip>
+
+	<spw_staticheavymufflethreshold>Порог сильного приглушения (статич.)</spw_staticheavymufflethreshold>
+	<spw_staticheavymufflethresholdtooltip>Минимальный общий уровень преград, необходимый для того, чтобы звуки и голоса использовали «Частоту сильного приглушения (НЧ)» (вкладка «Статический») или «Частоту сильного приглушения голоса (НЧ)» (вкладка «Голос»).</spw_staticheavymufflethresholdtooltip>
+
+	<spw_categorythresholds>Пороги приглушения</spw_categorythresholds>
+
+	<!-- Volume -->
+	<spw_volumetab>Громкость</spw_volumetab>
+
+	<spw_categorysidechaining>Сайдчейн</spw_categorysidechaining>
+
+	<spw_sidechaining>Включить сайдчейн</spw_sidechaining>
+	<spw_sidechainingtooltip>Приглушает громкость всех звуков, когда воспроизводится более громкий звук.\n\nПримечание: чтобы звук считался громким, он должен быть указан в списке «Пользовательские звуки» (вкладка «Продвинутые») с множителем сайдчейна больше нуля.</spw_sidechainingtooltip>
+	<spw_sidechainmusic>Сайдчейн для музыки</spw_sidechainmusic>
+	<spw_sidechainmusictooltip>Приглушает громкость музыкальных треков, когда воспроизводится громкий звук.</spw_sidechainmusictooltip>
+
+	<spw_sidechainintensitymaster>Общая интенсивность сайдчейна</spw_sidechainintensitymaster>
+	<spw_sidechainintensitymastertooltip>Глобальный множитель, применяемый ко всем множителям сайдчейна в списке «Пользовательские звуки» (вкладка «Продвинутые»).</spw_sidechainintensitymastertooltip>
+	<spw_sidechainreleasemaster>Общее затухание сайдчейна</spw_sidechainreleasemaster>
+	<spw_sidechainreleasemastertooltip>Фиксированное время, добавляемое ко всем затуханиям сайдчейна в списке «Пользовательские звуки» (вкладка «Продвинутые»).</spw_sidechainreleasemastertooltip>
+	<spw_sidechainreleasecurve>Кривая затухания сайдчейна</spw_sidechainreleasecurve>
+	<spw_sidechainreleasecurvetooltip>Экспонента, используемая для расчёта формы кривой затухания сайдчейна. Значения ниже единицы реагируют медленно и затухают резче к концу. Значения выше единицы спадают быстро и выравниваются к концу.</spw_sidechainreleasecurvetooltip>
+	<spw_sidechainmufflepower>Влияние приглушения на сайдчейн</spw_sidechainmufflepower>
+	<spw_sidechainmufflepowertooltip>Насколько сильно эффект сайдчейна реагирует на силу приглушения звука. Более высокие значения заставляют сильно приглушённые звуки агрессивнее уменьшать сайдчейн.</spw_sidechainmufflepowertooltip>
+	<spw_sidechainmusicmultiplier>Сила сайдчейна для музыки</spw_sidechainmusicmultiplier>
+	<spw_sidechainmusicmultipliertooltip>Интенсивность эффекта сайдчейна для музыки.</spw_sidechainmusicmultipliertooltip>
+
+	<spw_muffledsoundvolume>Громкость приглушённых звуков</spw_muffledsoundvolume>
+	<spw_muffledsoundvolumetooltip>Громкость полностью приглушённых незацикленных звуков. Смешивается с «Громкостью неприглушённых звуков» в зависимости от активных преград (например, при силе приглушения 0.75, эффект применяется на 75%).</spw_muffledsoundvolumetooltip>
+	<spw_unmuffledsoundvolume>Громкость неприглушённых звуков</spw_unmuffledsoundvolume>
+	<spw_unmuffledsoundvolumetooltip>Громкость неприглушённых незацикленных звуков. Смешивается с «Громкостью приглушённых звуков» в зависимости от силы приглушения.</spw_unmuffledsoundvolumetooltip>
+	<spw_muffledvoicevolume>Громкость приглушённых голосов</spw_muffledvoicevolume>
+	<spw_muffledvoicevolumetooltip>Громкость полностью приглушённых голосов игроков. Смешивается с «Громкостью неприглушённых голосов» в зависимости от силы приглушения (например, при силе приглушения 0.75, эффект применяется на 75%).</spw_muffledvoicevolumetooltip>
+	<spw_unmuffledvoicevolume>Громкость неприглушённых голосов</spw_unmuffledvoicevolume>
+	<spw_unmuffledvoicevolumetooltip>Громкость неприглушённых голосов игроков. Смешивается с «Громкостью приглушённых голосов» в зависимости от силы приглушения.</spw_unmuffledvoicevolumetooltip>
+	<spw_muffledloopingvolume>Громкость приглушённых зацикленных звуков</spw_muffledloopingvolume>
+	<spw_muffledloopingvolumetooltip>Громкость полностью приглушённых зацикленных звуков (например, вентиляция, реактор, двигатель). Смешивается с «Громкостью неприглушённых зацикленных звуков» в зависимости от силы приглушения (например, при силе приглушения 0.75, эффект применяется на 75%).</spw_muffledloopingvolumetooltip>
+	<spw_unmuffledloopingvolume>Громкость неприглушённых зацикленных звуков</spw_unmuffledloopingvolume>
+	<spw_unmuffledloopingvolumetooltip>Громкость неприглушённых зацикленных звуков (которые автоматически повторяются). Смешивается с «Громкостью приглушённых зацикленных звуков» в зависимости от силы приглушения.</spw_unmuffledloopingvolumetooltip>
+	<spw_submergedvolume>Громкость под водой (вместе)</spw_submergedvolume>
+	<spw_submergedvolumetooltip>Громкость звуков, находящихся в той же воде, что и слушатель. Перемножается с другими множителями громкости.</spw_submergedvolumetooltip>
+	<spw_flowsoundvolume>Громкость потоков воды</spw_flowsoundvolume>
+	<spw_flowsoundvolumetooltip>Громкость потоков воды, вызванных протечками в подлодке.</spw_flowsoundvolumetooltip>
+	<spw_firesoundvolume>Громкость огня</spw_firesoundvolume>
+	<spw_firesoundvolumetooltip>Громкость огня.</spw_firesoundvolumetooltip>
+	<spw_vanillaexosuitvolume>Стандартная громкость экзокостюма</spw_vanillaexosuitvolume>
+	<spw_vanillaexosuitvolumetooltip>Громкость стандартного звука движения экзокостюма.</spw_vanillaexosuitvolumetooltip>
+	<spw_loopingcomponentsoundnearmultiplier>Начало затухания звуков компонентов</spw_loopingcomponentsoundnearmultiplier>
+	<spw_loopingcomponentsoundnearmultipliertooltip>Процент от максимальной дальности зацикленного звука компонента, на котором его громкость начинает уменьшаться.</spw_loopingcomponentsoundnearmultipliertooltip>
+	<spw_mindistancefalloffvolume>Мин. громкость при затухании</spw_mindistancefalloffvolume>
+	<spw_mindistancefalloffvolumetooltip>Минимальное усиление, которого может достичь звук из-за затухания по расстоянию при использовании модели «Реалистичное затухание звука» (настройка на вкладке «Общие»).</spw_mindistancefalloffvolumetooltip>
+
+
+	<!-- Eavesdropping -->
+	<spw_eavesdroppingtab>Подслушивание</spw_eavesdroppingtab>
+	<spw_eavesdroppingenabled>Включить подслушивание</spw_eavesdroppingenabled>
+	<spw_eavesdroppingenabledtooltip>Включает или отключает возможность подслушивать.</spw_eavesdroppingenabledtooltip>
+	<spw_eavesdroppingmuffle>Приглушать подслушиваемые звуки</spw_eavesdroppingmuffle>
+	<spw_eavesdroppingmuffletooltip>Приглушает звуки, слышимые при подслушивании, применяя преграду «Тонкая дверь».</spw_eavesdroppingmuffletooltip>
+	<spw_eavesdroppingtransition>Плавный переход при подслушивании</spw_eavesdroppingtransition>
+	<spw_eavesdroppingtransitiontooltip>Плавно переключает звук между корпусами при подслушивании.</spw_eavesdroppingtransitiontooltip>
+	<spw_eavesdroppingducksradio>Подслушивание приглушает рацию</spw_eavesdroppingducksradio>
+	<spw_eavesdroppingducksradiotooltip>Уменьшает громкость радиосвязи во время подслушивания.</spw_eavesdroppingducksradiotooltip>
+
+	<spw_eavesdroppingbind>Клавиша подслушивания</spw_eavesdroppingbind>
+	<spw_eavesdroppingbindtooltip>Изменяет кнопку, которую нужно удерживать для подслушивания.\nЭта настройка не синхронизируется с другими игроками.</spw_eavesdroppingbindtooltip>
+
+	<spw_eavesdroppingsoundvolume>Громкость подслушиваемых звуков</spw_eavesdroppingsoundvolume>
+	<spw_eavesdroppingsoundvolumetooltip>Громкость звуков, слышимых при подслушивании.</spw_eavesdroppingsoundvolumetooltip>
+	<spw_eavesdroppingvoicevolume>Громкость подслушиваемых голосов</spw_eavesdroppingvoicevolume>
+	<spw_eavesdroppingvoicevolumetooltip>Громкость голосов игроков, слышимых при подслушивании.</spw_eavesdroppingvoicevolumetooltip>
+	<spw_eavesdroppingsoundpitch>Высота тона подслушиваемых звуков</spw_eavesdroppingsoundpitch>
+	<spw_eavesdroppingsoundpitchtooltip>Высота тона звуков, слышимых при подслушивании. Не применяется к голосам игроков.</spw_eavesdroppingsoundpitchtooltip>
+	<spw_eavesdroppingmaxdistance>Макс. дистанция подслушивания</spw_eavesdroppingmaxdistance>
+	<spw_eavesdroppingmaxdistancetooltip>Максимальное расстояние от головы игрока до двери при подслушивании.</spw_eavesdroppingmaxdistancetooltip>
+	<spw_eavesdroppingtransitionduration>Длительность перехода при подслушивании</spw_eavesdroppingtransitionduration>
+	<spw_eavesdroppingtransitiondurationtooltip>Количество секунд, которое занимает плавный переход при подслушивании.</spw_eavesdroppingtransitiondurationtooltip>
+	<spw_eavesdroppingthreshold>Порог подслушивания</spw_eavesdroppingthreshold>
+	<spw_eavesdroppingthresholdtooltip>Процент плавного перехода, который должен завершиться, прежде чем игрок начнёт слышать звуки с другой стороны двери.</spw_eavesdroppingthresholdtooltip>
+
+	<spw_eavesdroppingrevealsall>Показывать все звуки</spw_eavesdroppingrevealsall>
+	<spw_eavesdroppingrevealsalltooltip>Применяет эффект свечения к звукам, не имеющим пути к подслушиваемой области. Звуки в корпусе слушателя по-прежнему игнорируются.</spw_eavesdroppingrevealsalltooltip>
+	<spw_eavesdroppingspritemaxsize>Макс. размер свечения</spw_eavesdroppingspritemaxsize>
+	<spw_eavesdroppingspritemaxsizetooltip>Максимальный размер эффекта свечения. Полезно для ограничения размера эффекта для звуков с большой дальностью.</spw_eavesdroppingspritemaxsizetooltip>
+	<spw_eavesdroppingspritesizemultiplier>Множитель размера свечения</spw_eavesdroppingspritesizemultiplier>
+	<spw_eavesdroppingspritesizemultipliertooltip>Размер эффекта свечения относительно дальности звука.</spw_eavesdroppingspritesizemultipliertooltip>
+	<spw_eavesdroppingspriteopacity>Непрозрачность свечения</spw_eavesdroppingspriteopacity>
+	<spw_eavesdroppingspriteopacitytooltip>Сила эффекта свечения, исходящего от подслушиваемых звуков.</spw_eavesdroppingspriteopacitytooltip>
+	<spw_eavesdroppingspritefadecurve>Кривая затухания свечения</spw_eavesdroppingspritefadecurve>
+	<spw_eavesdroppingspritefadecurvetooltip>Экспонента, используемая для расчёта формы кривой затухания спрайта. Значения ниже единицы начинаются медленно и затухают резче к концу. Значения выше единицы спадают быстро и выравниваются к концу.</spw_eavesdroppingspritefadecurvetooltip>
+	<spw_eavesdroppingzoom>Зум камеры при подслушивании</spw_eavesdroppingzoom>
+	<spw_eavesdroppingzoomtooltip>Насколько камера должна приближаться при подслушивании.</spw_eavesdroppingzoomtooltip>
+	<spw_eavesdroppingvignette>Непрозрачность виньетки</spw_eavesdroppingvignette>
+	<spw_eavesdroppingvignettetooltip>Сила эффекта виньетки по краям экрана при подслушивании.</spw_eavesdroppingvignettetooltip>
+
+	<!-- Hydrophone -->
+	<spw_hydrophonestab>Гидрофоны</spw_hydrophonestab>
+	<spw_hydrophoneswitchenabled>Включить переключатель гидрофонов</spw_hydrophoneswitchenabled>
+	<spw_hydrophoneswitchenabledtooltip>Включает функцию гидрофонов, добавляя или удаляя переключатель на терминале (требуется перезапуск раунда).</spw_hydrophoneswitchenabledtooltip>
+	<spw_hydrophonemovementsounds>Звуки движения</spw_hydrophonemovementsounds>
+	<spw_hydrophonemovementsoundstooltip>Воспроизводит направленные звуки движения воды через гидрофоны для близлежащих существ.</spw_hydrophonemovementsoundstooltip>
+	<spw_hydrophonelegacyswitch>Старая логика переключателя</spw_hydrophonelegacyswitch>
+	<spw_hydrophonelegacyswitchtooltip>Использует старую логику переключателя гидрофонов (выключается при использовании активного сонара).</spw_hydrophonelegacyswitchtooltip>
+	<spw_hydrophonehearengine>Слышать двигатели</spw_hydrophonehearengine>
+	<spw_hydrophonehearenginetooltip>Слышать двигатели подлодок через гидрофоны.</spw_hydrophonehearenginetooltip>
+	<spw_hydrophonehearintostructures>Слышать внутри конструкций</spw_hydrophonehearintostructures>
+	<spw_hydrophonehearintostructurestooltip>Улавливать звук из других подлодок или аванпостов. Звуки в этих конструкциях получают преграду «Тонкая стена».</spw_hydrophonehearintostructurestooltip>
+	<spw_hydrophonemuffleownsub>Приглушать свою подлодку</spw_hydrophonemuffleownsub>
+	<spw_hydrophonemuffleownsubtooltip>Приглушает звуки, исходящие из вашей собственной конструкции. Применяется преграда «Поверхность воды».</spw_hydrophonemuffleownsubtooltip>
+	<spw_hydrophonerange>Дальность гидрофонов</spw_hydrophonerange>
+	<spw_hydrophonerangetooltip>Дальность подводных звуков движения и дополнительная дальность, добавляемая ко всем звукам снаружи подлодки при использовании гидрофонов.</spw_hydrophonerangetooltip>
+	<spw_hydrophonevolume>Громкость гидрофонов</spw_hydrophonevolume>
+	<spw_hydrophonevolumetooltip>Громкость звука, слышимого через гидрофоны.</spw_hydrophonevolumetooltip>
+	<spw_hydrophonepitch>Высота тона гидрофонов</spw_hydrophonepitch>
+	<spw_hydrophonepitchtooltip>Высота тона звука, слышимого через гидрофоны. Не применяется к голосам игроков.</spw_hydrophonepitchtooltip>
+	<spw_hydrophoneambiencevolume>Громкость эмбиента гидрофонов</spw_hydrophoneambiencevolume>
+	<spw_hydrophoneambiencevolumetooltip>Громкость фонового трека, который воспроизводится при прослушивании гидрофонов.</spw_hydrophoneambiencevolumetooltip>
+	<spw_hydrophonemovementvolume>Громкость движения (гидрофоны)</spw_hydrophonemovementvolume>
+	<spw_hydrophonemovementvolumetooltip>Громкость звука плеска воды, вызванного движущимися объектами в воде.</spw_hydrophonemovementvolumetooltip>
+	
+	<spw_hydrophonevisualfeedbackenabled>Визуальная обратная связь</spw_hydrophonevisualfeedbackenabled>
+	<spw_hydrophonevisualfeedbackenabledtooltip>Включает красные подсветки на интерфейсе сонара, которые визуально представляют направление, размер и предполагаемое расстояние до звуков в воде. Расстояние можно определить по дальности звука и ширине подсвеченного сектора.</spw_hydrophonevisualfeedbackenabledtooltip>
+	<spw_hydrophoneusagedisablessonarblips>Отключить пассивный сонар</spw_hydrophoneusagedisablessonarblips>
+	<spw_hydrophoneusagedisablessonarblipstooltip>Прекращает отрисовку отметок сонара при мониторинге гидрофонов. Отметки сонара визуально отображают окружение.</spw_hydrophoneusagedisablessonarblipstooltip>
+	<spw_hydrophoneusagedisablessuboutline>Отключить контур подлодки</spw_hydrophoneusagedisablessuboutline>
+	<spw_hydrophoneusagedisablessuboutlinetooltip>Прекращает отрисовку контура подлодки и её стыковочных шлюзов при мониторинге гидрофонов.</spw_hydrophoneusagedisablessuboutlinetooltip>
+	<spw_hydrophonevisualfeedbacksizemultiplier>Размер визуальной обратной связи</spw_hydrophonevisualfeedbacksizemultiplier>
+	<spw_hydrophonevisualfeedbacksizemultipliertooltip>Насколько толстыми должны быть визуальные секторы.</spw_hydrophonevisualfeedbacksizemultipliertooltip>
+	<spw_hydrophonevisualfeedbackopacitymultiplier>Непрозрачность визуальной обратной связи</spw_hydrophonevisualfeedbackopacitymultiplier>
+	<spw_hydrophonevisualfeedbackopacitymultipliertooltip>Прозрачность эффекта визуальной обратной связи.</spw_hydrophonevisualfeedbackopacitymultipliertooltip>
+	<spw_hydrophonevisualfeedbackfadeduration>Длительность затухания обратной связи</spw_hydrophonevisualfeedbackfadeduration>
+	<spw_hydrophonevisualfeedbackfadedurationtooltip>Количество секунд, за которое каждый сектор затухает.</spw_hydrophonevisualfeedbackfadedurationtooltip>
+	
+	<spw_hydrophonereverb>Симулировать реверберацию</spw_hydrophonereverb>
+	<spw_hydrophonereverbtooltip>Включает уникальный пресет реверберации для гидрофонов.</spw_hydrophonereverbtooltip>
+	<spw_hydrophonereverbtargetgain>Сила реверберации</spw_hydrophonereverbtargetgain>
+	<spw_hydrophonereverbtargetgaintooltip>Целевое усиление для реверберации гидрофонов.</spw_hydrophonereverbtargetgaintooltip>
+	
+	<spw_hydrophonedistortion>Искажение гидрофонов</spw_hydrophonedistortion>
+	<spw_hydrophonedistortiontooltip>Применяет эффект искажения к звукам, слышимым через гидрофоны.</spw_hydrophonedistortiontooltip>
+	<spw_hydrophonedistortiontargetgain>Усиление искажения</spw_hydrophonedistortiontargetgain>
+	<spw_hydrophonedistortiontargetgaintooltip>Общая громкость эффекта искажения гидрофонов.</spw_hydrophonedistortiontargetgaintooltip>
+	<spw_hydrophonedistortiontargetedge>Жёсткость искажения</spw_hydrophonedistortiontargetedge>
+	<spw_hydrophonedistortiontargetedgetooltip>Жёсткость эффекта искажения гидрофонов. Более высокое значение приводит к большему количеству высокочастотных гармоник.</spw_hydrophonedistortiontargetedgetooltip>
+
+	<spw_hydrophonebandpassfilter>Полосовой фильтр гидрофонов</spw_hydrophonebandpassfilter>
+	<spw_hydrophonebandpassfiltertooltip>Применяет полосовой фильтр к звукам, слышимым через гидрофоны. Полосовой фильтр обрезает высокие и низкие частоты, оставляя только средние. Это создаёт звук, похожий на радио.</spw_hydrophonebandpassfiltertooltip>
+	<spw_hydrophonebandpassfilterhfgain>Усиление ВЧ полосового фильтра</spw_hydrophonebandpassfilterhfgain>
+	<spw_hydrophonebandpassfilterhfgaintooltip>Громкость высоких частот в полосовом фильтре гидрофонов.</spw_hydrophonebandpassfilterhfgaintooltip>
+	<spw_hydrophonebandpassfilterlfgain>Усиление НЧ полосового фильтра</spw_hydrophonebandpassfilterlfgain>
+	<spw_hydrophonebandpassfilterlfgaintooltip>Громкость низких частот в полосовом фильтре гидрофонов.</spw_hydrophonebandpassfilterlfgaintooltip>
+
+	<spw_categoryadvanced>Продвинутые</spw_categoryadvanced>
+
+	<spw_hydrophonemuffleignoredsounds>Игнорировать приглушение гидрофонов</spw_hydrophonemuffleignoredsounds>
+	<spw_hydrophonemuffleignoredsoundstooltip>Звуки в этом списке никогда не будут заглушаться при использовании гидрофонов.</spw_hydrophonemuffleignoredsoundstooltip>
+	
+	<spw_hydrophonevisualignoredsounds>Игнорировать в визуальной обратной связи</spw_hydrophonevisualignoredsounds>
+	<spw_hydrophonevisualignoredsoundstooltip>Звуки в этом списке никогда не будут отображаться при мониторинге гидрофонов.</spw_hydrophonevisualignoredsoundstooltip>
+	
+	<!-- Ambience -->
+	<spw_ambiencetab>Эмбиент</spw_ambiencetab>
+	<spw_disablewhitenoise>Отключить белый шум</spw_disablewhitenoise>
+	<spw_disablewhitenoisetooltip>Отключает фоновые зацикленные звуки белого шума биомов.</spw_disablewhitenoisetooltip>
+
+	<spw_categorytrack>Настройки треков</spw_categorytrack>
+	<spw_waterambienceinvolume>Громкость эмбиента воды «Внутри»</spw_waterambienceinvolume>
+	<spw_waterambienceinvolumetooltip>Общий множитель громкости для фонового трека, который играет внутри (он также играет снаружи поверх трека «снаружи»).</spw_waterambienceinvolumetooltip>
+	<spw_waterambienceoutvolume>Громкость эмбиента воды «Снаружи»</spw_waterambienceoutvolume>
+	<spw_waterambienceoutvolumetooltip>Общий множитель громкости для фонового трека, который играет снаружи.</spw_waterambienceoutvolumetooltip>
+	<spw_waterambiencemovingvolume>Громкость эмбиента воды «В движении»</spw_waterambiencemovingvolume>
+	<spw_waterambiencemovingvolumetooltip>Общий множитель громкости для фонового трека, который играет, когда подлодка или игрок движутся в воде.</spw_waterambiencemovingvolumetooltip>
+
+	<spw_categoryenvironment>Настройки окружения</spw_categoryenvironment>
+	<spw_unsubmergedsuitwaterambiencevolume>Громкость эмбиента воды (на суше, в костюме)</spw_unsubmergedsuitwaterambiencevolume>
+	<spw_unsubmergedsuitwaterambiencevolumetooltip></spw_unsubmergedsuitwaterambiencevolumetooltip>
+	<spw_unsubmergednosuitwaterambiencevolume>Громкость эмбиента воды (на суше, без костюма)</spw_unsubmergednosuitwaterambiencevolume>
+	<spw_unsubmergednosuitwaterambiencevolumetooltip></spw_unsubmergednosuitwaterambiencevolumetooltip>
+	<spw_submergedsuitwaterambiencevolume>Громкость эмбиента воды (под водой, в костюме)</spw_submergedsuitwaterambiencevolume>
+	<spw_submergedsuitwaterambiencevolumetooltip></spw_submergedsuitwaterambiencevolumetooltip>
+	<spw_submergednosuitwaterambiencevolume>Громкость эмбиента воды (под водой, без костюма)</spw_submergednosuitwaterambiencevolume>
+	<spw_submergednosuitwaterambiencevolumetooltip></spw_submergednosuitwaterambiencevolumetooltip>
 	<spw_waterambiencetransitionspeed>Скорость перехода эмбиента воды</spw_waterambiencetransitionspeed>
-	<spw_waterambiencetransitionspeedtooltip>Скорость, с которой эмбиент воды переходит между предустановками громкости</spw_waterambiencetransitionspeedtooltip>
+	<spw_waterambiencetransitionspeedtooltip>Скорость, с которой эмбиент воды переключается между пресетами громкости.</spw_waterambiencetransitionspeedtooltip>
 
-	<spw_advancedsoundsettings>Продвинутые настройки звука</spw_advancedsoundsettings>
-	<spw_soundvolumemultipliers>Множители громкости звука</spw_soundvolumemultipliers>
-	<spw_ignoredsounds>Исключённые из обработок звуки</spw_ignoredsounds>
-	<spw_lowpassignoredsounds>Исключённые звуки (для фильтра нижних частот)</spw_lowpassignoredsounds>
-	<spw_pitchignoredsounds>Исключённые звуки (для изменения тона)</spw_pitchignoredsounds>
-	<spw_pathignoredsounds>Исключённые звуки (для игнорирования стены)</spw_pathignoredsounds>
-	<spw_containerignoredsounds>Исключённые звуки (для контейнера)</spw_containerignoredsounds>
-	<spw_waterignoredsounds>Исключённые звуки (для водяных эффектов)</spw_waterignoredsounds>
-	<spw_submersionignoredsounds>Исключённые звуки (подводные эффекты)</spw_submersionignoredsounds>
-	<spw_bubbleignorednames>Имена игроков, невосприимчивых к "пузырькам"</spw_bubbleignorednames>
 
-	<spw_nichesettings>Нишевые настройки</spw_nichesettings>
-	<spw_mufflesubmergedplayer>Приглушать погруженных игроков</spw_mufflesubmergedplayer>
-	<spw_mufflesubmergedplayertooltip>Приглушать звуки, если голова игрока под водой (рекомендуется)</spw_mufflesubmergedplayertooltip>
-	<spw_mufflesubmergedviewtarget>Приглушать подводные дистанционные объекты</spw_mufflesubmergedviewtarget>
-	<spw_mufflesubmergedviewtargettooltip>Приглушать звуки дистанционно управляемых объектов (турелей, камер, т.д.), если они под водой</spw_mufflesubmergedviewtargettooltip>
-	<spw_mufflesubmergedsounds>Приглушать подводные звуки</spw_mufflesubmergedsounds>
-	<spw_mufflesubmergedsoundstooltip>Приглушать звуки, созданные под водой (рекомендуется)</spw_mufflesubmergedsoundstooltip>
-	<spw_muffleflowsounds>Приглушать бреши</spw_muffleflowsounds>
-	<spw_muffleflowsoundstooltip>Приглушать звуки течения воды, созданных брешами</spw_muffleflowsoundstooltip>
-	<spw_mufflefiresounds>Приглушать огонь</spw_mufflefiresounds>
-	<spw_mufflefiresoundstooltip>Включить приглушение звуков огня</spw_mufflefiresoundstooltip>
-	<spw_muffledivingsuit>Приглушать скафандры</spw_muffledivingsuit>
-	<spw_muffledivingsuittooltip>Включить приглушение звуков, когда надет скафандр (не рекомендуется)</spw_muffledivingsuittooltip>
-	<spw_divingsuitpitch>Тон в скафандрах</spw_divingsuitpitch>
-	<spw_divingsuitpitchtooltip>Изменение тона большинства звуков, когда надет скафандр</spw_divingsuitpitchtooltip>
-	<spw_submergedpitch>Тон подводных звуков</spw_submergedpitch>
-	<spw_submergedpitchtooltip>Изменение тона звуков, когда игрок под водой</spw_submergedpitchtooltip>
-	<spw_muffledvoicepitch>Тон приглушеннного голосового чата</spw_muffledvoicepitch>
-	<spw_muffledvoicepitchtooltip>Не рекомендуется к использованию</spw_muffledvoicepitchtooltip>
-	<spw_unmuffledvoicepitch>Тон неприглушенного голосового чата</spw_unmuffledvoicepitch>
-	<spw_unmuffledvoicepitchtooltip>Не рекомендуется к использованию</spw_unmuffledvoicepitchtooltip>
-	<spw_muffledcomponentpitch>Тон приглушенных компонентов</spw_muffledcomponentpitch>
-	<spw_unmuffledcomponentpitch>Тон неприглушенных компонентов</spw_unmuffledcomponentpitch>
-	<spw_hidesettings>Скрыть меню (навсегда)</spw_hidesettings>
-	<spw_hidesettingstooltip>Внимание: при включении, удалит кнопку настроек мода из графического интерфейса. Вам придётся вручную удалить или отредактировать config.json мода, чтобы вернуть кнопку настроек.</spw_hidesettingstooltip>
+	<!-- Pitch -->
+	<spw_pitchtab>Высота тона</spw_pitchtab>
+	<spw_pitchenabled>Включить изменение высоты тона</spw_pitchenabled>
+	<spw_pitchenabledtooltip>Глобально включает или отключает все эффекты изменения высоты тона. Может быть полезно для быстрого исправления странных взаимодействий с высотой тона звуков из других модов.</spw_pitchenabledtooltip>
+	<spw_pitchstatuseffectsounds>Изменять высоту тона звуков от эффектов</spw_pitchstatuseffectsounds>
+	<spw_pitchstatuseffectsoundstooltip>Включает изменение высоты тона для звуков, воспроизводимых XML-эффектами статуса.</spw_pitchstatuseffectsoundstooltip>
+	<spw_pitchwithdistance>Изменять высоту тона с расстоянием</spw_pitchwithdistance>
+	<spw_pitchwithdistancetooltip>Динамически понижает высоту тона незацикленных звуков в зависимости от их расстояния и силы приглушения. Складывается с другими эффектами высоты тона.</spw_pitchwithdistancetooltip>
+	<spw_divingsuitpitch>Высота тона в водолазном костюме</spw_divingsuitpitch>
+	<spw_divingsuitpitchtooltip>Высота тона звуков при ношении водолазного костюма. Складывается с другими эффектами высоты тона.</spw_divingsuitpitchtooltip>
+	<spw_submergedpitch>Высота тона под водой</spw_submergedpitch>
+	<spw_submergedpitchtooltip>Высота тона звуков, когда слушатель находится под водой. Складывается с другими эффектами высоты тона.</spw_submergedpitchtooltip>
+	<spw_muffledsoundpitch>Высота тона приглушённых звуков</spw_muffledsoundpitch>
+	<spw_muffledsoundpitchtooltip>Высота тона полностью приглушённых незацикленных звуков. Смешивается с «Высотой тона неприглушённых звуков» в зависимости от активных преград. Складывается с другими эффектами высоты тона.</spw_muffledsoundpitchtooltip>
+	<spw_unmuffledsoundpitch>Высота тона неприглушённых звуков</spw_unmuffledsoundpitch>
+	<spw_unmuffledsoundpitchtooltip>Высота тона неприглушённых незацикленных звуков. Смешивается с «Высотой тона приглушённых звуков» в зависимости от активных преград. Складывается с другими эффектами высоты тона.</spw_unmuffledsoundpitchtooltip>
+	<spw_muffledloopingpitch>Высота тона приглушённых зацикленных звуков</spw_muffledloopingpitch>
+	<spw_muffledloopingpitchtooltip>Высота тона приглушённых зацикленных звуков (например, вентиляция, реактор, двигатель и т. д.).</spw_muffledloopingpitchtooltip>
+	<spw_unmuffledloopingpitch>Высота тона неприглушённых зацикленных звуков</spw_unmuffledloopingpitch>
+	<spw_unmuffledloopingpitchtooltip>Высота тона обычных звуков компонентов. Не рекомендуется. Просто для развлечения.</spw_unmuffledloopingpitchtooltip>
+	<spw_muffledvoicepitch>Высота тона приглушённых голосов</spw_muffledvoicepitch>
+	<spw_muffledvoicepitchtooltip>Не рекомендуется. Просто для развлечения.</spw_muffledvoicepitchtooltip>
+	<spw_unmuffledvoicepitch>Высота тона неприглушённых голосов</spw_unmuffledvoicepitch>
+	<spw_unmuffledvoicepitchtooltip>Не рекомендуется. Просто для развлечения.</spw_unmuffledvoicepitchtooltip>
 
-	<spw_updateserverconfig>изменненые настройки - конфиг сервера обновлён</spw_updateserverconfig>
-	<spw_disableserverconfig>отключена синхронизация настроек - локальные конфиги теперь берут приоритет</spw_disableserverconfig>
-	<spw_hydrophonemonitoring>Гидрофон</spw_hydrophonemonitoring>
-	<spw_listening>Подслушиваю...</spw_listening>
-	<spw_invalidinput>Ошибка ввода</spw_invalidinput>
-	<spw_default>(По умолчанию)</spw_default>
-	<spw_vanilla>(Ванильные)</spw_vanilla>
-	<spw_custom>(Пользовательские)</spw_custom>
+
+	<!-- Advanced -->
+	<spw_advancedtab>Продвинутые</spw_advancedtab>
+
+	<spw_debugperformance>Показывать производительность</spw_debugperformance>
+	<spw_debugperformancetooltip>Отображает подробную информацию о производительности мода «Soundproof Walls».\nЭта настройка не синхронизируется с другими игроками.</spw_debugperformancetooltip>
+
+	<spw_debugplayingsounds>Показывать воспроизводимые звуки</spw_debugplayingsounds>
+	<spw_debugplayingsoundstooltip>Отображает все активно воспроизводимые звуки, зарегистрированные модом «Soundproof Walls».\nЭта настройка не синхронизируется с другими игроками.</spw_debugplayingsoundstooltip>
+
+	<spw_debugchannelinfo>Показывать информацию о каналах</spw_debugchannelinfo>
+	<spw_debugchannelinfotooltip>Отображает усиление, высоту тона, дальность, расстояние, приглушение и преграды для всех активно воспроизводимых звуков. Если «Показывать воспроизводимые звуки» отключено, эта информация выводится в консоль Barotrauma.\nЭта настройка не синхронизируется с другими игроками.</spw_debugchannelinfotooltip>
+
+	<spw_hidesettings>Скрыть кнопку меню</spw_hidesettings>
+	<spw_hidesettingstooltip>Удаляет кнопку «Soundproof Walls» из меню паузы. Меню настроек мода всё ещё можно открыть, введя «spw» в консоли.\nЭта настройка не синхронизируется с другими игроками.</spw_hidesettingstooltip>
+
+	<spw_remembermenutabandscroll>Запоминать позицию в меню</spw_remembermenutabandscroll>
+	<spw_remembermenutabandscrolltooltip>Открывает меню на последней посещённой вкладке и позиции прокрутки.\nЭта настройка не синхронизируется с другими игроками.</spw_remembermenutabandscrolltooltip>
+
+	<spw_maxsourcecount>Макс. воспроизводимых звуков</spw_maxsourcecount>
+	<spw_maxsourcecounttooltip>Сколько звуков может воспроизводиться одновременно. Более высокие значения могут повлиять на производительность.</spw_maxsourcecounttooltip>
+	
+	<spw_maxsimultaneousinstances>Макс. одновременных экземпляров</spw_maxsimultaneousinstances>
+	<spw_maxsimultaneousinstancestooltip>Сколько экземпляров одного и того же звука может воспроизводиться одновременно. Более высокие значения могут повлиять на производительность.</spw_maxsimultaneousinstancestooltip>
+
+	<spw_categoryintervals>Интервалы обновления</spw_categoryintervals>
+	<spw_updatenonloopingsounds>Обновлять незацикленные звуки</spw_updatenonloopingsounds>
+	<spw_updatenonloopingsoundstooltip>Позволяет незацикленным звукам обновлять свою громкость, приглушение и другие эффекты во время воспроизведения. В оригинальной игре это происходит только для зацикленных звуков. Отключение этой настройки может улучшить производительность.</spw_updatenonloopingsoundstooltip>
+	<spw_nonloopingsoundmuffleupdateinterval>Интервал обновления незацикленных звуков</spw_nonloopingsoundmuffleupdateinterval>
+	<spw_nonloopingsoundmuffleupdateintervaltooltip>Требует включения «Обновлять незацикленные звуки».\nВремя между каждым обновлением преград и динамических эффектов для незацикленных звуков. Значения громкости и высоты тона по-прежнему обновляются каждый тик. Увеличение этого значения может улучшить производительность.</spw_nonloopingsoundmuffleupdateintervaltooltip>
+	<spw_openaleffectsupdateinterval>Интервал обновления эффектов OpenAL</spw_openaleffectsupdateinterval>
+	<spw_openaleffectsupdateintervaltooltip>Время между каждым обновлением параметров эффектов OpenAL. Актуально только при использовании динамического режима.</spw_openaleffectsupdateintervaltooltip>
+	<spw_voicemuffleupdateinterval>Интервал обновления голоса</spw_voicemuffleupdateinterval>
+	<spw_voicemuffleupdateintervaltooltip>Время между каждым обновлением преград и динамических эффектов для голосов игроков. Значения громкости и высоты тона по-прежнему обновляются каждый тик. Увеличение этого значения может улучшить производительность.</spw_voicemuffleupdateintervaltooltip>
+	<spw_componentmuffleupdateinterval>Интервал обновления звуков компонентов</spw_componentmuffleupdateinterval>
+	<spw_componentmuffleupdateintervaltooltip>Время между каждым обновлением преград и динамических эффектов для зацикленных звуков компонентов (например, вентиляция, реактор, двигатель). Значения громкости и высоты тона по-прежнему обновляются каждый тик. Увеличение этого значения может улучшить производительность.</spw_componentmuffleupdateintervaltooltip>
+	<spw_statuseffectmuffleupdateinterval>Интервал обновления звуков от эффектов</spw_statuseffectmuffleupdateinterval>
+	<spw_statuseffectmuffleupdateintervaltooltip>Время между каждым обновлением преград и динамических эффектов для зацикленных звуков от эффектов статуса (например, звуки от недугов). Значения громкости и высоты тона по-прежнему обновляются каждый тик. Увеличение этого значения может улучшить производительность.</spw_statuseffectmuffleupdateintervaltooltip>
+	
+	<spw_categorytransitions>Переходы</spw_categorytransitions>
+	<spw_disablevanillafadeout>Отключить стандартное затухание</spw_disablevanillafadeout>
+	<spw_disablevanillafadeouttooltip>Отключает стандартный метод «FadeOutAndDispose», который может вызывать зацикливание звуков. Компромисс за эту стабильность — менее плавное обрывание звука.</spw_disablevanillafadeouttooltip>
+	<spw_gaintransitionfactor>Скорость перехода громкости</spw_gaintransitionfactor>
+	<spw_gaintransitionfactortooltip>Насколько сильно громкость звука может изменяться в секунду. Например, значение 5 означает, что звуку на полной громкости потребуется 0.2 секунды, чтобы затихнуть. Значение 0 отключает эту функцию для мгновенных переходов.</spw_gaintransitionfactortooltip>
+	<spw_pitchtransitionfactor>Скорость перехода высоты тона</spw_pitchtransitionfactor>
+	<spw_pitchtransitionfactortooltip>Насколько сильно высота тона звука может изменяться в секунду. Значение 0 отключает эту функцию для мгновенных переходов.</spw_pitchtransitionfactortooltip>
+	<spw_airreverbgaintransitionfactor>Скорость перехода силы реверберации (внутри)</spw_airreverbgaintransitionfactor>
+	<spw_airreverbgaintransitionfactortooltip>Насколько сильно усиление эффекта реверберации внутри может изменяться в секунду. Значение 0 отключает эту функцию для мгновенных переходов.</spw_airreverbgaintransitionfactortooltip>
+	<spw_hydrophonereverbgaintransitionfactor>Скорость перехода силы реверберации (гидрофоны)</spw_hydrophonereverbgaintransitionfactor>
+	<spw_hydrophonereverbgaintransitionfactortooltip>Насколько сильно усиление эффекта реверберации гидрофонов может изменяться в секунду. Значение 0 отключает эту функцию для мгновенных переходов.</spw_hydrophonereverbgaintransitionfactortooltip>
+	<spw_dynamicmuffletransitionfactor>Скорость перехода приглушения</spw_dynamicmuffletransitionfactor>
+	<spw_dynamicmuffletransitionfactortooltip>Насколько сильно эффект приглушения в динамическом режиме может изменяться в секунду. Значение 0 отключает эту функцию для мгновенных переходов.\nПримечание: эта функция может вызывать слышимые щелчки при включении, что, вероятно, не будет исправлено до обновления версии OpenAL Soft в Barotrauma.</spw_dynamicmuffletransitionfactortooltip>
+	<spw_dynamicmuffletransitionfactorflowfire>Скорость перехода приглушения для потоков и огня</spw_dynamicmuffletransitionfactorflowfire>
+	<spw_dynamicmuffletransitionfactorflowfiretooltip>Насколько сильно эффект приглушения в динамическом режиме может изменяться в секунду, специально для звуков потоков воды и огня. Значение 0 отключает эту функцию для мгновенных переходов.\nПримечание: эта функция может вызывать слышимые щелчки при включении, что, вероятно, не будет исправлено до обновления версии OpenAL Soft в Barotrauma.</spw_dynamicmuffletransitionfactorflowfiretooltip>
+
+	<spw_categorypathfinding>Поиск пути звука</spw_categorypathfinding>
+	<spw_traversewaterducts>Прохождение через водоводы</spw_traversewaterducts>
+	<spw_traversewaterductstooltip>Позволяет звукам проходить через открытые водоводы без преград.</spw_traversewaterductstooltip>
+	<spw_flowsoundstraversewaterducts>Звуки потоков проходят через водоводы</spw_flowsoundstraversewaterducts>
+	<spw_flowsoundstraversewaterductstooltip>Требует включения «Приглушение путей потоков и огня».\nПозволяет предполагаемому пути звука потока проходить через открытые водоводы без преград.</spw_flowsoundstraversewaterductstooltip>
+	<spw_opendoorthreshold>Порог открытой двери</spw_opendoorthreshold>
+	<spw_opendoorthresholdtooltip>Насколько должна быть открыта дверь, люк или водовод, чтобы звук проходил без преград. Значение 0 позволяет звукам проходить через полностью закрытые двери без преград.</spw_opendoorthresholdtooltip>
+	<spw_openwallthreshold>Порог открытой стены</spw_openwallthreshold>
+	<spw_openwallthresholdtooltip>Насколько должна быть открыта прореха в стене, чтобы звук проходил без преград.</spw_openwallthresholdtooltip>
+	<spw_soundpropagationrange>Дальность распространения звука</spw_soundpropagationrange>
+	<spw_soundpropagationrangetooltip>Максимальное расстояние, на котором звук из списка «Звуки, распространяющиеся сквозь стены» может искать ближайший корпус для распространения.</spw_soundpropagationrangetooltip>
+
+	<spw_categoryai>ИИ персонажей</spw_categoryai>
+	<spw_aitargetsoundrange>Дальность слуха ИИ</spw_aitargetsoundrange>
+	<spw_aitargetsoundrangetooltip>Только в одиночной игре.\nИзменяет расстояние, на котором ИИ может слышать предметы и персонажей.</spw_aitargetsoundrangetooltip>
+	<spw_aitargetsightrange>Дальность зрения ИИ</spw_aitargetsightrange>
+	<spw_aitargetsightrangetooltip>Только в одиночной игре.\nИзменяет расстояние, на котором ИИ может видеть предметы и персонажей. Эта настройка не связана со звуком, но идёт рука об руку с дальностью слуха ИИ.</spw_aitargetsightrangetooltip>
+
+	<spw_categoryrules>Правила звуков</spw_categoryrules>
+	
+	<spw_customsounds>Пользовательские звуки</spw_customsounds>
+	<spw_customsoundstooltip>Применяет пользовательские значения и эффекты к определённым звукам.\n\n«Ключевое слово»: Часть имени файла целевого звука. Регистр не учитывается.\n\n«Множ. громкости»: Множитель громкости. Складывается с другими множителями громкости.\n\n«Множ. дальности»: Множитель дальности. Перемножается с другими множителями дальности.\n\n«Множ. сайдчейна»: Насколько будет уменьшена громкость других звуков, когда воспроизводится этот звук.\n\n«Затухание сайдчейна»: Как долго длится уменьшение громкости.\n\n«Искажение»: Включает эффект искажения для этого звука. Только в динамическом режиме.\n\n«Множ. высоты тона»: Множитель высоты тона. Работает путём растягивания звука. Диапазон от 0.25 до 4.0.\n\n«Влияние приглушения»: Эффективность эффектов приглушения. Чем ниже значение, тем слабее эффект.\n\n«Исключения»: Звуки, содержащие ключевое слово, но которые нужно игнорировать. Например, ключевое слово «shot» подходит к «gunshot», но также может подойти к звукам, к которым вы не хотите применять те же значения, например, «tasershot». Чтобы избежать этого без использования более конкретного ключевого слова, вы должны поместить «tasershot» в этот список. Регистр не учитывается.</spw_customsoundstooltip>
+	<spw_moddedcustomsoundstooltip>Пользовательские значения звуков из [modname]. Имеют приоритет над стандартным списком «Пользовательские звуки». Этот список не синхронизируется с другими игроками. Если вы отредактируете элементы в этом списке, изменения применятся локально, но не сохранятся после сессии. Если у вас возникли проблемы с содержимым этого списка, пожалуйста, обратитесь к автору мода.</spw_moddedcustomsoundstooltip>
+	
+	<spw_ignoredsounds>Игнорируемые звуки</spw_ignoredsounds>
+	<spw_ignoredsoundstooltip>Звуки в этом списке игнорируются всей обработкой, кроме громкости.</spw_ignoredsoundstooltip>
+	
+	<spw_surfaceignoredsounds>Игнорируемые поверхностью воды звуки</spw_surfaceignoredsounds>
+	<spw_surfaceignoredsoundstooltip>Звуки в этом списке проходят через границу вода-воздух без преград.</spw_surfaceignoredsoundstooltip>
+	
+	<spw_submersionignoredsounds>Игнорируемые толщей воды звуки</spw_submersionignoredsounds>
+	<spw_submersionignoredsoundstooltip>Звуки в этом списке проходят через толщу воды без преград. Не влияет на взаимодействие звуков с поверхностью воды.</spw_submersionignoredsoundstooltip>
+	
+	<spw_wallpropagatingsounds>Звуки, распространяющиеся сквозь стены</spw_wallpropagatingsounds>
+	<spw_wallpropagatingsoundstooltip>Звуки в этом списке могут «перепрыгивать» в ближайшие корпуса, чтобы лучше достичь игрока, получая преграду «Тонкая стена» вместо «Толстой стены».</spw_wallpropagatingsoundstooltip>
+	
+	<spw_pitchignoredsounds>Игнорируемые высотой тона звуки</spw_pitchignoredsounds>
+	<spw_pitchignoredsoundstooltip>Звуки в этом списке не могут иметь изменённую высоту тона.</spw_pitchignoredsoundstooltip>
+
+	<spw_reverbforcedsounds>Звуки с принудительной реверберацией</spw_reverbforcedsounds>
+	<spw_reverbforcedsoundstooltip>Только для «Динамического» и «Статического» режимов эффектов. Звуки в этом списке всегда будут получать эффект реверберации, если это возможно.</spw_reverbforcedsoundstooltip>
+
+	<spw_airreverbignoredsounds>Игнорируемые реверберацией на суше звуки</spw_airreverbignoredsounds>
+	<spw_airreverbignoredsoundstooltip>Только для «Динамического» и «Статического» режимов эффектов. Звуки в этом списке никогда не получают эффект реверберации.</spw_airreverbignoredsoundstooltip>
+	
+	<spw_waterreverbignoredsounds>Игнорируемые реверберацией в воде звуки</spw_waterreverbignoredsounds>
+	<spw_waterreverbignoredsoundstooltip>Только для «Динамического» режима эффектов. Звуки в этом списке никогда не получают эффект реверберации.</spw_waterreverbignoredsoundstooltip>
+	
+	<spw_barrierignoredsounds>Игнорируемые барьерами звуки</spw_barrierignoredsounds>
+	<spw_barrierignoredsoundstooltip>Звуки в этом списке не могут быть приглушены окклюзией, стенами, дверьми или поверхностью воды.</spw_barrierignoredsoundstooltip>
+	
+	<spw_xmlignoredsounds>Игнорируемые XML звуки</spw_xmlignoredsounds>
+	<spw_xmlignoredsoundstooltip>Этот список предназначен для звуков, внутренне помеченных тегом «dontmuffle» или подобными свойствами. Звуки в этом списке всегда будут проверяться на приглушение.</spw_xmlignoredsoundstooltip>
+	
+	<spw_lowpassignoredsounds>Игнорируемые НЧ-фильтром звуки</spw_lowpassignoredsounds>
+	<spw_lowpassignoredsoundstooltip>Звуки в этом списке никогда не будут получать эффекты приглушения.</spw_lowpassignoredsoundstooltip>
+	
+	<spw_containerignoredsounds>Игнорируемые контейнерами звуки</spw_containerignoredsounds>
+	<spw_containerignoredsoundstooltip>Звуки в этом списке проходят через любые контейнеры, в которых они хранятся, без преград.</spw_containerignoredsoundstooltip>
+	
+	<spw_bubbleignorednames>Игроки, невосприимчивые к утоплению</spw_bubbleignorednames>
+	<spw_bubbleignorednamestooltip>Введите имена игроков в этот список, чтобы дать им иммунитет к эффекту пузырей при утоплении, вызванному разговором под водой без костюма.</spw_bubbleignorednamestooltip>
+
+	<!-- Extra -->
+	<spw_updateserverconfig>настройки изменены - конфигурация сервера обновлена</spw_updateserverconfig>
+	<spw_disableserverconfig>синхронизация настроек отключена - теперь приоритет у локальных конфигураций</spw_disableserverconfig>
+	<spw_hydrophonemonitoring>Мониторинг гидрофонов</spw_hydrophonemonitoring>
+	<spw_serverdiffheader>Активная конфигурация сервера имеет [count] отличий от вашей локальной конфигурации:</spw_serverdiffheader>
+	<spw_listening>Прослушивание...</spw_listening>
+	<spw_loading>Загрузка аудио буферов...</spw_loading>
+	<spw_invalidinput>Неверный ввод</spw_invalidinput>
+	<spw_enabled>Включено</spw_enabled>
+	<spw_disabled>Отключено</spw_disabled>
+	<spw_default>По умолчанию</spw_default>
+	<spw_vanilla>Стандарт</spw_vanilla>
+	<spw_custom>Польз.</spw_custom>
+	<spw_linear>Линейный</spw_linear>
+	<spw_instant>Мгновенно</spw_instant>
+	<spw_pertick>За тик</spw_pertick>
+	<spw_concave>Вогнутый</spw_concave>
+	<spw_convex>Выпуклый</spw_convex>
+	<spw_seconds>с</spw_seconds>
 	<spw_reset>Сбросить</spw_reset>
 	<spw_resetall>Сбросить всё</spw_resetall>
+
+
+	<!-- 2.0 Popup message -->
+	<spw_popupheader>Добро пожаловать в Soundproof Walls 2.0</spw_popupheader>
+	<spw_popupheadersubtext>Soundproof Walls 2.0 — это полностью переписанная и расширенная версия оригинального мода, представляющая собой капитальную переработку всей аудиосистемы Barotrauma.</spw_popupheadersubtext>
+
+	<spw_popupbodyheader>Основные изменения</spw_popupbodyheader>
+	
+	<spw_popupbodysubheading1>• Симуляция реверберации окружения</spw_popupbodysubheading1>
+	<spw_popupbodysubtext1>Звуки и голоса игроков реалистично отражаются в зависимости от размера и громкости помещения. Снаружи подлодки громкие звуки могут разноситься на мили, отражаясь от ледяной поверхности Европы.</spw_popupbodysubtext1>
+
+	<spw_popupbodysubheading2>• Система сайдчейн-компрессии</spw_popupbodysubheading2>
+	<spw_popupbodysubtext2>Звуки, такие как выстрелы или взрывы, стали громче и эффектнее. Этот новый динамический диапазон создаёт ощущение мощи за каждым выстрелом, оставляя тихие звуки позади.</spw_popupbodysubtext2>
+
+	<spw_popupbodysubheading3>• Динамический низкочастотный фильтр</spw_popupbodysubheading3>
+	<spw_popupbodysubtext3>Звуки больше не ограничены одной фиксированной силой приглушения и теперь динамически адаптируются в зависимости от ситуации и количества преград на пути.</spw_popupbodysubtext3>
+
+	<spw_popupbodysubheading4>• Окклюзия звука</spw_popupbodysubheading4>
+	<spw_popupbodysubtext4>Звуки приглушаются формой окружающей геометрии уровня, пока они ищут путь к ушам игрока.</spw_popupbodysubtext4>
+
+	<spw_popupbodysubheading5>• Мощный эффект искажения (дисторшн)</spw_popupbodysubheading5>
+	<spw_popupbodysubtext5>Выстрелы, взрывы и другие громкие звуки сильно искажаются. По умолчанию этот эффект едва заметен, но я бы не рекомендовал слишком сильно увеличивать усиление искажения.</spw_popupbodysubtext5>
+
+	<spw_popupbodysubheading6>• Улучшенный голосовой чат</spw_popupbodysubheading6>
+	<spw_popupbodysubtext6>Выберите, насколько чистым будет звук вашей рации с помощью пользовательского фильтра, или опробуйте новую систему локального голоса, которая динамически регулирует дальность вашего голоса в зависимости от того, как громко вы кричите.</spw_popupbodysubtext6>
+	
+	<spw_popupbodysubheading7>• Переработанные системы</spw_popupbodysubheading7>
+	<spw_popupbodysubtext7>Системы подслушивания и гидрофонов из версии 1.0 были полностью переработаны с новыми визуальными и звуковыми эффектами. Стандартные системы также были улучшены: звуки потоков воды наконец-то приглушаются стенами, и исправлена ошибка, из-за которой звуки иногда не воспроизводились.</spw_popupbodysubtext7>
+
+	<spw_popupbodysubheading8>• Абсолютный контроль</spw_popupbodysubheading8>
+	<spw_popupbodysubtext8>С более чем 150 новыми настройками и совершенно новым меню, у вас есть полный контроль над свойствами и эффектами каждого отдельного звука, что позволяет создавать множество уникальных конфигураций.</spw_popupbodysubtext8>
+	
+	<spw_popupbodyconclusion>Надеюсь, вам понравятся изменения! Дайте знать, если у вас возникнут вопросы или проблемы :) - Plag</spw_popupbodyconclusion>
+
+	<spw_footertext1>Это только верхушка айсберга</spw_footertext1>
+	<spw_footertext2>Поддержать меня</spw_footertext2>
+	<spw_footertext3>Посмотреть код</spw_footertext3>
+	<spw_footerlink1>Полный список изменений в Steam!</spw_footerlink1>
+	<spw_footerlink2>Поддержите меня на Ko-Fi!</spw_footerlink2>
+	<spw_footerlink3>Поставьте звезду репозиторию на GitHub!</spw_footerlink3>
+
+	<spw_popupbutton>Настройки</spw_popupbutton>
+
+	<!-- Stats log -->
+	<spw_statsheader>Статистика «Звуконепроницаемых Стен»:</spw_statsheader>
+	<spw_stats>Вы инициализировали «Soundproof Walls» [initcount] раз(а).\nИ играли [playtime] с включённым модом.\n[percenteavesdrop]% вашего времени вы подслушивали.\nА [percenthydrophone]% вашего времени вы следили за гидрофонами.\nВсего «Звуконепроницаемыми Стенами» было обработано [soundcount] звуков.</spw_stats>
 </infotexts>

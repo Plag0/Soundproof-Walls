@@ -104,9 +104,9 @@ namespace SoundproofWalls
             spriteBatch.End();
 
             float effectState = (float)Timing.TotalTime;
-            float pulse = 0.8f + MathF.Sin(effectState * 2.0f) * 0.2f; // Smooth pulse from 0.6 to 1.0
-            float colorIntensityBase = 0.65f; //Multiplies the overlay color by this amount, the higher the value, the more bright/vibrant the color.
-            float colorIntensityVariance = 0.05f; //The variance of the pulse effect affecting the color's brightness/vibrance 
+            float pulse = 0.8f + MathF.Sin(effectState * 2.0f) * 0.2f;
+            float colorIntensityBase = 0.65f;
+            float colorIntensityVariance = 0.05f;
             GameMain.LightManager.SolidColorEffect.Parameters["color"].SetValue(Color.DarkSeaGreen.ToVector4() * (colorIntensityBase + pulse * colorIntensityVariance) * EavesdropManager.Efficiency * ConfigManager.Config.EavesdroppingSpriteOpacity);
             GameMain.LightManager.SolidColorEffect.CurrentTechnique = GameMain.LightManager.SolidColorEffect.Techniques["SolidColorBlur"];
             GameMain.LightManager.SolidColorEffect.Parameters["blurDistance"].SetValue(0.005f + pulse * 0.0025f);
@@ -127,7 +127,7 @@ namespace SoundproofWalls
 
                 // Draw character body.
                 Character? c = channelInfo.ChannelCharacter;
-                if (c != null && !c.IsDead)
+                if (ConfigManager.Config.EavesdroppingRevealsCharacterOutline && c != null && !c.IsDead)
                 {
                     foreach (Limb limb in channelInfo.ChannelCharacter!.AnimController.Limbs)
                     {
@@ -142,6 +142,7 @@ namespace SoundproofWalls
                 }
 
                 int maxSpriteRange = ConfigManager.Config.EavesdroppingSpriteMaxSize;
+                if (maxSpriteRange <= 0) { maxSpriteRange = int.MaxValue; }
                 float spriteSizeMult = ConfigManager.Config.EavesdroppingSpriteSizeMultiplier;
                 // If we're seeing a non-eavesdropped sound (reveal all is enabled) make it smaller using its muffle strength. 
                 if (!channelInfo.Eavesdropped) { spriteSizeMult *= 1 - channelInfo.MuffleStrength * 0.75f; }
@@ -157,7 +158,6 @@ namespace SoundproofWalls
                 // Create a glow radius around the sound source.
                 uint sourceId = channelInfo.Channel.Sound.Owner.GetSourceFromIndex(channelInfo.Channel.Sound.SourcePoolIndex, channelInfo.Channel.ALSourceIndex);
                 noise1 = PerlinNoise.GetPerlin((effectState + sourceId) * 0.01f, (effectState + sourceId) * 0.02f);
-                noise2 = PerlinNoise.GetPerlin((effectState + sourceId) * 0.01f, (effectState + sourceId) * 0.008f);
                 spriteScale = new Vector2(Math.Min(channelInfo.Channel.Far * spriteSizeMult, maxSpriteRange)) / glowSprite.size * (noise1 * 0.5f + 2f);
                 spriteScale *= soundLifeMult;
                 drawPos = channelInfo.WorldPos;

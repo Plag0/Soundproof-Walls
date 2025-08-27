@@ -43,7 +43,7 @@ namespace SoundproofWalls
         public static bool SPW_Character_SpeechImpediment(Character __instance, ref float __result)
         {
 #if CLIENT
-            if (!Config.Enabled || !Config.TalkingRagdolls) { return true; }
+            if (!config.Enabled || !config.TalkingRagdolls) { return true; }
 #endif
             bool isKnockedDown = __instance.CharacterHealth.StunTimer > 1f ? true : __instance.IsIncapacitated;
 

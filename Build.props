@@ -2,7 +2,7 @@
     <PropertyGroup>
         <!-- IMPORTANT: Should point to <Barotrauma_Install>\LocalMods\<MyModName>\ -->
         <!-- IMPORTANT: ModDeplyDir Path must end with '\' -->
-        <ModDeployDir>C:\Program Files (x86)\Steam\steamapps\common\Barotrauma\LocalMods\Soundproof Walls\</ModDeployDir>
+        <ModDeployDir>C:\Program Files (x86)\Steam\steamapps\common\Barotrauma\LocalMods\Soundproof Walls 2.0\</ModDeployDir>
         <AssemblyName>SoundproofWalls</AssemblyName>
     </PropertyGroup>
 </Project>

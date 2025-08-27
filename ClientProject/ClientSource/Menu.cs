@@ -683,8 +683,8 @@ namespace SoundproofWalls
         }
 
         private string RawValue(float v) => $"{MathF.Round(v, 2)}";
-        private string RawValueZeroInfinity(float v) => $"{(v == 0 ? "∞" : MathF.Round(v, 2))}";
-        private string RawValueZeroInstant(float v) => $"{(v == 0 ? TextManager.Get("spw_instant") : MathF.Round(v, 2))}";
+        private string RawValueZeroInfinity(float v) => $"{(v <= 0 ? "∞" : MathF.Round(v, 2))}";
+        private string RawValueZeroInstant(float v) => $"{(v <= 0 ? TextManager.Get("spw_instant") : MathF.Round(v, 2))}";
         private string RawValuePrecise(float v) => $"{MathF.Round(v, 3)}";
         private string Percentage(float v)
         {
@@ -697,6 +697,7 @@ namespace SoundproofWalls
         private string SecondsOneTick(float v) => $"{( v > Timing.Step ? $"{MathF.Round(v, 2)} {TextManager.Get("spw_seconds")}" : $"{TextManager.Get("spw_pertick")}")}";
         private string PlusSeconds(float v) => $"+{MathF.Round(v, 2)} {TextManager.Get("spw_seconds")}";
         private string Centimeters(float v) => $"{MathF.Round(v).ToString("N0", CultureInfo.CurrentUICulture)} cm";
+        private string CentimetersZeroInfinity(float v) => $"{(v <= 0 ? "∞" : MathF.Round(v).ToString("N0", CultureInfo.CurrentUICulture))} cm";
         private string CentimetersSq(float v) => $"{MathF.Round(v).ToString("N0", CultureInfo.CurrentUICulture)} cm²";
         private string PlusMeters(float v) => $"+{MathF.Round(v / 100).ToString("N0", CultureInfo.CurrentUICulture)} m";
         private string Curve(float v)
@@ -723,21 +724,21 @@ namespace SoundproofWalls
             return localFormatted;
         }
 
-        private Color GetSettingColor<T>(T localValue, GUIComponentStyle componentStyle, object? defaultValue = null, object? vanillaValue = null)
+        private Color GetSettingColor<T>(T localValue, GUIComponentStyle componentStyle, object? defaultValue = null, object? vanillaValue = null, bool highPrecision = false)
         {
             Color color = componentStyle.TextColor;
-            if (defaultValue != null && ValuesEqual(localValue, defaultValue))
+            if (defaultValue != null && ValuesEqual(localValue, defaultValue, highPrecision))
             {
                 color = MenuDefaultValueColor;
             }
-            else if (vanillaValue != null && ValuesEqual(localValue, vanillaValue))
+            else if (vanillaValue != null && ValuesEqual(localValue, vanillaValue, highPrecision))
             {
                 color = MenuVanillaValueColor;
             }
             return color;
         }
 
-        private bool ValuesEqual<T>(T localValue, object otherValue)
+        private bool ValuesEqual<T>(T localValue, object otherValue, bool highPrecision = false)
         {
             // Handle boolean comparison
             if (localValue is bool localBool && otherValue is bool otherBool)
@@ -750,9 +751,10 @@ namespace SoundproofWalls
             {
                 try
                 {
+                    double epsilon = highPrecision ? 0.0005 : 0.005;
                     double localDouble = Convert.ToDouble(localValue);
                     double otherDouble = Convert.ToDouble(otherValue);
-                    return Math.Abs(localDouble - otherDouble) < double.Epsilon;
+                    return Math.Abs(localDouble - otherDouble) < epsilon;
                 }
                 catch
                 {
@@ -1350,7 +1352,7 @@ namespace SoundproofWalls
             Spacer(settingsFrame);
 
             Label(settingsFrame, TextManager.Get("spw_dynamicmufflestrengthmaster"));
-            PowerSlider(settingsFrame, (0, 1), 0.01f,
+            PowerSlider(settingsFrame, (0, 1.5f), 0.01f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.DynamicMuffleStrengthMultiplier ?? default,
@@ -1881,7 +1883,7 @@ namespace SoundproofWalls
                 colorFunc: (localSliderValue, componentStyle) =>
                 GetSettingColor(localSliderValue, componentStyle,
                     defaultValue: Menu.defaultConfig.VoiceLocalRangeMultiplier,
-                    vanillaValue: 1.0f),
+                    vanillaValue: null),
                 currentValue: unsavedConfig.VoiceLocalRangeMultiplier,
                 setter: v => unsavedConfig.VoiceLocalRangeMultiplier = v,
                 TextManager.Get("spw_voicerangetooltip")
@@ -1896,7 +1898,7 @@ namespace SoundproofWalls
                 colorFunc: (localSliderValue, componentStyle) =>
                 GetSettingColor(localSliderValue, componentStyle,
                     defaultValue: Menu.defaultConfig.VoiceRadioRangeMultiplier,
-                    vanillaValue: 1.0f),
+                    vanillaValue: null),
                 currentValue: unsavedConfig.VoiceRadioRangeMultiplier,
                 setter: v => unsavedConfig.VoiceRadioRangeMultiplier = v,
                 TextManager.Get("spw_radiorangetooltip")
@@ -1905,7 +1907,7 @@ namespace SoundproofWalls
             Spacer(settingsFrame);
 
             Label(settingsFrame, TextManager.Get("spw_voicevolume"));
-            Slider(settingsFrame, (0, 4), 0.01f,
+            Slider(settingsFrame, (0, 3), 0.01f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.VoiceLocalVolumeMultiplier ?? default,
@@ -1913,14 +1915,14 @@ namespace SoundproofWalls
                 colorFunc: (localSliderValue, componentStyle) =>
                 GetSettingColor(localSliderValue, componentStyle,
                     defaultValue: Menu.defaultConfig.VoiceLocalVolumeMultiplier,
-                    vanillaValue: 1.0f),
+                    vanillaValue: null),
                 currentValue: unsavedConfig.VoiceLocalVolumeMultiplier,
                 setter: v => unsavedConfig.VoiceLocalVolumeMultiplier = v,
                 TextManager.Get("spw_voicevolumetooltip")
             );
 
             Label(settingsFrame, TextManager.Get("spw_radiovolume"));
-            Slider(settingsFrame, (0, 4), 0.01f,
+            Slider(settingsFrame, (0, 3), 0.01f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.VoiceRadioVolumeMultiplier ?? default,
@@ -1928,7 +1930,7 @@ namespace SoundproofWalls
                 colorFunc: (localSliderValue, componentStyle) =>
                 GetSettingColor(localSliderValue, componentStyle,
                     defaultValue: Menu.defaultConfig.VoiceRadioVolumeMultiplier,
-                    vanillaValue: 1.0f),
+                    vanillaValue: null),
                 currentValue: unsavedConfig.VoiceRadioVolumeMultiplier,
                 setter: v => unsavedConfig.VoiceRadioVolumeMultiplier = v,
                 TextManager.Get("spw_radiovolumetooltip")
@@ -1956,8 +1958,23 @@ namespace SoundproofWalls
 
             Spacer(settingsFrame);
 
+            Label(settingsFrame, TextManager.Get("spw_voiceminlowpassfrequency"));
+            PowerSlider(settingsFrame, (10, 1000), 10,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.VoiceMinLowpassFrequency ?? default,
+                    formatter: Hertz),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.VoiceMinLowpassFrequency,
+                    vanillaValue: ChannelInfoManager.VANILLA_VOIP_LOWPASS_FREQUENCY),
+                currentValue: unsavedConfig.VoiceMinLowpassFrequency,
+                setter: v => unsavedConfig.VoiceMinLowpassFrequency = (int)v,
+                TextManager.Get("spw_voiceminlowpassfrequencytooltip")
+            );
+
             Label(settingsFrame, TextManager.Get("spw_voicedynamicmufflemultiplier"));
-            Slider(settingsFrame, (0, 3), 0.01f,
+            PowerSlider(settingsFrame, (0, 1.1f), 0.01f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.VoiceDynamicMuffleMultiplier ?? default,
@@ -1968,7 +1985,8 @@ namespace SoundproofWalls
                     vanillaValue: null),
                 currentValue: unsavedConfig.VoiceDynamicMuffleMultiplier,
                 setter: v => unsavedConfig.VoiceDynamicMuffleMultiplier = v,
-                TextManager.Get("spw_voicedynamicmufflemultipliertooltip")
+                TextManager.Get("spw_voicedynamicmufflemultipliertooltip"),
+                curveFactor: 0.4f
             );
 
             SpacerLabel(settingsFrame, TextManager.Get("spw_categorymuffle"));
@@ -2372,8 +2390,9 @@ namespace SoundproofWalls
 
             SpacerLabel(settingsFrame, TextManager.Get("spw_categoryobstructions"));
 
+            float obstructionCurve = 0.4f;
             Label(settingsFrame, TextManager.Get("spw_obstructionwatersurface"));
-            Slider(settingsFrame, (0, 1), 0.001f,
+            PowerSlider(settingsFrame, (0, 1), 0.001f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.ObstructionWaterSurface ?? default,
@@ -2381,14 +2400,16 @@ namespace SoundproofWalls
                 colorFunc: (localSliderValue, componentStyle) =>
                 GetSettingColor(localSliderValue, componentStyle,
                     defaultValue: Menu.defaultConfig.ObstructionWaterSurface,
-                    vanillaValue: null),
+                    vanillaValue: null,
+                    highPrecision: true),
                 currentValue: unsavedConfig.ObstructionWaterSurface,
                 setter: v => unsavedConfig.ObstructionWaterSurface = v,
-                TextManager.Get("spw_obstructionwatersurfacetooltip")
+                TextManager.Get("spw_obstructionwatersurfacetooltip"),
+                curveFactor: obstructionCurve
             );
 
             Label(settingsFrame, TextManager.Get("spw_obstructionwaterbody"));
-            Slider(settingsFrame, (0, 1), 0.001f,
+            PowerSlider(settingsFrame, (0, 1), 0.001f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.ObstructionWaterBody ?? default,
@@ -2396,14 +2417,16 @@ namespace SoundproofWalls
                 colorFunc: (localSliderValue, componentStyle) =>
                 GetSettingColor(localSliderValue, componentStyle,
                     defaultValue: Menu.defaultConfig.ObstructionWaterBody,
-                    vanillaValue: null),
+                    vanillaValue: null,
+                    highPrecision: true),
                 currentValue: unsavedConfig.ObstructionWaterBody,
                 setter: v => unsavedConfig.ObstructionWaterBody = v,
-                TextManager.Get("spw_obstructionwaterbodytooltip")
+                TextManager.Get("spw_obstructionwaterbodytooltip"),
+                curveFactor: obstructionCurve
             );
 
             Label(settingsFrame, TextManager.Get("spw_obstructionwallthick"));
-            Slider(settingsFrame, (0, 1), 0.001f,
+            PowerSlider(settingsFrame, (0, 1), 0.001f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.ObstructionWallThick ?? default,
@@ -2411,14 +2434,16 @@ namespace SoundproofWalls
                 colorFunc: (localSliderValue, componentStyle) =>
                 GetSettingColor(localSliderValue, componentStyle,
                     defaultValue: Menu.defaultConfig.ObstructionWallThick,
-                    vanillaValue: null),
+                    vanillaValue: null,
+                    highPrecision: true),
                 currentValue: unsavedConfig.ObstructionWallThick,
                 setter: v => unsavedConfig.ObstructionWallThick = v,
-                TextManager.Get("spw_obstructionwallthicktooltip")
+                TextManager.Get("spw_obstructionwallthicktooltip"),
+                curveFactor: obstructionCurve
             );
 
             Label(settingsFrame, TextManager.Get("spw_obstructionwallthin"));
-            Slider(settingsFrame, (0, 1), 0.001f,
+            PowerSlider(settingsFrame, (0, 1), 0.001f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.ObstructionWallThin ?? default,
@@ -2426,14 +2451,16 @@ namespace SoundproofWalls
                 colorFunc: (localSliderValue, componentStyle) =>
                 GetSettingColor(localSliderValue, componentStyle,
                     defaultValue: Menu.defaultConfig.ObstructionWallThin,
-                    vanillaValue: null),
+                    vanillaValue: null,
+                    highPrecision: true),
                 currentValue: unsavedConfig.ObstructionWallThin,
                 setter: v => unsavedConfig.ObstructionWallThin = v,
-                TextManager.Get("spw_obstructionwallthintooltip")
+                TextManager.Get("spw_obstructionwallthintooltip"),
+                curveFactor: obstructionCurve
             );
 
             Label(settingsFrame, TextManager.Get("spw_obstructiondoorthick"));
-            Slider(settingsFrame, (0, 1), 0.001f,
+            PowerSlider(settingsFrame, (0, 1), 0.001f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.ObstructionDoorThick ?? default,
@@ -2441,14 +2468,16 @@ namespace SoundproofWalls
                 colorFunc: (localSliderValue, componentStyle) =>
                 GetSettingColor(localSliderValue, componentStyle,
                     defaultValue: Menu.defaultConfig.ObstructionDoorThick,
-                    vanillaValue: null),
+                    vanillaValue: null,
+                    highPrecision: true),
                 currentValue: unsavedConfig.ObstructionDoorThick,
                 setter: v => unsavedConfig.ObstructionDoorThick = v,
-                TextManager.Get("spw_obstructiondoorthicktooltip")
+                TextManager.Get("spw_obstructiondoorthicktooltip"),
+                curveFactor: obstructionCurve
             );
 
             Label(settingsFrame, TextManager.Get("spw_obstructiondoorthin"));
-            Slider(settingsFrame, (0, 1), 0.001f,
+            PowerSlider(settingsFrame, (0, 1), 0.001f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.ObstructionDoorThin ?? default,
@@ -2456,14 +2485,16 @@ namespace SoundproofWalls
                 colorFunc: (localSliderValue, componentStyle) =>
                 GetSettingColor(localSliderValue, componentStyle,
                     defaultValue: Menu.defaultConfig.ObstructionDoorThin,
-                    vanillaValue: null),
+                    vanillaValue: null,
+                    highPrecision: true),
                 currentValue: unsavedConfig.ObstructionDoorThin,
                 setter: v => unsavedConfig.ObstructionDoorThin = v,
-                TextManager.Get("spw_obstructiondoorthintooltip")
+                TextManager.Get("spw_obstructiondoorthintooltip"),
+                curveFactor: obstructionCurve
             );
 
             Label(settingsFrame, TextManager.Get("spw_obstructionsuit"));
-            Slider(settingsFrame, (0, 1), 0.001f,
+            PowerSlider(settingsFrame, (0, 1), 0.001f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.ObstructionSuit ?? default,
@@ -2471,14 +2502,16 @@ namespace SoundproofWalls
                 colorFunc: (localSliderValue, componentStyle) =>
                 GetSettingColor(localSliderValue, componentStyle,
                     defaultValue: Menu.defaultConfig.ObstructionSuit,
-                    vanillaValue: null),
+                    vanillaValue: null,
+                    highPrecision: true),
                 currentValue: unsavedConfig.ObstructionSuit,
                 setter: v => unsavedConfig.ObstructionSuit = v,
-                TextManager.Get("spw_obstructionsuittooltip")
+                TextManager.Get("spw_obstructionsuittooltip"),
+                curveFactor: obstructionCurve
             );
 
             Label(settingsFrame, TextManager.Get("spw_obstructiondrowning"));
-            Slider(settingsFrame, (0, 1), 0.001f,
+            PowerSlider(settingsFrame, (0, 1), 0.001f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.ObstructionDrowning ?? default,
@@ -2486,10 +2519,12 @@ namespace SoundproofWalls
                 colorFunc: (localSliderValue, componentStyle) =>
                 GetSettingColor(localSliderValue, componentStyle,
                     defaultValue: Menu.defaultConfig.ObstructionDrowning,
-                    vanillaValue: null),
+                    vanillaValue: null,
+                    highPrecision: true),
                 currentValue: unsavedConfig.ObstructionDrowning,
                 setter: v => unsavedConfig.ObstructionDrowning = v,
-                TextManager.Get("spw_obstructiondrowningtooltip")
+                TextManager.Get("spw_obstructiondrowningtooltip"),
+                curveFactor: obstructionCurve
             );
 
             SpacerLabel(settingsFrame, TextManager.Get("spw_categorythresholds"));
@@ -2998,8 +3033,27 @@ namespace SoundproofWalls
             SpacerLabel(settingsFrame, TextManager.Get("spw_categoryvisuals"));
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
+                label: TextManager.Get("spw_eavesdroppingvisualfeedbackenabled"),
+                localValue: unsavedConfig.EavesdroppingVisualFeedbackEnabled,
+                serverValue: ConfigManager.ServerConfig?.EavesdroppingVisualFeedbackEnabled ?? default,
+                formatter: BoolFormatter),
+                tooltip: TextManager.Get("spw_eavesdroppingvisualfeedbackenabledtooltip"),
+                currentValue: unsavedConfig.EavesdroppingVisualFeedbackEnabled,
+                setter: v => unsavedConfig.EavesdroppingVisualFeedbackEnabled = v);
+
+            Tickbox(settingsFrame, FormatTextBoxLabel(
+                label: TextManager.Get("spw_eavesdroppingrevealscharacteroutline"),
+                localValue: unsavedConfig.EavesdroppingRevealsCharacterOutline,
+                serverValue: ConfigManager.ServerConfig?.EavesdroppingRevealsCharacterOutline ?? default,
+                formatter: BoolFormatter),
+                tooltip: TextManager.Get("spw_eavesdroppingrevealscharacteroutlinetooltip"),
+                currentValue: unsavedConfig.EavesdroppingRevealsCharacterOutline,
+                setter: v => unsavedConfig.EavesdroppingRevealsCharacterOutline = v);
+
+            Tickbox(settingsFrame, FormatTextBoxLabel(
                 label: TextManager.Get("spw_eavesdroppingrevealsall"),
-                localValue: unsavedConfig.EavesdroppingRevealsAll, serverValue: ConfigManager.ServerConfig?.EavesdroppingRevealsAll ?? default,
+                localValue: unsavedConfig.EavesdroppingRevealsAll,
+                serverValue: ConfigManager.ServerConfig?.EavesdroppingRevealsAll ?? default,
                 formatter: BoolFormatter),
                 tooltip: TextManager.Get("spw_eavesdroppingrevealsalltooltip"),
                 currentValue: unsavedConfig.EavesdroppingRevealsAll,
@@ -3008,11 +3062,11 @@ namespace SoundproofWalls
             Spacer(settingsFrame);
 
             Label(settingsFrame, TextManager.Get("spw_eavesdroppingspritemaxsize"));
-            Slider(settingsFrame, (10, 10000), 10,
+            Slider(settingsFrame, (0, 3000), 10,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.EavesdroppingSpriteMaxSize ?? default,
-                    formatter: Centimeters),
+                    formatter: CentimetersZeroInfinity),
                 colorFunc: (localSliderValue, componentStyle) =>
                 GetSettingColor(localSliderValue, componentStyle,
                     defaultValue: Menu.defaultConfig.EavesdroppingSpriteMaxSize,
@@ -3331,7 +3385,7 @@ namespace SoundproofWalls
 
             Spacer(settingsFrame);
 
-            Label(settingsFrame, TextManager.Get("spw_hydrophonedistortiontargetgain"));
+            Label(settingsFrame, TextManager.Get("spw_loudsounddistortiontargetgain"));
             Slider(settingsFrame, (0.01f, 1), 0.01f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
@@ -3343,10 +3397,10 @@ namespace SoundproofWalls
                     vanillaValue: null),
                 currentValue: unsavedConfig.HydrophoneDistortionTargetGain,
                 setter: v => unsavedConfig.HydrophoneDistortionTargetGain = v,
-                TextManager.Get("spw_hydrophonedistortiontargetgaintooltip")
+                TextManager.Get("spw_loudsounddistortiontargetgaintooltip")
             );
 
-            Label(settingsFrame, TextManager.Get("spw_hydrophonedistortiontargetedge"));
+            Label(settingsFrame, TextManager.Get("spw_loudsounddistortiontargetedge"));
             Slider(settingsFrame, (0, 1), 0.01f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
@@ -3358,7 +3412,7 @@ namespace SoundproofWalls
                     vanillaValue: null),
                 currentValue: unsavedConfig.HydrophoneDistortionTargetEdge,
                 setter: v => unsavedConfig.HydrophoneDistortionTargetEdge = v,
-                TextManager.Get("spw_hydrophonedistortiontargetedgetooltip")
+                TextManager.Get("spw_loudsounddistortiontargetedgetooltip")
             );
 
             Spacer(settingsFrame);
@@ -3583,15 +3637,6 @@ namespace SoundproofWalls
                 setter: v => unsavedConfig.PitchEnabled = v);
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
-                label: TextManager.Get("spw_pitchstatuseffectsounds"),
-                localValue: unsavedConfig.PitchStatusEffectSounds, 
-                serverValue: ConfigManager.ServerConfig?.PitchStatusEffectSounds ?? default,
-                formatter: BoolFormatter),
-                tooltip: TextManager.Get("spw_pitchstatuseffectsoundstooltip"),
-                currentValue: unsavedConfig.PitchStatusEffectSounds,
-                setter: v => unsavedConfig.PitchStatusEffectSounds = v);
-
-            Tickbox(settingsFrame, FormatTextBoxLabel(
                 label: TextManager.Get("spw_pitchwithdistance"),
                 localValue: unsavedConfig.PitchWithDistance, 
                 serverValue: ConfigManager.ServerConfig?.PitchWithDistance ?? default,
@@ -3599,6 +3644,16 @@ namespace SoundproofWalls
                 tooltip: TextManager.Get("spw_pitchwithdistancetooltip"),
                 currentValue: unsavedConfig.PitchWithDistance,
                 setter: v => unsavedConfig.PitchWithDistance = v);
+
+            Tickbox(settingsFrame, FormatTextBoxLabel(
+                label: TextManager.Get("spw_pitchstatuseffectsounds"),
+                localValue: unsavedConfig.PitchStatusEffectSounds,
+                serverValue: ConfigManager.ServerConfig?.PitchStatusEffectSounds ?? default,
+                formatter: BoolFormatter),
+                tooltip: TextManager.Get("spw_pitchstatuseffectsoundstooltip"),
+                currentValue: unsavedConfig.PitchStatusEffectSounds,
+                setter: v => unsavedConfig.PitchStatusEffectSounds = v);
+
 
             Spacer(settingsFrame);
 

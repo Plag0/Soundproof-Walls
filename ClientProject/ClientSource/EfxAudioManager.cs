@@ -67,6 +67,7 @@ namespace SoundproofWalls
         private HashSet<uint> _reverbRoutedSources = new HashSet<uint>();
 
         private double LastEffectUpdateTime = 0;
+        private bool ListenerIsCharacter = true;
 
         private float trailingAirReverbGain = ConfigManager.Config.DynamicReverbAirTargetGain;
         private float trailingHydrophoneReverbGain = ConfigManager.Config.HydrophoneReverbTargetGain;
@@ -156,10 +157,10 @@ namespace SoundproofWalls
         {
             if (!Config.DynamicFx) { return; }
 
-            PerformanceProfiler.Instance.StartTimingEvent(ProfileEvents.EffectsManagerUpdate);
-
             if (Timing.TotalTime < LastEffectUpdateTime + Config.OpenALEffectsUpdateInterval) { return; }
             LastEffectUpdateTime = Timing.TotalTime;
+
+            PerformanceProfiler.Instance.StartTimingEvent(ProfileEvents.EffectsManagerUpdate);
 
             if (Listener.IsUsingHydrophones)
             {
@@ -199,13 +200,15 @@ namespace SoundproofWalls
                 {
                     // Reset trailing gain when switching reverb type.
                     if (currentReverb == ReverbType.Hydrophone) { trailingAirReverbGain = 0; }
-                    ApplyReverbConfiguration(CalculateInsideReverbConfiguration());
+                    ApplyReverbConfiguration(CalculateInsideReverbConfiguration(), flushReverb: Listener.IsCharacter != ListenerIsCharacter);
                     currentReverb = ReverbType.Inside;
+                    ListenerIsCharacter = Listener.IsCharacter;
                 }
                 else
                 {
-                    ApplyReverbConfiguration(CalculateOutsideReverbConfiguration());
+                    ApplyReverbConfiguration(CalculateOutsideReverbConfiguration(), flushReverb: Listener.IsCharacter != ListenerIsCharacter);
                     currentReverb = ReverbType.Outside;
+                    ListenerIsCharacter = Listener.IsCharacter;
                 }
             }
             else
@@ -321,8 +324,8 @@ namespace SoundproofWalls
             }
             float amplitudeMult = 1f - MathUtils.InverseLerp(0.0f, 1.4f, totalAudioAmplitude);
             float submersionMult = Listener.IsSubmerged ? 1.3f : 1.0f;
-            float targetReverbGain = ((amplitudeMult * submersionMult) + loudSoundGain) * ConfigManager.Config.DynamicReverbAirTargetGain;
-
+            float areaMult = Math.Min(Listener.ConnectedArea * ConfigManager.Config.DynamicReverbAreaSizeMultiplier / 300_000, 1.1f);
+            float targetReverbGain = ((amplitudeMult * areaMult * submersionMult) + loudSoundGain) * ConfigManager.Config.DynamicReverbAirTargetGain;
             targetReverbGain = Math.Clamp(targetReverbGain, 0.0f, 1.0f);
 
             float transitionFactor = ConfigManager.Config.AirReverbGainTransitionFactor;
@@ -614,7 +617,10 @@ namespace SoundproofWalls
 
         public void UpdateSource(ChannelInfo channelInfo, float gainHf, float gainLf = 1)
         {
-            PerformanceProfiler.Instance.StartTimingEvent(ProfileEvents.EffectsManagerUpdate);
+            if (channelInfo.SoundInfo.Sound is not VoipSound) 
+            { 
+                PerformanceProfiler.Instance.StartTimingEvent(ProfileEvents.EffectsManagerUpdate); 
+            }
 
             uint sourceId = channelInfo.Channel.Sound.Owner.GetSourceFromIndex(channelInfo.Channel.Sound.SourcePoolIndex, channelInfo.Channel.ALSourceIndex);
 
@@ -630,7 +636,10 @@ namespace SoundproofWalls
             RouteSourceToEffectSlot(REVERB_SEND, sourceId, DetermineReverbEffectSlot(channelInfo), filterId);
             RouteSourceToEffectSlot(DISTORTION_SEND, sourceId, DetermineDistortionEffectSlot(channelInfo), filterId);
 
-            PerformanceProfiler.Instance.StopTimingEvent();
+            if (channelInfo.SoundInfo.Sound is not VoipSound)
+            {
+                PerformanceProfiler.Instance.StopTimingEvent();
+            }
         }
 
         private void UpdateSourceFilter(uint sourceId, uint filterId, float gainHf, float gainLf, ChannelInfo channelInfo)
@@ -664,6 +673,13 @@ namespace SoundproofWalls
             }
             else
             {
+                // Don't muffle voip sounds with OpenAL.
+                if (channelInfo.SoundInfo.Sound is VoipSound) 
+                {
+                    gainHf = 1;
+                    gainLf = 1;
+                }
+
                 AlEffects.Filterf(filterId, AlEffects.AL_LOWPASS_GAIN, gainLf);
                 if ((alError = Al.GetError()) != Al.NoError) DebugConsole.AddWarning($"[SoundproofWalls] Failed to update filter {filterId} param AL_LOWPASS_GAIN for source {sourceId}, {Al.GetErrorString(alError)}");
                 AlEffects.Filterf(filterId, AlEffects.AL_LOWPASS_GAINHF, gainHf);
@@ -680,7 +696,7 @@ namespace SoundproofWalls
             if (currentReverb == ReverbType.None) { return INVALID_ID; }
 
             bool sourceInHull = channelInfo.ChannelHull != null;
-            float amplitude = channelInfo.Channel.CurrentAmplitude * channelInfo.Gain;
+            float amplitude = channelInfo.Channel.CurrentAmplitude * Math.Min(channelInfo.Gain, 1);
             if (currentReverb == ReverbType.Inside)
             {
                 bool shouldReverbAir = sourceInHull &&

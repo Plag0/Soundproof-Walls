@@ -9,7 +9,7 @@
 	<spw_reporthelp>Opens the Soundproof Walls Report Bugs page in your browser.</spw_reporthelp>
 
 	<initmessage>Finished loading Soundproof Walls v[version]</initmessage>
-	<initmessagefollowup>Commands:  > Open the settings menu by typing "spw".\n  > Print your stats by typing "spw_stats".\n  > Have a question? Open the workshop page by typing "spw_workshop" and leave a comment.\n  > Found a bug? type "spw_report" to open the discussion page and make a post.\n  > Learn more about the config options with "spw_help".\n  > Re-open the first-time launch popup by typing "spw_welcome".</initmessagefollowup>
+	<initmessagefollowup>  > Open the settings menu by typing "spw".\n  > Print your stats by typing "spw_stats".\n  > Have a question? Open the workshop page by typing "spw_workshop" and leave a comment.\n  > Found a bug? type "spw_report" to open the discussion page and make a post.\n  > Learn more about the config options with "spw_help".\n  > Re-open the first-time launch popup by typing "spw_welcome".</initmessagefollowup>
 	
 	<!-- Info Panel -->
 	<spw_syncingenabled>Syncing Enabled!\nYou are using a config uploaded to the server by [name]. Values from this config are shown in parentheses next to yours.</spw_syncingenabled>
@@ -126,141 +126,143 @@
 	<spw_lightlowpassfrequencytooltip>The corner frequency used to muffle sounds that are lightly obstructed. The threshold to apply this filter is configurable in the Muffle tab.\n\nNote: Does not apply to voice chat. See the lowpass frequency sliders in the Voice tab.\n\nNote: Changing this setting while playing may briefly freeze the game as buffers are loaded.</spw_lightlowpassfrequencytooltip>
 
 	<spw_staticreverb>Enable Reverb Buffers</spw_staticreverb>
-	<spw_staticreverbtooltip>Load sounds with an additional buffer ran through a reverb filter. This feature only applies to non-muffled and non-looping sounds, uses ~100MB of memory (at the default duration), and may increase level loading times by a few seconds.\n\nNote: Changing this setting while playing may briefly freeze the game as buffers are loaded.</spw_staticreverbtooltip>
+	<spw_staticreverbtooltip>Load sounds with an additional buffer ran through a reverb filter. This feature only applies non-looping and non-muffled sounds.\n\nNote: Uses ~100MB of memory and extends buffer loading times (worsens with duration).\n\nNote: Changing this setting while playing may briefly freeze the game as buffers are loaded.</spw_staticreverbtooltip>
 	<spw_staticreverbalwaysloudsounds>Always Reverb Loud Sounds</spw_staticreverbalwaysloudsounds>
 	<spw_staticreverbalwaysloudsoundstooltip>Sounds referenced in the "Custom Sounds" list (Advanced tab) with a sidechain multiplier greater than one ignore the minimum reverb area requirement.</spw_staticreverbalwaysloudsoundstooltip>
 	<spw_staticreverbduration>Reverb Duration</spw_staticreverbduration>
-	<spw_staticreverbdurationtooltip>The decay time and size of the reverb effect. The value entered reflects the duration of the effect in seconds</spw_staticreverbdurationtooltip>
-	<spw_staticreverbwetdrymix>Reverb Mix (Dry/Wet)</spw_staticreverbwetdrymix>
-	<spw_staticreverbwetdrymixtooltip>The dry/wet mix of the reverb effect. A higher value results in a more processed signal, while lower values are closer to the original sound</spw_staticreverbwetdrymixtooltip>
+	<spw_staticreverbdurationtooltip>The decay time and size of the reverb. Increasing this value results in higher memory usage and buffer loading times.</spw_staticreverbdurationtooltip>
+	<spw_staticreverbwetdrymix>Reverb Mix</spw_staticreverbwetdrymix>
+	<spw_staticreverbwetdrymixtooltip>The dry/wet mix of the reverb. A higher value results in a stronger effect.</spw_staticreverbwetdrymixtooltip>
 	<spw_staticreverbdamping>Reverb Damping</spw_staticreverbdamping>
 	<spw_staticreverbdampingtooltip>The strength of the lowpass filter applied to the reverb feedback.</spw_staticreverbdampingtooltip>
 	<spw_staticreverbminarea>Minimum Reverb Area</spw_staticreverbminarea>
-	<spw_staticreverbminareatooltip>The minimum total area of the connected rooms inhabited by the listener required for non-looping non-muffled sounds to become reverberated</spw_staticreverbminareatooltip>
+	<spw_staticreverbminareatooltip>The minimum combined area of connected rooms around the listener required for reverberation to be applied to non-looping and non-muffled sounds.</spw_staticreverbminareatooltip>
 
 	<!-- Voice -->
 	<spw_voicetab>Voice</spw_voicetab>
 
 	<spw_talkingragdolls>Talking Ragdolls</spw_talkingragdolls>
-	<spw_talkingragdollstooltip>Hear players speak when they are ragdolled as long as they're not stunned</spw_talkingragdollstooltip>
+	<spw_talkingragdollstooltip>Hear non-stunned players speak when they're ragdolled.</spw_talkingragdollstooltip>
 	
 	<spw_voicerange>Local Range</spw_voicerange>
-	<spw_voicerangetooltip>The maximum range of player voices</spw_voicerangetooltip>
+	<spw_voicerangetooltip>The range of local proximity chat.</spw_voicerangetooltip>
 	<spw_radiorange>Radio Range</spw_radiorange>
-	<spw_radiorangetooltip>The maximum range of player radio transmissions</spw_radiorangetooltip>
+	<spw_radiorangetooltip>The range of radio proximity chat.</spw_radiorangetooltip>
 	<spw_voicevolume>Local Volume</spw_voicevolume>
-	<spw_voicevolumetooltip>The volume of local voice chat. Behaves independently of Barotrauma's voice chat volume slider</spw_voicevolumetooltip>
+	<spw_voicevolumetooltip>The volume of local proximity chat.\n\nNote: This setting is independent of Barotrauma’s voice chat volume slider.</spw_voicevolumetooltip>
 	<spw_radiovolume>Radio Volume</spw_radiovolume>
-	<spw_radiovolumetooltip>The volume of radio voice chat. Behaves independently of Barotrauma's voice chat volume slider</spw_radiovolumetooltip>
+	<spw_radiovolumetooltip>The volume of radio proximity chat.\n\nNote: This setting is independent of Barotrauma’s voice chat volume slider.</spw_radiovolumetooltip>
 
 	<spw_categorydynamicfx>Dynamic Mode Exclusive</spw_categorydynamicfx>
 
-	<spw_dynamicreverblocal>Reverb Local Voice</spw_dynamicreverblocal>
-	<spw_dynamicreverblocaltooltip>Requires "Simulate Reverb" to be enabled.\nAllows reverb to be applied to player voices when speaking locally</spw_dynamicreverblocaltooltip>
+	<spw_dynamicreverblocal>Reverb Local</spw_dynamicreverblocal>
+	<spw_dynamicreverblocaltooltip>Allows reverb to be applied to local proximity chat\n\nNote: Requires Dynamic mode's reverb effect to be enabled.</spw_dynamicreverblocaltooltip>
 	<spw_dynamicreverbradio>Reverb Radio</spw_dynamicreverbradio>
-	<spw_dynamicreverbradiotooltip>Requires "Simulate Reverb" to be enabled.\nAllows reverb to be applied to player voices heard over the radio</spw_dynamicreverbradiotooltip>
+	<spw_dynamicreverbradiotooltip>Allows reverb to be applied to radio proximity chat\n\nNote: Requires Dynamic mode's reverb effect to be enabled.</spw_dynamicreverbradiotooltip>
+	<spw_voiceminlowpassfrequency>Min Lowpass Frequency</spw_voiceminlowpassfrequency>
+	<spw_voiceminlowpassfrequencytooltip>The minimum lowpass frequency applied when fully muffled.</spw_voiceminlowpassfrequencytooltip>
 	<spw_voicedynamicmufflemultiplier>Dynamic Muffle Strength</spw_voicedynamicmufflemultiplier>
-	<spw_voicedynamicmufflemultipliertooltip>Requires the "Dynamic" effect processing mode.\nThe strength of muffle effects applied to player voices</spw_voicedynamicmufflemultipliertooltip>
+	<spw_voicedynamicmufflemultipliertooltip>The strength of the muffle effect applied to player voices when using Dynamic mode.</spw_voicedynamicmufflemultipliertooltip>
 
 	<spw_voiceheavylowpassfrequency>Heavy Voice Lowpass Frequency</spw_voiceheavylowpassfrequency>
-	<spw_voiceheavylowpassfrequencytooltip>The corner frequency used to muffle player voices that are heavily muffled.</spw_voiceheavylowpassfrequencytooltip>
+	<spw_voiceheavylowpassfrequencytooltip>The corner frequency used to muffle voices that are heavily obstructed. The threshold to apply this filter is configurable in the Muffle tab.</spw_voiceheavylowpassfrequencytooltip>
 	<spw_voicemediumlowpassfrequency>Medium Voice Lowpass Frequency</spw_voicemediumlowpassfrequency>
-	<spw_voicemediumlowpassfrequencytooltip>temp</spw_voicemediumlowpassfrequencytooltip>
+	<spw_voicemediumlowpassfrequencytooltip>The corner frequency used to muffle voices that are moderately obstructed. The threshold to apply this filter is configurable in the Muffle tab.</spw_voicemediumlowpassfrequencytooltip>
 	<spw_voicelightlowpassfrequency>Light Voice Lowpass Frequency</spw_voicelightlowpassfrequency>
-	<spw_voicelightlowpassfrequencytooltip>temp</spw_voicelightlowpassfrequencytooltip>
+	<spw_voicelightlowpassfrequencytooltip>The corner frequency used to muffle voices that are lightly obstructed. The threshold to apply this filter is configurable in the Muffle tab.</spw_voicelightlowpassfrequencytooltip>
 
 	<spw_categoryscreammode>Scream Mode</spw_categoryscreammode>
 
 	<spw_screammode>Scream Mode</spw_screammode>
-	<spw_screammodetooltip>The range of player voices become proportional to the amplitude of their signal (i.e., yelling will transmit your voice further)\nNote: for this setting to work as expected it's recommended to tweak your Barotrauma voice settings so that the volume bar has room to expand when receiving loud input</spw_screammodetooltip>
-	<spw_screammodemaxrange>Scream Mode Max Range</spw_screammodemaxrange>
-	<spw_screammodemaxrangetooltip>Requires "Scream Mode" to be enabled.\nThe range player voices can be heard from when speaking at max amplitude</spw_screammodemaxrangetooltip>
-	<spw_screammodeminrange>Scream Mode Min Range</spw_screammodeminrange>
-	<spw_screammodeminrangetooltip>Requires "Scream Mode" to be enabled.\nThe minimum range player voices can be reduced to when speaking at low amplitudes</spw_screammodeminrangetooltip>
-	<spw_screammodereleaserate>Scream Mode Release Rate</spw_screammodereleaserate>
-	<spw_screammodereleaseratetooltip>Requires "Scream Mode" to be enabled.\nThe distance that player voices decay in range per second when their range is no longer supported by their amplitude</spw_screammodereleaseratetooltip>
+	<spw_screammodetooltip>Local proximity chat range scales with input amplitude (screaming is heard from farther away).\n\nNote: For best results, adjust your Barotrauma mic volume so the voice activity meter still has room for loud input. The more dynamic range your mic allows the better.</spw_screammodetooltip>
+	<spw_screammodemaxrange>Max Scream Range</spw_screammodemaxrange>
+	<spw_screammodemaxrangetooltip>The maximum range of local proximity chat when speaking at full volume with "Scream Mode" enabled.\n\nNote: This setting is affected by the "Local Range" multiplier.</spw_screammodemaxrangetooltip>
+	<spw_screammodeminrange>Min Scream Range</spw_screammodeminrange>
+	<spw_screammodeminrangetooltip>The minimum range of local proximity chat with "Scream Mode" enabled.</spw_screammodeminrangetooltip>
+	<spw_screammodereleaserate>Scream Release Rate</spw_screammodereleaserate>
+	<spw_screammodereleaseratetooltip>The rate at which voice range decreases per second once it’s no longer sustained by amplitude.</spw_screammodereleaseratetooltip>
 	
 	<spw_categorybubbles>Drowning</spw_categorybubbles>
 	
 	<spw_drowningbubbles>Drowning Bubbles</spw_drowningbubbles>
-	<spw_drowningbubblestooltip>Players emit bubbles when speaking underwater without oxygen</spw_drowningbubblestooltip>
-	<spw_drowningbubbleslocalrange>Bubbles Range</spw_drowningbubbleslocalrange>
-	<spw_drowningbubbleslocalrangetooltip>The audible range of the drowning bubbles sound</spw_drowningbubbleslocalrangetooltip>
-	<spw_drowningbubbleslocalvolume>Bubbles Volume (Local)</spw_drowningbubbleslocalvolume>
-	<spw_drowningbubbleslocalvolumetooltip>The volume of the drowning bubbles sound that plays locally around the drowning player</spw_drowningbubbleslocalvolumetooltip>
-	<spw_drowningbubblesradiovolume>Bubbles Volume (Radio)</spw_drowningbubblesradiovolume>
-	<spw_drowningbubblesradiovolumetooltip>The volume of the drowning bubbles sound that plays over the radio</spw_drowningbubblesradiovolumetooltip>
+	<spw_drowningbubblestooltip>Players speaking underwater without oxygen emit visible bubbles that can be heard locally or over the radio.</spw_drowningbubblestooltip>
+	<spw_drowningbubbleslocalrange>Local Bubble Range</spw_drowningbubbleslocalrange>
+	<spw_drowningbubbleslocalrangetooltip>The audible range of the local bubbles sound.</spw_drowningbubbleslocalrangetooltip>
+	<spw_drowningbubbleslocalvolume>Local Bubble Volume</spw_drowningbubbleslocalvolume>
+	<spw_drowningbubbleslocalvolumetooltip>The volume of the local bubbles sound.</spw_drowningbubbleslocalvolumetooltip>
+	<spw_drowningbubblesradiovolume>Radio Bubble Volume</spw_drowningbubblesradiovolume>
+	<spw_drowningbubblesradiovolumetooltip>The volume of the radio bubbles sound.</spw_drowningbubblesradiovolumetooltip>
 	
 	<spw_categorycustomfilter>Radio Filter</spw_categorycustomfilter>
 
 	<spw_radiocustomfilter>Custom Radio Filter</spw_radiocustomfilter>
-	<spw_radiocustomfiltertooltip>Run player radio transmissions through a custom filter that includes configurable compression, distortion, and noise effects</spw_radiocustomfiltertooltip>
+	<spw_radiocustomfiltertooltip>Process radio proximity chat with a custom filter that includes configurable compression, distortion, and noise effects.</spw_radiocustomfiltertooltip>
 	<spw_radiobandpassfrequency>Radio Bandpass Frequency</spw_radiobandpassfrequency>
-	<spw_radiobandpassfrequencytooltip>The center frequency of the bandpass filter. The frequencies in this area (the size of which is controlled by the Q factor setting below) are allowed to pass through the radio</spw_radiobandpassfrequencytooltip>
+	<spw_radiobandpassfrequencytooltip>The center frequency of the bandpass filter. Only frequencies near this point are allowed through. \n\nNote: The width of the range is set by "Radio Bandpass Q Factor" below.</spw_radiobandpassfrequencytooltip>
 	<spw_radiobandpassqualityfactor>Radio Bandpass Q Factor</spw_radiobandpassqualityfactor>
-	<spw_radiobandpassqualityfactortooltip>The quality factor of the radio bandpass filter. Defines how tight the filter is around its center frequency ("Radio Bandpass Frequency"). A higher value creates a more "intense" effect</spw_radiobandpassqualityfactortooltip>
+	<spw_radiobandpassqualityfactortooltip>How narrow the bandpass filter is around its center frequency. Higher values create a tighter, more pronounced effect.</spw_radiobandpassqualityfactortooltip>
 	<spw_radiodistortiondrive>Radio Distortion Drive</spw_radiodistortiondrive>
-	<spw_radiodistortiondrivetooltip>How much player voices should be amplified before distortion clipping</spw_radiodistortiondrivetooltip>
+	<spw_radiodistortiondrivetooltip>Boosts the voice signal before clipping. Higher values increase distortion intensity.</spw_radiodistortiondrivetooltip>
 	<spw_radiodistortionthreshold>Radio Distortion Threshold</spw_radiodistortionthreshold>
-	<spw_radiodistortionthresholdtooltip>The level player voices are clipped to</spw_radiodistortionthresholdtooltip>
+	<spw_radiodistortionthresholdtooltip>Maximum allowed level. Samples exceeding this limit are hard-clipped.</spw_radiodistortionthresholdtooltip>
 	<spw_radiostatic>Radio Static</spw_radiostatic>
-	<spw_radiostatictooltip>The amount of static heard over the radio</spw_radiostatictooltip>
+	<spw_radiostatictooltip>The intensity of static noise added to radio transmissions.</spw_radiostatictooltip>
 	<spw_radiocompressionthreshold>Radio Compression Threshold</spw_radiocompressionthreshold>
-	<spw_radiocompressionthresholdtooltip>The threshold level at which radio compression is applied. Sounds below this level will not be compressed.</spw_radiocompressionthresholdtooltip>
+	<spw_radiocompressionthresholdtooltip>The input level where compression begins. Sounds below this level are unaffected.</spw_radiocompressionthresholdtooltip>
 	<spw_radiocompressionratio>Radio Compression Ratio</spw_radiocompressionratio>
-	<spw_radiocompressionratiotooltip>The ratio by which the volume above the threshold is reduced. A higher ratio results in more compression, reducing the dynamic range of the radio signal.</spw_radiocompressionratiotooltip>
+	<spw_radiocompressionratiotooltip>How much volume above the threshold is reduced. Higher ratios mean stronger compression and less dynamic range.</spw_radiocompressionratiotooltip>
 	<spw_radiopostfilterboost>Post Filter Gain Boost</spw_radiopostfilterboost>
-	<spw_radiopostfilterboosttooltip>Apply master gain adjustment to the radio filter</spw_radiopostfilterboosttooltip>
+	<spw_radiopostfilterboosttooltip>The overall output level after radio filtering.</spw_radiopostfilterboosttooltip>
 	
 	<!-- Muffle -->
 	<spw_muffletab>Muffle</spw_muffletab>
 	<spw_muffledivingsuit>Muffle Diving Suits</spw_muffledivingsuit>
-	<spw_muffledivingsuittooltip>Muffle sounds by applying the "Diving Suit" obstruction when wearing a diving suit</spw_muffledivingsuittooltip>
+	<spw_muffledivingsuittooltip>Apply the "Diving Suit" obstruction to all sounds when wearing a diving suit.</spw_muffledivingsuittooltip>
 	<spw_mufflesubmergedplayer>Muffle Submerged Player</spw_mufflesubmergedplayer>
-	<spw_mufflesubmergedplayertooltip>Muffle sounds by applying the "Water Body" obstruction when the player's head is submerged in the same body of water as the sound</spw_mufflesubmergedplayertooltip>
+	<spw_mufflesubmergedplayertooltip>Apply the "Water Body" obstruction to sounds submerged in the same body of water as the player's head.</spw_mufflesubmergedplayertooltip>
 	<spw_mufflesubmergedviewtarget>Muffle Submerged View Target</spw_mufflesubmergedviewtarget>
-	<spw_mufflesubmergedviewtargettooltip>Muffle sounds by applying the "Water Body" obstruction when your viewed target (e.g., turrets, cameras, etc) is submerged in the same body of water as the sound</spw_mufflesubmergedviewtargettooltip>
+	<spw_mufflesubmergedviewtargettooltip>Apply the "Water Body" obstruction to sounds submerged in the same body of water as the view target\n\nNote: Requires "Focus Target Audio" (General tab) to be enabled.</spw_mufflesubmergedviewtargettooltip>
 	<spw_mufflewatersurface>Muffle Water Surface</spw_mufflewatersurface>
-	<spw_mufflewatersurfacetooltip>Muffle sounds on the opposite side of an air-water barrier by applying the "Water Surface" obstruction</spw_mufflewatersurfacetooltip>
+	<spw_mufflewatersurfacetooltip>Apply the "Water Surface" obstruction to sounds on the opposite side of an air-water barrier.</spw_mufflewatersurfacetooltip>
 	<spw_muffleflowfirepath>Muffle Flow &amp; Fire Paths</spw_muffleflowfirepath>
-	<spw_muffleflowfirepathtooltip>Muffle water flow and fire sounds if they do not have a path to the listener.\nNote: this feature uses a predictive system which may not be accurate in all situations because flow/fire channels are limited and have no positional data</spw_muffleflowfirepathtooltip>
+	<spw_muffleflowfirepathtooltip>Muffle water flow and fire sounds if they do not have a path to the listener.\n\nNote: This feature uses a predictive system which may not be accurate in all situations.</spw_muffleflowfirepathtooltip>
 	<spw_muffleflowsounds>Muffle Flow Sounds</spw_muffleflowsounds>
-	<spw_muffleflowsoundstooltip>Toggle the muffling of water flow sounds from all sources (submerged, eavesdropping, using hydrophones, or behind a wall)</spw_muffleflowsoundstooltip>
+	<spw_muffleflowsoundstooltip>Toggle the muffling of water flow sounds from all sources.</spw_muffleflowsoundstooltip>
 	<spw_mufflefiresounds>Muffle Fire Sounds</spw_mufflefiresounds>
-	<spw_mufflefiresoundstooltip>Toggle the muffling of fire sounds from all sources (submerged, eavesdropping, using hydrophones, or behind a wall)</spw_mufflefiresoundstooltip>
+	<spw_mufflefiresoundstooltip>Toggles the muffling of fire sounds from all sources.</spw_mufflefiresoundstooltip>
 	<spw_classiclowpassfrequency>Classic Lowpass Frequency</spw_classiclowpassfrequency>
-	<spw_classiclowpassfrequencytooltip>The corner frequency used to muffle sounds in Classic mode. The threshold to apply this filter is configurable in the Muffle tab.\n\nNote: Does not apply to voice chat. See the lowpass frequency sliders in the Voice tab.\n\nNote: Changing this setting while playing may briefly freeze the game as buffers are loaded</spw_classiclowpassfrequencytooltip>
+	<spw_classiclowpassfrequencytooltip>The corner frequency used to muffle sounds in Classic mode. The threshold to apply this filter is configurable in the Muffle tab.\n\nNote: Does not apply to voice chat. See the lowpass frequency sliders in the Voice tab.\n\nNote: Changing this setting while playing may briefly freeze the game as buffers are loaded.</spw_classiclowpassfrequencytooltip>
 
 	<spw_categoryobstructions>Obstruction Muffle Strength</spw_categoryobstructions>
 
 	<spw_obstructionwatersurface>Water Surface</spw_obstructionwatersurface>
-	<spw_obstructionwatersurfacetooltip>The muffle strength applied when a sound crosses an air-water barrier. Stacks multiplicatively with other obstructions</spw_obstructionwatersurfacetooltip>
+	<spw_obstructionwatersurfacetooltip>The muffle strength applied when a sound crosses an air-water barrier.\n\nNote: Stacks multiplicatively (diminishing returns).</spw_obstructionwatersurfacetooltip>
 	<spw_obstructionwaterbody>Water Body</spw_obstructionwaterbody>
-	<spw_obstructionwaterbodytooltip>The muffle strength applied when a sound travels through water to reach the listener without crossing an air-water barrier (i.e., the sound starts and ends its journey in the same body of water). Stacks multiplicatively with other obstructions</spw_obstructionwaterbodytooltip>
+	<spw_obstructionwaterbodytooltip>The muffle strength applied when a sound travels through water to reach the listener without crossing an air-water barrier (i.e., the sound starts and ends its journey in the same body of water).\n\nNote: Stacks multiplicatively (diminishing returns).</spw_obstructionwaterbodytooltip>
 	<spw_obstructionwallthick>Thick Wall</spw_obstructionwallthick>
-	<spw_obstructionwallthicktooltip>The muffle strength applied when a sound passes through a wall normally. Stacks multiplicatively with other obstructions</spw_obstructionwallthicktooltip>
+	<spw_obstructionwallthicktooltip>The muffle strength applied when a sound passes through a wall normally.\n\nNote: Stacks multiplicatively (diminishing returns).</spw_obstructionwallthicktooltip>
 	<spw_obstructionwallthin>Thin Wall</spw_obstructionwallthin>
-	<spw_obstructionwallthintooltip>The muffle strength applied when a sound pierces through a wall (e.g., propagation). Stacks multiplicatively with other obstructions</spw_obstructionwallthintooltip>
+	<spw_obstructionwallthintooltip>The muffle strength applied when a sound pierces through a wall (propagation or hydrophoning structures) or has a partial path to the listener (occlusion).\n\nNote: Stacks multiplicatively (diminishing returns).</spw_obstructionwallthintooltip>
 	<spw_obstructiondoorthick>Thick Door</spw_obstructiondoorthick>
-	<spw_obstructiondoorthicktooltip>The muffle strength applied when a sound passes through a door normally. Stacks multiplicatively with other obstructions</spw_obstructiondoorthicktooltip>
+	<spw_obstructiondoorthicktooltip>The muffle strength applied when a sound passes through a door normally.\n\nNote: Stacks multiplicatively (diminishing returns).</spw_obstructiondoorthicktooltip>
 	<spw_obstructiondoorthin>Thin Door</spw_obstructiondoorthin>
-	<spw_obstructiondoorthintooltip>The muffle strength applied when a sound pierces through a door (e.g., eavesdropping). Stacks multiplicatively with other obstructions</spw_obstructiondoorthintooltip>
+	<spw_obstructiondoorthintooltip>The muffle strength applied when a sound pierces through a door (eavesdropping, propagation, or inside a container).\n\nNote: Stacks multiplicatively (diminishing returns).</spw_obstructiondoorthintooltip>
 	<spw_obstructionsuit>Diving Suit</spw_obstructionsuit>
-	<spw_obstructionsuittooltip>The muffle strength applied when a sound passes through a diving suit. Stacks multiplicatively with other obstructions</spw_obstructionsuittooltip>
+	<spw_obstructionsuittooltip>The muffle strength applied when a sound passes through a diving suit.\n\nNote: Also applies to sounds that are outside the submarine when using the hydrophones.\n\nNote: Stacks multiplicatively (diminishing returns).</spw_obstructionsuittooltip>
 	<spw_obstructiondrowning>Player Drowning</spw_obstructiondrowning>
-	<spw_obstructiondrowningtooltip>The muffle strength applied to a player's voice when they speak while drowning. Stacks multiplicatively with other obstructions</spw_obstructiondrowningtooltip>
+	<spw_obstructiondrowningtooltip>The muffle strength applied to a player's voice when they speak while drowning.\n\nNote: Stacks multiplicatively (diminishing returns).</spw_obstructiondrowningtooltip>
 	
 	<spw_classicmufflethreshold>(Classic) Muffle Threshold</spw_classicmufflethreshold>
-	<spw_classicmufflethresholdtooltip>The minimum aggregate obstruction level required to trigger the heavy lowpass filter when using classic mode</spw_classicmufflethresholdtooltip>
+	<spw_classicmufflethresholdtooltip>The minimum combined obstruction level required for sounds to use the "Classic Lowpass Frequency" (Muffle tab).</spw_classicmufflethresholdtooltip>
 
 	<spw_staticlightmufflethreshold>(Static) Light Muffle Threshold</spw_staticlightmufflethreshold>
-	<spw_staticlightmufflethresholdtooltip>The minimum aggregate obstruction level required to trigger the light lowpass filter when using static mode</spw_staticlightmufflethresholdtooltip>
+	<spw_staticlightmufflethresholdtooltip>The minimum combined obstruction level required for sounds and voices to use the "Light Lowpass Frequency" (Static tab) or "Light Voice Lowpass Frequency" (Voice tab).</spw_staticlightmufflethresholdtooltip>
 
 	<spw_staticmediummufflethreshold>(Static) Medium Muffle Threshold</spw_staticmediummufflethreshold>
-	<spw_staticmediummufflethresholdtooltip>The minimum aggregate obstruction level required to trigger the medium lowpass filter when using static mode</spw_staticmediummufflethresholdtooltip>
+	<spw_staticmediummufflethresholdtooltip>The minimum combined obstruction level required for sounds and voices to use the "Medium Lowpass Frequency" (Static tab) or "Medium Voice Lowpass Frequency" (Voice tab).</spw_staticmediummufflethresholdtooltip>
 
 	<spw_staticheavymufflethreshold>(Static) Heavy Muffle Threshold</spw_staticheavymufflethreshold>
-	<spw_staticheavymufflethresholdtooltip>The minimum aggregate obstruction level required to trigger the heavy lowpass filter when using static mode</spw_staticheavymufflethresholdtooltip>
+	<spw_staticheavymufflethresholdtooltip>The minimum combined obstruction level required for sounds and voices to use the "Heavy Lowpass Frequency" (Static tab) or "Heavy Voice Lowpass Frequency" (Voice tab).</spw_staticheavymufflethresholdtooltip>
 
 	<spw_categorythresholds>Muffle Thresholds</spw_categorythresholds>
 
@@ -270,243 +272,244 @@
 	<spw_categorysidechaining>Sidechaining</spw_categorysidechaining>
 
 	<spw_sidechaining>Enable Sidechaining</spw_sidechaining>
-	<spw_sidechainingtooltip>Briefly ducks the volume of all sounds when a "loud sound" plays. A "loud sound" is a sound in the "Custom Sounds" list (in the Advanced tab) with a "SidechainMultiplier" greater than zero</spw_sidechainingtooltip>
+	<spw_sidechainingtooltip>Duck the volume of all sounds when a loud sound plays.\n\nNote: For a sound to be considered loud internally, it must be referenced in the "Custom Sounds" list (Advanced tab) as having a sidechain multiplier greater than zero.</spw_sidechainingtooltip>
 	<spw_sidechainmusic>Sidechain Music</spw_sidechainmusic>
-	<spw_sidechainmusictooltip>Duck the volume of music tracks when a "loud sound" plays</spw_sidechainmusictooltip>
+	<spw_sidechainmusictooltip>Duck the volume of music tracks when a loud sound plays.</spw_sidechainmusictooltip>
 
 	<spw_sidechainintensitymaster>Sidechain Intensity Master</spw_sidechainintensitymaster>
-	<spw_sidechainintensitymastertooltip>A master value applied multiplicatively to all individual sidechain multipliers in the "Custom Sounds" list</spw_sidechainintensitymastertooltip>
+	<spw_sidechainintensitymastertooltip>Global multiplier applied to all sidechain multipliers in the "Custom Sounds" list (Advanced tab).</spw_sidechainintensitymastertooltip>
 	<spw_sidechainreleasemaster>Sidechain Release Master</spw_sidechainreleasemaster>
-	<spw_sidechainreleasemastertooltip>A flat amount of time added to all releases in the "Custom Sounds" list</spw_sidechainreleasemastertooltip>
+	<spw_sidechainreleasemastertooltip>Flat amount of time added to all sidechain releases in the "Custom Sounds" list (Advanced tab).</spw_sidechainreleasemastertooltip>
 	<spw_sidechainreleasecurve>Sidechain Release Curve</spw_sidechainreleasecurve>
-	<spw_sidechainreleasecurvetooltip>The exponent used to calculate the shape of the sidechain release curve. Values below one start slowly and decay more sharply towards the end. Values above one drop quickly and flatten out towards the end</spw_sidechainreleasecurvetooltip>
+	<spw_sidechainreleasecurvetooltip>The exponent used to calculate the shape of the sidechain release curve. Values less than one release slowly and then sharply towards the end. Values above one release quickly and flatten out towards the end.</spw_sidechainreleasecurvetooltip>
 	<spw_sidechainmufflepower>Sidechain Muffle Power</spw_sidechainmufflepower>
-	<spw_sidechainmufflepowertooltip>How strongly the sidechain effect responds to a sound’s muffle strength. Higher values make heavily muffled sounds reduce the sidechain more aggressively.</spw_sidechainmufflepowertooltip>
+	<spw_sidechainmufflepowertooltip>How strong a muffled sound's sidechain effect should be. Higher values retain more sidechain strength.</spw_sidechainmufflepowertooltip>
 	<spw_sidechainmusicmultiplier>Sidechain Music Strength</spw_sidechainmusicmultiplier>
-	<spw_sidechainmusicmultipliertooltip>The intensity of the sidechain effect on music</spw_sidechainmusicmultipliertooltip>
+	<spw_sidechainmusicmultipliertooltip>The intensity of the sidechain effect on music.</spw_sidechainmusicmultipliertooltip>
 
 	<spw_muffledsoundvolume>Muffled Sound Volume</spw_muffledsoundvolume>
-	<spw_muffledsoundvolumetooltip>Volume of fully muffled non-looping sounds. Blends with "Unmuffled Sound Volume" based on active obstructions (e.g., at 0.75 muffle strength, this is 75% applied)</spw_muffledsoundvolumetooltip>
+	<spw_muffledsoundvolumetooltip>The volume of muffled non-looping sounds. Blends with "Unmuffled Sound Volume" based on muffle strength.\n\nNote: Stacks additively with other volume multipliers.</spw_muffledsoundvolumetooltip>
 	<spw_unmuffledsoundvolume>Unmuffled Sound Volume</spw_unmuffledsoundvolume>
-	<spw_unmuffledsoundvolumetooltip>Volume of unmuffled non-looping sounds. Blends with "Muffled Sound Volume" based on muffle strength</spw_unmuffledsoundvolumetooltip>
+	<spw_unmuffledsoundvolumetooltip>The volume of unmuffled non-looping sounds. Blends with "Muffled Sound Volume" based on muffle strength.\n\nNote: Stacks additively with other volume multipliers.</spw_unmuffledsoundvolumetooltip>
 	<spw_muffledvoicevolume>Muffled Voice Volume</spw_muffledvoicevolume>
-	<spw_muffledvoicevolumetooltip>Volume of fully muffled player voices. Blends with "Unmuffled Voice Volume" based on muffle strength (e.g., at 0.75 muffle strength, this is 75% applied)"</spw_muffledvoicevolumetooltip>
+	<spw_muffledvoicevolumetooltip>The volume of muffled player voices. Blends with "Unmuffled Voice Volume" based on muffle strength.\n\nNote: Stacks additively with other volume multipliers.</spw_muffledvoicevolumetooltip>
 	<spw_unmuffledvoicevolume>Unmuffled Voice Volume</spw_unmuffledvoicevolume>
-	<spw_unmuffledvoicevolumetooltip>Volume of unmuffled player voices. Blends with "Muffled Voice volume" based on muffle strength</spw_unmuffledvoicevolumetooltip>
+	<spw_unmuffledvoicevolumetooltip>The volume of unmuffled player voices. Blends with "Muffled Voice Volume" based on muffle strength.\n\nNote: Stacks additively with other volume multipliers.</spw_unmuffledvoicevolumetooltip>
 	<spw_muffledloopingvolume>Muffled Looping Volume</spw_muffledloopingvolume>
-	<spw_muffledloopingvolumetooltip>Volume of fully muffled looping sounds. A looping sound is any sound that automatically repeats itself (e.g., the ventilation, reactor, or engine sounds). Blends with "Unmuffled Looping Volume" based on muffle strength (e.g., at 0.75 muffle strength, this is 75% applied)</spw_muffledloopingvolumetooltip>
+	<spw_muffledloopingvolumetooltip>The volume of muffled looping sounds. Blends with "Unmuffled Looping Volume" based on muffle strength.\n\nNote: Stacks additively with other volume multipliers.</spw_muffledloopingvolumetooltip>
 	<spw_unmuffledloopingvolume>Unmuffled Looping Volume</spw_unmuffledloopingvolume>
-	<spw_unmuffledloopingvolumetooltip>Volume of unmuffled looping sounds. A looping sound is any sound that automatically repeats itself. Blends with "Muffled Looping Volume" based on muffle strength</spw_unmuffledloopingvolumetooltip>
+	<spw_unmuffledloopingvolumetooltip>The volume of unmuffled looping sounds. Blends with "Muffled Looping Volume" based on muffle strength.\n\nNote: Stacks additively with other volume multipliers.</spw_unmuffledloopingvolumetooltip>
 	<spw_submergedvolume>Submerged Together Volume</spw_submergedvolume>
-	<spw_submergedvolumetooltip>Volume of sounds submerged in the same body of water as the listener. Stacks multiplicatively with other volume multipliers</spw_submergedvolumetooltip>
+	<spw_submergedvolumetooltip>The volume of sounds submerged in the same body of water as the listener.\n\nNote: Stacks additively with other volume multipliers.</spw_submergedvolumetooltip>
 	<spw_flowsoundvolume>Flow Sound Volume</spw_flowsoundvolume>
-	<spw_flowsoundvolumetooltip>The volume of flowing water caused by leaks in the submarine</spw_flowsoundvolumetooltip>
+	<spw_flowsoundvolumetooltip>The volume of flowing water caused by leaks in the submarine.</spw_flowsoundvolumetooltip>
 	<spw_firesoundvolume>Fire Sound Volume</spw_firesoundvolume>
-	<spw_firesoundvolumetooltip>The volume of fires</spw_firesoundvolumetooltip>
+	<spw_firesoundvolumetooltip>The volume of fires.</spw_firesoundvolumetooltip>
 	<spw_vanillaexosuitvolume>Vanilla Exosuit Volume</spw_vanillaexosuitvolume>
-	<spw_vanillaexosuitvolumetooltip>The volume of the vanilla exosuit movement sound</spw_vanillaexosuitvolumetooltip>
+	<spw_vanillaexosuitvolumetooltip>The volume of the vanilla exosuit movement sound. Some players find this sound unpleasant to hear.\n\nNote: Does not affect modded exosuit sounds.</spw_vanillaexosuitvolumetooltip>
 	<spw_loopingcomponentsoundnearmultiplier>Component Sound Distance Falloff Start</spw_loopingcomponentsoundnearmultiplier>
-	<spw_loopingcomponentsoundnearmultipliertooltip>The percentage of a looping component sound's max range where its volume starts dropping off</spw_loopingcomponentsoundnearmultipliertooltip>
+	<spw_loopingcomponentsoundnearmultipliertooltip>The distance needed before looping component sound volume starts dropping off.</spw_loopingcomponentsoundnearmultipliertooltip>
 	<spw_mindistancefalloffvolume>Min Distance Falloff Volume</spw_mindistancefalloffvolume>
-	<spw_mindistancefalloffvolumetooltip>The minimum gain a sound can reach from distance falloff using the "Accurate Distance Attenuation" model (setting in the General tab)"</spw_mindistancefalloffvolumetooltip>
+	<spw_mindistancefalloffvolumetooltip>The minimum falloff volume a sound can reach using the "Realistic Sound Falloff" model (General tab)."</spw_mindistancefalloffvolumetooltip>
 
 
 	<!-- Eavesdropping -->
 	<spw_eavesdroppingtab>Eavesdropping</spw_eavesdroppingtab>
 	<spw_eavesdroppingenabled>Eavesdropping Enabled</spw_eavesdroppingenabled>
-	<spw_eavesdroppingenabledtooltip>Toggles the player's ability to eavesdrop</spw_eavesdroppingenabledtooltip>
+	<spw_eavesdroppingenabledtooltip>Toggles the eavesdropping feature.</spw_eavesdroppingenabledtooltip>
 	<spw_eavesdroppingmuffle>Muffle Eavesdropped Sounds</spw_eavesdroppingmuffle>
-	<spw_eavesdroppingmuffletooltip>Muffle sounds heard via eavesdropping by applying the "Thin Door" obstruction</spw_eavesdroppingmuffletooltip>
+	<spw_eavesdroppingmuffletooltip>Muffle sounds heard via eavesdropping by applying the "Thin Door" obstruction.</spw_eavesdroppingmuffletooltip>
 	<spw_eavesdroppingtransition>Eavesdropping Transition</spw_eavesdroppingtransition>
-	<spw_eavesdroppingtransitiontooltip>Smoothly transition audio between hulls when eavesdropping</spw_eavesdroppingtransitiontooltip>
+	<spw_eavesdroppingtransitiontooltip>Smoothly transition audio between hulls when eavesdropping.</spw_eavesdroppingtransitiontooltip>
 	<spw_eavesdroppingducksradio>Eavesdropping Ducks Radio</spw_eavesdroppingducksradio>
-	<spw_eavesdroppingducksradiotooltip>Lower the volume of radio communications while eavesdropping</spw_eavesdroppingducksradiotooltip>
+	<spw_eavesdroppingducksradiotooltip>Lower the volume of radio proximity chat when eavesdropping.</spw_eavesdroppingducksradiotooltip>
 
 	<spw_eavesdroppingbind>Eavesdropping Bind</spw_eavesdroppingbind>
-	<spw_eavesdroppingbindtooltip>Change what button is held to eavesdrop.\nThis setting is not synced with other players</spw_eavesdroppingbindtooltip>
+	<spw_eavesdroppingbindtooltip>What button is held to eavesdrop.\n\nNote: This setting is not synced with other players when using "Sync Settings" (General tab).</spw_eavesdroppingbindtooltip>
 
 	<spw_eavesdroppingsoundvolume>Eavesdropped Sound Volume</spw_eavesdroppingsoundvolume>
-	<spw_eavesdroppingsoundvolumetooltip>The volume of sounds heard via eavesdropping</spw_eavesdroppingsoundvolumetooltip>
+	<spw_eavesdroppingsoundvolumetooltip>The volume of sounds heard from eavesdropping.\n\nNote: Stacks additively with other volume multipliers.</spw_eavesdroppingsoundvolumetooltip>
 	<spw_eavesdroppingvoicevolume>Eavesdropped Voice Volume</spw_eavesdroppingvoicevolume>
-	<spw_eavesdroppingvoicevolumetooltip>The volume of player voices heard via eavesdropping</spw_eavesdroppingvoicevolumetooltip>
+	<spw_eavesdroppingvoicevolumetooltip>The volume of local proximity chat heard from eavesdropping.\n\nNote: Stacks additively with other volume multipliers.</spw_eavesdroppingvoicevolumetooltip>
 	<spw_eavesdroppingsoundpitch>Eavesdropped Sound Pitch</spw_eavesdroppingsoundpitch>
-	<spw_eavesdroppingsoundpitchtooltip>The pitch of sounds heard via eavesdropping. Does not apply to player voices</spw_eavesdroppingsoundpitchtooltip>
+	<spw_eavesdroppingsoundpitchtooltip>The pitch of sounds heard from eavesdropping.\n\nNote: Does not apply to local proximity chat.\n\nNote: Stacks additively with other pitch multipliers.</spw_eavesdroppingsoundpitchtooltip>
 	<spw_eavesdroppingmaxdistance>Eavesdropping Max Distance</spw_eavesdroppingmaxdistance>
-	<spw_eavesdroppingmaxdistancetooltip>The maximum distance the player's head can be from a door while eavesdropping</spw_eavesdroppingmaxdistancetooltip>
+	<spw_eavesdroppingmaxdistancetooltip>The maximum distance the player's head can be from a door while eavesdropping.</spw_eavesdroppingmaxdistancetooltip>
 	<spw_eavesdroppingtransitionduration>Eavesdropping Transition Duration</spw_eavesdroppingtransitionduration>
-	<spw_eavesdroppingtransitiondurationtooltip>The amount of seconds that the eavesdropping fade transition takes</spw_eavesdroppingtransitiondurationtooltip>
+	<spw_eavesdroppingtransitiondurationtooltip>How many seconds the eavesdropping transition takes.\n\nNote: Requires "Eavesdropping Transition" to be enabled.</spw_eavesdroppingtransitiondurationtooltip>
 	<spw_eavesdroppingthreshold>Eavesdropping Threshold</spw_eavesdroppingthreshold>
-	<spw_eavesdroppingthresholdtooltip>The percentage of the fade transition that must play before the player starts hearing sounds on the opposite side of the door</spw_eavesdroppingthresholdtooltip>
+	<spw_eavesdroppingthresholdtooltip>How far into the eavesdropping transition does the muffle profile switch to the opposite side of the door.</spw_eavesdroppingthresholdtooltip>
 
-	<spw_eavesdroppingrevealsall>Show All Sounds</spw_eavesdroppingrevealsall>
-	<spw_eavesdroppingrevealsalltooltip>Apply the glow effect to sounds without a path to the eavesdropped area. Sounds in the listener's hull are still ignored</spw_eavesdroppingrevealsalltooltip>
-	<spw_eavesdroppingspritemaxsize>Glow Max Size</spw_eavesdroppingspritemaxsize>
-	<spw_eavesdroppingspritemaxsizetooltip>The maximum size of the glow effect. Helpful for limiting the size of the effect on longer range sounds</spw_eavesdroppingspritemaxsizetooltip>
+	<spw_eavesdroppingvisualfeedbackenabled>Visual Feedback</spw_eavesdroppingvisualfeedbackenabled>
+	<spw_eavesdroppingvisualfeedbackenabledtooltip>Display a soft green glow effect around eavesdropped sound sources.</spw_eavesdroppingvisualfeedbackenabledtooltip>
+	<spw_eavesdroppingrevealscharacteroutline>See Character Outline</spw_eavesdroppingrevealscharacteroutline>
+	<spw_eavesdroppingrevealscharacteroutlinetooltip>Display a rough outline of the body part responsible for making the sound (i.e., legs for footsteps and heads for voices).</spw_eavesdroppingrevealscharacteroutlinetooltip>
+	<spw_eavesdroppingrevealsall>See Inaccessible Sounds</spw_eavesdroppingrevealsall>
+	<spw_eavesdroppingrevealsalltooltip>Display the glow effect for sounds without a path to the eavesdropped area.\n\nNote: Sounds in the listener's hull are always ignored.</spw_eavesdroppingrevealsalltooltip>
+	<spw_eavesdroppingspritemaxsize>Max Glow Size</spw_eavesdroppingspritemaxsize>
+	<spw_eavesdroppingspritemaxsizetooltip>The maximum size of the glow effect.</spw_eavesdroppingspritemaxsizetooltip>
 	<spw_eavesdroppingspritesizemultiplier>Glow Size Multiplier</spw_eavesdroppingspritesizemultiplier>
-	<spw_eavesdroppingspritesizemultipliertooltip>The size of the glow effect relative to the range of the sound</spw_eavesdroppingspritesizemultipliertooltip>
+	<spw_eavesdroppingspritesizemultipliertooltip>The size of the glow effect relative to the range of the sound.</spw_eavesdroppingspritesizemultipliertooltip>
 	<spw_eavesdroppingspriteopacity>Glow Opacity</spw_eavesdroppingspriteopacity>
-	<spw_eavesdroppingspriteopacitytooltip>The strength of the glow effect that emits from eavesdropped sounds</spw_eavesdroppingspriteopacitytooltip>
+	<spw_eavesdroppingspriteopacitytooltip>The strength of the glow effect.</spw_eavesdroppingspriteopacitytooltip>
 	<spw_eavesdroppingspritefadecurve>Glow Fade Curve</spw_eavesdroppingspritefadecurve>
-	<spw_eavesdroppingspritefadecurvetooltip>The exponent used to calculate the shape of the sprite fadeout curve. Values below one start slowly and decay more sharply towards the end. Values above one drop quickly and flatten out towards the end</spw_eavesdroppingspritefadecurvetooltip>
+	<spw_eavesdroppingspritefadecurvetooltip>The exponent used to calculate the shape of the glow fade out curve. Values less than one fade slowly and then sharply towards the end. Values above one fade quickly and flatten out towards the end.</spw_eavesdroppingspritefadecurvetooltip>
 	<spw_eavesdroppingzoom>Eavesdropping Camera Zoom</spw_eavesdroppingzoom>
-	<spw_eavesdroppingzoomtooltip>How far the camera should zoom in when eavesdropping</spw_eavesdroppingzoomtooltip>
+	<spw_eavesdroppingzoomtooltip>How far the camera zooms in when eavesdropping.\n\nNote: May not work with other mods that adjust camera zoom.</spw_eavesdroppingzoomtooltip>
 	<spw_eavesdroppingvignette>Vignette Opacity</spw_eavesdroppingvignette>
-	<spw_eavesdroppingvignettetooltip>The strength of the vignette effect around the edges of the screen when eavesdropping</spw_eavesdroppingvignettetooltip>
+	<spw_eavesdroppingvignettetooltip>The strength of the vignette effect around the edges of the screen when eavesdropping.</spw_eavesdroppingvignettetooltip>
 
 	<!-- Hydrophone -->
 	<spw_hydrophonestab>Hydrophones</spw_hydrophonestab>
 	<spw_hydrophoneswitchenabled>Hydrophone Switch Enabled</spw_hydrophoneswitchenabled>
-	<spw_hydrophoneswitchenabledtooltip>Toggles the hydrophone feature by adding or removing the terminal switch (requires restarting the round)</spw_hydrophoneswitchenabledtooltip>
+	<spw_hydrophoneswitchenabledtooltip>Toggles the hydrophone feature.\n\nNote: The hydrophone switch will remain until next round.</spw_hydrophoneswitchenabledtooltip>
 	<spw_hydrophonemovementsounds>Movement Sounds</spw_hydrophonemovementsounds>
-	<spw_hydrophonemovementsoundstooltip>Play directional water movement sounds through the hydrophones for nearby creatures</spw_hydrophonemovementsoundstooltip>
-	<spw_hydrophonelegacyswitch>Hydrophone Legacy Switch</spw_hydrophonelegacyswitch>
-	<spw_hydrophonelegacyswitchtooltip>Use the old hydrophone switch logic (switch is turned off when using active sonar)</spw_hydrophonelegacyswitchtooltip>
+	<spw_hydrophonemovementsoundstooltip>Hear movement in the water.</spw_hydrophonemovementsoundstooltip>
 	<spw_hydrophonehearengine>Hear Engines</spw_hydrophonehearengine>
-	<spw_hydrophonehearenginetooltip>Hear submarine engines through the hydrophones</spw_hydrophonehearenginetooltip>
+	<spw_hydrophonehearenginetooltip>Hear submarine engines, including your own.</spw_hydrophonehearenginetooltip>
 	<spw_hydrophonehearintostructures>Hear Into Structures</spw_hydrophonehearintostructures>
-	<spw_hydrophonehearintostructurestooltip>Pick up audio from other submarines or outposts. Sounds in these structures receive the "Thin Wall" obstruction</spw_hydrophonehearintostructurestooltip>
-	<spw_hydrophonemuffleownsub>Muffle Own Sub</spw_hydrophonemuffleownsub>
-	<spw_hydrophonemuffleownsubtooltip>Muffle sounds coming from within your own structure. Apply a "Water Surface" obstruction</spw_hydrophonemuffleownsubtooltip>
+	<spw_hydrophonehearintostructurestooltip>Hear inside other submarines or outposts.\n\nNote: Sounds in these structures receive the "Thin Wall" obstruction.</spw_hydrophonehearintostructurestooltip>
+	<spw_hydrophonemuffleownsub>Muffle Self</spw_hydrophonemuffleownsub>
+	<spw_hydrophonemuffleownsubtooltip>Muffle sounds coming from within your own structure.\n\nNote: Applies the "Water Surface" obstruction.</spw_hydrophonemuffleownsubtooltip>
 	<spw_hydrophonerange>Hydrophone Range</spw_hydrophonerange>
-	<spw_hydrophonerangetooltip>The range of underwater movement sounds and the additional range added to all sounds outside the submarine when using the hydrophones</spw_hydrophonerangetooltip>
+	<spw_hydrophonerangetooltip>How far you can hear sounds through the hydrophones.\n\nNote: This distance is summed to the existing range of the sounds.</spw_hydrophonerangetooltip>
 	<spw_hydrophonevolume>Hydrophone Volume</spw_hydrophonevolume>
-	<spw_hydrophonevolumetooltip>The volume of audio heard through the hydrophones</spw_hydrophonevolumetooltip>
+	<spw_hydrophonevolumetooltip>The volume of sounds heard through the hydrophones.</spw_hydrophonevolumetooltip>
 	<spw_hydrophonepitch>Hydrophone Pitch</spw_hydrophonepitch>
-	<spw_hydrophonepitchtooltip>The pitch of audio heard through the hydrophones. Does not apply to player voices</spw_hydrophonepitchtooltip>
+	<spw_hydrophonepitchtooltip>The pitch of sounds heard through the hydrophones.\n\nNote: Does not apply to proximity chat.</spw_hydrophonepitchtooltip>
 	<spw_hydrophoneambiencevolume>Hydrophone Ambience Volume</spw_hydrophoneambiencevolume>
-	<spw_hydrophoneambiencevolumetooltip>The volume of the ambience track that plays when listening to the hydrophones</spw_hydrophoneambiencevolumetooltip>
+	<spw_hydrophoneambiencevolumetooltip>The volume of the ocean ambience that plays when listening to the hydrophones.</spw_hydrophoneambiencevolumetooltip>
 	<spw_hydrophonemovementvolume>Hydrophone Movement Volume</spw_hydrophonemovementvolume>
-	<spw_hydrophonemovementvolumetooltip>The volume of the water sloshing sound caused by moving entites in the water</spw_hydrophonemovementvolumetooltip>
+	<spw_hydrophonemovementvolumetooltip>The volume of the water sloshing sound caused by moving characters in the water.</spw_hydrophonemovementvolumetooltip>
 	
 	<spw_hydrophonevisualfeedbackenabled>Visual Feedback</spw_hydrophonevisualfeedbackenabled>
-	<spw_hydrophonevisualfeedbackenabledtooltip>Enable red highlights on the sonar UI that visually represent the direction, size, and implied distance of sounds in the water. Distance can be implied based on the range of the sound and the width of the highlighted sector</spw_hydrophonevisualfeedbackenabledtooltip>
+	<spw_hydrophonevisualfeedbackenabledtooltip>Display colored sectors on the sonar UI that visually represent the direction, size, and implied distance of sounds in the water.\n\nNote: Distance can be implied based on the range of the sound and the width of the highlighted sector.</spw_hydrophonevisualfeedbackenabledtooltip>
 	<spw_hydrophoneusagedisablessonarblips>Disable Passive Sonar</spw_hydrophoneusagedisablessonarblips>
-	<spw_hydrophoneusagedisablessonarblipstooltip>Stop drawing sonar blips when monitoring the hydrophones. Sonar blips are what visually display the environment</spw_hydrophoneusagedisablessonarblipstooltip>
+	<spw_hydrophoneusagedisablessonarblipstooltip>Stop drawing sonar blips when monitoring the hydrophones. Sonar blips are what visually display the environment.</spw_hydrophoneusagedisablessonarblipstooltip>
 	<spw_hydrophoneusagedisablessuboutline>Disable Sub Outline</spw_hydrophoneusagedisablessuboutline>
-	<spw_hydrophoneusagedisablessuboutlinetooltip>Stop drawing the outline of the submarine and its docking hatches when monitoring the hydrophones</spw_hydrophoneusagedisablessuboutlinetooltip>
+	<spw_hydrophoneusagedisablessuboutlinetooltip>Stop drawing the outline of the submarine and its docking hatches when monitoring the hydrophones.</spw_hydrophoneusagedisablessuboutlinetooltip>
 	<spw_hydrophonevisualfeedbacksizemultiplier>Visual Feedback Size</spw_hydrophonevisualfeedbacksizemultiplier>
-	<spw_hydrophonevisualfeedbacksizemultipliertooltip>How thick the visual sectors should be</spw_hydrophonevisualfeedbacksizemultipliertooltip>
+	<spw_hydrophonevisualfeedbacksizemultipliertooltip>The thickness of the colored sectors.</spw_hydrophonevisualfeedbacksizemultipliertooltip>
 	<spw_hydrophonevisualfeedbackopacitymultiplier>Visual Feedback Opacity</spw_hydrophonevisualfeedbackopacitymultiplier>
-	<spw_hydrophonevisualfeedbackopacitymultipliertooltip>The transparency of the visual feedback effect</spw_hydrophonevisualfeedbackopacitymultipliertooltip>
-	<spw_hydrophonevisualfeedbackfadeduration>Visual Feedback Fade Duration</spw_hydrophonevisualfeedbackfadeduration>
-	<spw_hydrophonevisualfeedbackfadedurationtooltip>How many seconds it takes for each sector to fade out</spw_hydrophonevisualfeedbackfadedurationtooltip>
+	<spw_hydrophonevisualfeedbackopacitymultipliertooltip>The transparency of the colored sectors.</spw_hydrophonevisualfeedbackopacitymultipliertooltip>
 	
-	<spw_hydrophonereverb>Simulate Reverb</spw_hydrophonereverb>
-	<spw_hydrophonereverbtooltip>Enable a unique reverb preset for hydrophones</spw_hydrophonereverbtooltip>
+	<spw_hydrophonereverb>Ethereal Echoes</spw_hydrophonereverb>
+	<spw_hydrophonereverbtooltip>Applies a unique hydrophone reverb that mimics the way distant sounds diffuse, scatter, and reverberate through ice caves and underwater spaces.\n\nNote: Requires "Enable Reverb" (Dynamic tab) to be enabled.</spw_hydrophonereverbtooltip>
 	<spw_hydrophonereverbtargetgain>Reverb Strength</spw_hydrophonereverbtargetgain>
-	<spw_hydrophonereverbtargetgaintooltip>The target gain for hydrophone reverb</spw_hydrophonereverbtargetgaintooltip>
+	<spw_hydrophonereverbtargetgaintooltip>The base gain for the unique hydrophone reverb.</spw_hydrophonereverbtargetgaintooltip>
 	
 	<spw_hydrophonedistortion>Distort Hydrophones</spw_hydrophonedistortion>
-	<spw_hydrophonedistortiontooltip>Applies a distortion effect to sounds heard through the hydrophones</spw_hydrophonedistortiontooltip>
-	<spw_hydrophonedistortiontargetgain>Distortion Gain</spw_hydrophonedistortiontargetgain>
-	<spw_hydrophonedistortiontargetgaintooltip>The overall volume of the hydrophone distortion effect</spw_hydrophonedistortiontargetgaintooltip>
-	<spw_hydrophonedistortiontargetedge>Distortion Edge</spw_hydrophonedistortiontargetedge>
-	<spw_hydrophonedistortiontargetedgetooltip>The harshness of the hydrophone distortion effect. A higher value results in more high-frequency harmonics</spw_hydrophonedistortiontargetedgetooltip>
-
+	<spw_hydrophonedistortiontooltip>Apply a distortion effect to sounds heard through the hydrophones.</spw_hydrophonedistortiontooltip>
+	
 	<spw_hydrophonebandpassfilter>Bandpass Hydrophones</spw_hydrophonebandpassfilter>
-	<spw_hydrophonebandpassfiltertooltip>Applies a bandpass filter to sounds heard through the hydrophones. A bandpass filter cuts high and low frequencies, leaving only the middle. This creates a radio-like sound</spw_hydrophonebandpassfiltertooltip>
+	<spw_hydrophonebandpassfiltertooltip>Apply a bandpass filter to sounds heard through the hydrophones. A bandpass filter cuts high and low frequencies, creating a radio-like sound.\n\nNote: Muffling is disabled for sounds using a bandpass filter.</spw_hydrophonebandpassfiltertooltip>
 	<spw_hydrophonebandpassfilterhfgain>Bandpass High Frequency Gain</spw_hydrophonebandpassfilterhfgain>
-	<spw_hydrophonebandpassfilterhfgaintooltip>The volume of high frequencies in the hydrophone bandpass filter</spw_hydrophonebandpassfilterhfgaintooltip>
+	<spw_hydrophonebandpassfilterhfgaintooltip>The volume of the bandpass filter's high frequencies.</spw_hydrophonebandpassfilterhfgaintooltip>
 	<spw_hydrophonebandpassfilterlfgain>Bandpass Low Frequency Gain</spw_hydrophonebandpassfilterlfgain>
-	<spw_hydrophonebandpassfilterlfgaintooltip>The volume of low frequencies in the hydrophone bandpass filter</spw_hydrophonebandpassfilterlfgaintooltip>
+	<spw_hydrophonebandpassfilterlfgaintooltip>The volume of the bandpass filter's low frequencies.</spw_hydrophonebandpassfilterlfgaintooltip>
 
 	<spw_categoryadvanced>Advanced</spw_categoryadvanced>
 
 	<spw_hydrophonemuffleignoredsounds>Muffle Ignored Sounds</spw_hydrophonemuffleignoredsounds>
-	<spw_hydrophonemuffleignoredsoundstooltip>Sounds in this list will never be obstructed by using the hydrophones</spw_hydrophonemuffleignoredsoundstooltip>
+	<spw_hydrophonemuffleignoredsoundstooltip>Sounds in this list are never muffled when using the hydrophones.</spw_hydrophonemuffleignoredsoundstooltip>
 	
 	<spw_hydrophonevisualignoredsounds>Visual Feedback Ignored Sounds</spw_hydrophonevisualignoredsounds>
-	<spw_hydrophonevisualignoredsoundstooltip>Sounds in this list will never be drawn when monitoring hydrophones</spw_hydrophonevisualignoredsoundstooltip>
+	<spw_hydrophonevisualignoredsoundstooltip>Sounds in this list are never displayed on the sonar UI when using the hydrophones.</spw_hydrophonevisualignoredsoundstooltip>
 	
 	<!-- Ambience -->
 	<spw_ambiencetab>Ambience</spw_ambiencetab>
 	<spw_disablewhitenoise>Disable White Noise</spw_disablewhitenoise>
-	<spw_disablewhitenoisetooltip>Disables the white noise ambient biome loops</spw_disablewhitenoisetooltip>
+	<spw_disablewhitenoisetooltip>Mute the biome noise loops from the vanilla game.</spw_disablewhitenoisetooltip>
 
 	<spw_categorytrack>Track-Specific</spw_categorytrack>
-	<spw_waterambienceinvolume>Water Ambience "In" Volume</spw_waterambienceinvolume>
-	<spw_waterambienceinvolumetooltip>Master volume multiplier for the ambience track that plays inside (it also plays when outside on top of the "outside" track)</spw_waterambienceinvolumetooltip>
-	<spw_waterambienceoutvolume>Water Ambience "Out" Volume</spw_waterambienceoutvolume>
-	<spw_waterambienceoutvolumetooltip>Master volume multiplier for the ambience track that plays outside</spw_waterambienceoutvolumetooltip>
-	<spw_waterambiencemovingvolume>Water Ambience "Moving" Volume</spw_waterambiencemovingvolume>
-	<spw_waterambiencemovingvolumetooltip>Master volume multiplier for the ambience track that plays when the submarine or player is moving through water</spw_waterambiencemovingvolumetooltip>
+	<spw_waterambienceinvolume>Inside Water Volume</spw_waterambienceinvolume>
+	<spw_waterambienceinvolumetooltip>The volume of the water ambience track that plays inside.\n\nNote: This track continues to play at a lower volume on top of the outside track.</spw_waterambienceinvolumetooltip>
+	<spw_waterambienceoutvolume>Outside Water Volume</spw_waterambienceoutvolume>
+	<spw_waterambienceoutvolumetooltip>The volume of the water ambience track that plays outside.</spw_waterambienceoutvolumetooltip>
+	<spw_waterambiencemovingvolume>Moving Water Volume</spw_waterambiencemovingvolume>
+	<spw_waterambiencemovingvolumetooltip>The volume of the water ambience track that plays when the submarine or player is moving through water.</spw_waterambiencemovingvolumetooltip>
 
 	<spw_categoryenvironment>Environment-Specific</spw_categoryenvironment>
-	<spw_unsubmergedsuitwaterambiencevolume>Unsubmerged Suit Water Ambience Volume</spw_unsubmergedsuitwaterambiencevolume>
-	<spw_unsubmergedsuitwaterambiencevolumetooltip></spw_unsubmergedsuitwaterambiencevolumetooltip>
-	<spw_unsubmergednosuitwaterambiencevolume>Unsubmerged No Suit Water Ambience Volume</spw_unsubmergednosuitwaterambiencevolume>
-	<spw_unsubmergednosuitwaterambiencevolumetooltip></spw_unsubmergednosuitwaterambiencevolumetooltip>
-	<spw_submergedsuitwaterambiencevolume>Submerged Suit Water Ambience Volume</spw_submergedsuitwaterambiencevolume>
-	<spw_submergedsuitwaterambiencevolumetooltip></spw_submergedsuitwaterambiencevolumetooltip>
-	<spw_submergednosuitwaterambiencevolume>Submerged No Suit Water Ambience Volume</spw_submergednosuitwaterambiencevolume>
-	<spw_submergednosuitwaterambiencevolumetooltip></spw_submergednosuitwaterambiencevolumetooltip>
+	<spw_unsubmergedsuitwaterambiencevolume>Unsubmerged Water Volume (Suit)</spw_unsubmergedsuitwaterambiencevolume>
+	<spw_unsubmergedsuitwaterambiencevolumetooltip>The volume of water ambience tracks when the listener is unsubmerged and wearing a diving suit.</spw_unsubmergedsuitwaterambiencevolumetooltip>
+	<spw_unsubmergednosuitwaterambiencevolume>Unsubmerged Water Volume (No Suit)</spw_unsubmergednosuitwaterambiencevolume>
+	<spw_unsubmergednosuitwaterambiencevolumetooltip>The volume of water ambience tracks when the listener is unsubmerged and not wearing a diving suit.</spw_unsubmergednosuitwaterambiencevolumetooltip>
+	<spw_submergedsuitwaterambiencevolume>Submerged Water Volume (Suit)</spw_submergedsuitwaterambiencevolume>
+	<spw_submergedsuitwaterambiencevolumetooltip>The volume of water ambience tracks when the listener is submerged and wearing a diving suit.</spw_submergedsuitwaterambiencevolumetooltip>
+	<spw_submergednosuitwaterambiencevolume>Submerged Water Volume (No Suit)</spw_submergednosuitwaterambiencevolume>
+	<spw_submergednosuitwaterambiencevolumetooltip>The volume of water ambience tracks when the listener is submerged and not wearing a diving suit.</spw_submergednosuitwaterambiencevolumetooltip>
 	<spw_waterambiencetransitionspeed>Water Ambience Transition Speed</spw_waterambiencetransitionspeed>
-	<spw_waterambiencetransitionspeedtooltip>The speed at which the water ambience transitions between volume presets</spw_waterambiencetransitionspeedtooltip>
+	<spw_waterambiencetransitionspeedtooltip>How fast the water ambience transitions between volume levels.</spw_waterambiencetransitionspeedtooltip>
 
 
 	<!-- Pitch -->
 	<spw_pitchtab>Pitch</spw_pitchtab>
 	<spw_pitchenabled>Enable Pitch</spw_pitchenabled>
-	<spw_pitchenabledtooltip>Globally toggles all pitch effects. May be helpful as a quick fix for weird pitch interactions with sounds from other mods</spw_pitchenabledtooltip>
+	<spw_pitchenabledtooltip>Globally toggles all pitch effects.\n\nNote: May be helpful as a quick fix for unusual pitch interactions with sounds from other mods.</spw_pitchenabledtooltip>
 	<spw_pitchstatuseffectsounds>Pitch Status Effect Sounds</spw_pitchstatuseffectsounds>
-	<spw_pitchstatuseffectsoundstooltip>Toggles pitching for sounds played by XML status effects</spw_pitchstatuseffectsoundstooltip>
+	<spw_pitchstatuseffectsoundstooltip>Toggle pitching for sounds played by XML status effects.</spw_pitchstatuseffectsoundstooltip>
 	<spw_pitchwithdistance>Pitch With Distance</spw_pitchwithdistance>
-	<spw_pitchwithdistancetooltip>Dynamically lower the pitch of non-looping sounds based on their distance ratio and muffle strength. Stacks additively with other pitch effects</spw_pitchwithdistancetooltip>
+	<spw_pitchwithdistancetooltip>Dynamically lower the pitch of muffled sounds based on their distance.\n\nNote: Does not apply to looping sounds or proximity chat.\n\nNote: Stacks additively with other pitch multipliers.</spw_pitchwithdistancetooltip>
+	
 	<spw_divingsuitpitch>Diving Suit Pitch</spw_divingsuitpitch>
-	<spw_divingsuitpitchtooltip>The pitch of sounds when wearing a diving suit. Stacks additively with other pitch effects</spw_divingsuitpitchtooltip>
+	<spw_divingsuitpitchtooltip>The pitch of sounds when wearing a diving suit.\n\nNote: Stacks additively with other pitch multipliers.</spw_divingsuitpitchtooltip>
 	<spw_submergedpitch>Submerged Pitch</spw_submergedpitch>
-	<spw_submergedpitchtooltip>The pitch of sounds when the listener is submerged. Stacks additively with other pitch effects</spw_submergedpitchtooltip>
+	<spw_submergedpitchtooltip>The pitch of sounds when the listener is submerged.\n\nNote: Stacks additively with other pitch multipliers.</spw_submergedpitchtooltip>
+	
 	<spw_muffledsoundpitch>Muffled Sound Pitch</spw_muffledsoundpitch>
-	<spw_muffledsoundpitchtooltip>Pitch of fully muffled non-looping sounds. Blends with "Unmuffled Sound Pitch" based on active obstructions. Stacks additively with other pitch effects</spw_muffledsoundpitchtooltip>
+	<spw_muffledsoundpitchtooltip>The pitch of muffled non-looping sounds. Blends with "Unmuffled Sound Pitch" based on muffle strength.\n\nNote: Stacks additively with other pitch multipliers.</spw_muffledsoundpitchtooltip>
 	<spw_unmuffledsoundpitch>Unmuffled Sound Pitch</spw_unmuffledsoundpitch>
-	<spw_unmuffledsoundpitchtooltip>Pitch of unmuffled non-looping sounds. Blends with "Muffled Sound Pitch" based on active obstructions. Stacks additively with other pitch effects</spw_unmuffledsoundpitchtooltip>
-	<spw_muffledloopingpitch>Muffled Looping Sound Pitch</spw_muffledloopingpitch>
-	<spw_muffledloopingpitchtooltip>The pitch of muffled looping sounds (e.g. vents, reactor, engine, etc)</spw_muffledloopingpitchtooltip>
-	<spw_unmuffledloopingpitch>Unmuffled Looping Sound Pitch</spw_unmuffledloopingpitch>
-	<spw_unmuffledloopingpitchtooltip>The pitch of normal component sounds. Not recommended. Just for fun</spw_unmuffledloopingpitchtooltip>
+	<spw_unmuffledsoundpitchtooltip>The pitch of unmuffled non-looping sounds. Blends with "Muffled Sound Pitch" based on muffle strength.\n\nNote: Stacks additively with other pitch multipliers.</spw_unmuffledsoundpitchtooltip>
+	
+	<spw_muffledloopingpitch>Muffled Looping Pitch</spw_muffledloopingpitch>
+	<spw_muffledloopingpitchtooltip>The pitch of muffled looping sounds. Blends with "Unmuffled Looping Pitch" based on muffle strength.\n\nNote: Stacks additively with other pitch multipliers.</spw_muffledloopingpitchtooltip>
+	<spw_unmuffledloopingpitch>Unmuffled Looping Pitch</spw_unmuffledloopingpitch>
+	<spw_unmuffledloopingpitchtooltip>The pitch of unmuffled looping sounds. Blends with "Muffled Looping Pitch" based on muffle strength.\n\nNote: Stacks additively with other pitch multipliers.</spw_unmuffledloopingpitchtooltip>
+	
 	<spw_muffledvoicepitch>Muffled Voice Pitch</spw_muffledvoicepitch>
-	<spw_muffledvoicepitchtooltip>Not recommended. Just for fun</spw_muffledvoicepitchtooltip>
+	<spw_muffledvoicepitchtooltip>The pitch of muffled proximity chat. Blends with "Unmuffled Voice Pitch" based on muffle strength.\n\nNote: Stacks additively with other pitch multipliers.\n\nNote: Just for fun :)</spw_muffledvoicepitchtooltip>
 	<spw_unmuffledvoicepitch>Unmuffled Voice Pitch</spw_unmuffledvoicepitch>
-	<spw_unmuffledvoicepitchtooltip>Not recommended. Just for fun</spw_unmuffledvoicepitchtooltip>
+	<spw_unmuffledvoicepitchtooltip>The pitch of unmuffled proximity chat. Blends with "Muffled Voice Pitch" based on muffle strength.\n\nNote: Stacks additively with other pitch multipliers.\n\nNote: Just for fun :)</spw_unmuffledvoicepitchtooltip>
 
 
 	<!-- Advanced -->
 	<spw_advancedtab>Advanced</spw_advancedtab>
 
 	<spw_debugperformance>Show Performance</spw_debugperformance>
-	<spw_debugperformancetooltip>Display detailed performance information for Soundproof Walls.\nThis setting is not synced with other players</spw_debugperformancetooltip>
+	<spw_debugperformancetooltip>Display detailed performance information for Soundproof Walls.\n\nNote: This setting is not synced with other players when using "Sync Settings" (General tab).</spw_debugperformancetooltip>
 
 	<spw_debugplayingsounds>Show Playing Sounds</spw_debugplayingsounds>
-	<spw_debugplayingsoundstooltip>Display all actively playing sounds registered by Soundproof Walls.\nThis setting is not synced with other players</spw_debugplayingsoundstooltip>
+	<spw_debugplayingsoundstooltip>Display all actively playing sounds registered by Soundproof Walls.\n\nNote: This setting is not synced with other players when using "Sync Settings" (General tab).</spw_debugplayingsoundstooltip>
 
 	<spw_debugchannelinfo>Show Channel Info</spw_debugchannelinfo>
-	<spw_debugchannelinfotooltip>Display the gain, pitch, range, distance, muffle, and obstructions for all actively playing sounds. If "Show Playing Sounds" is disabled this information is logged in the Barotrauma console.\nThis setting is not synced with other players</spw_debugchannelinfotooltip>
+	<spw_debugchannelinfotooltip>Extend the "Show Playing Sounds" setting to also display the gain, pitch, range, distance, muffle, and obstructions for all actively playing sounds.\n\nNote: If "Show Playing Sounds" is disabled, this information is logged in the Barotrauma console.\n\nNote: This setting is not synced with other players when using "Sync Settings" (General tab).</spw_debugchannelinfotooltip>
 
 	<spw_hidesettings>Hide Menu Button</spw_hidesettings>
-	<spw_hidesettingstooltip>Remove the "Soundproof Walls" button from the pause menu. The Soundproof Walls settings menu can still be opened by typing "spw" in the console.\nThis setting is not synced with other players</spw_hidesettingstooltip>
+	<spw_hidesettingstooltip>Remove the "Soundproof Walls" button from the pause menu. The Soundproof Walls settings menu can still be accessed by typing "spw" in the console.\n\nNote: This setting is not synced with other players when using "Sync Settings" (General tab).</spw_hidesettingstooltip>
 
 	<spw_remembermenutabandscroll>Remember Menu Position</spw_remembermenutabandscroll>
-	<spw_remembermenutabandscrolltooltip>Opens the menu at the last scroll position and tab visited.\nThis setting is not synced with other players</spw_remembermenutabandscrolltooltip>
+	<spw_remembermenutabandscrolltooltip>Open the menu at the last scroll position and tab visited.\n\nNote: This setting is not synced with other players when using "Sync Settings" (General tab).</spw_remembermenutabandscrolltooltip>
 
 	<spw_maxsourcecount>Max Playing Sounds</spw_maxsourcecount>
-	<spw_maxsourcecounttooltip>How many sounds can be playing at the same time. Higher values may impact performance</spw_maxsourcecounttooltip>
+	<spw_maxsourcecounttooltip>How many sounds can be playing at the same time. Higher values prevent sounds from being skipped but may impact performance.</spw_maxsourcecounttooltip>
 	
 	<spw_maxsimultaneousinstances>Max Simultaneous Instances</spw_maxsimultaneousinstances>
-	<spw_maxsimultaneousinstancestooltip>How many instances of the same sound can be playing at the same time. Higher values may impact performance</spw_maxsimultaneousinstancestooltip>
+	<spw_maxsimultaneousinstancestooltip>How many instances of the same sound can be playing at the same time. Higher values prevent sounds from being skipped but may impact performance.</spw_maxsimultaneousinstancestooltip>
 
 	<spw_categoryintervals>Update Intervals</spw_categoryintervals>
 	<spw_updatenonloopingsounds>Update Non-Looping Sounds</spw_updatenonloopingsounds>
-	<spw_updatenonloopingsoundstooltip>This allows for non-looping sounds to update their volume, muffle, and other effects, while playing. This is something the vanilla game only does for looping sounds. Disabling this setting may improve performance</spw_updatenonloopingsoundstooltip>
+	<spw_updatenonloopingsoundstooltip>Continuously update the volume, muffling, and other effects of non-looping sounds while they play, instead of only applying them once at inception.\n\nNote: May slightly impact performance.</spw_updatenonloopingsoundstooltip>
+	
 	<spw_nonloopingsoundmuffleupdateinterval>Non-Looping Sound Update Interval</spw_nonloopingsoundmuffleupdateinterval>
-	<spw_nonloopingsoundmuffleupdateintervaltooltip>Requires "Update Non-Looping Sounds" to be enabled.\nThe amount of time between each obstruction and dynamic effects update for non-looping sounds. Volume and pitch values are still updated every tick. Increasing this value may improve performance</spw_nonloopingsoundmuffleupdateintervaltooltip>
+	<spw_nonloopingsoundmuffleupdateintervaltooltip>The amount of time between each obstruction and dynamic effects update for non-looping sounds. Volume and pitch values are still updated every tick.\n\nNote: Requires "Update Non-Looping Sounds" to be enabled.\n\nNote: Increasing this value may improve performance.</spw_nonloopingsoundmuffleupdateintervaltooltip>
 	<spw_openaleffectsupdateinterval>OpenAL Effects Update Interval</spw_openaleffectsupdateinterval>
-	<spw_openaleffectsupdateintervaltooltip>The amount of time between each effect parameter update for OpenAL effects. Only relevant when using Dynamic mode</spw_openaleffectsupdateintervaltooltip>
+	<spw_openaleffectsupdateintervaltooltip>The amount of time between each effect parameter update for effects in Dynamic mode.\n\nNote: Increasing this value may improve performance.</spw_openaleffectsupdateintervaltooltip>
 	<spw_voicemuffleupdateinterval>Voice Update Interval</spw_voicemuffleupdateinterval>
-	<spw_voicemuffleupdateintervaltooltip>The amount of time between each obstruction and dynamic effects update for player voices. Volume and pitch values are still updated every tick. Increasing this value may improve performance</spw_voicemuffleupdateintervaltooltip>
+	<spw_voicemuffleupdateintervaltooltip>The amount of time between each obstruction and dynamic effects update for player voices. Volume and pitch values are still updated every tick.\n\nNote: Increasing this value may improve performance.</spw_voicemuffleupdateintervaltooltip>
 	<spw_componentmuffleupdateinterval>Component Sound Update Interval</spw_componentmuffleupdateinterval>
-	<spw_componentmuffleupdateintervaltooltip>The amount of time between each obstruction and dynamic effects update for looping component sounds (e.g., vents, reactor, engine). Volume and pitch values are still updated every tick. Increasing this value may improve performance</spw_componentmuffleupdateintervaltooltip>
+	<spw_componentmuffleupdateintervaltooltip>The amount of time between each obstruction and dynamic effects update for looping component sounds (e.g., vents, reactor, engine). Volume and pitch values are still updated every tick.\n\nNote: Increasing this value may improve performance.</spw_componentmuffleupdateintervaltooltip>
 	<spw_statuseffectmuffleupdateinterval>Status Effect Sound Update Interval</spw_statuseffectmuffleupdateinterval>
-	<spw_statuseffectmuffleupdateintervaltooltip>The amount of time between each obstruction and dynamic effects update for looping status effect sounds (e.g., sounds from afflictions). Volume and pitch values are still updated every tick. Increasing this value may improve performance</spw_statuseffectmuffleupdateintervaltooltip>
+	<spw_statuseffectmuffleupdateintervaltooltip>The amount of time between each obstruction and dynamic effects update for looping status effect sounds (e.g., sounds from afflictions). Volume and pitch values are still updated every tick.\n\nNote: Increasing this value may improve performance.</spw_statuseffectmuffleupdateintervaltooltip>
 	
 	<spw_categorytransitions>Transitions</spw_categorytransitions>
 	<spw_disablevanillafadeout>Disable Vanilla Fade Out</spw_disablevanillafadeout>

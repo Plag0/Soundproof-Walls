@@ -40,7 +40,8 @@ namespace SoundproofWalls
 
             foreach (ChannelInfo info in channelInfoMap.Values)
             {
-                if ((info.Eavesdropped || ConfigManager.Config.EavesdroppingRevealsAll && Listener.IsEavesdropping) && 
+                if (ConfigManager.Config.EavesdroppingVisualFeedbackEnabled &&
+                    (info.Eavesdropped || ConfigManager.Config.EavesdroppingRevealsAll && Listener.IsEavesdropping) && 
                     !info.AudioIsFlow && !info.AudioIsFire && !info.AudioIsAmbience && 
                     info.Channel.IsPlaying && info.ChannelHull != Listener.CurrentHull)
                 {
@@ -104,9 +105,14 @@ namespace SoundproofWalls
             };
         }
 
-        public static void EnsureUpdateVoiceInfo(SoundChannel channel, Hull? soundHull = null, Client? speakingClient = null, ChatMessageType? messageType = null)
+        public static void EnsureUpdateVoiceInfo(SoundChannel channel, Client speakingClient, ChatMessageType messageType, Hull? soundHull = null)
         {
-            if (channel == null) { return; }
+            if (channel == null || 
+                channel.Sound == null || 
+                speakingClient == null) 
+            { 
+                return; 
+            }
 
             uint sourceId = channel.Sound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
             if (!channelInfoMap.TryGetValue(sourceId, out ChannelInfo? info))

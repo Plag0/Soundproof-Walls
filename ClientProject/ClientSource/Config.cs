@@ -58,7 +58,7 @@ namespace SoundproofWalls
         public bool DynamicReverbWaterSubtractsArea { get; set; } = true;
         public int DynamicReverbMinArea { get; set; } = 0;
         public float DynamicReverbAreaSizeMultiplier { get; set; } = 1.0f;
-        public float DynamicReverbWetRoomAreaSizeMultiplier { get; set; } = 3.0f;
+        public float DynamicReverbWetRoomAreaSizeMultiplier { get; set; } = 1.5f;
         public float DynamicReverbAirTargetGain { get; set; } = 0.30f;
         public float DynamicReverbWaterTargetGain { get; set; } = 0.55f;
         public float DyanmicReverbAirAmplitudeThreshold { get; set; } = 0.0f; // Zero to avoid audio pops
@@ -98,11 +98,12 @@ namespace SoundproofWalls
 
         public bool VoiceLocalReverb { get; set; } = true;
         public bool VoiceRadioReverb { get; set; } = false;
+        public int VoiceMinLowpassFrequency { get; set; } = 130;
         public bool ScreamMode { get; set; } = false;
         public int ScreamModeMaxRange { get; set; } = 1300; // cm
         public int ScreamModeMinRange { get; set; } = 450; // cm
         public int ScreamModeReleaseRate { get; set; } = 350; // cm
-        public float VoiceDynamicMuffleMultiplier { get; set; } = 1.02f;
+        public float VoiceDynamicMuffleMultiplier { get; set; } = 1.0f;
         public float VoiceLocalRangeMultiplier { get; set; } = 1.2f;
         public float VoiceRadioRangeMultiplier { get; set; } = 1.0f;
         public float VoiceLocalVolumeMultiplier { get; set; } = 1.0f;
@@ -178,6 +179,8 @@ namespace SoundproofWalls
         public bool EavesdroppingMuffle { get; set; } = true; // Not available for Classic mode.
         public bool EavesdroppingTransitionEnabled { get; set; } = true;
         public bool EavesdroppingDucksRadio { get; set; } = true;
+        public bool EavesdroppingVisualFeedbackEnabled { get; set; } = true;
+        public bool EavesdroppingRevealsCharacterOutline { get; set; } = true;
         public bool EavesdroppingRevealsAll { get; set; } = false;
         public int EavesdroppingSpriteMaxSize { get; set; } = 400;
         public float EavesdroppingSpriteSizeMultiplier { get; set; } = 0.2f;
@@ -270,11 +273,11 @@ namespace SoundproofWalls
 
             // Update Intervals
         public bool UpdateNonLoopingSounds { get; set; } = true; // Updates the gain and pitch of non looping "single-shot" sounds every tick. Muffle is updated every NonLoopingSoundMuffleUpdateInterval.
-        public float VoiceMuffleUpdateInterval { get; set; } = 0.2f;
-        public float NonLoopingSoundMuffleUpdateInterval { get; set; } = 0.2f; // Only applied if UpdateNonLoopingSounds is enabled.
-        public float OpenALEffectsUpdateInterval { get; set; } = 0.2f; // Recommend lowering if having trouble with reverb amplitude gates
-        public float ComponentMuffleUpdateInterval { get; set; } = 0.2f;
-        public float StatusEffectMuffleUpdateInterval { get; set; } = 0.2f;
+        public float VoiceMuffleUpdateInterval { get; set; } = 0.01f;
+        public float NonLoopingSoundMuffleUpdateInterval { get; set; } = 0.01f; // Only applied if UpdateNonLoopingSounds is enabled.
+        public float OpenALEffectsUpdateInterval { get; set; } = 0.01f; // Recommend lowering if having trouble with reverb amplitude gates
+        public float ComponentMuffleUpdateInterval { get; set; } = 0.01f;
+        public float StatusEffectMuffleUpdateInterval { get; set; } = 0.01f;
 
             // Transitions
         public bool DisableVanillaFadeOutAndDispose { get; set; } = false; // Disables the vanilla "FadeOutAndDispose" function that has the potential to cause issues with permanently looping sounds.
@@ -365,7 +368,7 @@ namespace SoundproofWalls
             gainMultiplier: 2.3f,
             rangeMultiplier: 1.35f,
             sidechainMultiplier: 1.2f,
-            release: 1.3f,
+            release: 1.5f,
             distortion: true,
             pitchMultiplier: 1.0f,
             muffleInfluence: 0.85f),
@@ -373,7 +376,7 @@ namespace SoundproofWalls
             gainMultiplier: 2.5f,
             rangeMultiplier: 1.4f,
             sidechainMultiplier: 1.3f,
-            release: 1.5f,
+            release: 1.7f,
             distortion: true,
             pitchMultiplier: 1.0f,
             muffleInfluence: 0.85f),
@@ -381,7 +384,7 @@ namespace SoundproofWalls
             gainMultiplier: 3.0f,
             rangeMultiplier: 1.5f,
             sidechainMultiplier: 1.5f,
-            release: 1.9f,
+            release: 3.2f,
             distortion: true,
             pitchMultiplier: 1.0f,
             muffleInfluence: 0.85f,
@@ -390,7 +393,7 @@ namespace SoundproofWalls
             gainMultiplier: 2.8f,
             rangeMultiplier: 1.3f,
             sidechainMultiplier: 1.4f,
-            release: 1.7f,
+            release: 3.2f,
             distortion: true,
             pitchMultiplier: 1.0f,
             muffleInfluence: 0.85f),
@@ -467,7 +470,7 @@ namespace SoundproofWalls
             release: 1.0f,
             distortion: false,
             pitchMultiplier: 1.0f,
-            muffleInfluence: 0.78f),
+            muffleInfluence: 0.82f),
         new CustomSound("items/alarmbuzzerloop.ogg",
             gainMultiplier: 1.0f,
             rangeMultiplier: 1.8f,
@@ -475,7 +478,7 @@ namespace SoundproofWalls
             release: 1.0f,
             distortion: false,
             pitchMultiplier: 1.0f,
-            muffleInfluence: 0.78f),
+            muffleInfluence: 0.82f),
         new CustomSound("items/warningsiren.ogg",
             gainMultiplier: 1.0f,
             rangeMultiplier: 1.8f,
@@ -483,7 +486,7 @@ namespace SoundproofWalls
             release: 1.0f,
             distortion: false,
             pitchMultiplier: 1.0f,
-            muffleInfluence: 0.78f),
+            muffleInfluence: 0.82f),
 
 
         // Pitch adjustments. The ambience sounds really cool stretched out over a low pitch
@@ -626,6 +629,7 @@ namespace SoundproofWalls
             "barotrauma/content/sounds/water/flow",
             "barotrauma/content/sounds/fire",
             "barotrauma/content/characters",
+            "monster_farlayer",
             "sonardecoy"
         };
 

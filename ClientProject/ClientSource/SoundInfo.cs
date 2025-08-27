@@ -34,6 +34,7 @@ namespace SoundproofWalls
         public bool IgnoreHydrophoneMuffle = false;
 
         public bool IsChargeSound = false;
+        public bool IsTurretMovementSound = false;
 
         public enum AudioType
         {
@@ -122,6 +123,10 @@ namespace SoundproofWalls
             else if (lower.Contains("chargeup"))
             {
                 IsChargeSound = true;
+            }
+            else if (lower.Contains("railgunstop") || lower.Contains("railgunstart") || lower.Contains("railgunloop"))
+            {
+                IsTurretMovementSound = true;
             }
 
             PerformanceProfiler.Instance.StopTimingEvent();
