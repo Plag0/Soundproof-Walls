@@ -2,6 +2,7 @@
 using Barotrauma.Sounds;
 using Microsoft.Xna.Framework;
 using OpenAL;
+using System.Collections.Concurrent;
 
 namespace SoundproofWalls
 {
@@ -63,14 +64,18 @@ namespace SoundproofWalls
 
 
         // Maps source IDs to their current filter ID
-        private Dictionary<uint, uint> _sourceFilters = new Dictionary<uint, uint>();
-        private HashSet<uint> _reverbRoutedSources = new HashSet<uint>();
+        private ConcurrentDictionary<uint, uint> _sourceFilters = new ConcurrentDictionary<uint, uint>();
+        private ConcurrentDictionary<uint, bool> _reverbRoutedSources = new ConcurrentDictionary<uint, bool>();
 
         private double LastEffectUpdateTime = 0;
         private bool ListenerIsCharacter = true;
 
         private float trailingAirReverbGain = ConfigManager.Config.DynamicReverbAirTargetGain;
         private float trailingHydrophoneReverbGain = ConfigManager.Config.HydrophoneReverbTargetGain;
+
+        private bool AirReverbGainBounceActive = false;
+        private bool AirReverbGainBounceGainSet = false;
+        private float AirReverbGainBounceFinishValue = 0;
         
         private static Config Config { get { return ConfigManager.Config; } }
 
@@ -87,7 +92,7 @@ namespace SoundproofWalls
 
             if (!InitEffects()) { Dispose(); return; }
 
-            _sourceFilters = new Dictionary<uint, uint>();
+            _sourceFilters = new ConcurrentDictionary<uint, uint>();
 
             IsInitialized = true;
             DebugConsole.NewMessage("[SoundproofWalls] DynamicFx initialization complete.");
@@ -298,6 +303,10 @@ namespace SoundproofWalls
         {
             // Calculate the strength of the reverb effect based on aggregated looping sound amplitude, gain, and player submersion.
             SoundChannel[] playingChannels = GameMain.SoundManager.playingChannels[0]; // Index 0 is sounds while 1 is voice (cite SourcePoolIndex enum) yeah I guess I'm citing stuff in code comments now...
+
+            // For reference: roomSizeFactor == 2 inside the Orca main floor.
+
+            float roomSizeFactor = (Listener.ConnectedArea * ConfigManager.Config.DynamicReverbAreaSizeMultiplier) / 200_000; // Arbitrary magic number that seems to work well.
             float totalAudioAmplitude = 0;
             float loudSoundGain = 0;
             for (int i = 0; i < playingChannels.Length; i++)
@@ -305,7 +314,9 @@ namespace SoundproofWalls
                 if (playingChannels[i] != null && playingChannels[i].IsPlaying && 
                     ChannelInfoManager.TryGetChannelInfo(playingChannels[i], out ChannelInfo? info) && info != null && !info.Ignored)
                 {
-                    if (playingChannels[i].Looping)
+                    // Reduce reverb gain when near loud looping sounds.
+                    bool isLooping = playingChannels[i].Looping;
+                    if (isLooping && !AirReverbGainBounceActive)
                     {
                         float gain = playingChannels[i].Gain;
                         float amplitude = playingChannels[i].CurrentAmplitude;
@@ -314,53 +325,86 @@ namespace SoundproofWalls
                         //LuaCsLogger.Log($"{Path.GetFileName(playingChannels[i].Sound.Filename)} gain: {gain} * amplitude {amplitude} * muffleMult {muffleMult} = totalAudioAmplitude {totalAudioAmplitude}");
                         totalAudioAmplitude += amplitude * gain * muffleMult;
                     }
-                    // Non looping sounds that are loud
-                    else if (info.IsLoud)
+                    // Linearly increase reverb gain when loud non-looping sounds play.
+                    else if (!isLooping && info.IsLoud)
                     {
-                        loudSoundGain += 0.09f; // Arbitrary magic number
+                        loudSoundGain += 0.028f; // Arbitrary magic number
                     }
 
+                    // Dramatically hike the reverb gain if a loud sound is triggered in a small area.
+                    if (ConfigManager.Config.DynamicReverbBloom && !isLooping && roomSizeFactor <= 1 && info.IsLoud && !info.ReverbBounceTriggered && 
+                        info.PlaybackPosition / (info.SoundInfo.Sound.DurationSeconds * info.SoundInfo.Sound.SampleRate) < 0.05f)
+                    {
+                        loudSoundGain = (1 - roomSizeFactor) * 2;
+                        AirReverbGainBounceActive = true;
+                        AirReverbGainBounceGainSet = false;
+                        AirReverbGainBounceFinishValue = trailingAirReverbGain;
+                    }
                 }
             }
-            float amplitudeMult = 1f - MathUtils.InverseLerp(0.0f, 1.4f, totalAudioAmplitude);
-            float submersionMult = Listener.IsSubmerged ? 1.3f : 1.0f;
-            float areaMult = Math.Min(Listener.ConnectedArea * ConfigManager.Config.DynamicReverbAreaSizeMultiplier / 300_000, 1.1f);
-            float targetReverbGain = ((amplitudeMult * areaMult * submersionMult) + loudSoundGain) * ConfigManager.Config.DynamicReverbAirTargetGain;
+            float loudRoomPenalty = 1f - MathUtils.InverseLerp(0.0f, 1.4f, totalAudioAmplitude);
+            float submersionBonus = Listener.IsSubmerged ? 1.4f : 1.0f;
+            float smallRoomPenalty = Math.Min(Listener.ConnectedArea * ConfigManager.Config.DynamicReverbAreaSizeMultiplier / 180_000, 1.0f);
+            float targetReverbGain = loudSoundGain + (loudRoomPenalty * smallRoomPenalty * submersionBonus * ConfigManager.Config.DynamicReverbAirTargetGain);
             targetReverbGain = Math.Clamp(targetReverbGain, 0.0f, 1.0f);
 
             float transitionFactor = ConfigManager.Config.AirReverbGainTransitionFactor;
-            if (transitionFactor > 0)
+            if (transitionFactor > 0 && AirReverbGainBounceGainSet)
             {
+                if (AirReverbGainBounceActive) { transitionFactor *= 0.5f; }
                 float maxStep = (float)(transitionFactor * ConfigManager.Config.OpenALEffectsUpdateInterval);
                 trailingAirReverbGain = Util.SmoothStep(trailingAirReverbGain, targetReverbGain, maxStep);
+
+                if (trailingAirReverbGain <= AirReverbGainBounceFinishValue)
+                {
+                    AirReverbGainBounceActive = false;
+                }
             }
             else
             {
                 trailingAirReverbGain = targetReverbGain;
+                if (AirReverbGainBounceActive) { AirReverbGainBounceGainSet = true; }
             }
 
-            // Influences decay and delay times.
-            float roomSizeFactor = (Listener.ConnectedArea * ConfigManager.Config.DynamicReverbAreaSizeMultiplier) / 200_000; // Arbitrary magic number that seems to work well.
+            float durationMult = ConfigManager.Config.DynamicReverbAirDurationMultiplier;
+            float decayTime = (0.8f + (roomSizeFactor * 1.9f)) * durationMult * (AirReverbGainBounceActive ? trailingAirReverbGain * 2.6f : 1);
+            float reflectionsDelay = (0.025f + (roomSizeFactor * 0.010f)) * durationMult;
+            float lateReverbDelay = (0.040f + (roomSizeFactor * 0.015f)) * durationMult;
+             
+            float reflectionsBaseGain = 5.1f - (roomSizeFactor * 0.95f);
+            float reflectionsMult = loudRoomPenalty * submersionBonus * 0.3f;
+            float reflectionsTargetGain =  reflectionsBaseGain * reflectionsMult;
 
-            float decayTime = 3.1f + (roomSizeFactor * 1.0f);
-            float reflectionsDelay = 0.025f + (roomSizeFactor * 0.010f);
+
+            float diffusion = 0.55f + (roomSizeFactor * 0.15f);
+            diffusion = Math.Clamp(diffusion, 0.0f, 1.0f);
+
+            float decayHfRatio = 0.5f - (roomSizeFactor * 0.15f);
+            decayHfRatio = Math.Clamp(decayHfRatio, 0.1f, 2.0f);
+
+
             float lateReverbGain = trailingAirReverbGain * 1.8f;
-            float lateReverbDelay = 0.040f + (roomSizeFactor * 0.015f);
+
+            /*
+            LuaCsLogger.Log($"\n\n\nConnectedArea: {Listener.ConnectedArea}\nareaMult: {smallRoomPenalty}\nroomSizeFactor: " +
+                $"{roomSizeFactor}\ndiffusion: {diffusion}\nGain: {trailingAirReverbGain}" +
+                $"\ndecayTime: {decayTime}\nDecayHfRatio: {decayHfRatio}\nreflectionsGain: {reflectionsTargetGain}");
+            */
 
             return new ReverbConfiguration
             {
                 Density = 1.0f,
-                Diffusion = 0.9f,
+                Diffusion = diffusion,
                 Gain = trailingAirReverbGain,
-                GainHf = 0.3f,
+                GainHf = ConfigManager.Config.DynamicReverbAirGainHf,
                 DecayTime = decayTime,
-                DecayHfRatio = 0.2f,
-                ReflectionsGain = 0.9f,
+                DecayHfRatio = decayHfRatio,
+                ReflectionsGain = reflectionsTargetGain,
                 ReflectionsDelay = reflectionsDelay,
                 LateReverbGain = lateReverbGain,
                 LateReverbDelay = lateReverbDelay,
                 AirAbsorptionGainHf = 0.994f, // Default value
-                RoomRolloffFactor = 1.1f,
+                RoomRolloffFactor = 1.1f, // Make sure the reverb effect dies out before we reach the border of the sound's range.
                 DecayHfLimit = Al.True // Default value
             };
         }
@@ -374,7 +418,7 @@ namespace SoundproofWalls
 
             return new ReverbConfiguration()
             {
-                Density = 0.9f,
+                Density = 1.0f,
                 Diffusion = 0.25f,
                 Gain = targetReverbGain,
                 GainHf = 0.04f,
@@ -589,11 +633,11 @@ namespace SoundproofWalls
                     AlEffects.DeleteFilters(1, new[] { filterId });
                     if ((alError = Al.GetError()) != Al.NoError) DebugConsole.AddWarning($"[SoundproofWalls] Failed to delete filter ID: {filterId}, {Al.GetErrorString(alError)}");
                 }
-                _sourceFilters.Remove(sourceId);
+                _sourceFilters.TryRemove(sourceId, out uint _);
                 return;
             }
 
-            _reverbRoutedSources.Remove(sourceId);
+            _reverbRoutedSources.TryRemove(sourceId, out bool _);
 
             // Disconnect auxiliary sends 0 and 1
             Al.Source3i(sourceId, AlEffects.AL_AUXILIARY_SEND_FILTER, AlEffects.AL_EFFECTSLOT_NULL, 0, AlEffects.AL_FILTER_NULL);
@@ -612,15 +656,13 @@ namespace SoundproofWalls
                 if ((alError = Al.GetError()) != Al.NoError) DebugConsole.AddWarning($"[SoundproofWalls] Failed to delete filter ID: {filterId}, {Al.GetErrorString(alError)}");
             }
 
-            _sourceFilters.Remove(sourceId);
+            _sourceFilters.TryRemove(sourceId, out uint _);
         }
 
         public void UpdateSource(ChannelInfo channelInfo, float gainHf, float gainLf = 1)
         {
-            if (channelInfo.SoundInfo.Sound is not VoipSound) 
-            { 
-                PerformanceProfiler.Instance.StartTimingEvent(ProfileEvents.EffectsManagerUpdate); 
-            }
+
+            PerformanceProfiler.Instance.StartTimingEvent(ProfileEvents.EffectsManagerUpdate); 
 
             uint sourceId = channelInfo.Channel.Sound.Owner.GetSourceFromIndex(channelInfo.Channel.Sound.SourcePoolIndex, channelInfo.Channel.ALSourceIndex);
 
@@ -636,10 +678,7 @@ namespace SoundproofWalls
             RouteSourceToEffectSlot(REVERB_SEND, sourceId, DetermineReverbEffectSlot(channelInfo), filterId);
             RouteSourceToEffectSlot(DISTORTION_SEND, sourceId, DetermineDistortionEffectSlot(channelInfo), filterId);
 
-            if (channelInfo.SoundInfo.Sound is not VoipSound)
-            {
-                PerformanceProfiler.Instance.StopTimingEvent();
-            }
+            PerformanceProfiler.Instance.StopTimingEvent();
         }
 
         private void UpdateSourceFilter(uint sourceId, uint filterId, float gainHf, float gainLf, ChannelInfo channelInfo)
@@ -674,7 +713,7 @@ namespace SoundproofWalls
             else
             {
                 // Don't muffle voip sounds with OpenAL.
-                if (channelInfo.SoundInfo.Sound is VoipSound) 
+                if (channelInfo.AudioIsVoice) 
                 {
                     gainHf = 1;
                     gainLf = 1;
@@ -729,7 +768,7 @@ namespace SoundproofWalls
                                       channelInfo.SoundInfo.Distortion &&
                                       channelInfo.MuffleStrength <= Config.LoudSoundDistortionAirMaxMuffleThreshold 
                                       ||
-                                      BubbleManager.IsClientDrowning(channelInfo.SpeakingClient);
+                                      Config.DrowningRadioDistortion && channelInfo.AudioIsRadioVoice && BubbleManager.IsClientDrowning(channelInfo.SpeakingClient);
                 return shouldDistort ? distortionSlotId : INVALID_ID;
             }
             else if (currentDistortion == DistortionType.Outside)
@@ -738,7 +777,7 @@ namespace SoundproofWalls
                                       channelInfo.SoundInfo.Distortion &&
                                       channelInfo.MuffleStrength <= Config.LoudSoundDistortionWaterMaxMuffleThreshold
                                       ||
-                                      BubbleManager.IsClientDrowning(channelInfo.SpeakingClient);
+                                      Config.DrowningRadioDistortion && channelInfo.AudioIsRadioVoice && BubbleManager.IsClientDrowning(channelInfo.SpeakingClient);
                 return shouldDistort ? distortionSlotId : INVALID_ID;
             }
             else if (currentDistortion == DistortionType.Hydrophone)
@@ -757,10 +796,10 @@ namespace SoundproofWalls
             int alError;
 
             // Disable auto gain when a source is sending to a reverb effect slot.
-            bool sourceHasReverb = _reverbRoutedSources.Contains(sourceId) || targetSlot == reverbSlotId;
+            bool sourceHasReverb = _reverbRoutedSources.ContainsKey(sourceId) || targetSlot == reverbSlotId;
             Al.Sourcei(sourceId, AlEffects.AL_AUXILIARY_SEND_FILTER_GAIN_AUTO, sourceHasReverb ? Al.False : Al.True);
             if ((alError = Al.GetError()) != Al.NoError) DebugConsole.AddWarning($"[SoundproofWalls] Failed to set AL_AUXILIARY_SEND_FILTER_GAIN_AUTO for source ID: {sourceId}, {Al.GetErrorString(alError)}");
-            if (sourceHasReverb) { _reverbRoutedSources.Add(sourceId); }
+            if (sourceHasReverb) { _reverbRoutedSources.TryAdd(sourceId, true); }
 
             // Send source to the specified effect slot via the specified send.
             Al.Source3i(sourceId, AlEffects.AL_AUXILIARY_SEND_FILTER, (int)targetSlot, (int)send, (int)filterId);

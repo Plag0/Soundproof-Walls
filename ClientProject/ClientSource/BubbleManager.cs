@@ -147,10 +147,15 @@ namespace SoundproofWalls
 
         private static void UpdateClientBubbleSounds(Client client)
         {
+            if (client == null) { return; }
             PlayerBubbleSoundState state = PlayerBubbleSoundState.DoNotPlayBubbles; // Default to not playing.
 
             Character? player = client.Character;
-            Limb? playerHead = player?.AnimController?.GetLimb(LimbType.Head);
+            Limb? playerHead = null;
+            if (player?.AnimController?.limbs != null && player?.AnimController?.limbDictionary != null)
+            {
+                playerHead = player.AnimController.GetLimb(LimbType.Head);
+            }
             SoundChannel? voiceChannel = client.VoipSound?.soundChannel;
 
             bool shouldStop = !ConfigManager.Config.Enabled || !ConfigManager.Config.DrowningBubblesEnabled || !Util.RoundStarted;
@@ -219,7 +224,7 @@ namespace SoundproofWalls
                 }
                 else if (state == PlayerBubbleSoundState.PlayLocalBubbles) // Start local
                 {
-                    newBubbleChannel = SoundPlayer.PlaySound(BubbleSound, playerHead.WorldPosition, volume: localVolume, range: localRange, freqMult: MathHelper.Lerp(0.8f, 2.0f, MathUtils.InverseLerp(0, 2, player.CurrentSpeed)), ignoreMuffling: true);
+                    newBubbleChannel = SoundPlayer.PlaySound(BubbleSound, playerHead.WorldPosition, volume: localVolume, range: localRange, freqMult: MathHelper.Lerp(0.8f, 2.0f, MathUtils.InverseLerp(0, 2, player.CurrentSpeed)), ignoreMuffling: false);
                 }
 
                 if (newBubbleChannel != null)

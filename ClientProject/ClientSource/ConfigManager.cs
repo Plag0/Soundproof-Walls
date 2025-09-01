@@ -23,9 +23,10 @@ namespace SoundproofWalls
             get => serverConfig; 
             set 
             { 
-                serverConfig = value; 
+                serverConfig = value;
                 // Refresh menu if it's open.
-                if (Menu.Instance != null) { Menu.Create(startAtUnsavedValues: true); } 
+                Color externalUpdateFlashColor = new Color(95, 54, 15);
+                if (Menu.Instance != null) { Menu.Create(startAtUnsavedValues: true, flashColor: externalUpdateFlashColor); } 
             } 
         }
         public static Client? ServerConfigUploader = null;

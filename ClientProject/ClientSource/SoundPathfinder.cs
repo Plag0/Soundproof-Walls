@@ -41,9 +41,9 @@ namespace SoundproofWalls
         /// Finds the top N shortest/lowest-cost sound paths from a source to a listener,
         /// where each path is defined by a unique final gap it passes through before reaching the listener's hull.
         /// </summary>
-        /// <param name="sourcePos">The world-space position of the sound source.</param>
+        /// <param name="sourcePos">The local-space position of the sound source.</param>
         /// <param name="sourceHull">The hull containing the sound source.</param>
-        /// <param name="listenerPos">The world-space position of the listener.</param>
+        /// <param name="listenerPos">The local-space position of the listener.</param>
         /// <param name="listenerHull">The hull containing the listener.</param>
         /// <param name="submarine">The submarine context for the search.</param>
         /// <param name="n">The maximum number of unique paths to return.</param>
@@ -97,8 +97,7 @@ namespace SoundproofWalls
             {
                 if (startGap == null) continue;
 
-                // TODO: When converting to local positions, this will need updating.
-                float initialRawDist = Vector2.Distance(sourcePos, startGap.WorldPosition);
+                float initialRawDist = Vector2.Distance(sourcePos, startGap.Position);
 
                 if (initialRawDist > maxRawDistance) continue;
 
@@ -133,7 +132,7 @@ namespace SoundproofWalls
                         if (neighborGap == null || neighborGap == currentGap) continue;
 
                         // TODO: When converting to local positions, this will need updating.
-                        float segmentDistance = Vector2.Distance(currentGap.WorldPosition, neighborGap.WorldPosition);
+                        float segmentDistance = Vector2.Distance(currentGap.Position, neighborGap.Position);
                         float tentativeRawGScore = costToReachCurrentRaw + segmentDistance;
 
                         // Pruning check: if the raw geometric distance is already too high, abandon this path.
@@ -162,8 +161,7 @@ namespace SoundproofWalls
 
                 // The final cost is the path cost to the gap + penalty for crossing it + final leg to listener.
                 float penalty = (finalGap == ignoredGap) ? 0f : GetGapTraversalPenalty(finalGap);
-                // TODO: When converting to local positions, this will need updating.
-                float finalLegDist = Vector2.Distance(finalGap.WorldPosition, listenerPos);
+                float finalLegDist = Vector2.Distance(finalGap.Position, listenerPos);
                 float totalApproxCost = gScore[finalGap] + penalty + finalLegDist;
 
                 potentialEndpoints.Add((finalGap, totalApproxCost));
@@ -265,22 +263,20 @@ namespace SoundproofWalls
             if (hullA != null && hullB != null)
             {
                 const float epsilon = 100f;
-                // TODO: When converting to local positions, this will need updating.
-                float gapWorldY = gap.WorldPosition.Y;
+                float gapY = gap.Position.Y;
 
-                // TODO: When converting to local positions, this will need updating.
-                float waterSurfaceYA = GetWaterSurfaceY(gap.WorldPosition.X, hullA);
-                float waterSurfaceYB = GetWaterSurfaceY(gap.WorldPosition.X, hullB);
+                float waterSurfaceYA = GetWaterSurfaceY(gap.Position.X, hullA);
+                float waterSurfaceYB = GetWaterSurfaceY(gap.Position.X, hullB);
 
-                bool isSubmergedA = gapWorldY < waterSurfaceYA;
-                bool isSubmergedB = gapWorldY < waterSurfaceYB;
+                bool isSubmergedA = gapY < waterSurfaceYA;
+                bool isSubmergedB = gapY < waterSurfaceYB;
 
                 // If the submerged states are different, a crossing occurs.
                 // An additional check prevents "false" crossings if the gap is just barely touching the surface on one side.
                 if (isSubmergedA != isSubmergedB)
                 {
-                    float closenessA = Math.Abs(gapWorldY - waterSurfaceYA);
-                    float closenessB = Math.Abs(gapWorldY - waterSurfaceYB);
+                    float closenessA = Math.Abs(gapY - waterSurfaceYA);
+                    float closenessB = Math.Abs(gapY - waterSurfaceYB);
 
                     // If one side is very close to the water level, treat it as being on the same side as the other.
                     if (closenessA < epsilon) isSubmergedA = isSubmergedB;
@@ -295,18 +291,15 @@ namespace SoundproofWalls
         }
 
         /// <summary>
-        /// Gets the approximate world Y coordinate of the water surface at a given world X coordinate within a hull.
+        /// Gets the approximate local Y coordinate of the water surface at a given local X coordinate within a hull.
         /// </summary>
-        private static float GetWaterSurfaceY(float worldX, Hull hull)
+        private static float GetWaterSurfaceY(float x, Hull hull)
         {
             if (hull == null || hull.WaveY == null || hull.WaveY.Length == 0) return float.MinValue;
 
-            // Convert world X to local hull coordinates for indexing.
-            // TODO: This is a key area for local position conversion. The hull.Rect is in local sub coords.
-            int xIndex = (int)MathF.Round(worldX - hull.Rect.X);
+            int xIndex = (int)MathF.Round(x - hull.Rect.X);
             xIndex = Math.Clamp(xIndex, 0, hull.WaveY.Length - 1);
 
-            // hull.Surface is the base water level in world coordinates.
             return hull.Surface + hull.WaveY[xIndex];
         }
 
@@ -318,7 +311,7 @@ namespace SoundproofWalls
         {
             if (node == null) return float.MaxValue;
             // TODO: When converting to local positions, this will need updating.
-            return Vector2.Distance(node.WorldPosition, targetPos);
+            return Vector2.Distance(node.Position, targetPos);
         }
 
         /// <summary>
@@ -376,9 +369,8 @@ namespace SoundproofWalls
         {
             if (gap == null) return startPos;
 
-            // TODO: When converting to local positions, all these World/Rect values will need updating.
-            Vector2 gapCenter = gap.WorldPosition;
-            RectangleF gapWorldRect = gap.WorldRect;
+            Vector2 gapCenter = gap.Position;
+            RectangleF gapRect = gap.Rect;
             const float epsilon = 0.001f;
 
             if (gap.IsHorizontal)
@@ -393,7 +385,7 @@ namespace SoundproofWalls
                     // Standard line-line intersection formula.
                     intersectX = startPos.X + (endPos.X - startPos.X) * (gapY - startPos.Y) / (endPos.Y - startPos.Y);
                 }
-                return new Vector2(Math.Clamp(intersectX, gapWorldRect.X, gapWorldRect.Right), gapY);
+                return new Vector2(Math.Clamp(intersectX, gapRect.X, gapRect.Right), gapY);
             }
             else // Is Vertical
             {
@@ -405,7 +397,7 @@ namespace SoundproofWalls
                 {
                     intersectY = startPos.Y + (endPos.Y - startPos.Y) * (gapX - startPos.X) / (endPos.X - startPos.X);
                 }
-                return new Vector2(gapX, Math.Clamp(intersectY, gapWorldRect.Y, gapWorldRect.Bottom));
+                return new Vector2(gapX, Math.Clamp(intersectY, gapRect.Y, gapRect.Bottom));
             }
         }
     }

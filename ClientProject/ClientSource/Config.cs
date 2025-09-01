@@ -13,6 +13,15 @@ namespace SoundproofWalls
         public const uint EFFECT_PROCESSING_DYNAMIC = 2;
 
         [JsonIgnore]
+        public const uint CUSTOM_RADIO_BROKEN = 0;
+        [JsonIgnore]
+        public const uint CUSTOM_RADIO_DIRTY = 1;
+        [JsonIgnore]
+        public const uint CUSTOM_RADIO_NORMAL = 2;
+        [JsonIgnore]
+        public const uint CUSTOM_RADIO_CLEAN = 3;
+
+        [JsonIgnore]
         public bool ClassicFx => EffectProcessingMode == EFFECT_PROCESSING_CLASSIC;
         [JsonIgnore]
         public bool StaticFx => EffectProcessingMode == EFFECT_PROCESSING_STATIC;
@@ -55,17 +64,20 @@ namespace SoundproofWalls
         public float DynamicMuffleStrengthMultiplier { get; set; } = 1.0f;
         public float OverMuffleStrengthMultiplier { get; set; } = 0.33f;
         public bool DynamicReverbEnabled { get; set; } = true;
+        public bool DynamicReverbBloom { get; set; } = true;
         public bool DynamicReverbWaterSubtractsArea { get; set; } = true;
         public int DynamicReverbMinArea { get; set; } = 0;
         public float DynamicReverbAreaSizeMultiplier { get; set; } = 1.0f;
         public float DynamicReverbWetRoomAreaSizeMultiplier { get; set; } = 1.5f;
         public float DynamicReverbAirTargetGain { get; set; } = 0.30f;
+        public float DynamicReverbAirDurationMultiplier { get; set; } = 1.0f;
+        public float DynamicReverbAirGainHf { get; set; } = 0.3f;
         public float DynamicReverbWaterTargetGain { get; set; } = 0.55f;
         public float DyanmicReverbAirAmplitudeThreshold { get; set; } = 0.0f; // Zero to avoid audio pops
         public float DyanmicReverbWaterAmplitudeThreshold { get; set; } = 0.75f; // The necessary amplitude * gain needed for a non "loud" source to have reverb applied in water.
         public bool LoudSoundDistortionAirEnabled { get; set; } = true;
         public float LoudSoundDistortionAirMaxMuffleThreshold { get; set; } = 0.5f;
-        public float LoudSoundDistortionAirTargetGain { get; set; } = 0.13f;
+        public float LoudSoundDistortionAirTargetGain { get; set; } = 0.22f;
         public float LoudSoundDistortionAirTargetEdge { get; set; } = 0.34f;
         public int LoudSoundDistortionAirTargetFrequency { get; set; } = 250; // The frequencies targeted by the distortion
         public int LoudSoundDistortionAirLowpassFrequency { get; set; } = 24000; // The frequencies allowed through post-distortion
@@ -98,13 +110,14 @@ namespace SoundproofWalls
 
         public bool VoiceLocalReverb { get; set; } = true;
         public bool VoiceRadioReverb { get; set; } = false;
-        public int VoiceMinLowpassFrequency { get; set; } = 130;
+        public bool DrowningRadioDistortion { get; set; } = true;
+        public int VoiceMinLowpassFrequency { get; set; } = 90;
         public bool ScreamMode { get; set; } = false;
-        public int ScreamModeMaxRange { get; set; } = 1300; // cm
-        public int ScreamModeMinRange { get; set; } = 450; // cm
+        public int ScreamModeMaxRange { get; set; } = 1450; // cm
+        public int ScreamModeMinRange { get; set; } = 500; // cm
         public int ScreamModeReleaseRate { get; set; } = 350; // cm
         public float VoiceDynamicMuffleMultiplier { get; set; } = 1.0f;
-        public float VoiceLocalRangeMultiplier { get; set; } = 1.2f;
+        public float VoiceLocalRangeMultiplier { get; set; } = 1.1f;
         public float VoiceRadioRangeMultiplier { get; set; } = 1.0f;
         public float VoiceLocalVolumeMultiplier { get; set; } = 1.0f;
         public float VoiceRadioVolumeMultiplier { get; set; } = 1.0f;
@@ -112,17 +125,18 @@ namespace SoundproofWalls
         public bool DrowningBubblesEnabled { get; set; } = true;
         public float DrowningBubblesLocalRangeMultiplier { get; set; } = 1.2f; // in cm
         public float DrowningBubblesLocalVolumeMultiplier { get; set; } = 1.0f;
-        public float DrowningBubblesRadioVolumeMultiplier { get; set; } = 0.65f;
+        public float DrowningBubblesRadioVolumeMultiplier { get; set; } = 0.80f;
             // Custom Filter
         public bool RadioCustomFilterEnabled { get; set; } = true;
-        public int RadioBandpassFrequency { get; set; } = 2800;
-        public float RadioBandpassQualityFactor { get; set; } = 3.7f;
-        public float RadioDistortionDrive { get; set; } = 2.0f;
-        public float RadioDistortionThreshold { get; set; } = 0.9f;
-        public float RadioStatic { get; set; } = 0.00f;
-        public float RadioCompressionThreshold { get; set; } = 0.7f;
-        public float RadioCompressionRatio { get; set; } = 1.5f;
-        public float RadioPostFilterBoost { get; set; } = 1.5f;
+        public uint RadioCustomPreset { get; set; } = 1;
+        public int RadioBandpassFrequency { get; set; } = 2250;
+        public float RadioBandpassQualityFactor { get; set; } = 7f;
+        public float RadioDistortionDrive { get; set; } = 8.0f;
+        public float RadioDistortionThreshold { get; set; } = 0.55f;
+        public float RadioStatic { get; set; } = 0.05f;
+        public float RadioCompressionThreshold { get; set; } = 0.25f;
+        public float RadioCompressionRatio { get; set; } = 0.8f;
+        public float RadioPostFilterBoost { get; set; } = 0.9f;
 
         // Muffle
         public bool MuffleDivingSuits { get; set; } = true; // Not available for Classic mode.
@@ -143,7 +157,7 @@ namespace SoundproofWalls
         public float ObstructionDoorThick { get; set; } = 1.0f;
         public float ObstructionDoorThin { get; set; } = 0.80f;
         public float ObstructionSuit { get; set; } = 0.50f;
-        public float ObstructionDrowning { get; set; } = 0.96f;
+        public float ObstructionDrowning { get; set; } = 0.98f;
         // Amount of combined obstruction strength needed to achieve different muffle levels
         public float ClassicMinMuffleThreshold { get; set; } = 0.85f;
         public float StaticMinLightMuffleThreshold { get; set; } = 0.01f;
@@ -313,7 +327,8 @@ namespace SoundproofWalls
             muffleInfluence: 1.2f),
         new CustomSound("door",
             gainMultiplier: 0.9f,
-            rangeMultiplier: 1.3f),
+            rangeMultiplier: 1.3f,
+            exclusions: ["doorbreak"]),
         new CustomSound("metalimpact",
             gainMultiplier: 0.8f,
             rangeMultiplier: 1.2f),
@@ -344,6 +359,14 @@ namespace SoundproofWalls
             distortion: true,
             pitchMultiplier: 1.0f,
             muffleInfluence: 0.94f),
+        new CustomSound("hmgshot",
+            gainMultiplier: 2.2f,
+            rangeMultiplier: 1.3f,
+            sidechainMultiplier: 1.3f,
+            release: 1.2f,
+            distortion: true,
+            pitchMultiplier: 0.95f,
+            muffleInfluence: 0.94f),
         new CustomSound("rifleshot",
             gainMultiplier: 2.5f,
             rangeMultiplier: 1.2f,
@@ -353,17 +376,64 @@ namespace SoundproofWalls
             pitchMultiplier: 1.0f,
             muffleInfluence: 0.95f,
             exclusions: ["harpooncoilrifleshot"]),
-        new CustomSound("shot",
-            gainMultiplier: 2.0f,
-            rangeMultiplier: 1.15f,
+        new CustomSound("handcannon",
+            gainMultiplier: 2.5f,
+            rangeMultiplier: 1.3f,
+            sidechainMultiplier: 1.4f,
+            release: 1.8f,
+            distortion: true,
+            pitchMultiplier: 1.05f,
+            muffleInfluence: 0.95f),
+        new CustomSound("rapidfissileaccelerator",
+            gainMultiplier: 2.5f,
+            rangeMultiplier: 1.3f,
+            sidechainMultiplier: 1.5f,
+            release: 1.7f,
+            distortion: true,
+            pitchMultiplier: 0.90f,
+            muffleInfluence: 0.95f,
+            exclusions: ["startloop"]),
+        new CustomSound("alienturret",
+            gainMultiplier: 1.9f,
+            rangeMultiplier: 1.3f,
+            sidechainMultiplier: 1.1f,
+            release: 1.1f,
+            distortion: true,
+            pitchMultiplier: 2.5f,
+            muffleInfluence: 0.95f),
+        new CustomSound("alienweapon",
+            gainMultiplier: 1.3f,
+            rangeMultiplier: 1.2f,
+            sidechainMultiplier: 0.8f,
+            release: 0.8f,
+            distortion: true,
+            pitchMultiplier: 2.2f,
+            muffleInfluence: 0.98f),
+        new CustomSound("electricaldischarge",
+            gainMultiplier: 1.2f,
+            rangeMultiplier: 0.9f,
             sidechainMultiplier: 1.0f,
-            release: 0.9f,
+            release: 2.1f,
+            distortion: true,
+            pitchMultiplier: 0.9f,
+            muffleInfluence: 1.0f),
+        new CustomSound("scrapcannonshot",
+            gainMultiplier: 1f,
+            rangeMultiplier: 1.2f,
+            sidechainMultiplier: 1f,
+            release: 1.1f,
+            distortion: true,
+            pitchMultiplier: 2.45f,
+            muffleInfluence: 1.0f),
+
+        new CustomSound("chaingunshot",
+            gainMultiplier: 2.1f,
+            rangeMultiplier: 1.35f,
+            sidechainMultiplier: 1.1f,
+            release: 1.3f,
             distortion: true,
             pitchMultiplier: 1.0f,
-            muffleInfluence: 0.95f,
-            exclusions: ["shotgunload", "tasershot", "riflegrenadeshot"]),
-
-
+            muffleInfluence: 0.85f),
         new CustomSound("coilgun",
             gainMultiplier: 2.3f,
             rangeMultiplier: 1.35f,
@@ -398,8 +468,7 @@ namespace SoundproofWalls
             pitchMultiplier: 1.0f,
             muffleInfluence: 0.85f),
 
-
-        new CustomSound("gravityshells_boom.ogg",
+        new CustomSound("gravityshells_boom",
             gainMultiplier: 2.0f,
             rangeMultiplier: 1.5f,
             sidechainMultiplier: 2.0f,
@@ -411,6 +480,12 @@ namespace SoundproofWalls
             sidechainMultiplier: 0.6f,
             release: 1.5f,
             distortion: false),
+        new CustomSound("fraggrenade",
+            gainMultiplier: 2.0f,
+            rangeMultiplier: 1.3f,
+            sidechainMultiplier: 2.0f,
+            release: 5f,
+            distortion: true),
         new CustomSound("incendiumgrenade",
             gainMultiplier: 2.0f,
             rangeMultiplier: 1.2f,
@@ -423,14 +498,14 @@ namespace SoundproofWalls
             sidechainMultiplier: 3.0f,
             release: 11.0f,
             distortion: true),
-        new CustomSound("explosionlarge",
+        new CustomSound("explosionlarge", // Reactor explosion.
             gainMultiplier: 3.0f,
             rangeMultiplier: 1.8f,
             sidechainMultiplier: 10.0f,
             release: 10.0f,
             distortion: true,
-            pitchMultiplier: 0.94f,
-            muffleInfluence: 0.8f),
+            pitchMultiplier: 0.77f,
+            muffleInfluence: 0.55f),
         new CustomSound("explosion",
             gainMultiplier: 2.0f,
             rangeMultiplier: 1.5f,
@@ -442,9 +517,19 @@ namespace SoundproofWalls
         new CustomSound("gravityshells",
             gainMultiplier: 1.5f,
             rangeMultiplier: 1.4f,
-            sidechainMultiplier: 2.0f,
+            sidechainMultiplier: 0.7f,
             release: 1.5f,
             distortion: true),
+
+        new CustomSound("shot", // Placed last like an else block for sounds in with "shot" in them.
+            gainMultiplier: 2.0f,
+            rangeMultiplier: 1.15f,
+            sidechainMultiplier: 1.0f,
+            release: 0.9f,
+            distortion: true,
+            pitchMultiplier: 1.0f,
+            muffleInfluence: 0.95f,
+            exclusions: ["shotgunload", "tasershot", "riflegrenadeshot"]),
 
 
         new CustomSound("firelarge.ogg",
@@ -463,6 +548,14 @@ namespace SoundproofWalls
             distortion: false,
             pitchMultiplier: 0.9f,
             muffleInfluence: 0.55f),
+        new CustomSound("doorbreak",
+            gainMultiplier: 1.5f,
+            rangeMultiplier: 1.2f,
+            sidechainMultiplier: 0.4f,
+            release: 1.7f,
+            distortion: false,
+            pitchMultiplier: 0.96f,
+            muffleInfluence: 0.98f),
         new CustomSound("items/alarmdivingloop.ogg",
             gainMultiplier: 1.0f,
             rangeMultiplier: 1.1f,
@@ -470,7 +563,7 @@ namespace SoundproofWalls
             release: 1.0f,
             distortion: false,
             pitchMultiplier: 1.0f,
-            muffleInfluence: 0.82f),
+            muffleInfluence: 0.98f),
         new CustomSound("items/alarmbuzzerloop.ogg",
             gainMultiplier: 1.0f,
             rangeMultiplier: 1.8f,
@@ -478,7 +571,7 @@ namespace SoundproofWalls
             release: 1.0f,
             distortion: false,
             pitchMultiplier: 1.0f,
-            muffleInfluence: 0.82f),
+            muffleInfluence: 0.98f),
         new CustomSound("items/warningsiren.ogg",
             gainMultiplier: 1.0f,
             rangeMultiplier: 1.8f,
@@ -486,7 +579,7 @@ namespace SoundproofWalls
             release: 1.0f,
             distortion: false,
             pitchMultiplier: 1.0f,
-            muffleInfluence: 0.82f),
+            muffleInfluence: 0.98f),
 
 
         // Pitch adjustments. The ambience sounds really cool stretched out over a low pitch
@@ -515,7 +608,8 @@ namespace SoundproofWalls
         // Soundproof Walls sounds.
         new CustomSound("sounds/spw_",
             gainMultiplier: 1.0f,
-            muffleInfluence: 0.0f),
+            muffleInfluence: 0.0f,
+            exclusions: ["bubblesloopmono"]),
 
         // Real Sonar sounds.
         new CustomSound("2936760984/sounds/sonar",
@@ -566,6 +660,7 @@ namespace SoundproofWalls
             "barotrauma/content/items/pump",
             "explosionlarge", // so underwater reactor explosion can be heard by spectators
             "footstep", // Prevents footsteps from being muffled when standing in an inch of water.
+            "spw_bubblesloopmono.ogg"
         };
 
         // Submerged sounds that can freely travel through their body of water without it being treated like a wall.
@@ -579,7 +674,8 @@ namespace SoundproofWalls
             "barotrauma/content/items/warningbeep",
             "barotrauma/content/items/alien",
             "explosion",
-            "sonar"
+            "sonar",
+            "spw_bubblesloopmono.ogg"
         };
 
         // Propagating sounds pierce through one layer of walls/water.
@@ -608,6 +704,7 @@ namespace SoundproofWalls
             "items/warningbeep",
             "items/fabricators",
             "items/button",
+            "items/door",
             "sounds/spw_", // Don't allow pitching of SPW sounds to take place outside their managing classes.
             "divingsuitloop",
             "divingsuitoxygenleakloop",
@@ -617,7 +714,6 @@ namespace SoundproofWalls
             "tinnitus",
             "repairloop",
             "music",
-            "door",
             "sonar",
             "male",
             "female"

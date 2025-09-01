@@ -33,7 +33,7 @@ namespace SoundproofWalls
 
         public static PerformanceProfiler Instance => lazyInstance.Value;
 
-        // --- Data Storage ---
+        // Data Storage
         private readonly Dictionary<string, Queue<TimeSpan>> eventHistory;
         private readonly Dictionary<string, TimeSpan> averagedTimings;
         private readonly Stack<Tuple<string, Stopwatch>> stopwatchStack;
@@ -42,6 +42,7 @@ namespace SoundproofWalls
         private readonly Graph modTotalTimeGraph;
         private TimeSpan lastFrameTotalTime = TimeSpan.Zero;
         private const double TargetFrameTimeMilliseconds = 1000.0 / 60.0;
+        private readonly object _profilerLock = new object();
 
         private PerformanceProfiler()
         {
@@ -56,40 +57,49 @@ namespace SoundproofWalls
         {
             if (!ConfigManager.LocalConfig.ShowPerformance) return;
 
-            if (stopwatchStack.Count > 0)
+            lock (_profilerLock) // Use the new lock
             {
-                stopwatchStack.Peek().Item2.Stop();
+                if (stopwatchStack.Count > 0)
+                {
+                    stopwatchStack.Peek().Item2.Stop();
+                }
+                stopwatchStack.Push(new Tuple<string, Stopwatch>(eventName, Stopwatch.StartNew()));
             }
-
-            stopwatchStack.Push(new Tuple<string, Stopwatch>(eventName, Stopwatch.StartNew()));
         }
 
         public void StopTimingEvent()
         {
-            if (!ConfigManager.LocalConfig.ShowPerformance || stopwatchStack.Count == 0) return;
+            if (!ConfigManager.LocalConfig.ShowPerformance) return;
 
-            var stoppedTuple = stopwatchStack.Pop();
-            stoppedTuple.Item2.Stop();
-            string eventName = stoppedTuple.Item1;
-            TimeSpan elapsed = stoppedTuple.Item2.Elapsed;
-
-            eventsUpdatedThisFrame.Add(eventName);
-
-            // Store the raw timing for this frame for averaging
-            if (!eventHistory.ContainsKey(eventName))
+            lock (_profilerLock)
             {
-                eventHistory[eventName] = new Queue<TimeSpan>();
-            }
-            var queue = eventHistory[eventName];
-            queue.Enqueue(elapsed);
-            while (queue.Count > HistoryLength)
-            {
-                queue.Dequeue();
-            }
+                if (!stopwatchStack.TryPop(out var stoppedTuple))
+                {
+                    return; // Stack was empty, nothing to do.
+                }
 
-            if (stopwatchStack.Count > 0)
-            {
-                stopwatchStack.Peek().Item2.Start();
+                stoppedTuple.Item2.Stop();
+
+                // If there's another timer on the stack, resume it.
+                if (stopwatchStack.Count > 0)
+                {
+                    stopwatchStack.Peek().Item2.Start();
+                }
+
+                string eventName = stoppedTuple.Item1;
+                TimeSpan elapsed = stoppedTuple.Item2.Elapsed;
+                eventsUpdatedThisFrame.Add(eventName);
+
+                if (!eventHistory.ContainsKey(eventName))
+                {
+                    eventHistory[eventName] = new Queue<TimeSpan>();
+                }
+                var queue = eventHistory[eventName];
+                queue.Enqueue(elapsed);
+                while (queue.Count > HistoryLength)
+                {
+                    queue.Dequeue();
+                }
             }
         }
 
@@ -97,63 +107,69 @@ namespace SoundproofWalls
         {
             if (!ConfigManager.LocalConfig.ShowPerformance) return;
 
-            if (stopwatchStack.Count > 0)
+            // Lock the entire update logic to prevent race conditions.
+            lock (_profilerLock)
             {
-                stopwatchStack.Clear();
-            }
-
-            var knownEvents = eventHistory.Keys.ToList();
-            foreach (var eventName in knownEvents)
-            {
-                // If a known event was NOT updated this frame, it didn't run.
-                // Feed a zero into its history to make its average decay over time.
-                if (!eventsUpdatedThisFrame.Contains(eventName))
+                // Clear any dangling stopwatches if StopTimingEvent wasn't called for them.
+                if (stopwatchStack.Count > 0)
                 {
-                    var queue = eventHistory[eventName];
-                    queue.Enqueue(TimeSpan.Zero);
-                    while (queue.Count > HistoryLength)
+                    stopwatchStack.Clear();
+                }
+
+                var knownEvents = eventHistory.Keys.ToList();
+                foreach (var eventName in knownEvents)
+                {
+                    // If a known event was NOT updated this frame, it didn't run.
+                    // Feed a zero into its history to make its average decay over time.
+                    if (!eventsUpdatedThisFrame.Contains(eventName))
                     {
-                        queue.Dequeue();
+                        var queue = eventHistory[eventName];
+                        queue.Enqueue(TimeSpan.Zero);
+                        while (queue.Count > HistoryLength)
+                        {
+                            queue.Dequeue();
+                        }
                     }
                 }
-            }
 
-            // --- Recalculate all averages ---
-            var eventKeys = eventHistory.Keys.ToList();
-            foreach (var eventName in eventKeys)
-            {
-                var queue = eventHistory[eventName];
-                if (queue.Count > 0)
+                // Recalculate all averages.
+                // Create a copy of the keys to safely modify the dictionary while iterating.
+                var eventKeys = eventHistory.Keys.ToList();
+                foreach (var eventName in eventKeys)
                 {
-                    long averageTicks = (long)queue.Average(ts => ts.Ticks);
-                    TimeSpan averageTime = TimeSpan.FromTicks(averageTicks);
+                    // Ensure the key still exists, as a previous iteration might have removed it.
+                    if (eventHistory.TryGetValue(eventName, out var queue))
+                    {
+                        if (queue.Count > 0)
+                        {
+                            long averageTicks = (long)queue.Average(ts => ts.Ticks);
+                            TimeSpan averageTime = TimeSpan.FromTicks(averageTicks);
 
-                    // If the average has decayed to zero, remove the event entirely.
-                    if (averageTime <= TimeSpan.Zero)
-                    {
-                        averagedTimings.Remove(eventName);
-                        eventHistory.Remove(eventName);
-                    }
-                    else
-                    {
-                        averagedTimings[eventName] = averageTime;
+                            // If the average has decayed to zero, remove the event entirely.
+                            if (averageTime <= TimeSpan.Zero)
+                            {
+                                averagedTimings.Remove(eventName);
+                                eventHistory.Remove(eventName);
+                            }
+                            else
+                            {
+                                averagedTimings[eventName] = averageTime;
+                            }
+                        }
                     }
                 }
+
+                // Store the total from the frame that just finished.
+                lastFrameTotalTime = TimeSpan.FromTicks(averagedTimings.Values.Sum(ts => ts.Ticks));
+                // Update the graph with the averaged total.
+                modTotalTimeGraph.Update((float)lastFrameTotalTime.TotalMilliseconds);
+                eventsUpdatedThisFrame.Clear();
             }
-
-            // Store the total from the frame that just finished
-            lastFrameTotalTime = TimeSpan.FromTicks(averagedTimings.Values.Sum(ts => ts.Ticks));
-
-            // Update the graph with the averaged total
-            modTotalTimeGraph.Update((float)lastFrameTotalTime.TotalMilliseconds);
-
-            // Clear the set for the next frame.
-            eventsUpdatedThisFrame.Clear();
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            // --- Draw Performance Column ---
+            // Draw Performance Column
             if (ConfigManager.LocalConfig.ShowPerformance && averagedTimings.Count > 0)
             {
                 float x = 700;
@@ -185,7 +201,7 @@ namespace SoundproofWalls
                 }
             }
 
-            // --- Draw Channel Info Column ---
+            // Draw Channel Info Column
             if (ConfigManager.LocalConfig.ShowPlayingSounds)
             {
                 float x = 1100;

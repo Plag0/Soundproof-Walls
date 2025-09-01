@@ -12,8 +12,6 @@ namespace SoundproofWalls
         public const short VANILLA_VOIP_LOWPASS_FREQUENCY = 800;
         public const short VANILLA_VOIP_BANDPASS_FREQUENCY = 2000;
 
-        public const float CLONE_FREQ_MULT_CODE = 1.006921f;
-
         public static int SourceCount = 128;
 
         private static ConcurrentDictionary<uint, ChannelInfo> channelInfoMap = new ConcurrentDictionary<uint, ChannelInfo>();
@@ -54,28 +52,8 @@ namespace SoundproofWalls
                     hydrophonedChannels.Add(info);
                 }
 
-                // Update obstructions for voice on the main thread.
-                double currentTime = Timing.TotalTime;
-                if (ConfigManager.Config.DynamicFx && info.AudioIsVoice &&
-                    currentTime > info.LastVoiceMainThreadUpdateTime + info.VoiceMainThreadUpdateInterval)
-                {
-                    info.LastVoiceMainThreadUpdateTime = currentTime;
-
-                    // Get occluding bodies.
-                    IEnumerable<FarseerPhysics.Dynamics.Body> bodies = Submarine.PickBodies(Listener.SimPos, info.SimPos, collisionCategory: Physics.CollisionWall);
-                    lock (info.VoiceOcclusionsLock) { info.VoiceOcclusions = bodies.ToList(); }
-
-                    // Get best path.
-                    Hull? listenerHull = Listener.FocusedHull;
-                    List<SoundPathfinder.PathfindingResult> topResults = SoundPathfinder.FindShortestPaths(
-                        info.WorldPos, info.ChannelHull,
-                        Listener.WorldPos, listenerHull,
-                        listenerHull?.Submarine, 1);
-                    lock (info.VoicePathResultsLock) { info.VoicePathResults = topResults.ToList(); }
-                }
-
                 // Update non-looping sounds.
-                else if (ConfigManager.Config.UpdateNonLoopingSounds && !info.Channel.Looping && !info.AudioIsVoice && info.Channel.IsPlaying)
+                if (ConfigManager.Config.UpdateNonLoopingSounds && !info.Channel.Looping && !info.AudioIsVoice && info.Channel.IsPlaying)
                 {
                     info.Update();  
                 }
@@ -105,13 +83,13 @@ namespace SoundproofWalls
             };
         }
 
-        public static void EnsureUpdateVoiceInfo(SoundChannel channel, Client speakingClient, ChatMessageType messageType, Hull? soundHull = null)
+        public static ChannelInfo EnsureUpdateVoiceInfo(SoundChannel channel, Client speakingClient, ChatMessageType messageType, Hull? soundHull = null)
         {
             if (channel == null || 
                 channel.Sound == null || 
                 speakingClient == null) 
             { 
-                return; 
+                return null; 
             }
 
             uint sourceId = channel.Sound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
@@ -124,6 +102,8 @@ namespace SoundproofWalls
             {
                 info.Update(soundHull, null, null, speakingClient, messageType);
             }
+
+            return info;
         }
 
         // Updates or creates a ChannelInfo object.
@@ -145,12 +125,31 @@ namespace SoundproofWalls
             return info;
         }
 
-        public static bool TryGetChannelInfo(SoundChannel channel, out ChannelInfo? soundInfo)
+        public static bool TryGetChannelInfo(SoundChannel channel, out ChannelInfo? channelInfo)
         {
-            soundInfo = null;
+            channelInfo = null;
             if (channel == null) { return false; }
             uint sourceId = channel.Sound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
-            return channelInfoMap.TryGetValue(sourceId, out soundInfo);
+            return channelInfoMap.TryGetValue(sourceId, out channelInfo);
+        }
+
+        public static ChannelInfo EnsureGetVoiceInfo(SoundChannel channel, Client speakingClient)
+        {
+            if (channel == null ||
+                channel.Sound == null ||
+                speakingClient == null)
+            {
+                return null;
+            }
+
+            uint sourceId = channel.Sound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
+            if (!channelInfoMap.TryGetValue(sourceId, out ChannelInfo? info))
+            {
+                info = new ChannelInfo(channel, speakingClient.Character?.CurrentHull, null, null, speakingClient, Util.GetMessageType(speakingClient), false);
+                channelInfoMap[sourceId] = info;
+            }
+
+            return info;
         }
 
         public static void ResetAllPitchedChannels()

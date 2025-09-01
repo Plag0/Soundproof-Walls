@@ -16,7 +16,9 @@ namespace SoundproofWalls
         public static float SmoothStep(float current, float target, float maxStep)
         {
             float diff = target - current;
-            return current + (MathF.Abs(diff) < maxStep ? diff : MathF.Sign(diff) * maxStep);
+            float min = Math.Min(current, target);
+            float max = Math.Max(current, target);
+            return Math.Clamp(current + (MathF.Abs(diff) < maxStep ? diff : MathF.Sign(diff) * maxStep), min, max);
         }
 
         public static Limb GetCharacterHead(Character character)

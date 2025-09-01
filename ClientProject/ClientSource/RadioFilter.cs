@@ -42,6 +42,7 @@ namespace SoundproofWalls
         public float Process(float sample)
         {
             PerformanceProfiler.Instance.StartTimingEvent(ProfileEvents.RadioFilterUpdate);
+            sample = AddFilteredStatic(sample, staticAmount);
             sample = ApplyHardClipDistortion(sample, distortionDrive, distortionThreshold);
             PerformanceProfiler.Instance.StopTimingEvent();
 
@@ -50,7 +51,6 @@ namespace SoundproofWalls
 
             PerformanceProfiler.Instance.StartTimingEvent(ProfileEvents.RadioFilterUpdate);
             sample *= qCompensation;
-            sample = AddFilteredStatic(sample, staticAmount);
             sample = compressor.Process(sample);
             PerformanceProfiler.Instance.StopTimingEvent();
 

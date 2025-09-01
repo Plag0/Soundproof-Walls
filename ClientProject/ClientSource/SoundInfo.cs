@@ -98,7 +98,11 @@ namespace SoundproofWalls
             // We can only determine types based on their filename here. More advanced types are resolved in ChannelInfo.
             StaticType = AudioType.BaseSound;
             string lower = filename.ToLower();
-            if (lower.Contains("door") && !lower.Contains("doorbreak") || lower.Contains("duct") && !lower.Contains("ductbreak"))
+            if (Sound is VoipSound)
+            {
+                StaticType = AudioType.LocalVoice;
+            }
+            else if (lower.Contains("door") && !lower.Contains("doorbreak") || lower.Contains("duct") && !lower.Contains("ductbreak"))
             {
                 StaticType = AudioType.DoorSound;
             }
@@ -109,10 +113,6 @@ namespace SoundproofWalls
             else if (lower.Contains("content/sounds/fire"))
             {
                 StaticType = AudioType.FireSound;
-            }
-            else if (Sound is VoipSound)
-            {
-                StaticType = AudioType.LocalVoice;
             }
             else if (lower.Contains("barotrauma/content/sounds/ambient") || 
                      lower.Contains("barotrauma/content/sounds/damage/creak") || 

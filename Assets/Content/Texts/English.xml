@@ -75,6 +75,8 @@
 	
 	<spw_dynamicreverb>Enable Reverb</spw_dynamicreverb>
 	<spw_dynamicreverbtooltip>Toggles the indoor and outdoor reverb effects. If enabled, sounds dynamically reverberate based on the size and combined audio amplitude of their environment (i.e., echos are stronger in larger and quieter spaces).</spw_dynamicreverbtooltip>
+	<spw_dynamicreverbbloom>Reverb Bloom</spw_dynamicreverbbloom>
+	<spw_dynamicreverbbloomtooltip>Makes the reverb effect swell dramatically in response to loud sounds in confined areas.</spw_dynamicreverbbloomtooltip>
 	<spw_dynamicreverbwatersubtractsarea>Dynamic Reverb Area</spw_dynamicreverbwatersubtractsarea>
 	<spw_dynamicreverbwatersubtractsareatooltip>Calculates reverb using air area when above water, or water area when submerged. If disabled, uses the area of both.</spw_dynamicreverbwatersubtractsareatooltip>
 	<spw_dynamicreverbminarea>Minimum Reverb Area</spw_dynamicreverbminarea>
@@ -85,6 +87,10 @@
 	<spw_dynamicreverbwetroomareasizemultipliertooltip>Multiplies the effective area of ballast tanks and airlocks when the listener is inside them, making these rooms sound larger and more reverberant.</spw_dynamicreverbwetroomareasizemultipliertooltip>
 	<spw_dynamicreverbairtargetgain>Indoor Reverb Strength</spw_dynamicreverbairtargetgain>
 	<spw_dynamicreverbairtargetgaintooltip>The base gain of the reverb effect when inside a hull.</spw_dynamicreverbairtargetgaintooltip>
+	<spw_dynamicreverbairduration>Indoor Reverb Duration</spw_dynamicreverbairduration>
+	<spw_dynamicreverbairdurationtooltip>The decay time of the reverb effect when inside a hull.</spw_dynamicreverbairdurationtooltip>
+	<spw_dynamicreverbairgainhf>Indoor Reverb HF Gain</spw_dynamicreverbairgainhf>
+	<spw_dynamicreverbairgainhftooltip>The gain of high frequencies in the reverb effect when inside a hull.</spw_dynamicreverbairgainhftooltip>
 	<spw_dynamicreverbwatertargetgain>Outdoor Reverb Strength</spw_dynamicreverbwatertargetgain>
 	<spw_dynamicreverbwatertargetgaintooltip>The base gain of the reverb effect when outside.</spw_dynamicreverbwatertargetgaintooltip>
 	<spw_dynamicreverbairamplitudethreshold>Indoor Reverb Threshold</spw_dynamicreverbairamplitudethreshold>
@@ -159,10 +165,12 @@
 	<spw_dynamicreverblocaltooltip>Allows reverb to be applied to local proximity chat\n\nNote: Requires Dynamic mode's reverb effect to be enabled.</spw_dynamicreverblocaltooltip>
 	<spw_dynamicreverbradio>Reverb Radio</spw_dynamicreverbradio>
 	<spw_dynamicreverbradiotooltip>Allows reverb to be applied to radio proximity chat\n\nNote: Requires Dynamic mode's reverb effect to be enabled.</spw_dynamicreverbradiotooltip>
+	<spw_drowningdistortion>Distort Radio Drowning</spw_drowningdistortion>
+	<spw_drowningdistortiontooltip>Applies distortion to radio proximity chat when drowning.\n\nNote: This setting reduces the muffle of radio proximity chat when drowning.</spw_drowningdistortiontooltip>
 	<spw_voiceminlowpassfrequency>Min Lowpass Frequency</spw_voiceminlowpassfrequency>
 	<spw_voiceminlowpassfrequencytooltip>The minimum lowpass frequency applied when fully muffled.</spw_voiceminlowpassfrequencytooltip>
 	<spw_voicedynamicmufflemultiplier>Dynamic Muffle Strength</spw_voicedynamicmufflemultiplier>
-	<spw_voicedynamicmufflemultipliertooltip>The strength of the muffle effect applied to player voices when using Dynamic mode.</spw_voicedynamicmufflemultipliertooltip>
+	<spw_voicedynamicmufflemultipliertooltip>The strength of obstructions applied to voices when using Dynamic mode.</spw_voicedynamicmufflemultipliertooltip>
 
 	<spw_voiceheavylowpassfrequency>Heavy Voice Lowpass Frequency</spw_voiceheavylowpassfrequency>
 	<spw_voiceheavylowpassfrequencytooltip>The corner frequency used to muffle voices that are heavily obstructed. The threshold to apply this filter is configurable in the Muffle tab.</spw_voiceheavylowpassfrequencytooltip>
@@ -197,6 +205,18 @@
 
 	<spw_radiocustomfilter>Custom Radio Filter</spw_radiocustomfilter>
 	<spw_radiocustomfiltertooltip>Process radio proximity chat with a custom filter that includes configurable compression, distortion, and noise effects.</spw_radiocustomfiltertooltip>
+
+	<spw_customradiopresets>Custom Radio Presets</spw_customradiopresets>
+	<spw_customradiopresetstooltip>Unique radio filter configurations. Selecting one of these options will modify all the filter values below.</spw_customradiopresetstooltip>
+	<spw_customradiopresetbroken>Broken</spw_customradiopresetbroken>
+	<spw_customradiopresetbrokentooltip>Just terrible. Using the radio is a hinderance.</spw_customradiopresetbrokentooltip>
+	<spw_customradiopresetdirty>Dirty</spw_customradiopresetdirty>
+	<spw_customradiopresetdirtytooltip>Low quality radio that can make frantic communications difficult to understand.</spw_customradiopresetdirtytooltip>
+	<spw_customradiopresetnormal>Standard</spw_customradiopresetnormal>
+	<spw_customradiopresetnormaltooltip>Vanilla radio with a more stylized sound.</spw_customradiopresetnormaltooltip>
+	<spw_customradiopresetclean>Clean</spw_customradiopresetclean>
+	<spw_customradiopresetcleantooltip>Perfectly clear radio communications.</spw_customradiopresetcleantooltip>
+	
 	<spw_radiobandpassfrequency>Radio Bandpass Frequency</spw_radiobandpassfrequency>
 	<spw_radiobandpassfrequencytooltip>The center frequency of the bandpass filter. Only frequencies near this point are allowed through. \n\nNote: The width of the range is set by "Radio Bandpass Q Factor" below.</spw_radiobandpassfrequencytooltip>
 	<spw_radiobandpassqualityfactor>Radio Bandpass Q Factor</spw_radiobandpassqualityfactor>
@@ -513,7 +533,7 @@
 	
 	<spw_categorytransitions>Transitions</spw_categorytransitions>
 	<spw_disablevanillafadeout>Disable Vanilla Fade Out</spw_disablevanillafadeout>
-	<spw_disablevanillafadeouttooltip>Disables the vanilla "FadeOutAndDispose" method, which can cause sounds to get stuck looping. The tradeoff for this stability is less smooth audio cutoffs.</spw_disablevanillafadeouttooltip>
+	<spw_disablevanillafadeouttooltip>Disables the vanilla "FadeOutAndDispose" method. Only enable this option if sounds are getting stuck looping.\n\nNote: Results in less smooth audio cutoffs.</spw_disablevanillafadeouttooltip>
 	<spw_gaintransitionfactor>Gain Transition Speed</spw_gaintransitionfactor>
 	<spw_gaintransitionfactortooltip>How much a sound's volume can change per second. For example, a value of 5 means it would take 0.2 seconds for a full volume sound to reach silence. A value of zero disables this feature for instant transitions.</spw_gaintransitionfactortooltip>
 	<spw_pitchtransitionfactor>Pitch Transition Speed</spw_pitchtransitionfactor>
@@ -525,7 +545,7 @@
 	<spw_dynamicmuffletransitionfactor>Muffle Transition Speed</spw_dynamicmuffletransitionfactor>
 	<spw_dynamicmuffletransitionfactortooltip>How much the Dynamic mode's muffle effect can change per second. A value of zero disables this feature for instant transitions.\nNote: this feature can produce audible pops when enabled, which probably won't be fixed until Barotrauma updates its OpenAL Soft version</spw_dynamicmuffletransitionfactortooltip>
 	<spw_dynamicmuffletransitionfactorflowfire>Flow &amp; Fire Muffle Transition Speed</spw_dynamicmuffletransitionfactorflowfire>
-	<spw_dynamicmuffletransitionfactorflowfiretooltip>How much the Dynamic mode's muffle effect can change per second, specifically for water flow and fire sounds. A value of zero disables this feature for instant transitions.\nNote: this feature can produce audible pops when enabled, which probably won't be fixed until Barotrauma updates its OpenAL Soft version.</spw_dynamicmuffletransitionfactorflowfiretooltip>
+	<spw_dynamicmuffletransitionfactorflowfiretooltip>How much the Dynamic mode's muffle effect can change per second, specifically for water flow and fire sounds. A value of zero disables this feature for instant transitions.\n\nNote: Can produce audible pops when enabled, which probably won't be fixed until Barotrauma updates its OpenAL Soft version.</spw_dynamicmuffletransitionfactorflowfiretooltip>
 
 	<spw_categorypathfinding>Sound Pathfinding</spw_categorypathfinding>
 	<spw_traversewaterducts>Traverse Water Ducts</spw_traversewaterducts>

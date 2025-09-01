@@ -11,14 +11,17 @@ using OpenAL;
 using System.Data;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
-using System.Threading.Channels;
 
 namespace SoundproofWalls
 {
     public partial class Plugin : IAssemblyPlugin
     {
         public static Plugin Instance;
+
+        private static readonly ConditionalWeakTable<VoipSound, VoipSoundFilterData> AllFilterData = new();
+        private static readonly object filterDataTableLock = new();
 
         // Pointers for convenience.
         public static Config LocalConfig = ConfigManager.LocalConfig;
@@ -131,7 +134,7 @@ namespace SoundproofWalls
             // SoundPlayer_UpdateMusic transpiler.
             // Needed to reflect changes to the maximum source count.
             harmony.Patch(
-                original: typeof(SoundPlayer).GetMethod("UpdateMusic", BindingFlags.Static | BindingFlags.NonPublic),
+                original: typeof(SoundPlayer).GetMethod(nameof(SoundPlayer.UpdateMusic), BindingFlags.Static | BindingFlags.NonPublic),
                 transpiler: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SoundManager_Constructor_Transpiler), BindingFlags.Static | BindingFlags.Public))
             );
 
@@ -204,11 +207,17 @@ namespace SoundproofWalls
                 typeof(BiQuad).GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, new Type[] { typeof(int), typeof(double), typeof(double), typeof(double) }),
                 new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_BiQuad))));
 
-            // SoundChannel ctor postfix REPLACEMENT.
+            // VoipSound ctor postfix
+            // For attaching filter data to each client.
+            harmony.Patch(
+                original: typeof(VoipSound).GetConstructor(new Type[] { typeof(Client), typeof(SoundManager), typeof(VoipQueue) }),
+                prefix: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_VoipSound_Prefix))));
+
+            // SoundChannel ctor prefix REPLACEMENT.
             // Implements the custom ExtendedSoundBuffers for SoundChannels made with ExtendedOggSounds.
             harmony.Patch(
                 typeof(SoundChannel).GetConstructor(new Type[] { typeof(Sound), typeof(float), typeof(Vector3), typeof(float), typeof(float), typeof(float), typeof(Identifier), typeof(bool) }),
-                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_SoundChannel_Prefix)))) ;
+                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_SoundChannel_Prefix))));
 
             // Soundchannel Muffle property prefix REPLACEMENT.
             // Switches between the five (when using ExtendedOggSounds) types of buffers.
@@ -710,9 +719,6 @@ namespace SoundproofWalls
                 client.VoipSound = new VoipSound(client, GameMain.SoundManager, client.VoipQueue);
             }
 
-            GameMain.SoundManager.ForceStreamUpdate();
-            GameMain.NetLobbyScreen?.SetPlayerSpeaking(client);
-            GameMain.GameSession?.CrewManager?.SetClientSpeaking(client);
             client.RadioNoise = 0.0f;
 
             // Attenuate other sounds when players speak.
@@ -736,16 +742,27 @@ namespace SoundproofWalls
 
             if (!clientAlive) // Stop here if the speaker is spectating or in lobby.
             {
+                ChannelInfoManager.EnsureUpdateVoiceInfo(client.VoipSound.soundChannel,
+                    speakingClient: client,
+                    messageType: ChatMessageType.Default,
+                    soundHull: null);
+                // Guarantee filters are off.
                 client.VoipSound.UseMuffleFilter = false;
                 client.VoipSound.UseRadioFilter = false;
-                return false; 
+
+                GameMain.SoundManager.ForceStreamUpdate();
+                GameMain.NetLobbyScreen?.SetPlayerSpeaking(client);
+                GameMain.GameSession?.CrewManager?.SetClientSpeaking(client);
+
+                return false;
             }
 
-            bool spectating = Character.Controlled == null;
-            WifiComponent senderRadio = null;
+            // ------ The speaker is alive from this point ------
 
+            bool listenerSpectating = Character.Controlled == null;
+            WifiComponent senderRadio = null;
             var messageType = ChatMessageType.Default;
-            if (!spectating)
+            if (!listenerSpectating)
             {
                 messageType =
                     !client.VoipQueue.ForceLocal &&
@@ -761,8 +778,7 @@ namespace SoundproofWalls
                     ChatMessage.CanUseRadio(client.Character, out senderRadio) ?
                         ChatMessageType.Radio : ChatMessageType.Default;
             }
-
-            client.Character.ShowTextlessSpeechBubble(1.25f, ChatMessage.MessageColor[(int)messageType]);
+            client.VoipSound.UseRadioFilter = messageType == ChatMessageType.Radio && !GameSettings.CurrentConfig.Audio.DisableVoiceChatFilters;
 
             // Range.
             float speechImpedimentMultiplier = 1.0f - client.Character.SpeechImpediment / 100.0f;
@@ -771,7 +787,7 @@ namespace SoundproofWalls
                 client.VoipSound.UsingRadio = true;
                 float radioRange = senderRadio.Range * speechImpedimentMultiplier * config.VoiceRadioRangeMultiplier;
                 client.VoipSound.SetRange(near: radioRange * VoipClient.RangeNear, far: radioRange);
-                if (distanceFactor > VoipClient.RangeNear && !spectating)
+                if (distanceFactor > VoipClient.RangeNear && !listenerSpectating)
                 {
                     //noise starts increasing exponentially after 40% range
                     client.RadioNoise = MathF.Pow(MathUtils.InverseLerp(VoipClient.RangeNear, 1.0f, distanceFactor), 2);
@@ -804,10 +820,21 @@ namespace SoundproofWalls
                 //LuaCsLogger.Log($"CurrentAmplitude {client.VoipSound.CurrentAmplitude} localRangeMultiplier {localRangeMultiplier} targetNear: {targetNear} targetFar: {targetFar} channelFar {client.VoipSound.soundChannel.Far}");
             }
 
-            // Sound Info stuff.
-            SoundChannel channel = client.VoipSound.soundChannel;
-            Hull? clientHull = client.Character.CurrentHull;
-            ChannelInfoManager.EnsureUpdateVoiceInfo(channel, speakingClient: client, messageType: messageType, soundHull: clientHull);
+            // Update channelInfo.
+            ChannelInfo? info = ChannelInfoManager.EnsureUpdateVoiceInfo(
+                channel: client.VoipSound.soundChannel, 
+                speakingClient: client, 
+                messageType: messageType, 
+                soundHull: client.Character.CurrentHull);
+
+            client.VoipSound.UseMuffleFilter = info.Muffled && (!client.VoipSound.UseRadioFilter || BubbleManager.IsClientDrowning(client));
+            UpdateFilterData(client.VoipSound, info);
+
+            GameMain.SoundManager.ForceStreamUpdate();
+            GameMain.NetLobbyScreen?.SetPlayerSpeaking(client);
+            GameMain.GameSession?.CrewManager?.SetClientSpeaking(client);
+            client.Character.ShowTextlessSpeechBubble(1.25f, ChatMessage.MessageColor[(int)messageType]);
+
             return false;
         }
 
@@ -889,121 +916,159 @@ namespace SoundproofWalls
             return false;
         }
 
-        private static float voipLastMinLowpassFrequency = -1;
-        private static float voipLastMuffleStrength = -1;
-        private static BiQuad voipDynamicMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, 24000); // Temp value.
-        private static BiQuad voipLightMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, config.VoiceLightLowpassFrequency);
-        private static BiQuad voipMediumMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, config.VoiceMediumLowpassFrequency);
-        private static BiQuad voipHeavyMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, config.VoiceHeavyLowpassFrequency);
-        private static RadioFilter voipCustomRadioFilter = new RadioFilter(VoipConfig.FREQUENCY, config.RadioBandpassFrequency, 
-                                                                config.RadioBandpassQualityFactor, config.RadioDistortionDrive, 
-                                                                config.RadioDistortionThreshold, config.RadioStatic, 
+        public static void SPW_VoipSound_Prefix(VoipSound __instance)
+        {
+            lock (filterDataTableLock)
+            {
+                AllFilterData.Add(__instance, new VoipSoundFilterData());
+            }
+        }
+
+        public class VoipSoundFilterData
+        {
+            // Use object for Interlocked operations.
+            private object _muffleFilter;
+            private object _radioFilter;
+            private object _customRadioFilter;
+
+            // Public properties for the audio thread to read from.
+            public BiQuad MuffleFilter => (BiQuad)_muffleFilter;
+            public BiQuad RadioFilter => (BiQuad)_radioFilter;
+            public RadioFilter CustomRadioFilter => (RadioFilter)_customRadioFilter;
+
+            public int LastLowpassFrequency = config.VoiceHeavyLowpassFrequency;
+
+            public VoipSoundFilterData()
+            {
+                _muffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, config.VoiceHeavyLowpassFrequency);
+                _radioFilter = new BandpassFilter(VoipConfig.FREQUENCY, ChannelInfoManager.VANILLA_VOIP_BANDPASS_FREQUENCY);
+                _customRadioFilter = new RadioFilter(VoipConfig.FREQUENCY, config.RadioBandpassFrequency,
+                                                                config.RadioBandpassQualityFactor, config.RadioDistortionDrive,
+                                                                config.RadioDistortionThreshold, config.RadioStatic,
                                                                 config.RadioCompressionThreshold, config.RadioCompressionRatio);
-        private static BiQuad voipVanillaRadioFilter = new BandpassFilter(VoipConfig.FREQUENCY, ChannelInfoManager.VANILLA_VOIP_BANDPASS_FREQUENCY);
+            }
+
+            // Thread-safe method for the main thread to call.
+            public void UpdateMuffleFilter(BiQuad newFilter)
+            {
+                Interlocked.Exchange(ref _muffleFilter, newFilter);
+            }
+
+            public void UpdateCustomRadioFilter(RadioFilter newFilter)
+            {
+                Interlocked.Exchange(ref _customRadioFilter, newFilter);
+            }
+        }
+
+        // Called from main thread.
+        private static void UpdateFilterData(VoipSound voipSound, ChannelInfo channelInfo)
+        {
+            if (!AllFilterData.TryGetValue(voipSound, out VoipSoundFilterData filterData) || filterData == null)
+            {
+                return;
+            }
+
+            // Update muffle filters if needed.
+            float muffleStrength = channelInfo.MuffleStrength;
+            int minLowpassFreq = config.VoiceMinLowpassFrequency;
+            if (voipSound.UseMuffleFilter && config.DynamicFx)
+            {
+                int targetFreq = (int)Util.GetCompensatedBiquadFrequency(muffleStrength, minLowpassFreq, VoipConfig.FREQUENCY);
+                
+                if (targetFreq != filterData.LastLowpassFrequency)
+                {
+                    LowpassFilter newMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, targetFreq);
+                    filterData.UpdateMuffleFilter(newMuffleFilter);
+                    filterData.LastLowpassFrequency = targetFreq;
+                }
+            }
+            else if (voipSound.UseMuffleFilter && !config.DynamicFx)
+            {
+                int targetFreq = config.VoiceHeavyLowpassFrequency;
+                if (channelInfo.LightMuffle) targetFreq = config.LightLowpassFrequency;
+                else if (channelInfo.MediumMuffle) targetFreq = config.MediumLowpassFrequency;
+
+                if (targetFreq != filterData.LastLowpassFrequency)
+                {
+                    LowpassFilter newMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, targetFreq);
+                    filterData.UpdateMuffleFilter(newMuffleFilter);
+                    filterData.LastLowpassFrequency = targetFreq;
+                }
+            }
+
+            // Update custom radio filter if any settings for it have been changed.
+            RadioFilter radioFilter = filterData.CustomRadioFilter;
+            if (voipSound.UseRadioFilter && config.RadioCustomFilterEnabled &&
+                (radioFilter.frequency != config.RadioBandpassFrequency ||
+                radioFilter.q != config.RadioBandpassQualityFactor ||
+                radioFilter.distortionDrive != config.RadioDistortionDrive ||
+                radioFilter.distortionThreshold != config.RadioDistortionThreshold ||
+                radioFilter.staticAmount != config.RadioStatic ||
+                radioFilter.compressionThreshold != config.RadioCompressionThreshold ||
+                radioFilter.compressionRatio != config.RadioCompressionRatio))
+            {
+                RadioFilter newRadioFilter = new RadioFilter(VoipConfig.FREQUENCY, config.RadioBandpassFrequency,
+                    config.RadioBandpassQualityFactor, config.RadioDistortionDrive, config.RadioDistortionThreshold,
+                    config.RadioStatic, config.RadioCompressionThreshold, config.RadioCompressionRatio);
+
+                filterData.UpdateCustomRadioFilter(newRadioFilter);
+            }
+        }
+
+        /// <summary>
+        /// This function is called from the voice thread!
+        /// </summary>
         public static bool SPW_VoipSound_ApplyFilters_Prefix(VoipSound __instance, ref short[] buffer, ref int readSamples)
         {
             VoipSound voipSound = __instance;
             Client client = voipSound.client;
-
-            if (!config.Enabled || 
-                voipSound == null || 
-                !voipSound.IsPlaying ||
-                client == null ||
-                client.Character == null) 
+            
+            if (!config.Enabled || voipSound == null || 
+                !voipSound.IsPlaying || client == null) 
             { return true; }
 
-            SoundChannel channel = voipSound.soundChannel;
-            Hull? clientHull = client.Character.CurrentHull;
-            ChannelInfo channelInfo = ChannelInfoManager.EnsureUpdateChannelInfo(channel, soundHull: clientHull, speakingClient: client);
-
-            // Update muffle filters if needed.
-            if (voipSound.UseMuffleFilter && config.DynamicFx && 
-                (voipLastMuffleStrength != channelInfo.MuffleStrength || voipLastMinLowpassFrequency != config.VoiceMinLowpassFrequency))
+            if (!AllFilterData.TryGetValue(__instance, out VoipSoundFilterData filterData) || filterData == null)
             {
-                double lowpassFrequency = Util.GetCompensatedBiquadFrequency(channelInfo.MuffleStrength, config.VoiceMinLowpassFrequency, VoipConfig.FREQUENCY);
-                voipDynamicMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, lowpassFrequency);
-                voipLastMuffleStrength = channelInfo.MuffleStrength;
-                voipLastMinLowpassFrequency = config.VoiceMinLowpassFrequency;
-            }
-            else if (voipSound.UseMuffleFilter && !config.DynamicFx)
-            {
-                if (voipHeavyMuffleFilter._frequency != config.VoiceHeavyLowpassFrequency)
-                {
-                    voipHeavyMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, config.VoiceHeavyLowpassFrequency);
-                }
-                if (voipLightMuffleFilter._frequency != config.VoiceLightLowpassFrequency)
-                {
-                    voipLightMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, config.VoiceLightLowpassFrequency);
-                }
-                if (voipMediumMuffleFilter._frequency != config.VoiceMediumLowpassFrequency)
-                {
-                    voipMediumMuffleFilter = new LowpassFilter(VoipConfig.FREQUENCY, config.VoiceMediumLowpassFrequency);
-                }
+                return true;
             }
 
-            // Select the muffle filter to use.
-            BiQuad muffleFilter;
-            if (config.DynamicFx)
-            {
-                muffleFilter = voipDynamicMuffleFilter;
-            }
-            else
-            {
-                muffleFilter = voipHeavyMuffleFilter;
-                if (channelInfo.LightMuffle) muffleFilter = voipLightMuffleFilter;
-                else if (channelInfo.MediumMuffle) muffleFilter = voipMediumMuffleFilter;
-            }
-
-            // Update custom radio filter if any settings for it have been changed.
-            if (voipSound.UseRadioFilter &&
-                config.RadioCustomFilterEnabled &&
-                (voipCustomRadioFilter.frequency != config.RadioBandpassFrequency ||
-                voipCustomRadioFilter.q != config.RadioBandpassQualityFactor ||
-                voipCustomRadioFilter.distortionDrive != config.RadioDistortionDrive ||
-                voipCustomRadioFilter.distortionThreshold != config.RadioDistortionThreshold ||
-                voipCustomRadioFilter.staticAmount != config.RadioStatic ||
-                voipCustomRadioFilter.compressionThreshold != config.RadioCompressionThreshold ||
-                voipCustomRadioFilter.compressionRatio != config.RadioCompressionRatio))
-            {
-                voipCustomRadioFilter = new RadioFilter(VoipConfig.FREQUENCY, config.RadioBandpassFrequency, 
-                    config.RadioBandpassQualityFactor, config.RadioDistortionDrive, config.RadioDistortionThreshold, 
-                    config.RadioStatic, config.RadioCompressionThreshold, config.RadioCompressionRatio);
-            }
-
-            // Vanilla method & changes.
-
-            // This voipSound.Gain property applies Baro's CurrentConfig.Audio.VoiceChatVolume and client.VoiceVolume to channel.Gain.
-            // The soundInfo.Gain property returns channel.gain
-            //voipSound.Gain = soundInfo.Gain;
-
+            float finalGain = voipSound.gain * GameSettings.CurrentConfig.Audio.VoiceChatVolume * client.VoiceVolume;
             for (int i = 0; i < readSamples; i++)
             {
                 float fVal = ToolBox.ShortAudioSampleToFloat(buffer[i]);
 
+                if (finalGain > 1.0f)
+                {
+                    fVal = Math.Clamp(fVal * finalGain, -1f, 1f);
+                }
+
                 if (voipSound.UseMuffleFilter)
                 {
-                    fVal = muffleFilter.Process(fVal);
+                    fVal = filterData.MuffleFilter.Process(fVal);
                 }
+
                 if (voipSound.UseRadioFilter)
                 {
                     fVal *= ConfigManager.Config.VoiceRadioVolumeMultiplier;
 
                     if (config.RadioCustomFilterEnabled)
                     {
-                        fVal = Math.Clamp(voipCustomRadioFilter.Process(fVal) * ConfigManager.Config.RadioPostFilterBoost, -1f, 1f);
+                        fVal = Math.Clamp(filterData.CustomRadioFilter.Process(fVal) * ConfigManager.Config.RadioPostFilterBoost, -1f, 1f);
                     }
                     else
                     {
-                        fVal = Math.Clamp(voipVanillaRadioFilter.Process(fVal) * VoipSound.PostRadioFilterBoost, -1f, 1f);
+                        fVal = Math.Clamp(filterData.RadioFilter.Process(fVal) * VoipSound.PostRadioFilterBoost, -1f, 1f);
                     }
                 }
                 else
                 {
                     fVal *= ConfigManager.Config.VoiceLocalVolumeMultiplier;
                 }
+
                 buffer[i] = ToolBox.FloatToShortAudioSample(fVal);
             }
 
+            // Replace vanilla method.
             return false;
         }
 
@@ -1646,15 +1711,13 @@ namespace SoundproofWalls
             return false;
         }
 
-        static bool BindReducedSoundBuffers(ReducedOggSound reducedSound, SoundChannel instance, uint sourceId, bool muffle, bool isClone)
+        static bool BindReducedSoundBuffers(ReducedOggSound reducedSound, SoundChannel instance, uint sourceId, bool muffle)
         {
             reducedSound.FillAlBuffers();
             if (reducedSound.Buffers is not { AlBuffer: not 0 }) { return false; }
 
-            if (!isClone)
-            {
-                ChannelInfoManager.EnsureUpdateChannelInfo(instance, dontMuffle: !muffle);
-            }
+
+            ChannelInfoManager.EnsureUpdateChannelInfo(instance, dontMuffle: !muffle);
 
             uint alBuffer = reducedSound.Buffers.AlBuffer;
 
@@ -1670,10 +1733,10 @@ namespace SoundproofWalls
             return true;
         }
 
-        static bool BindExtendedSoundBuffers(ExtendedOggSound extendedSound, SoundChannel instance, uint sourceId, bool muffle, bool isClone)
+        static bool BindExtendedSoundBuffers(ExtendedOggSound extendedSound, SoundChannel instance, uint sourceId, bool muffle)
         {
             extendedSound.FillAlBuffers();
-            if (isClone || extendedSound.Buffers is not { AlBuffer: not 0, AlReverbBuffer: not 0, AlHeavyMuffledBuffer: not 0, AlLightMuffledBuffer: not 0, AlMediumMuffledBuffer: not 0 }) { return false; }
+            if (extendedSound.Buffers is not { AlBuffer: not 0, AlReverbBuffer: not 0, AlHeavyMuffledBuffer: not 0, AlLightMuffledBuffer: not 0, AlMediumMuffledBuffer: not 0 }) { return false; }
 
             ChannelInfo soundInfo = ChannelInfoManager.EnsureUpdateChannelInfo(instance, dontMuffle: !muffle);
 
@@ -1716,19 +1779,24 @@ namespace SoundproofWalls
             return true;
         }
 
-        static bool BindVanillaSoundBuffers(Sound sound, SoundChannel instance, uint sourceId, bool muffle, bool isClone)
+        static bool BindVanillaSoundBuffers(Sound sound, SoundChannel instance, uint sourceId, bool muffle)
         {
             sound.FillAlBuffers();
             if (sound.Buffers is not { AlBuffer: not 0, AlMuffledBuffer: not 0}) { return false; }
 
-            bool shouldMuffle = false;
-            if (!isClone) 
+            Client speakingClient = null;
+            ChatMessageType? messageType = null;
+            Hull? soundHull = null;
+            if (sound is VoipSound voipSound)
             {
-                ChannelInfo soundInfo = ChannelInfoManager.EnsureUpdateChannelInfo(instance, dontMuffle: !muffle);
-                shouldMuffle = soundInfo.Muffled;
+                speakingClient = voipSound.client;
+                messageType = Util.GetMessageType(speakingClient);
+                soundHull = speakingClient.Character?.CurrentHull;
             }
 
-            uint alBuffer = shouldMuffle || sound.Owner.GetCategoryMuffle(instance.Category) ? sound.Buffers.AlMuffledBuffer : sound.Buffers.AlBuffer;
+            ChannelInfo soundInfo = ChannelInfoManager.EnsureUpdateChannelInfo(instance, soundHull: soundHull, speakingClient: speakingClient, messageType: messageType, dontMuffle: !muffle);
+
+            uint alBuffer = soundInfo.Muffled || sound.Owner.GetCategoryMuffle(instance.Category) ? sound.Buffers.AlMuffledBuffer : sound.Buffers.AlBuffer;
 
             Al.Sourcei(sourceId, Al.Buffer, (int)alBuffer);
 
@@ -1766,10 +1834,7 @@ namespace SoundproofWalls
             instance.FilledByNetwork = sound is VoipSound;
             instance.decayTimer = 0;
             instance.streamSeekPos = 0; instance.reachedEndSample = false;
-            instance.buffersToRequeue = 4;
-
-            bool isClone = freqMult == ChannelInfoManager.CLONE_FREQ_MULT_CODE;
-            if (isClone) { freqMult = 1; }
+            instance.buffersToRequeue = 4; // TODO look into increasing this one day.
 
             if (instance.IsStream)
             {
@@ -1810,15 +1875,15 @@ namespace SoundproofWalls
                     bool success = false;
                     if (instance.Sound is ReducedOggSound reducedSound)
                     {
-                        success = BindReducedSoundBuffers(reducedSound, instance, sourceId, muffle, isClone);
+                        success = BindReducedSoundBuffers(reducedSound, instance, sourceId, muffle);
                     }
                     else if (instance.Sound is ExtendedOggSound extendedSound)
                     {
-                        success = BindExtendedSoundBuffers(extendedSound, instance, sourceId, muffle, isClone);
+                        success = BindExtendedSoundBuffers(extendedSound, instance, sourceId, muffle);
                     }
                     else
                     {
-                        success = BindVanillaSoundBuffers(sound, instance, sourceId, muffle, isClone);
+                        success = BindVanillaSoundBuffers(sound, instance, sourceId, muffle);
                     }
                     if (!success) { return false; }
 
