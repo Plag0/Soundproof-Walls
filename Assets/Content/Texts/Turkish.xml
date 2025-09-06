@@ -1,109 +1,692 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <infotexts language="Turkish" nowhitespace="false" translatedname="Türkçe">
 
-	<spw_settings>Soundproof Ayarları</spw_settings>
+	<spw_modname>Soundproof Walls [version]</spw_modname>
+	<spw_openmenuhelp>Soundproof Walls ayarlar menüsünü açar.</spw_openmenuhelp>
+	<spw_openpopuphelp>Soundproof Walls hoş geldin penceresini açar.</spw_openpopuphelp>
+	<spw_openworkshophelp>Tarayıcınızda Soundproof Walls atölye sayfasını açar.</spw_openworkshophelp>
+	<spw_guidehelp>Tarayıcınızda Soundproof Walls Yapılandırma Rehberi sayfasını açar.</spw_guidehelp>
+	<spw_reporthelp>Tarayıcınızda Soundproof Walls Hata Bildirimi sayfasını açar.</spw_reporthelp>
 
-	<spw_generalsettings>Genel Ayarlar</spw_generalsettings>
-	<spw_enabled>Aktif</spw_enabled>
-	<spw_disabled>Pasif</spw_disabled>
-	<spw_enabledtooltip>Modun tüm işlevlerini açar veya kapatır</spw_enabledtooltip>
+	<initmessage>Soundproof Walls v[version] yüklemesi tamamlandı</initmessage>
+	<initmessagefollowup>  > "spw" yazarak ayarlar menüsünü açın.\n  > "spw_stats" ile istatistiklerinizi yazdırın.\n  > Bir sorunuz mu var? "spw_workshop" ile atölye sayfasını açın ve bir yorum bırakın.\n  > Bir hata mı buldunuz? "spw_report" ile hata tartışma sayfasını açın ve bir gönderi oluşturun.\n  > "spw_help" ile yapılandırma seçenekleri hakkında daha fazla bilgi edinin.\n  > "spw_welcome" yazarak ilk açılış penceresini yeniden açın.</initmessagefollowup>
+	
+	<!-- Info Panel -->
+	<spw_syncingenabled>Senkronizasyon Etkin!\n[name] tarafından sunucuya yüklenen bir yapılandırmayı kullanıyorsunuz. Bu yapılandırmadaki değerler, sizinkilerin yanında parantez içinde gösterilir.</spw_syncingenabled>
+	<spw_syncingenableduploader>Senkronizasyon Etkin!\nYapılandırmanız sunucuya yüklendi ve diğer tüm oyuncular tarafından kullanılıyor.</spw_syncingenableduploader>
+	<spw_syncingdisabled>Senkronizasyon Devre Dışı!\nSunucuda yüklenmiş bir yapılandırma yok. Yerel yapılandırmanızı kullanıyorsunuz.</spw_syncingdisabled>
+	<spw_offlinemode>Varsayılan değerler mavidir.\nÖzel değerler sarıdır.\nVanilla değerleri beyazdır.\n\nYapılandırma dosyanızı mı arıyorsunuz?\nŞurada bulabilirsiniz:\n[path]</spw_offlinemode>
+
+	<spw_editpermissionhost>Düzenleme İzni:\nBu oturumun sunucususunuz. Değişiklikler sunucuya yüklenecek ve diğer tüm oyuncular tarafından kullanılacaktır.</spw_editpermissionhost>
+	<spw_editpermissionadmin>Düzenleme İzni:\nBu oturumda bir yöneticisiniz. Değişiklikler sunucuya yüklenecek ve diğer tüm oyuncular tarafından kullanılacaktır.</spw_editpermissionadmin>
+	<spw_editpermissionnothost>Düzenleme İzni:\nBu oturumun sunucusu değilsiniz. Değişiklikler yerel olarak kaydedilecek ancak sunucu senkronizasyonu etkinken uygulanmayacaktır.</spw_editpermissionnothost>
+	<spw_editpermissionnotadmin>Düzenleme İzni:\nBu oturumda bir yönetici değilsiniz. Değişiklikler yerel olarak kaydedilecek ancak sunucu senkronizasyonu etkinken uygulanmayacaktır.</spw_editpermissionnotadmin>
+
+	<spw_categorymuffle>Boğuklaştırma</spw_categorymuffle>
+	<spw_categorygain>Kazanç</spw_categorygain>
+	<spw_categoryreverb>Yankı</spw_categoryreverb>
+	<spw_categorygeneral>Genel</spw_categorygeneral>
+	<spw_categoryvisuals>Görseller</spw_categoryvisuals>
+
+	<!-- General -->
+	<spw_generaltab>Genel</spw_generaltab>
+
+	<spw_enablemod>Modu Etkinleştir</spw_enablemod>
+	<spw_enablemodtooltip>Modun tüm özelliklerini genel olarak açar/kapatır.</spw_enablemodtooltip>
 	<spw_syncsettings>Ayarları Senkronize Et</spw_syncsettings>
-	<spw_syncsettingstooltip>Host ve istemci yapılandırmalarının senkronizasyonunu açar veya kapatır</spw_syncsettingstooltip>
-	<spw_syncsettingsalert>Not: Bu sunucu senkronizasyonu etkinleştirdi - tüm oyuncular otomatik olarak host'un ayarlarını kullanacak (parantez içindeki değerler)</spw_syncsettingsalert>
-	<spw_focustargetaudio>Odak Hedef Ses</spw_focustargetaudio>
-	<spw_focustargetaudiotooltip>Mevcut hedefin POV'ünden sesi simüle eder (yani, taret/kameranın duyduğunu duyarsınız)</spw_focustargetaudiotooltip>
-	<spw_talkingragdolls>Konuşan Bez Bebekler</spw_talkingragdolls>
-	<spw_talkingragdollstooltip>Oyuncuların bez bebek durumundayken konuşmalarını duymanızı sağlar (bayılmaları kapsamaz)</spw_talkingragdollstooltip>
-	<spw_lowpassfrequency>Düşük Geçiş Frekansı</spw_lowpassfrequency>
-	<spw_lowpassfrequencytooltip>Sesleri boğmak için kullanılan köşe frekansı (bu ayarı oyun içinde ayarlamak oyunu kısa bir süreliğine dondurabilir)</spw_lowpassfrequencytooltip>
-	<spw_voicelowpassfrequency>Ses Düşük Geçiş Frekansı</spw_voicelowpassfrequency>
-	<spw_voicelowpassfrequencytooltip>Sesli sohbeti boğmak için kullanılan köşe frekansı</spw_voicelowpassfrequencytooltip>
-	<spw_soundrange>Ses Menzili</spw_soundrange>
-	<spw_soundrangetooltip>Bileşen olmayan seslerin menzili</spw_soundrangetooltip>
-	<spw_voicerange>Ses Menzili</spw_voicerange>
-	<spw_radiorange>Radyo Menzili</spw_radiorange>
+	<spw_syncsettingstooltip>Oyuncular arasındaki ayar senkronizasyonunu açar/kapatır.\n\nEtkinleştirilirse, sunucu otomatik olarak kendi yapılandırmasını tüm oyuncularla paylaşılmak üzere sunucuya yükler. Bu yükleme, bir oturumun başında bir kez veya değişiklik yapıldığında gerçekleşir. Oyuncular, değişmeden kalan yerel yapılandırma ayarlarına bakılmaksızın bu yapılandırmayı kullanmaya zorlanır.</spw_syncsettingstooltip>
 
-	<spw_volumesettings>Ses Düzeyi Ayarları</spw_volumesettings>
-	<spw_muffledvoicevolume>Boğuk Ses Düzeyi</spw_muffledvoicevolume>
-	<spw_muffledvoicevolumetooltip>Bir duvar/su yüzeyi ardındaki düşük geçişli oyuncu seslerinin hacmi</spw_muffledvoicevolumetooltip>
-	<spw_muffledsoundvolume>Boğuk Ses Düzeyi</spw_muffledsoundvolume>
-	<spw_muffledsoundvolumetooltip>Bir duvar/su yüzeyi ardındaki düşük geçişli döngüsel olmayan seslerin hacmi</spw_muffledsoundvolumetooltip>
-	<spw_muffledcomponentvolume>Boğuk Bileşen Ses Düzeyi</spw_muffledcomponentvolume>
-	<spw_muffledcomponentvolumetooltip>Bir duvar/su yüzeyi ardındaki düşük geçişli döngüsel bileşen/durum etkisi seslerinin hacmi</spw_muffledcomponentvolumetooltip>
-	<spw_unmuffledcomponentvolume>Boğulmamış Bileşen Ses Düzeyi</spw_unmuffledcomponentvolume>
-	<spw_submergedvolume>Batık Ses Düzeyi</spw_submergedvolume>
-	<spw_submergedvolumetooltip>Dinleyici de aynı su kütlesinde batık olduğunda batık seslerin hacmi</spw_submergedvolumetooltip>
+	<spw_effectprocessingmode>Efekt İşleme Modu</spw_effectprocessingmode>
+	<spw_effectprocessingmodetooltip>Ses efektlerinin nasıl işlendiği. Dinamik mod önerilir.\n\nNot: Bu ayarı oynarken değiştirmek, arabellekler yüklenirken oyunu kısa bir süreliğine dondurabilir.</spw_effectprocessingmodetooltip>
 
-	<spw_eavesdroppingsettings>Dinleme Ayarları</spw_eavesdroppingsettings>
-	<spw_eavesdroppingbind>Dinleme Tuşu</spw_eavesdroppingbind>
-	<spw_eavesdroppingsoundvolume>Dinleme Ses Düzeyi</spw_eavesdroppingsoundvolume>
-	<spw_eavesdroppingvoicevolume>Dinleme Ses Düzeyi</spw_eavesdroppingvoicevolume>
-	<spw_eavesdroppingpitch>Dinleme Sesi Tonu</spw_eavesdroppingpitch>
-	<spw_eavesdroppingmaxdistance>Dinleme Maksimum Mesafesi</spw_eavesdroppingmaxdistance>
-	<spw_eavesdroppingmaxdistancetooltip>Bir oyuncunun başının bir kapıdan dinlerken olabileceği maksimum mesafe</spw_eavesdroppingmaxdistancetooltip>
+	<spw_vanillafx>Klasik</spw_vanillafx>
+	<spw_vanillafxtooltip>Tek bir boğuklaştırma ön ayarıyla Vanilla tarzı boğuklaştırma. Minimum kaynak kullanımı.</spw_vanillafxtooltip>
+	<spw_staticfx>Statik</spw_staticfx>
+	<spw_staticfxtooltip>Hafif ve orta boğuklaştırma ön ayarları ile isteğe bağlı yankı ekler. Biraz daha uzun yükleme süreleri ve daha yüksek bellek kullanımı (~250 MB).</spw_staticfxtooltip>
+	<spw_dynamicfx>Dinamik</spw_dynamicfx>
+	<spw_dynamicfxtooltip>OpenAL aracılığıyla gelişmiş gerçek zamanlı efektler. Daha yüksek CPU maliyetiyle simüle edilmiş yankı, distorsiyon ve gelişmiş boğuklaştırma ile en gerçekçi ses.\n\nNot: Performans konusunda endişeleriniz varsa, ayrıntılı istatistikleri görmek için "Performansı Göster" ayarını (Gelişmiş sekmesi) etkinleştirin.</spw_dynamicfxtooltip>
 
-	<spw_hydrophonesettings>Hidrofon Ayarları</spw_hydrophonesettings>
-	<spw_hydrophonerange>Hidrofon Menzili</spw_hydrophonerange>
-	<spw_hydrophonerangetooltip>Su altı hareket seslerinin menzili ve denizaltının dışındaki tüm seslere eklenen ekstra menzil</spw_hydrophonerangetooltip>
-	<spw_hydrophonevolume>Hidrofon Ses Düzeyi</spw_hydrophonevolume>
-	<spw_hydrophonepitch>Hidrofon Tonu</spw_hydrophonepitch>
-	<spw_hydrophonelegacyswitch>Hidrofon Eski Anahtarı</spw_hydrophonelegacyswitch>
-	<spw_hydrophonelegacyswitchtooltip>Aktif sonar kullanılırken hidrofon anahtarının kapatılması eski mantığını kullanın</spw_hydrophonelegacyswitchtooltip>
+	<spw_focustargetaudio>Hedef Sese Odaklan</spw_focustargetaudio>
+	<spw_focustargetaudiotooltip>Sesi mevcut kamera hedefinin perspektifinden simüle eder (yani, taretin duyduğunu duyarsınız).</spw_focustargetaudiotooltip>
+	<spw_attenuatewithapproximatedistance>Gerçekçi Ses Azalması</spw_attenuatewithapproximatedistance>
+	<spw_attenuatewithapproximatedistancetooltip>Sesin dinleyiciye olan yolunu kullanarak ses seviyesi azalmasını hesaplar. Devre dışı bırakılırsa, bunun yerine basit düz çizgi (Öklid) mesafesi kullanılır.</spw_attenuatewithapproximatedistancetooltip>
+	<spw_soundrange>Ana Ses Menzili</spw_soundrange>
+	<spw_soundrangetooltip>Döngüsel olmayan tüm sesler için genel menzil çarpanı.\n\nNot: Gelişmiş sekmesindeki "Özel Sesler" listesi tarafından atanan sese özgü menzil çarpanı ile çarpımsal olarak birikir.</spw_soundrangetooltip>
+	<spw_loopingsoundrange>Döngüsel Ses Ana Menzili</spw_loopingsoundrange>
+	<spw_loopingsoundrangetooltip>Tüm döngüsel sesler için genel menzil çarpanı.\n\nNot: Gelişmiş sekmesindeki "Özel Sesler" listesi tarafından atanan sese özgü menzil çarpanı ile çarpımsal olarak birikir.</spw_loopingsoundrangetooltip>
+
+
+	<!-- Dynamic -->
+	<spw_dynamicfxtab>Dinamik Mod</spw_dynamicfxtab>
+
+	<spw_occludesounds>Ses Tıkanması</spw_occludesounds>
+	<spw_occludesoundstooltip>Duvarlar nedeniyle oyuncunun kulaklarına doğrudan görüş hattı olmayan sesleri boğuklaştırır.</spw_occludesoundstooltip>
+	<spw_maxocclusions>Maksimum Tıkanma</spw_maxocclusions>
+	<spw_maxocclusionstooltip>Bir sesin kaç katman duvar tarafından tıkanabileceği.\n\nNot: Tıkanmayı sınırlamak, alışılmadık duvar yapılandırmalarıyla karşılaşıldığında işitsel olarak daha tutarlı bir boğuklaştırma ile sonuçlanabilir. Bu değeri sıfıra ayarlamak limiti devre dışı bırakır.</spw_maxocclusionstooltip>
+	
+	<spw_overmuffle>Aşırı Boğuklaştırma</spw_overmuffle>
+	<spw_overmuffletooltip>1.0'lık maksimum etkili boğuklaştırma gücünün yakınındaki ve üzerindeki seslerin ses seviyesini dinamik olarak azaltır.</spw_overmuffletooltip>
+
+	<spw_dynamicmufflestrengthmaster>Ana Boğuklaştırma Gücü</spw_dynamicmufflestrengthmaster>
+	<spw_dynamicmufflestrengthmastertooltip>Dinamik boğuklaştırma efektinin genel gücü.</spw_dynamicmufflestrengthmastertooltip>
+
+	<spw_overmufflestrength>Aşırı Boğuklaştırma Gücü</spw_overmufflestrength>
+	<spw_overmufflestrengthtooltip>Yüksek boğuklaştırma değerlerinin ses seviyesini azaltmada ne kadar etkili olduğu.</spw_overmufflestrengthtooltip>
+	
+	<spw_dynamicreverb>Yankıyı Etkinleştir</spw_dynamicreverb>
+	<spw_dynamicreverbtooltip>İç ve dış mekan yankı efektlerini açar/kapatır. Etkinleştirilirse, sesler ortamlarının boyutuna ve birleşik ses genliğine göre dinamik olarak yankılanır (yani, yankılar daha büyük ve daha sessiz alanlarda daha güçlüdür).</spw_dynamicreverbtooltip>
+	<spw_dynamicreverbbloom>Yankı Patlaması</spw_dynamicreverbbloom>
+	<spw_dynamicreverbbloomtooltip>Yankı efektinin, kapalı alanlardaki yüksek seslere tepki olarak dramatik bir şekilde kabarmasını sağlar.</spw_dynamicreverbbloomtooltip>
+	<spw_dynamicreverbwatersubtractsarea>Dinamik Yankı Alanı</spw_dynamicreverbwatersubtractsarea>
+	<spw_dynamicreverbwatersubtractsareatooltip>Su üzerindeyken hava alanını, su altındayken su alanını kullanarak yankıyı hesaplar. Devre dışı bırakılırsa, her ikisinin alanını kullanır.</spw_dynamicreverbwatersubtractsareatooltip>
+	<spw_dynamicreverbminarea>Minimum Yankı Alanı</spw_dynamicreverbminarea>
+	<spw_dynamicreverbminareatooltip>Yankının uygulanması için dinleyicinin etrafındaki bağlı odaların gereken minimum birleşik alanı.</spw_dynamicreverbminareatooltip>
+	<spw_dynamicreverbareasizemultiplier>Yankı Alanı Ölçeği</spw_dynamicreverbareasizemultiplier>
+	<spw_dynamicreverbareasizemultipliertooltip>Mevcut iç mekan ortamının etkili alanını ölçeklendirir. Daha büyük değerler, yansımaların sönümlenme süresini ve gecikmesini artırarak mekanın daha büyük duyulmasını sağlar.</spw_dynamicreverbareasizemultipliertooltip>
+	<spw_dynamicreverbwetroomareasizemultiplier>Islak Oda Yankı Ölçeği</spw_dynamicreverbwetroomareasizemultiplier>
+	<spw_dynamicreverbwetroomareasizemultipliertooltip>Dinleyici içlerindeyken balast tanklarının ve hava kilitlerinin etkili alanını çarparak bu odaların daha büyük ve daha yankılı duyulmasını sağlar.</spw_dynamicreverbwetroomareasizemultipliertooltip>
+	
+	<spw_dynamicreverbairtargetgain>İç Mekan Yankı Gücü</spw_dynamicreverbairtargetgain>
+	<spw_dynamicreverbairtargetgaintooltip>Bir gövdenin içindeyken yankı efektinin temel kazancı.</spw_dynamicreverbairtargetgaintooltip>
+	<spw_dynamicreverbairduration>İç Mekan Yankı Süresi</spw_dynamicreverbairduration>
+	<spw_dynamicreverbairdurationtooltip>Bir gövdenin içindeyken yankı efektinin sönümlenme süresi.</spw_dynamicreverbairdurationtooltip>
+	<spw_dynamicreverbairgainhf>İç Mekan Yankı YF Kazancı</spw_dynamicreverbairgainhf>
+	<spw_dynamicreverbairgainhftooltip>Bir gövdenin içindeyken yankı efektindeki yüksek frekansların kazancı.</spw_dynamicreverbairgainhftooltip>
+	<spw_dynamicreverbairamplitudethreshold>İç Mekan Yankı Eşiği</spw_dynamicreverbairamplitudethreshold>
+	<spw_dynamicreverbairamplitudethresholdtooltip>Dinleyici içerideyken bir sesin yankı üretmesi için gereken minimum ses genliği.</spw_dynamicreverbairamplitudethresholdtooltip>
+	
+	<spw_dynamicreverbwatertargetgain>Dış Mekan Yankı Gücü</spw_dynamicreverbwatertargetgain>
+	<spw_dynamicreverbwatertargetgaintooltip>Dışarıdayken yankı efektinin temel kazancı.</spw_dynamicreverbwatertargetgaintooltip>
+	<spw_dynamicreverbwaterdiffusion>Dış Mekan Yankı Yayılımı</spw_dynamicreverbwaterdiffusion>
+	<spw_dynamicreverbwaterdiffusiontooltip>Dışarıdayken yankı efektinin pürüzsüzlüğü.</spw_dynamicreverbwaterdiffusiontooltip>
+	<spw_dynamicreverbwaterduration>Dış Mekan Yankı Süresi</spw_dynamicreverbwaterduration>
+	<spw_dynamicreverbwaterdurationtooltip>Dışarıdayken yankı efektinin sönümlenme süresi.</spw_dynamicreverbwaterdurationtooltip>
+	<spw_dynamicreverbwatergainhf>Dış Mekan Yankı YF Kazancı</spw_dynamicreverbwatergainhf>
+	<spw_dynamicreverbwatergainhftooltip>Dışarıdayken yankı efektindeki yüksek frekansların kazancı.</spw_dynamicreverbwatergainhftooltip>
+	<spw_dynamicreverbwateramplitudethreshold>Dış Mekan Yankı Eşiği</spw_dynamicreverbwateramplitudethreshold>
+	<spw_dynamicreverbwateramplitudethresholdtooltip>Dinleyici dışarıdayken bir sesin yankı üretmesi için gereken minimum ses genliği.</spw_dynamicreverbwateramplitudethresholdtooltip>
+
+	<spw_categoryloudsounddistortionair>Su Yüzeyinde Distorsiyon</spw_categoryloudsounddistortionair>
+	<spw_categoryloudsounddistortionwater>Su Altında Distorsiyon</spw_categoryloudsounddistortionwater>
+
+	<spw_loudsounddistortionair>Su Yüzeyinde Distorsiyonu Etkinleştir</spw_loudsounddistortionair>
+	<spw_loudsounddistortionwater>Su Altında Distorsiyonu Etkinleştir</spw_loudsounddistortionwater>
+	<spw_loudsounddistortiontooltipair>Dinleyici su altında değilse, "Özel Sesler" listesinde (Gelişmiş sekmesi) distorsiyonu doğru olarak ayarlanmış seslere su yüzeyinde distorsiyon efektini uygular.</spw_loudsounddistortiontooltipair>
+	<spw_loudsounddistortiontooltipwater>Dinleyici su altındaysa, "Özel Sesler" listesinde (Gelişmiş sekmesi) distorsiyonu doğru olarak ayarlanmış seslere su altında distorsiyon efektini uygular.</spw_loudsounddistortiontooltipwater>
+	<spw_loudsounddistortionmaxmuffle>Distorsiyon Boğuklaştırma Gereksinimi</spw_loudsounddistortionmaxmuffle>
+	<spw_loudsounddistortionmaxmuffletooltip>Bir sesin distorsiyonu devre dışı bırakılmadan önce sahip olabileceği maksimum boğuklaştırma gücü.</spw_loudsounddistortionmaxmuffletooltip>
+	<spw_loudsounddistortiontargetgain>Distorsiyon Kazancı</spw_loudsounddistortiontargetgain>
+	<spw_loudsounddistortiontargetgaintooltip>Distorsiyonun ses seviyesi.</spw_loudsounddistortiontargetgaintooltip>
+	<spw_loudsounddistortiontargetedge>Distorsiyon Keskinliği</spw_loudsounddistortiontargetedge>
+	<spw_loudsounddistortiontargetedgetooltip>Distorsiyonun sertliği. Daha yüksek bir değer daha yoğun bir etkiyle sonuçlanır.</spw_loudsounddistortiontargetedgetooltip>
+	<spw_loudsounddistortiontargetfrequency>Distorsiyon Frekansı</spw_loudsounddistortiontargetfrequency>
+	<spw_loudsounddistortiontargetfrequencytooltip>Distorsiyonun EQ merkezi. Bu değere yakın frekanslar efektten daha fazla etkilenecektir.</spw_loudsounddistortiontargetfrequencytooltip>
+	<spw_loudsounddistortionlowpassfrequency>Distorsiyon Alçak Geçiren Frekansı</spw_loudsounddistortionlowpassfrequency>
+	<spw_loudsounddistortionlowpassfrequencytooltip>Bozulmuş sinyale sonradan bir alçak geçiren filtre uygulanır. Bu, o alçak geçiren filtrenin kullandığı köşe frekansıdır.</spw_loudsounddistortionlowpassfrequencytooltip>
+
+	<spw_categoryexperimental>Deneysel</spw_categoryexperimental>
+	
+	<spw_removeunusedbuffers>Kullanılmayan Arabellekleri Temizle</spw_removeunusedbuffers>
+	<spw_removeunusedbufferstooltip>Vanilla'ya göre ~100MB bellek tasarrufu sağlamak için sesleri vanilla boğuklaştırma arabelleği olmadan yükleyin. Ses nesneleriyle düşük seviyede etkileşime giren diğer modlarla olası uyumluluk sorunları endişesi nedeniyle varsayılan olarak devre dışıdır. Ancak, vakaların büyük çoğunda bu ayar bedava bir artıştır.\n\nNot: Bu ayarı oynarken değiştirmek, arabellekler yüklenirken oyunu kısa bir süreliğine dondurabilir.</spw_removeunusedbufferstooltip>
+
+
+	<!-- StaticFx -->
+	<spw_staticfxtab>Statik Mod</spw_staticfxtab>
+	<spw_heavylowpassfrequency>Ağır Alçak Geçiren Frekansı</spw_heavylowpassfrequency>
+	<spw_heavylowpassfrequencytooltip>Ağır şekilde engellenen sesleri boğuklaştırmak için kullanılan köşe frekansı. Bu filtreyi uygulama eşiği Boğuklaştırma sekmesinde yapılandırılabilir.\n\nNot: Sesli sohbete uygulanmaz. Ses sekmesindeki alçak geçiren frekans kaydırıcılarına bakın.\n\nNot: Bu ayarı oynarken değiştirmek, arabellekler yüklenirken oyunu kısa bir süreliğine dondurabilir.</spw_heavylowpassfrequencytooltip>
+	<spw_mediumlowpassfrequency>Orta Alçak Geçiren Frekansı</spw_mediumlowpassfrequency>
+	<spw_mediumlowpassfrequencytooltip>Orta derecede engellenen sesleri boğuklaştırmak için kullanılan köşe frekansı. Bu filtreyi uygulama eşiği Boğuklaştırma sekmesinde yapılandırılabilir.\n\nNot: Sesli sohbete uygulanmaz. Ses sekmesindeki alçak geçiren frekans kaydırıcılarına bakın.\n\nNot: Bu ayarı oynarken değiştirmek, arabellekler yüklenirken oyunu kısa bir süreliğine dondurabilir.</spw_mediumlowpassfrequencytooltip>
+	<spw_lightlowpassfrequency>Hafif Alçak Geçiren Frekansı</spw_lightlowpassfrequency>
+	<spw_lightlowpassfrequencytooltip>Hafifçe engellenen sesleri boğuklaştırmak için kullanılan köşe frekansı. Bu filtreyi uygulama eşiği Boğuklaştırma sekmesinde yapılandırılabilir.\n\nNot: Sesli sohbete uygulanmaz. Ses sekmesindeki alçak geçiren frekans kaydırıcılarına bakın.\n\nNot: Bu ayarı oynarken değiştirmek, arabellekler yüklenirken oyunu kısa bir süreliğine dondurabilir.</spw_lightlowpassfrequencytooltip>
+
+	<spw_staticreverb>Yankı Arabelleklerini Etkinleştir</spw_staticreverb>
+	<spw_staticreverbtooltip>Sesleri, bir yankı filtresinden geçirilmiş ek bir arabellek ile yükleyin. Bu özellik yalnızca döngüsel olmayan ve boğuklaştırılmamış seslere uygulanır.\n\nNot: ~100MB bellek kullanır ve arabellek yükleme sürelerini uzatır (süre ile kötüleşir).\n\nNot: Bu ayarı oynarken değiştirmek, arabellekler yüklenirken oyunu kısa bir süreliğine dondurabilir.</spw_staticreverbtooltip>
+	<spw_staticreverbalwaysloudsounds>Yüksek Seslere Her Zaman Yankı Uygula</spw_staticreverbalwaysloudsounds>
+	<spw_staticreverbalwaysloudsoundstooltip>"Özel Sesler" listesinde (Gelişmiş sekmesi) birden büyük bir yan zincirleme çarpanına sahip olan sesler, minimum yankı alanı gereksinimini yok sayar.</spw_staticreverbalwaysloudsoundstooltip>
+	<spw_staticreverbduration>Yankı Süresi</spw_staticreverbduration>
+	<spw_staticreverbdurationtooltip>Yankının sönümlenme süresi ve boyutu. Bu değeri artırmak, daha yüksek bellek kullanımı ve arabellek yükleme süreleriyle sonuçlanır.</spw_staticreverbdurationtooltip>
+	<spw_staticreverbwetdrymix>Yankı Karışımı</spw_staticreverbwetdrymix>
+	<spw_staticreverbwetdrymixtooltip>Yankının kuru/ıslak karışımı. Daha yüksek bir değer daha güçlü bir etkiyle sonuçlanır.</spw_staticreverbwetdrymixtooltip>
+	<spw_staticreverbdamping>Yankı Sönümlemesi</spw_staticreverbdamping>
+	<spw_staticreverbdampingtooltip>Yankı geri beslemesine uygulanan alçak geçiren filtrenin gücü.</spw_staticreverbdampingtooltip>
+	<spw_staticreverbminarea>Minimum Yankı Alanı</spw_staticreverbminarea>
+	<spw_staticreverbminareatooltip>Döngüsel olmayan ve boğuklaştırılmamış seslere yankı uygulanması için dinleyicinin etrafındaki bağlı odaların gereken minimum birleşik alanı.</spw_staticreverbminareatooltip>
+
+	<!-- Voice -->
+	<spw_voicetab>Ses</spw_voicetab>
+
+	<spw_talkingragdolls>Konuşan Ragdoll'lar</spw_talkingragdolls>
+	<spw_talkingragdollstooltip>Sersemlememiş oyuncular ragdoll durumundayken konuştuklarında duyun.</spw_talkingragdollstooltip>
+	
+	<spw_voicerange>Yerel Menzil</spw_voicerange>
+	<spw_voicerangetooltip>Yerel yakınlık sohbetinin menzili.</spw_voicerangetooltip>
+	<spw_radiorange>Telsiz Menzili</spw_radiorange>
+	<spw_radiorangetooltip>Telsiz yakınlık sohbetinin menzili.</spw_radiorangetooltip>
+	<spw_voicevolume>Yerel Ses Seviyesi</spw_voicevolume>
+	<spw_voicevolumetooltip>Yerel yakınlık sohbetinin ses seviyesi.\n\nNot: Bu ayar, Barotrauma'nın sesli sohbet ses seviyesi kaydırıcısından bağımsızdır.</spw_voicevolumetooltip>
+	<spw_radiovolume>Telsiz Ses Seviyesi</spw_radiovolume>
+	<spw_radiovolumetooltip>Telsiz yakınlık sohbetinin ses seviyesi.\n\nNot: Bu ayar, Barotrauma'nın sesli sohbet ses seviyesi kaydırıcısından bağımsızdır.</spw_radiovolumetooltip>
+
+	<spw_categorydynamicfx>Dinamik Moda Özel</spw_categorydynamicfx>
+
+	<spw_dynamicreverblocal>Yerel Yankı</spw_dynamicreverblocal>
+	<spw_dynamicreverblocaltooltip>Yerel yakınlık sohbetine yankı uygulanmasına izin verir\n\nNot: Dinamik modun yankı efektinin etkin olmasını gerektirir.</spw_dynamicreverblocaltooltip>
+	<spw_dynamicreverbradio>Telsiz Yankısı</spw_dynamicreverbradio>
+	<spw_dynamicreverbradiotooltip>Telsiz yakınlık sohbetine yankı uygulanmasına izin verir\n\nNot: Dinamik modun yankı efektinin etkin olmasını gerektirir.</spw_dynamicreverbradiotooltip>
+	<spw_drowningdistortion>Boğulurken Telsizi Boz</spw_drowningdistortion>
+	<spw_drowningdistortiontooltip>Boğulurken telsiz yakınlık sohbetine distorsiyon uygular.\n\nNot: Bu ayar, boğulurken telsiz yakınlık sohbetinin boğukluğunu azaltır.</spw_drowningdistortiontooltip>
+	<spw_voiceminlowpassfrequency>Min Alçak Geçiren Frekansı</spw_voiceminlowpassfrequency>
+	<spw_voiceminlowpassfrequencytooltip>Tamamen boğuklaştırıldığında uygulanan minimum alçak geçiren frekansı.</spw_voiceminlowpassfrequencytooltip>
+	<spw_voicedynamicmufflemultiplier>Dinamik Boğuklaştırma Gücü</spw_voicedynamicmufflemultiplier>
+	<spw_voicedynamicmufflemultipliertooltip>Dinamik mod kullanılırken seslere uygulanan engellerin gücü.</spw_voicedynamicmufflemultipliertooltip>
+
+	<spw_voiceheavylowpassfrequency>Ağır Ses Alçak Geçiren Frekansı</spw_voiceheavylowpassfrequency>
+	<spw_voiceheavylowpassfrequencytooltip>Ağır şekilde engellenen sesleri boğuklaştırmak için kullanılan köşe frekansı. Bu filtreyi uygulama eşiği Boğuklaştırma sekmesinde yapılandırılabilir.</spw_voiceheavylowpassfrequencytooltip>
+	<spw_voicemediumlowpassfrequency>Orta Ses Alçak Geçiren Frekansı</spw_voicemediumlowpassfrequency>
+	<spw_voicemediumlowpassfrequencytooltip>Orta derecede engellenen sesleri boğuklaştırmak için kullanılan köşe frekansı. Bu filtreyi uygulama eşiği Boğuklaştırma sekmesinde yapılandırılabilir.</spw_voicemediumlowpassfrequencytooltip>
+	<spw_voicelightlowpassfrequency>Hafif Ses Alçak Geçiren Frekansı</spw_voicelightlowpassfrequency>
+	<spw_voicelightlowpassfrequencytooltip>Hafifçe engellenen sesleri boğuklaştırmak için kullanılan köşe frekansı. Bu filtreyi uygulama eşiği Boğuklaştırma sekmesinde yapılandırılabilir.</spw_voicelightlowpassfrequencytooltip>
+
+	<spw_categoryscreammode>Çığlık Modu</spw_categoryscreammode>
+
+	<spw_screammode>Çığlık Modu</spw_screammode>
+	<spw_screammodetooltip>Yerel yakınlık sohbeti menzili giriş genliği ile ölçeklenir (bağırma daha uzaktan duyulur).\n\nNot: En iyi sonuçlar için, Barotrauma mikrofon sesinizi, ses aktivite ölçerin hala yüksek giriş için yeri olacak şekilde ayarlayın. Mikrofonunuz ne kadar çok dinamik aralığa izin verirse o kadar iyidir.</spw_screammodetooltip>
+	<spw_screammodemaxrange>Maksimum Çığlık Menzili</spw_screammodemaxrange>
+	<spw_screammodemaxrangetooltip>"Çığlık Modu" etkinken tam sesle konuşurken yerel yakınlık sohbetinin maksimum menzili.\n\nNot: Bu ayar "Yerel Menzil" çarpanından etkilenir.</spw_screammodemaxrangetooltip>
+	<spw_screammodeminrange>Minimum Çığlık Menzili</spw_screammodeminrange>
+	<spw_screammodeminrangetooltip>"Çığlık Modu" etkinken yerel yakınlık sohbetinin minimum menzili.</spw_screammodeminrangetooltip>
+	<spw_screammodereleaserate>Çığlık Bırakma Oranı</spw_screammodereleaserate>
+	<spw_screammodereleaseratetooltip>Ses menzilinin, genlik tarafından artık sürdürülmediğinde saniyede azalma oranı.</spw_screammodereleaseratetooltip>
+	
+	<spw_categorybubbles>Boğulma</spw_categorybubbles>
+	
+	<spw_drowningbubbles>Boğulma Baloncukları</spw_drowningbubbles>
+	<spw_drowningbubblestooltip>Oksijensiz su altında konuşan oyuncular, yerel olarak veya telsiz üzerinden duyulabilen görünür baloncuklar çıkarır.</spw_drowningbubblestooltip>
+	<spw_drowningbubbleslocalrange>Yerel Baloncuk Menzili</spw_drowningbubbleslocalrange>
+	<spw_drowningbubbleslocalrangetooltip>Yerel baloncuk sesinin duyulabilir menzili.</spw_drowningbubbleslocalrangetooltip>
+	<spw_drowningbubbleslocalvolume>Yerel Baloncuk Ses Seviyesi</spw_drowningbubbleslocalvolume>
+	<spw_drowningbubbleslocalvolumetooltip>Yerel baloncuk sesinin ses seviyesi.</spw_drowningbubbleslocalvolumetooltip>
+	<spw_drowningbubblesradiovolume>Telsiz Baloncuk Ses Seviyesi</spw_drowningbubblesradiovolume>
+	<spw_drowningbubblesradiovolumetooltip>Telsiz baloncuk sesinin ses seviyesi.</spw_drowningbubblesradiovolumetooltip>
+	
+	<spw_categorycustomfilter>Telsiz Filtresi</spw_categorycustomfilter>
+
+	<spw_radiocustomfilter>Özel Telsiz Filtresi</spw_radiocustomfilter>
+	<spw_radiocustomfiltertooltip>Telsiz yakınlık sohbetini, yapılandırılabilir sıkıştırma, distorsiyon ve gürültü efektleri içeren özel bir filtreyle işleyin.</spw_radiocustomfiltertooltip>
+
+	<spw_customradiopresets>Özel Telsiz Ön Ayarları</spw_customradiopresets>
+	<spw_customradiopresetstooltip>Benzersiz telsiz filtresi yapılandırmaları. Bu seçeneklerden birini seçmek, aşağıdaki tüm filtre değerlerini değiştirecektir.</spw_customradiopresetstooltip>
+	<spw_customradiopresetbroken>Bozuk</spw_customradiopresetbroken>
+	<spw_customradiopresetbrokentooltip>Sadece berbat. Telsizi kullanmak bir engel.</spw_customradiopresetbrokentooltip>
+	<spw_customradiopresetdirty>Kirli</spw_customradiopresetdirty>
+	<spw_customradiopresetdirtytooltip>Telaşlı iletişimleri anlamayı zorlaştırabilen düşük kaliteli telsiz.</spw_customradiopresetdirtytooltip>
+	<spw_customradiopresetnormal>Standart</spw_customradiopresetnormal>
+	<spw_customradiopresetnormaltooltip>Daha stilize bir sese sahip Vanilla telsiz.</spw_customradiopresetnormaltooltip>
+	<spw_customradiopresetclean>Temiz</spw_customradiopresetclean>
+	<spw_customradiopresetcleantooltip>Mükemmel derecede net telsiz iletişimleri.</spw_customradiopresetcleantooltip>
+	
+	<spw_radiobandpassfrequency>Telsiz Bant Geçiren Frekansı</spw_radiobandpassfrequency>
+	<spw_radiobandpassfrequencytooltip>Bant geçiren filtrenin merkez frekansı. Sadece bu noktaya yakın frekansların geçmesine izin verilir.\n\nNot: Aralığın genişliği aşağıdaki "Telsiz Bant Geçiren Q Faktörü" ile ayarlanır.</spw_radiobandpassfrequencytooltip>
+	<spw_radiobandpassqualityfactor>Telsiz Bant Geçiren Q Faktörü</spw_radiobandpassqualityfactor>
+	<spw_radiobandpassqualityfactortooltip>Bant geçiren filtrenin merkez frekansı etrafında ne kadar dar olduğu. Daha yüksek değerler daha sıkı, daha belirgin bir etki yaratır.</spw_radiobandpassqualityfactortooltip>
+	<spw_radiodistortiondrive>Telsiz Distorsiyon Sürüşü</spw_radiodistortiondrive>
+	<spw_radiodistortiondrivetooltip>Kırpılmadan önce ses sinyalini artırır. Daha yüksek değerler distorsiyon yoğunluğunu artırır.</spw_radiodistortiondrivetooltip>
+	<spw_radiodistortionthreshold>Telsiz Distorsiyon Eşiği</spw_radiodistortionthreshold>
+	<spw_radiodistortionthresholdtooltip>İzin verilen maksimum seviye. Bu sınırı aşan örnekler sert bir şekilde kırpılır.</spw_radiodistortionthresholdtooltip>
+	<spw_radiostatic>Telsiz Paraziti</spw_radiostatic>
+	<spw_radiostatictooltip>Telsiz yayınlarına eklenen parazit gürültüsünün yoğunluğu.</spw_radiostatictooltip>
+	<spw_radiocompressionthreshold>Telsiz Sıkıştırma Eşiği</spw_radiocompressionthreshold>
+	<spw_radiocompressionthresholdtooltip>Sıkıştırmanın başladığı giriş seviyesi. Bu seviyenin altındaki sesler etkilenmez.</spw_radiocompressionthresholdtooltip>
+	<spw_radiocompressionratio>Telsiz Sıkıştırma Oranı</spw_radiocompressionratio>
+	<spw_radiocompressionratiotooltip>Eşiğin üzerindeki ses seviyesinin ne kadar azaltıldığı. Daha yüksek oranlar daha güçlü sıkıştırma ve daha az dinamik aralık anlamına gelir.</spw_radiocompressionratiotooltip>
+	<spw_radiopostfilterboost>Filtre Sonrası Kazanç Artışı</spw_radiopostfilterboost>
+	<spw_radiopostfilterboosttooltip>Telsiz filtrelemesinden sonraki genel çıkış seviyesi.</spw_radiopostfilterboosttooltip>
+	
+	<!-- Muffle -->
+	<spw_muffletab>Boğuklaştırma</spw_muffletab>
+	<spw_muffledivingsuit>Dalgıç Kıyafetlerini Boğuklaştır</spw_muffledivingsuit>
+	<spw_muffledivingsuittooltip>Dalgıç kıyafeti giyerken tüm seslere "Dalgıç Kıyafeti" engelini uygulayın.</spw_muffledivingsuittooltip>
+	<spw_mufflesubmergedplayer>Su Altındaki Oyuncuyu Boğuklaştır</spw_mufflesubmergedplayer>
+	<spw_mufflesubmergedplayertooltip>Oyuncunun kafasıyla aynı su kütlesinde bulunan seslere "Su Kütlesi" engelini uygulayın.</spw_mufflesubmergedplayertooltip>
+	<spw_mufflesubmergedviewtarget>Su Altındaki Görüş Hedefini Boğuklaştır</spw_mufflesubmergedviewtarget>
+	<spw_mufflesubmergedviewtargettooltip>Görüş hedefiyle aynı su kütlesinde bulunan seslere "Su Kütlesi" engelini uygulayın\n\nNot: "Hedef Sese Odaklan" (Genel sekmesi) seçeneğinin etkin olmasını gerektirir.</spw_mufflesubmergedviewtargettooltip>
+	<spw_mufflewatersurface>Su Yüzeyini Boğuklaştır</spw_mufflewatersurface>
+	<spw_mufflewatersurfacetooltip>Bir hava-su bariyerinin karşı tarafındaki seslere "Su Yüzeyi" engelini uygulayın.</spw_mufflewatersurfacetooltip>
+	<spw_muffleflowfirepath>Akış ve Yangın Yollarını Boğuklaştır</spw_muffleflowfirepath>
+	<spw_muffleflowfirepathtooltip>Dinleyiciye bir yolu yoksa su akışı ve yangın seslerini boğuklaştırın.\n\nNot: Bu özellik, her durumda doğru olmayabilecek bir tahmin sistemi kullanır.</spw_muffleflowfirepathtooltip>
+	<spw_muffleflowsounds>Akış Seslerini Boğuklaştır</spw_muffleflowsounds>
+	<spw_muffleflowsoundstooltip>Tüm kaynaklardan gelen su akışı seslerinin boğuklaştırılmasını aç/kapat.</spw_muffleflowsoundstooltip>
+	<spw_mufflefiresounds>Yangın Seslerini Boğuklaştır</spw_mufflefiresounds>
+	<spw_mufflefiresoundstooltip>Tüm kaynaklardan gelen yangın seslerinin boğuklaştırılmasını açar/kapatır.</spw_mufflefiresoundstooltip>
+	<spw_classiclowpassfrequency>Klasik Alçak Geçiren Frekansı</spw_classiclowpassfrequency>
+	<spw_classiclowpassfrequencytooltip>Klasik modda sesleri boğuklaştırmak için kullanılan köşe frekansı. Bu filtreyi uygulama eşiği Boğuklaştırma sekmesinde yapılandırılabilir.\n\nNot: Sesli sohbete uygulanmaz. Ses sekmesindeki alçak geçiren frekans kaydırıcılarına bakın.\n\nNot: Bu ayarı oynarken değiştirmek, arabellekler yüklenirken oyunu kısa bir süreliğine dondurabilir.</spw_classiclowpassfrequencytooltip>
+
+	<spw_categoryobstructions>Engel Boğuklaştırma Gücü</spw_categoryobstructions>
+
+	<spw_obstructionwatersurface>Su Yüzeyi</spw_obstructionwatersurface>
+	<spw_obstructionwatersurfacetooltip>Bir ses bir hava-su bariyerini geçtiğinde uygulanan boğuklaştırma gücü.\n\nNot: Çarpımsal olarak birikir (azalan verim).</spw_obstructionwatersurfacetooltip>
+	<spw_obstructionwaterbody>Su Kütlesi</spw_obstructionwaterbody>
+	<spw_obstructionwaterbodytooltip>Bir ses, bir hava-su bariyerini geçmeden dinleyiciye ulaşmak için sudan geçtiğinde uygulanan boğuklaştırma gücü (yani, ses yolculuğuna aynı su kütlesinde başlar ve bitirir).\n\nNot: Çarpımsal olarak birikir (azalan verim).</spw_obstructionwaterbodytooltip>
+	<spw_obstructionwallthick>Kalın Duvar</spw_obstructionwallthick>
+	<spw_obstructionwallthicktooltip>Bir ses normalde bir duvardan geçtiğinde uygulanan boğuklaştırma gücü.\n\nNot: Dinamik mod kullanılırken sesin geçtiği her iki kapı için de geçerlidir.\n\nNot: Çarpımsal olarak birikir (azalan verim).</spw_obstructionwallthicktooltip>
+	<spw_obstructionwallthin>İnce Duvar</spw_obstructionwallthin>
+	<spw_obstructionwallthintooltip>Bir ses bir duvarı deldiğinde (yayılma veya hidrofon yapıları) veya dinleyiciye kısmi bir yolu olduğunda (tıkanma) uygulanan boğuklaştırma gücü.\n\nNot: Çarpımsal olarak birikir (azalan verim).</spw_obstructionwallthintooltip>
+	<spw_obstructiondoorthick>Kalın Kapı</spw_obstructiondoorthick>
+	<spw_obstructiondoorthicktooltip>Bir ses normalde bir kapıdan geçtiğinde uygulanan boğuklaştırma gücü.\n\nNot: Çarpımsal olarak birikir (azalan verim).</spw_obstructiondoorthicktooltip>
+	<spw_obstructiondoorthin>İnce Kapı</spw_obstructiondoorthin>
+	<spw_obstructiondoorthintooltip>Bir ses bir kapıyı deldiğinde (gizlice dinleme, yayılma veya bir konteynerin içinde) uygulanan boğuklaştırma gücü.\n\nNot: Çarpımsal olarak birikir (azalan verim).</spw_obstructiondoorthintooltip>
+	<spw_obstructionsuit>Dalgıç Kıyafeti</spw_obstructionsuit>
+	<spw_obstructionsuittooltip>Bir ses bir dalgıç kıyafetinden geçtiğinde uygulanan boğuklaştırma gücü.\n\nNot: Hidrofonları kullanırken denizaltının dışındaki seslere de uygulanır.\n\nNot: Çarpımsal olarak birikir (azalan verim).</spw_obstructionsuittooltip>
+	<spw_obstructiondrowning>Oyuncu Boğulması</spw_obstructiondrowning>
+	<spw_obstructiondrowningtooltip>Bir oyuncu boğulurken konuştuğunda sesine uygulanan boğuklaştırma gücü.\n\nNot: Çarpımsal olarak birikir (azalan verim).</spw_obstructiondrowningtooltip>
+	
+	<spw_classicmufflethreshold>(Klasik) Boğuklaştırma Eşiği</spw_classicmufflethreshold>
+	<spw_classicmufflethresholdtooltip>Seslerin "Klasik Alçak Geçiren Frekansı"nı (Boğuklaştırma sekmesi) kullanması için gereken minimum birleşik engel seviyesi.</spw_classicmufflethresholdtooltip>
+
+	<spw_staticlightmufflethreshold>(Statik) Hafif Boğuklaştırma Eşiği</spw_staticlightmufflethreshold>
+	<spw_staticlightmufflethresholdtooltip>Seslerin ve konuşmaların "Hafif Alçak Geçiren Frekansı" (Statik sekmesi) veya "Hafif Ses Alçak Geçiren Frekansı"nı (Ses sekmesi) kullanması için gereken minimum birleşik engel seviyesi.</spw_staticlightmufflethresholdtooltip>
+
+	<spw_staticmediummufflethreshold>(Statik) Orta Boğuklaştırma Eşiği</spw_staticmediummufflethreshold>
+	<spw_staticmediummufflethresholdtooltip>Seslerin ve konuşmaların "Orta Alçak Geçiren Frekansı" (Statik sekmesi) veya "Orta Ses Alçak Geçiren Frekansı"nı (Ses sekmesi) kullanması için gereken minimum birleşik engel seviyesi.</spw_staticmediummufflethresholdtooltip>
+
+	<spw_staticheavymufflethreshold>(Statik) Ağır Boğuklaştırma Eşiği</spw_staticheavymufflethreshold>
+	<spw_staticheavymufflethresholdtooltip>Seslerin ve konuşmaların "Ağır Alçak Geçiren Frekansı" (Statik sekmesi) veya "Ağır Ses Alçak Geçiren Frekansı"nı (Ses sekmesi) kullanması için gereken minimum birleşik engel seviyesi.</spw_staticheavymufflethresholdtooltip>
+
+	<spw_categorythresholds>Boğuklaştırma Eşikleri</spw_categorythresholds>
+
+	<!-- Volume -->
+	<spw_volumetab>Ses Seviyesi</spw_volumetab>
+
+	<spw_categorysidechaining>Yan Zincirleme</spw_categorysidechaining>
+
+	<spw_sidechaining>Yan Zincirlemeyi Etkinleştir</spw_sidechaining>
+	<spw_sidechainingtooltip>Yüksek bir ses çaldığında tüm seslerin ses seviyesini kısın.\n\nNot: Bir sesin dahili olarak yüksek kabul edilmesi için, "Özel Sesler" listesinde (Gelişmiş sekmesi) sıfırdan büyük bir yan zincirleme çarpanına sahip olarak referans gösterilmesi gerekir.</spw_sidechainingtooltip>
+	<spw_sidechainmusic>Müziği Yan Zincirle</spw_sidechainmusic>
+	<spw_sidechainmusictooltip>Yüksek bir ses çaldığında müzik parçalarının ses seviyesini kısın.</spw_sidechainmusictooltip>
+
+	<spw_sidechainintensitymaster>Ana Yan Zincirleme Yoğunluğu</spw_sidechainintensitymaster>
+	<spw_sidechainintensitymastertooltip>"Özel Sesler" listesindeki (Gelişmiş sekmesi) tüm yan zincirleme çarpanlarına uygulanan genel çarpan.</spw_sidechainintensitymastertooltip>
+	<spw_sidechainreleasemaster>Ana Yan Zincirleme Bırakma</spw_sidechainreleasemaster>
+	<spw_sidechainreleasemastertooltip>"Özel Sesler" listesindeki (Gelişmiş sekmesi) tüm yan zincirleme bırakmalarına eklenen sabit süre miktarı.</spw_sidechainreleasemastertooltip>
+	<spw_sidechainreleasecurve>Yan Zincirleme Bırakma Eğrisi</spw_sidechainreleasecurve>
+	<spw_sidechainreleasecurvetooltip>Yan zincirleme bırakma eğrisinin şeklini hesaplamak için kullanılan üs. Birden küçük değerler yavaşça ve sonra sona doğru keskin bir şekilde bırakır. Birden büyük değerler hızla bırakır ve sona doğru düzleşir.</spw_sidechainreleasecurvetooltip>
+	<spw_sidechainmufflepower>Yan Zincirleme Boğuklaştırma Gücü</spw_sidechainmufflepower>
+	<spw_sidechainmufflepowertooltip>Boğuklaştırılmış bir sesin yan zincirleme etkisinin ne kadar güçlü olması gerektiği. Daha yüksek değerler daha fazla yan zincirleme gücü korur.</spw_sidechainmufflepowertooltip>
+	<spw_sidechainmusicmultiplier>Yan Zincirleme Müzik Gücü</spw_sidechainmusicmultiplier>
+	<spw_sidechainmusicmultipliertooltip>Müzik üzerindeki yan zincirleme etkisinin yoğunluğu.</spw_sidechainmusicmultipliertooltip>
+
+	<spw_muffledsoundvolume>Boğuklaştırılmış Ses Seviyesi</spw_muffledsoundvolume>
+	<spw_muffledsoundvolumetooltip>Boğuklaştırılmış döngüsel olmayan seslerin ses seviyesi. Boğuklaştırma gücüne göre "Boğuklaştırılmamış Ses Seviyesi" ile karışır.\n\nNot: Diğer ses seviyesi çarpanlarıyla toplamsal olarak birikir.</spw_muffledsoundvolumetooltip>
+	<spw_unmuffledsoundvolume>Boğuklaştırılmamış Ses Seviyesi</spw_unmuffledsoundvolume>
+	<spw_unmuffledsoundvolumetooltip>Boğuklaştırılmamış döngüsel olmayan seslerin ses seviyesi. Boğuklaştırma gücüne göre "Boğuklaştırılmış Ses Seviyesi" ile karışır.\n\nNot: Diğer ses seviyesi çarpanlarıyla toplamsal olarak birikir.</spw_unmuffledsoundvolumetooltip>
+	<spw_muffledvoicevolume>Boğuklaştırılmış Konuşma Ses Seviyesi</spw_muffledvoicevolume>
+	<spw_muffledvoicevolumetooltip>Boğuklaştırılmış oyuncu seslerinin ses seviyesi. Boğuklaştırma gücüne göre "Boğuklaştırılmamış Konuşma Ses Seviyesi" ile karışır.\n\nNot: Diğer ses seviyesi çarpanlarıyla toplamsal olarak birikir.</spw_muffledvoicevolumetooltip>
+	<spw_unmuffledvoicevolume>Boğuklaştırılmamış Konuşma Ses Seviyesi</spw_unmuffledvoicevolume>
+	<spw_unmuffledvoicevolumetooltip>Boğuklaştırılmamış oyuncu seslerinin ses seviyesi. Boğuklaştırma gücüne göre "Boğuklaştırılmış Konuşma Ses Seviyesi" ile karışır.\n\nNot: Diğer ses seviyesi çarpanlarıyla toplamsal olarak birikir.</spw_unmuffledvoicevolumetooltip>
+	<spw_muffledloopingvolume>Boğuklaştırılmış Döngüsel Ses Seviyesi</spw_muffledloopingvolume>
+	<spw_muffledloopingvolumetooltip>Boğuklaştırılmış döngüsel seslerin ses seviyesi. Boğuklaştırma gücüne göre "Boğuklaştırılmamış Döngüsel Ses Seviyesi" ile karışır.\n\nNot: Diğer ses seviyesi çarpanlarıyla toplamsal olarak birikir.</spw_muffledloopingvolumetooltip>
+	<spw_unmuffledloopingvolume>Boğuklaştırılmamış Döngüsel Ses Seviyesi</spw_unmuffledloopingvolume>
+	<spw_unmuffledloopingvolumetooltip>Boğuklaştırılmamış döngüsel seslerin ses seviyesi. Boğuklaştırma gücüne göre "Boğuklaştırılmış Döngüsel Ses Seviyesi" ile karışır.\n\nNot: Diğer ses seviyesi çarpanlarıyla toplamsal olarak birikir.</spw_unmuffledloopingvolumetooltip>
+	<spw_submergedvolume>Birlikte Su Altında Ses Seviyesi</spw_submergedvolume>
+	<spw_submergedvolumetooltip>Dinleyiciyle aynı su kütlesinde bulunan seslerin ses seviyesi.\n\nNot: Diğer ses seviyesi çarpanlarıyla toplamsal olarak birikir.</spw_submergedvolumetooltip>
+	<spw_flowsoundvolume>Akış Sesi Seviyesi</spw_flowsoundvolume>
+	<spw_flowsoundvolumetooltip>Denizaltındaki sızıntılardan kaynaklanan akan suyun ses seviyesi.</spw_flowsoundvolumetooltip>
+	<spw_firesoundvolume>Yangın Sesi Seviyesi</spw_firesoundvolume>
+	<spw_firesoundvolumetooltip>Yangınların ses seviyesi.</spw_firesoundvolumetooltip>
+	<spw_vanillaexosuitvolume>Vanilla Dış İskelet Ses Seviyesi</spw_vanillaexosuitvolume>
+	<spw_vanillaexosuitvolumetooltip>Vanilla dış iskelet hareket sesinin ses seviyesi. Bazı oyuncular bu sesi duymaktan hoşlanmaz.\n\nNot: Modlanmış dış iskelet seslerini etkilemez.</spw_vanillaexosuitvolumetooltip>
+	<spw_loopingcomponentsoundnearmultiplier>Bileşen Sesi Mesafe Azalması Başlangıcı</spw_loopingcomponentsoundnearmultiplier>
+	<spw_loopingcomponentsoundnearmultipliertooltip>Döngüsel bileşen sesi seviyesinin düşmeye başlaması için gereken mesafe.</spw_loopingcomponentsoundnearmultipliertooltip>
+	<spw_mindistancefalloffvolume>Minimum Mesafe Azalması Ses Seviyesi</spw_mindistancefalloffvolume>
+	<spw_mindistancefalloffvolumetooltip>Bir sesin "Gerçekçi Ses Azalması" modelini (Genel sekmesi) kullanarak ulaşabileceği minimum azalma ses seviyesi.</spw_mindistancefalloffvolumetooltip>
+
+
+	<!-- Eavesdropping -->
+	<spw_eavesdroppingtab>Gizlice Dinleme</spw_eavesdroppingtab>
+	<spw_eavesdroppingenabled>Gizlice Dinleme Etkin</spw_eavesdroppingenabled>
+	<spw_eavesdroppingenabledtooltip>Gizlice dinleme özelliğini açar/kapatır.</spw_eavesdroppingenabledtooltip>
+	<spw_eavesdroppingmuffleself>Kendi Gövdeni Boğuklaştır</spw_eavesdroppingmuffleself>
+	<spw_eavesdroppingmuffleselftooltip>Gizlice dinlerken dinleyicinin gövdesindeki sesleri boğuklaştırın.</spw_eavesdroppingmuffleselftooltip>
+	<spw_eavesdroppingmuffle>Gizlice Dinlenen Gövdeyi Boğuklaştır</spw_eavesdroppingmuffle>
+	<spw_eavesdroppingmuffletooltip>"İnce Kapı" engelini uygulayarak gizlice dinleme yoluyla duyulan sesleri hafifçe boğuklaştırın.</spw_eavesdroppingmuffletooltip>
+	<spw_eavesdroppingtransition>Gizlice Dinleme Geçişi</spw_eavesdroppingtransition>
+	<spw_eavesdroppingtransitiontooltip>Gizlice dinlerken gövdeler arasında sesi sorunsuzca geçirin.</spw_eavesdroppingtransitiontooltip>
+	<spw_eavesdroppingducksradio>Gizlice Dinleme Telsizi Kısar</spw_eavesdroppingducksradio>
+	<spw_eavesdroppingducksradiotooltip>Gizlice dinlerken telsiz yakınlık sohbetinin sesini kısın.</spw_eavesdroppingducksradiotooltip>
+
+	<spw_eavesdroppingbind>Gizlice Dinleme Tuşu</spw_eavesdroppingbind>
+	<spw_eavesdroppingbindtooltip>Gizlice dinlemek için basılı tutulan tuş.\n\nNot: Bu ayar, "Ayarları Senkronize Et" (Genel sekmesi) kullanılırken diğer oyuncularla senkronize edilmez.</spw_eavesdroppingbindtooltip>
+
+	<spw_eavesdroppingsoundvolume>Gizlice Dinlenen Ses Seviyesi</spw_eavesdroppingsoundvolume>
+	<spw_eavesdroppingsoundvolumetooltip>Gizlice dinlemeden duyulan seslerin ses seviyesi.\n\nNot: Diğer ses seviyesi çarpanlarıyla toplamsal olarak birikir.</spw_eavesdroppingsoundvolumetooltip>
+	<spw_eavesdroppingvoicevolume>Gizlice Dinlenen Konuşma Ses Seviyesi</spw_eavesdroppingvoicevolume>
+	<spw_eavesdroppingvoicevolumetooltip>Gizlice dinlemeden duyulan yerel yakınlık sohbetinin ses seviyesi.\n\nNot: Diğer ses seviyesi çarpanlarıyla toplamsal olarak birikir.</spw_eavesdroppingvoicevolumetooltip>
+	<spw_eavesdroppingothervolume>Kendi Gövde Ses Seviyesi</spw_eavesdroppingothervolume>
+	<spw_eavesdroppingothervolumetooltip>Gizlice dinlerken dinleyicinin gövdesindeki sesin ses seviyesi.</spw_eavesdroppingothervolumetooltip>
+	<spw_eavesdroppingsoundpitch>Gizlice Dinlenen Ses Perdesi</spw_eavesdroppingsoundpitch>
+	<spw_eavesdroppingsoundpitchtooltip>Gizlice dinlemeden duyulan seslerin perdesi.\n\nNot: Yerel yakınlık sohbetine uygulanmaz.\n\nNot: Diğer perde çarpanlarıyla toplamsal olarak birikir.</spw_eavesdroppingsoundpitchtooltip>
+	<spw_eavesdroppingmaxdistance>Maksimum Gizlice Dinleme Mesafesi</spw_eavesdroppingmaxdistance>
+	<spw_eavesdroppingmaxdistancetooltip>Oyuncunun kafasının gizlice dinlerken bir kapıdan olabileceği maksimum mesafe.</spw_eavesdroppingmaxdistancetooltip>
+	<spw_eavesdroppingtransitionduration>Gizlice Dinleme Geçiş Süresi</spw_eavesdroppingtransitionduration>
+	<spw_eavesdroppingtransitiondurationtooltip>Gizlice dinleme geçişinin kaç saniye sürdüğü.\n\nNot: "Gizlice Dinleme Geçişi"nin etkin olmasını gerektirir.</spw_eavesdroppingtransitiondurationtooltip>
+	<spw_eavesdroppingthreshold>Gizlice Dinleme Eşiği</spw_eavesdroppingthreshold>
+	<spw_eavesdroppingthresholdtooltip>Gizlice dinleme geçişinin ne kadar ilerisinde boğuklaştırma profilinin kapının karşı tarafına geçtiği.</spw_eavesdroppingthresholdtooltip>
+
+	<spw_eavesdroppingvisualfeedbackenabled>Görsel Geri Bildirim</spw_eavesdroppingvisualfeedbackenabled>
+	<spw_eavesdroppingvisualfeedbackenabledtooltip>Gizlice dinlenen ses kaynaklarının etrafında yumuşak yeşil bir parlama efekti görüntüleyin.</spw_eavesdroppingvisualfeedbackenabledtooltip>
+	<spw_eavesdroppingrevealscharacteroutline>Karakter Dış Hattını Gör</spw_eavesdroppingrevealscharacteroutline>
+	<spw_eavesdroppingrevealscharacteroutlinetooltip>Sesi çıkaran vücut parçasının (yani, ayak sesleri için bacaklar ve sesler için kafalar) kaba bir dış hattını görüntüleyin.</spw_eavesdroppingrevealscharacteroutlinetooltip>
+	<spw_eavesdroppingrevealsall>Erişilemeyen Sesleri Gör</spw_eavesdroppingrevealsall>
+	<spw_eavesdroppingrevealsalltooltip>Gizlice dinlenen alana yolu olmayan sesler için parlama efektini görüntüleyin.\n\nNot: Dinleyicinin gövdesindeki sesler her zaman yok sayılır.</spw_eavesdroppingrevealsalltooltip>
+	<spw_eavesdroppingspritemaxsize>Maksimum Parlama Boyutu</spw_eavesdroppingspritemaxsize>
+	<spw_eavesdroppingspritemaxsizetooltip>Parlama efektinin maksimum boyutu.</spw_eavesdroppingspritemaxsizetooltip>
+	<spw_eavesdroppingspritesizemultiplier>Parlama Boyutu Çarpanı</spw_eavesdroppingspritesizemultiplier>
+	<spw_eavesdroppingspritesizemultipliertooltip>Parlama efektinin sesin menziline göre boyutu.</spw_eavesdroppingspritesizemultipliertooltip>
+	<spw_eavesdroppingspriteopacity>Parlama Opaklığı</spw_eavesdroppingspriteopacity>
+	<spw_eavesdroppingspriteopacitytooltip>Parlama efektinin gücü.</spw_eavesdroppingspriteopacitytooltip>
+	<spw_eavesdroppingspritefadecurve>Parlama Sönme Eğrisi</spw_eavesdroppingspritefadecurve>
+	<spw_eavesdroppingspritefadecurvetooltip>Parlama sönme eğrisinin şeklini hesaplamak için kullanılan üs. Birden küçük değerler yavaşça ve sonra sona doğru keskin bir şekilde söner. Birden büyük değerler hızla söner ve sona doğru düzleşir.</spw_eavesdroppingspritefadecurvetooltip>
+	<spw_eavesdroppingzoom>Gizlice Dinleme Kamera Yakınlaştırması</spw_eavesdroppingzoom>
+	<spw_eavesdroppingzoomtooltip>Gizlice dinlerken kameranın ne kadar yakınlaştığı.\n\nNot: Kamera yakınlaştırmasını ayarlayan diğer modlarla çalışmayabilir.</spw_eavesdroppingzoomtooltip>
+	<spw_eavesdroppingvignette>Vinyet Opaklığı</spw_eavesdroppingvignette>
+	<spw_eavesdroppingvignettetooltip>Gizlice dinlerken ekranın kenarlarındaki vinyet efektinin gücü.</spw_eavesdroppingvignettetooltip>
+
+	<!-- Hydrophone -->
+	<spw_hydrophonestab>Hidrofonlar</spw_hydrophonestab>
 	<spw_hydrophoneswitchenabled>Hidrofon Anahtarı Etkin</spw_hydrophoneswitchenabled>
-	<spw_hydrophoneswitchenabledtooltip>Hidrofon anahtarının varlığını değiştirir (turun yeniden başlatılması gerekir)</spw_hydrophoneswitchenabledtooltip>
+	<spw_hydrophoneswitchenabledtooltip>Hidrofon özelliğini açar/kapatır.\n\nNot: Hidrofon anahtarı bir sonraki tura kadar kalacaktır.</spw_hydrophoneswitchenabledtooltip>
+	<spw_hydrophonemovementsounds>Hareket Sesleri</spw_hydrophonemovementsounds>
+	<spw_hydrophonemovementsoundstooltip>Sudaki hareketi duyun.</spw_hydrophonemovementsoundstooltip>
+	<spw_hydrophonehearengine>Motorları Duy</spw_hydrophonehearengine>
+	<spw_hydrophonehearenginetooltip>Kendi motorunuz da dahil olmak üzere denizaltı motorlarını duyun.</spw_hydrophonehearenginetooltip>
+	<spw_hydrophonehearintostructures>Yapıların İçini Duy</spw_hydrophonehearintostructures>
+	<spw_hydrophonehearintostructurestooltip>Diğer denizaltıların veya karakolların içini duyun.\n\nNot: Bu yapılardaki sesler "İnce Duvar" engelini alır.</spw_hydrophonehearintostructurestooltip>
+	<spw_hydrophonemuffleownsub>Kendi Denizaltını Boğuklaştır</spw_hydrophonemuffleownsub>
+	<spw_hydrophonemuffleownsubtooltip>Kendi yapınızın içinden gelen sesleri boğuklaştırın.\n\nNot: "Su Yüzeyi" engelini uygular.</spw_hydrophonemuffleownsubtooltip>
+	<spw_hydrophonerange>Hidrofon Menzili</spw_hydrophonerange>
+	<spw_hydrophonerangetooltip>Hidrofonlar aracılığıyla sesleri ne kadar uzaktan duyabileceğiniz.\n\nNot: Bu mesafe, seslerin mevcut menziline eklenir.</spw_hydrophonerangetooltip>
+	<spw_hydrophonevolume>Hidrofon Ses Seviyesi</spw_hydrophonevolume>
+	<spw_hydrophonevolumetooltip>Hidrofonlar aracılığıyla duyulan seslerin ses seviyesi.</spw_hydrophonevolumetooltip>
+	<spw_hydrophonepitch>Hidrofon Perdesi</spw_hydrophonepitch>
+	<spw_hydrophonepitchtooltip>Hidrofonlar aracılığıyla duyulan seslerin perdesi.\n\nNot: Yakınlık sohbetine uygulanmaz.</spw_hydrophonepitchtooltip>
+	<spw_hydrophoneambiencevolume>Hidrofon Ambiyans Ses Seviyesi</spw_hydrophoneambiencevolume>
+	<spw_hydrophoneambiencevolumetooltip>Hidrofonları dinlerken çalan okyanus ambiyansının ses seviyesi.</spw_hydrophoneambiencevolumetooltip>
+	<spw_hydrophonemovementvolume>Hidrofon Hareket Ses Seviyesi</spw_hydrophonemovementvolume>
+	<spw_hydrophonemovementvolumetooltip>Sudaki hareket eden karakterlerin neden olduğu su çalkantı sesinin ses seviyesi.</spw_hydrophonemovementvolumetooltip>
+	
+	<spw_hydrophonevisualfeedbackenabled>Görsel Geri Bildirim</spw_hydrophonevisualfeedbackenabled>
+	<spw_hydrophonevisualfeedbackenabledtooltip>Sonar arayüzünde, sudaki seslerin yönünü, boyutunu ve ima edilen mesafesini görsel olarak temsil eden renkli sektörler görüntüleyin.\n\nNot: Mesafe, sesin menziline ve vurgulanan sektörün genişliğine göre ima edilebilir.</spw_hydrophonevisualfeedbackenabledtooltip>
+	<spw_hydrophoneusagedisablessonarblips>Pasif Sonarı Devre Dışı Bırak</spw_hydrophoneusagedisablessonarblips>
+	<spw_hydrophoneusagedisablessonarblipstooltip>Hidrofonları izlerken sonar sinyallerini çizmeyi durdurun. Sonar sinyalleri, çevreyi görsel olarak gösteren şeydir.</spw_hydrophoneusagedisablessonarblipstooltip>
+	<spw_hydrophoneusagedisablessuboutline>Denizaltı Dış Hattını Devre Dışı Bırak</spw_hydrophoneusagedisablessuboutline>
+	<spw_hydrophoneusagedisablessuboutlinetooltip>Hidrofonları izlerken denizaltının ve kenetlenme kapaklarının dış hattını çizmeyi durdurun.</spw_hydrophoneusagedisablessuboutlinetooltip>
+	<spw_hydrophonevisualfeedbacksizemultiplier>Görsel Geri Bildirim Boyutu</spw_hydrophonevisualfeedbacksizemultiplier>
+	<spw_hydrophonevisualfeedbacksizemultipliertooltip>Renkli sektörlerin kalınlığı.</spw_hydrophonevisualfeedbacksizemultipliertooltip>
+	<spw_hydrophonevisualfeedbackopacitymultiplier>Görsel Geri Bildirim Opaklığı</spw_hydrophonevisualfeedbackopacitymultiplier>
+	<spw_hydrophonevisualfeedbackopacitymultipliertooltip>Renkli sektörlerin şeffaflığı.</spw_hydrophonevisualfeedbackopacitymultipliertooltip>
+	
+	<spw_hydrophonereverb>Ruhani Yankılar</spw_hydrophonereverb>
+	<spw_hydrophonereverbtooltip>Uzak seslerin buz mağaraları ve su altı boşluklarında nasıl yayıldığını, dağıldığını ve yankılandığını taklit eden benzersiz bir hidrofon yankısı uygular.\n\nNot: "Yankıyı Etkinleştir" (Dinamik sekmesi) seçeneğinin etkin olmasını gerektirir.</spw_hydrophonereverbtooltip>
+	<spw_hydrophonereverbtargetgain>Yankı Gücü</spw_hydrophonereverbtargetgain>
+	<spw_hydrophonereverbtargetgaintooltip>Benzersiz hidrofon yankısı için temel kazanç.</spw_hydrophonereverbtargetgaintooltip>
+	
+	<spw_hydrophonedistortion>Hidrofonları Boz</spw_hydrophonedistortion>
+	<spw_hydrophonedistortiontooltip>Hidrofonlar aracılığıyla duyulan seslere bir distorsiyon efekti uygulayın.</spw_hydrophonedistortiontooltip>
+	
+	<spw_hydrophonebandpassfilter>Hidrofonları Bant Geçir</spw_hydrophonebandpassfilter>
+	<spw_hydrophonebandpassfiltertooltip>Hidrofonlar aracılığıyla duyulan seslere bir bant geçiren filtre uygulayın. Bir bant geçiren filtre, yüksek ve düşük frekansları keserek telsiz benzeri bir ses oluşturur.\n\nNot: Bant geçiren filtre kullanan sesler için boğuklaştırma devre dışı bırakılır.</spw_hydrophonebandpassfiltertooltip>
+	<spw_hydrophonebandpassfilterhfgain>Bant Geçiren Yüksek Frekans Kazancı</spw_hydrophonebandpassfilterhfgain>
+	<spw_hydrophonebandpassfilterhfgaintooltip>Bant geçiren filtrenin yüksek frekanslarının ses seviyesi.</spw_hydrophonebandpassfilterhfgaintooltip>
+	<spw_hydrophonebandpassfilterlfgain>Bant Geçiren Düşük Frekans Kazancı</spw_hydrophonebandpassfilterlfgain>
+	<spw_hydrophonebandpassfilterlfgaintooltip>Bant geçiren filtrenin düşük frekanslarının ses seviyesi.</spw_hydrophonebandpassfilterlfgaintooltip>
 
-	<spw_ambiencesettings>Ambiyans Ayarları</spw_ambiencesettings>
-	<spw_unsubmergedwaterambiencevolume>Su Altı Olmayan Ambiyans Ses Düzeyi</spw_unsubmergedwaterambiencevolume>
-	<spw_submergedwaterambiencevolume>Su Altı Ambiyans Ses Düzeyi</spw_submergedwaterambiencevolume>
-	<spw_hydrophonewaterambiencevolume>Hidrofon Su Ambiyans Ses Düzeyi</spw_hydrophonewaterambiencevolume>
+	<spw_categoryadvanced>Gelişmiş</spw_categoryadvanced>
+
+	<spw_hydrophonemuffleignoredsounds>Boğuklaştırmada Yok Sayılan Sesler</spw_hydrophonemuffleignoredsounds>
+	<spw_hydrophonemuffleignoredsoundstooltip>Bu listedeki sesler, hidrofonları kullanırken asla boğuklaştırılmaz.</spw_hydrophonemuffleignoredsoundstooltip>
+	
+	<spw_hydrophonevisualignoredsounds>Görsel Geri Bildirimde Yok Sayılan Sesler</spw_hydrophonevisualignoredsounds>
+	<spw_hydrophonevisualignoredsoundstooltip>Bu listedeki sesler, hidrofonları kullanırken sonar arayüzünde asla görüntülenmez.</spw_hydrophonevisualignoredsoundstooltip>
+	
+	<!-- Ambience -->
+	<spw_ambiencetab>Ambiyans</spw_ambiencetab>
+	<spw_disablewhitenoise>Beyaz Gürültüyü Devre Dışı Bırak</spw_disablewhitenoise>
+	<spw_disablewhitenoisetooltip>Vanilla oyunundaki biyom gürültü döngülerini sessize alın.</spw_disablewhitenoisetooltip>
+
+	<spw_categorytrack>Parçaya Özel</spw_categorytrack>
+	<spw_waterambienceinvolume>İçeride Su Ses Seviyesi</spw_waterambienceinvolume>
+	<spw_waterambienceinvolumetooltip>İçeride çalan su ambiyans parçasının ses seviyesi.\n\nNot: Bu parça, dışarıdaki parçanın üzerinde daha düşük bir ses seviyesinde çalmaya devam eder.</spw_waterambienceinvolumetooltip>
+	<spw_waterambienceoutvolume>Dışarıda Su Ses Seviyesi</spw_waterambienceoutvolume>
+	<spw_waterambienceoutvolumetooltip>Dışarıda çalan su ambiyans parçasının ses seviyesi.</spw_waterambienceoutvolumetooltip>
+	<spw_waterambiencemovingvolume>Hareketli Su Ses Seviyesi</spw_waterambiencemovingvolume>
+	<spw_waterambiencemovingvolumetooltip>Denizaltı veya oyuncu suda hareket ederken çalan su ambiyans parçasının ses seviyesi.</spw_waterambiencemovingvolumetooltip>
+
+	<spw_categoryenvironment>Ortama Özel</spw_categoryenvironment>
+	<spw_unsubmergedsuitwaterambiencevolume>Su Yüzeyinde Su Ses Seviyesi (Kıyafetli)</spw_unsubmergedsuitwaterambiencevolume>
+	<spw_unsubmergedsuitwaterambiencevolumetooltip>Dinleyici su yüzeyindeyken ve dalgıç kıyafeti giyerken su ambiyans parçalarının ses seviyesi.</spw_unsubmergedsuitwaterambiencevolumetooltip>
+	<spw_unsubmergednosuitwaterambiencevolume>Su Yüzeyinde Su Ses Seviyesi (Kıyafetsiz)</spw_unsubmergednosuitwaterambiencevolume>
+	<spw_unsubmergednosuitwaterambiencevolumetooltip>Dinleyici su yüzeyindeyken ve dalgıç kıyafeti giymiyorken su ambiyans parçalarının ses seviyesi.</spw_unsubmergednosuitwaterambiencevolumetooltip>
+	<spw_submergedsuitwaterambiencevolume>Su Altında Su Ses Seviyesi (Kıyafetli)</spw_submergedsuitwaterambiencevolume>
+	<spw_submergedsuitwaterambiencevolumetooltip>Dinleyici su altındayken ve dalgıç kıyafeti giyerken su ambiyans parçalarının ses seviyesi.</spw_submergedsuitwaterambiencevolumetooltip>
+	<spw_submergednosuitwaterambiencevolume>Su Altında Su Ses Seviyesi (Kıyafetsiz)</spw_submergednosuitwaterambiencevolume>
+	<spw_submergednosuitwaterambiencevolumetooltip>Dinleyici su altındayken ve dalgıç kıyafeti giymiyorken su ambiyans parçalarının ses seviyesi.</spw_submergednosuitwaterambiencevolumetooltip>
 	<spw_waterambiencetransitionspeed>Su Ambiyansı Geçiş Hızı</spw_waterambiencetransitionspeed>
-	<spw_waterambiencetransitionspeedtooltip>Su ambiansının ses düzeyi arasındaki geçiş hızı</spw_waterambiencetransitionspeedtooltip>
+	<spw_waterambiencetransitionspeedtooltip>Su ambiyansının ses seviyeleri arasında ne kadar hızlı geçiş yaptığı.</spw_waterambiencetransitionspeedtooltip>
 
-	<spw_advancedsoundsettings>Gelişmiş Ses Ayarları</spw_advancedsoundsettings>
-	<spw_soundvolumemultipliers>Ses Düzeyi Çarpanları</spw_soundvolumemultipliers>
-	<spw_ignoredsounds>Yok Sayılan Sesler</spw_ignoredsounds>
-	<spw_lowpassignoredsounds>Düşük Geçiş Yok Sayılan Sesler</spw_lowpassignoredsounds>
-	<spw_pitchignoredsounds>Perde Yok Sayılan Sesler</spw_pitchignoredsounds>
-	<spw_pathignoredsounds>Yol Yok Sayılan Sesler</spw_pathignoredsounds>
-	<spw_containerignoredsounds>Konteyner Yok Sayılan Sesler</spw_containerignoredsounds>
-	<spw_waterignoredsounds>Su Yok Sayılan Sesler</spw_waterignoredsounds>
-	<spw_submersionignoredsounds>Batma Yok Sayılan Sesler</spw_submersionignoredsounds>
-	<spw_bubbleignorednames>Kabarcık Yok Sayılan İsimler</spw_bubbleignorednames>
 
-	<spw_nichesettings>Niş Ayarları</spw_nichesettings>
-	<spw_mufflesubmergedplayer>Su Altı Oyuncu Sesi Boğma</spw_mufflesubmergedplayer>
-	<spw_mufflesubmergedplayertooltip>Kafanız suyun altındayken sesi boğar (tavsiye edilir)</spw_mufflesubmergedplayertooltip>
-	<spw_mufflesubmergedviewtarget>Su Altı Görüntüleme Hedefi Sesi Boğma</spw_mufflesubmergedviewtarget>
-	<spw_mufflesubmergedviewtargettooltip>Görüntülediğiniz hedef suyun altındayken sesi boğar (örn. taretler, kameralar vb.)</spw_mufflesubmergedviewtargettooltip>
-	<spw_mufflesubmergedsounds>Su Altı Seslerini Boğma</spw_mufflesubmergedsounds>
-	<spw_mufflesubmergedsoundstooltip>Su yüzeyinin altında konumlandırılan sesleri boğar (tavsiye edilir)</spw_mufflesubmergedsoundstooltip>
-	<spw_muffleflowsounds>Akıntı Seslerini Boğma</spw_muffleflowsounds>
-	<spw_muffleflowsoundstooltip>Sızıntılardan gelen su akıntısı seslerinin boğulmasını açar/kapatır</spw_muffleflowsoundstooltip>
-	<spw_mufflefiresounds>Ateş Seslerini Boğma</spw_mufflefiresounds>
-	<spw_mufflefiresoundstooltip>Ateş seslerinin boğulmasını açar/kapatır</spw_mufflefiresoundstooltip>
-	<spw_muffledivingsuit>Dalış Tulumu Sustur</spw_muffledivingsuit>
-	<spw_muffledivingsuittooltip>Dalış tulumu giyerken seslerin susturulmasını açar/kapatır (önerilmez)</spw_muffledivingsuittooltip>
-	<spw_divingsuitpitch>Dalış Elbisesi Tonu</spw_divingsuitpitch>
-	<spw_divingsuitpitchtooltip>Dalış elbisesi giyerken seslerin tonu (üst üste eklenir)</spw_divingsuitpitchtooltip>
-	<spw_submergedpitch>Batık Ton</spw_submergedpitch>
-	<spw_submergedpitchtooltip>Dinleyici su altındayken seslerin tonu (üst üste eklenir)</spw_submergedpitchtooltip>
-	<spw_muffledvoicepitch>Boğuk Ses Tonu</spw_muffledvoicepitch>
-	<spw_muffledvoicepitchtooltip>Tavsiye edilmez. Sadece eğlence için</spw_muffledvoicepitchtooltip>
-	<spw_unmuffledvoicepitch>Boğulmamış Ses Tonu</spw_unmuffledvoicepitch>
-	<spw_unmuffledvoicepitchtooltip>Tavsiye edilmez. Sadece eğlence için</spw_unmuffledvoicepitchtooltip>
-	<spw_muffledcomponentpitch>Boğuk Bileşen Tonu</spw_muffledcomponentpitch>
-	<spw_unmuffledcomponentpitch>Boğulmamış Bileşen Tonu</spw_unmuffledcomponentpitch>
+	<!-- Pitch -->
+	<spw_pitchtab>Perde</spw_pitchtab>
+	<spw_pitchenabled>Perdeyi Etkinleştir</spw_pitchenabled>
+	<spw_pitchenabledtooltip>Tüm perde efektlerini genel olarak açar/kapatır.\n\nNot: Diğer modlardan gelen seslerle olan alışılmadık perde etkileşimleri için hızlı bir çözüm olarak yardımcı olabilir.</spw_pitchenabledtooltip>
+	<spw_pitchstatuseffectsounds>Durum Efekti Seslerini Perdele</spw_pitchstatuseffectsounds>
+	<spw_pitchstatuseffectsoundstooltip>XML durum efektleri tarafından çalınan sesler için perdelemeyi aç/kapat.</spw_pitchstatuseffectsoundstooltip>
+	<spw_pitchwithdistance>Mesafeyle Perdele</spw_pitchwithdistance>
+	<spw_pitchwithdistancetooltip>Boğuklaştırılmış seslerin perdesini mesafelerine göre dinamik olarak düşürün.\n\nNot: Döngüsel seslere veya yakınlık sohbetine uygulanmaz.\n\nNot: Diğer perde çarpanlarıyla toplamsal olarak birikir.</spw_pitchwithdistancetooltip>
+	
+	<spw_divingsuitpitch>Dalgıç Kıyafeti Perdesi</spw_divingsuitpitch>
+	<spw_divingsuitpitchtooltip>Dalgıç kıyafeti giyerken seslerin perdesi.\n\nNot: Diğer perde çarpanlarıyla toplamsal olarak birikir.</spw_divingsuitpitchtooltip>
+	<spw_submergedpitch>Su Altı Perdesi</spw_submergedpitch>
+	<spw_submergedpitchtooltip>Dinleyici su altındayken seslerin perdesi.\n\nNot: Diğer perde çarpanlarıyla toplamsal olarak birikir.</spw_submergedpitchtooltip>
+	
+	<spw_muffledsoundpitch>Boğuklaştırılmış Ses Perdesi</spw_muffledsoundpitch>
+	<spw_muffledsoundpitchtooltip>Boğuklaştırılmış döngüsel olmayan seslerin perdesi. Boğuklaştırma gücüne göre "Boğuklaştırılmamış Ses Perdesi" ile karışır.\n\nNot: Diğer perde çarpanlarıyla toplamsal olarak birikir.</spw_muffledsoundpitchtooltip>
+	<spw_unmuffledsoundpitch>Boğuklaştırılmamış Ses Perdesi</spw_unmuffledsoundpitch>
+	<spw_unmuffledsoundpitchtooltip>Boğuklaştırılmamış döngüsel olmayan seslerin perdesi. Boğuklaştırma gücüne göre "Boğuklaştırılmış Ses Perdesi" ile karışır.\n\nNot: Diğer perde çarpanlarıyla toplamsal olarak birikir.</spw_unmuffledsoundpitchtooltip>
+	
+	<spw_muffledloopingpitch>Boğuklaştırılmış Döngüsel Ses Perdesi</spw_muffledloopingpitch>
+	<spw_muffledloopingpitchtooltip>Boğuklaştırılmış döngüsel seslerin perdesi. Boğuklaştırma gücüne göre "Boğuklaştırılmamış Döngüsel Ses Perdesi" ile karışır.\n\nNot: Diğer perde çarpanlarıyla toplamsal olarak birikir.</spw_muffledloopingpitchtooltip>
+	<spw_unmuffledloopingpitch>Boğuklaştırılmamış Döngüsel Ses Perdesi</spw_unmuffledloopingpitch>
+	<spw_unmuffledloopingpitchtooltip>Boğuklaştırılmamış döngüsel seslerin perdesi. Boğuklaştırma gücüne göre "Boğuklaştırılmış Döngüsel Ses Perdesi" ile karışır.\n\nNot: Diğer perde çarpanlarıyla toplamsal olarak birikir.</spw_unmuffledloopingpitchtooltip>
+	
+	<spw_muffledvoicepitch>Boğuklaştırılmış Konuşma Perdesi</spw_muffledvoicepitch>
+	<spw_muffledvoicepitchtooltip>Boğuklaştırılmış yakınlık sohbetinin perdesi. Boğuklaştırma gücüne göre "Boğuklaştırılmamış Konuşma Perdesi" ile karışır.\n\nNot: Diğer perde çarpanlarıyla toplamsal olarak birikir.\n\nNot: Sadece eğlence için :)</spw_muffledvoicepitchtooltip>
+	<spw_unmuffledvoicepitch>Boğuklaştırılmamış Konuşma Perdesi</spw_unmuffledvoicepitch>
+	<spw_unmuffledvoicepitchtooltip>Boğuklaştırılmamış yakınlık sohbetinin perdesi. Boğuklaştırma gücüne göre "Boğuklaştırılmış Konuşma Perdesi" ile karışır.\n\nNot: Diğer perde çarpanlarıyla toplamsal olarak birikir.\n\nNot: Sadece eğlence için :)</spw_unmuffledvoicepitchtooltip>
+
+
+	<!-- Advanced -->
+	<spw_advancedtab>Gelişmiş</spw_advancedtab>
+
+	<spw_debugperformance>Performansı Göster</spw_debugperformance>
+	<spw_debugperformancetooltip>Soundproof Walls için ayrıntılı performans bilgilerini görüntüleyin.\n\nNot: Bu ayar, "Ayarları Senkronize Et" (Genel sekmesi) kullanılırken diğer oyuncularla senkronize edilmez.</spw_debugperformancetooltip>
+
+	<spw_debugplayingsounds>Çalan Sesleri Göster</spw_debugplayingsounds>
+	<spw_debugplayingsoundstooltip>Soundproof Walls tarafından kaydedilen tüm aktif olarak çalan sesleri görüntüleyin.\n\nNot: Bu ayar, "Ayarları Senkronize Et" (Genel sekmesi) kullanılırken diğer oyuncularla senkronize edilmez.</spw_debugplayingsoundstooltip>
+
+	<spw_debugchannelinfo>Kanal Bilgisini Göster</spw_debugchannelinfo>
+	<spw_debugchannelinfotooltip>"Çalan Sesleri Göster" ayarını, tüm aktif olarak çalan sesler için kazanç, perde, menzil, mesafe, boğuklaştırma ve engelleri de gösterecek şekilde genişletin.\n\nNot: "Çalan Sesleri Göster" devre dışıysa, bu bilgiler Barotrauma konsoluna kaydedilir.\n\nNot: Bu ayar, "Ayarları Senkronize Et" (Genel sekmesi) kullanılırken diğer oyuncularla senkronize edilmez.</spw_debugchannelinfotooltip>
+
 	<spw_hidesettings>Menü Düğmesini Gizle</spw_hidesettings>
-	<spw_hidesettingstooltip>Uyarı: Bu ayarı etkinleştirmek, UI'nızdan "Ses Yalıtım Ayarları" düğmesini kaldırır. Bu ayarı geri yüklemek için yapılandırma dosyanızı manuel olarak düzenlemeniz veya silmeniz gerekir.</spw_hidesettingstooltip>
+	<spw_hidesettingstooltip>Duraklatma menüsünden "Soundproof Walls" düğmesini kaldırın. Soundproof Walls ayarlar menüsüne hala konsola "spw" yazarak erişilebilir.\n\nNot: Bu ayar, "Ayarları Senkronize Et" (Genel sekmesi) kullanılırken diğer oyuncularla senkronize edilmez.</spw_hidesettingstooltip>
 
+	<spw_remembermenutabandscroll>Menü Konumunu Hatırla</spw_remembermenutabandscroll>
+	<spw_remembermenutabandscrolltooltip>Menüyü en son ziyaret edilen kaydırma konumunda ve sekmede açın.\n\nNot: Bu ayar, "Ayarları Senkronize Et" (Genel sekmesi) kullanılırken diğer oyuncularla senkronize edilmez.</spw_remembermenutabandscrolltooltip>
+
+	<spw_maxsourcecount>Maksimum Çalan Ses</spw_maxsourcecount>
+	<spw_maxsourcecounttooltip>Aynı anda kaç tane sesin çalabileceği. Daha yüksek değerler seslerin atlanmasını önler ancak performansı etkileyebilir.</spw_maxsourcecounttooltip>
+	
+	<spw_maxsimultaneousinstances>Maksimum Eşzamanlı Örnek</spw_maxsimultaneousinstances>
+	<spw_maxsimultaneousinstancestooltip>Aynı sesin aynı anda kaç örneğinin çalabileceği. Daha yüksek değerler seslerin atlanmasını önler ancak performansı etkileyebilir.</spw_maxsimultaneousinstancestooltip>
+
+	<spw_categoryintervals>Güncelleme Aralıkları</spw_categoryintervals>
+	<spw_updatenonloopingsounds>Döngüsel Olmayan Sesleri Güncelle</spw_updatenonloopingsounds>
+	<spw_updatenonloopingsoundstooltip>Döngüsel olmayan seslerin çalarken değiştirilmesine izin vererek, daha önce kesilemeyen seslere kesilme potansiyeli kazandırın.\n\nNot: Performansı biraz etkileyebilir.</spw_updatenonloopingsoundstooltip>
+	
+	<spw_nonloopingsoundmuffleupdateinterval>Döngüsel Olmayan Ses Güncelleme Aralığı</spw_nonloopingsoundmuffleupdateinterval>
+	<spw_nonloopingsoundmuffleupdateintervaltooltip>Döngüsel olmayan sesler için her engel güncellemesi arasındaki süre.\n\nNot: "Döngüsel Olmayan Sesleri Güncelle"nin etkin olmasını gerektirir.\n\nNot: Bu değeri artırmak performansı artırabilir.</spw_nonloopingsoundmuffleupdateintervaltooltip>
+	<spw_openaleffectsupdateinterval>OpenAL Efektleri Güncelleme Aralığı</spw_openaleffectsupdateinterval>
+	<spw_openaleffectsupdateintervaltooltip>Dinamik moddaki efektler için her efekt parametresi güncellemesi arasındaki süre.\n\nNot: Bu değeri artırmak performansı artırabilir.</spw_openaleffectsupdateintervaltooltip>
+	<spw_voicemuffleupdateinterval>Konuşma Güncelleme Aralığı</spw_voicemuffleupdateinterval>
+	<spw_voicemuffleupdateintervaltooltip>Oyuncu sesleri için her engel güncellemesi arasındaki süre.\n\nNot: Bu değeri artırmak performansı artırabilir.</spw_voicemuffleupdateintervaltooltip>
+	<spw_componentmuffleupdateinterval>Bileşen Sesi Güncelleme Aralığı</spw_componentmuffleupdateinterval>
+	<spw_componentmuffleupdateintervaltooltip>Döngüsel bileşen sesleri (ör. havalandırmalar, reaktör, motor) için her engel güncellemesi arasındaki süre.\n\nNot: Bu değeri artırmak performansı artırabilir.</spw_componentmuffleupdateintervaltooltip>
+	<spw_statuseffectmuffleupdateinterval>Durum Efekti Sesi Güncelleme Aralığı</spw_statuseffectmuffleupdateinterval>
+	<spw_statuseffectmuffleupdateintervaltooltip>Döngüsel durum efekti sesleri (ör. rahatsızlıklardan gelen sesler) için her engel güncellemesi arasındaki süre.\n\nNot: Bu değeri artırmak performansı artırabilir.</spw_statuseffectmuffleupdateintervaltooltip>
+	
+	<spw_categorytransitions>Geçişler</spw_categorytransitions>
+	<spw_disablevanillafadeout>Vanilla Sönmesini Devre Dışı Bırak</spw_disablevanillafadeout>
+	<spw_disablevanillafadeouttooltip>Vanilla "FadeOutAndDispose" yöntemini devre dışı bırakır. Bu seçeneği yalnızca sesler döngüde takılı kalıyorsa etkinleştirin.\n\nNot: Daha az pürüzsüz ses kesilmeleriyle sonuçlanır.</spw_disablevanillafadeouttooltip>
+	<spw_gaintransitionfactor>Kazanç Geçiş Hızı</spw_gaintransitionfactor>
+	<spw_gaintransitionfactortooltip>Bir sesin ses seviyesinin saniyede ne kadar değişebileceği. Sıfır değeri, anlık geçişler için bu özelliği devre dışı bırakır.</spw_gaintransitionfactortooltip>
+	<spw_pitchtransitionfactor>Perde Geçiş Hızı</spw_pitchtransitionfactor>
+	<spw_pitchtransitionfactortooltip>Bir sesin perdesinin saniyede ne kadar değişebileceği. Sıfır değeri, anlık geçişler için bu özelliği devre dışı bırakır.</spw_pitchtransitionfactortooltip>
+	<spw_airreverbgaintransitionfactor>İç Mekan Yankı Geçiş Hızı</spw_airreverbgaintransitionfactor>
+	<spw_airreverbgaintransitionfactortooltip>İç mekan yankı efektinin kazancının saniyede ne kadar değişebileceği. Sıfır değeri, anlık geçişler için bu özelliği devre dışı bırakır.</spw_airreverbgaintransitionfactortooltip>
+	<spw_hydrophonereverbgaintransitionfactor>Hidrofon Yankı Geçiş Hızı</spw_hydrophonereverbgaintransitionfactor>
+	<spw_hydrophonereverbgaintransitionfactortooltip>Hidrofon yankı efektinin kazancının saniyede ne kadar değişebileceği. Sıfır değeri, anlık geçişler için bu özelliği devre dışı bırakır.</spw_hydrophonereverbgaintransitionfactortooltip>
+	<spw_dynamicmuffletransitionfactor>Boğuklaştırma Geçiş Hızı</spw_dynamicmuffletransitionfactor>
+	<spw_dynamicmuffletransitionfactortooltip>Dinamik modun boğuklaştırma efektinin saniyede ne kadar değişebileceği. Sıfır değeri, anlık geçişler için bu özelliği devre dışı bırakır.\n\nNot: Bu özellik etkinleştirildiğinde duyulabilir patlamalar üretebilir, muhtemelen Barotrauma'nın OpenAL Soft sürümünün bir belirtisi.</spw_dynamicmuffletransitionfactortooltip>
+	<spw_dynamicmuffletransitionfactorflowfire>Akış ve Yangın Boğuklaştırma Geçiş Hızı</spw_dynamicmuffletransitionfactorflowfire>
+	<spw_dynamicmuffletransitionfactorflowfiretooltip>Su akışı ve yangın sesleri için Dinamik modun boğuklaştırma efektinin saniyede ne kadar değişebileceği. Sıfır değeri, anlık geçişler için bu özelliği devre dışı bırakır.\n\nNot: Bu özellik etkinleştirildiğinde duyulabilir patlamalar üretebilir, muhtemelen Barotrauma'nın OpenAL Soft sürümünün bir belirtisi.</spw_dynamicmuffletransitionfactorflowfiretooltip>
+
+	<spw_categorypathfinding>Ses Yol Bulma</spw_categorypathfinding>
+	<spw_traversewaterducts>Su Kanallarından Geç</spw_traversewaterducts>
+	<spw_traversewaterductstooltip>Seslerin açık su kanallarından engelsiz geçmesine izin verin.</spw_traversewaterductstooltip>
+	<spw_flowsoundstraversewaterducts>Akış Sesleri Su Kanallarından Geçer</spw_flowsoundstraversewaterducts>
+	<spw_flowsoundstraversewaterductstooltip>Bir akış sesinin yolunun tahmininin açık su kanallarından engelsiz geçmesine izin verin.\n\nNot: "Akış ve Yangın Yollarını Boğuklaştır" (Boğuklaştırma sekmesi) seçeneğinin etkin olmasını gerektirir.</spw_flowsoundstraversewaterductstooltip>
+	<spw_opendoorthreshold>Açık Kapı Eşiği</spw_opendoorthreshold>
+	<spw_opendoorthresholdtooltip>Bir kapı, kapak veya kanalın sesin engelsiz geçmesi için ne kadar açık olması gerektiği. Sıfır değeri, seslerin tamamen kapalı kapılardan engelsiz geçmesine izin verir.</spw_opendoorthresholdtooltip>
+	<spw_openwallthreshold>Açık Duvar Eşiği</spw_openwallthreshold>
+	<spw_openwallthresholdtooltip>Bir duvardaki bir boşluğun sesin engelsiz geçmesi için ne kadar açık olması gerektiği.</spw_openwallthresholdtooltip>
+	<spw_soundpropagationrange>Ses Yayılma Menzili</spw_soundpropagationrange>
+	<spw_soundpropagationrangetooltip>"Duvardan Yayılan Sesler" listesindeki (Gelişmiş sekmesi) bir sesin, içine yayılmak için yakındaki bir gövdeyi arayabileceği maksimum mesafe.</spw_soundpropagationrangetooltip>
+
+	<spw_categoryai>Karakter Yapay Zekası</spw_categoryai>
+	<spw_aitargetsoundrange>Yapay Zeka Ses Menzili</spw_aitargetsoundrange>
+	<spw_aitargetsoundrangetooltip>Karakter yapay zekasının eşyaları ve karakterleri duyabileceği mesafe.\n\nNot: Sadece tek oyunculu.</spw_aitargetsoundrangetooltip>
+	<spw_aitargetsightrange>Yapay Zeka Görüş Menzili</spw_aitargetsightrange>
+	<spw_aitargetsightrangetooltip>Karakter yapay zekasının eşyaları ve karakterleri görebileceği mesafe.\n\nNot: Sadece tek oyunculu.</spw_aitargetsightrangetooltip>
+
+	<spw_categoryrules>Ses Kuralları</spw_categoryrules>
+	
+	<spw_customsounds>Özel Sesler</spw_customsounds>
+	<spw_customsoundstooltip>Belirli seslere özel değerler ve efektler uygulayın.\n\n"Keyword": Hedef sesin dosya adının bir parçası. Büyük/küçük harfe duyarsız.\n\n"GainMult": Ses seviyesi çarpanı. Diğer ses seviyesi çarpanlarıyla toplamsal olarak birikir.\n\n"RangeMult": Menzil çarpanı. Diğer menzil çarpanlarıyla çarpımsal olarak birikir.\n\n"SidechainMult": Bu ses çaldığında diğer seslerin ne kadar azaltılacağı.\n\n"SidechainRelease": Ses seviyesi azaltmasının ne kadar süreceği.\n\n"Distortion": Bu ses için distorsiyon efektini açar/kapatır. Sadece Dinamik mod.\n\n"PitchMult": Perde çarpanı. Sesin uzunluğunu esneterek çalışır. 0.25-4.0 arasında değişir.\n\n"MuffleInfluence": Boğuklaştırma efektlerinin etkinliği. Düşük değerler daha az etkilenme anlamına gelir.\n\n"KeywordExclusions": Sağlanan Anahtar Kelimeyi içeren ancak hariç tutulması gereken sesler. Büyük/küçük harfe duyarsız.</spw_customsoundstooltip>
+	<spw_moddedcustomsoundstooltip>[modname] modundan gelen özel ses değerleri. Standart "Özel Sesler" listesine göre önceliklidir.\n\nBu liste diğer oyuncularla senkronize edilmez ve yapılan değişiklikler mevcut oturumun ötesinde kalıcı olmaz.\n\nSoundproof Walls bu listenin içeriğinden sorumlu değildir.</spw_moddedcustomsoundstooltip>
+	
+	<spw_ignoredsounds>Yok Sayılan Sesler</spw_ignoredsounds>
+	<spw_ignoredsoundstooltip>Bu listedeki sesler tüm işlemler tarafından yok sayılır.</spw_ignoredsoundstooltip>
+	
+	<spw_surfaceignoredsounds>Su Yüzeyinde Yok Sayılan Sesler</spw_surfaceignoredsounds>
+	<spw_surfaceignoredsoundstooltip>Bu listedeki sesler hava-su bariyerlerinden engelsiz geçer.</spw_surfaceignoredsoundstooltip>
+	
+	<spw_submersionignoredsounds>Su Kütlesinde Yok Sayılan Sesler</spw_submersionignoredsounds>
+	<spw_submersionignoredsoundstooltip>Bu listedeki sesler sudan engelsiz geçer.\n\nNot: Seslerin su yüzeyleriyle nasıl etkileşime girdiğini etkilemez.</spw_submersionignoredsoundstooltip>
+	
+	<spw_wallpropagatingsounds>Duvardan Yayılan Sesler</spw_wallpropagatingsounds>
+	<spw_wallpropagatingsoundstooltip>Bu listedeki sesler, oyuncuya daha iyi ulaşmak için yakındaki gövdelere atlayabilir ve "Kalın Duvar" yerine "İnce Duvar" engeli alır.</spw_wallpropagatingsoundstooltip>
+	
+	<spw_pitchignoredsounds>Perdede Yok Sayılan Sesler</spw_pitchignoredsounds>
+	<spw_pitchignoredsoundstooltip>Bu listedeki seslerin perdesi 1.0'a zorlanır.\n\nNot: "Özel Sesler" listesindeki (Gelişmiş sekmesi) sese özgü perde çarpanı bu listeyi geçersiz kılar.</spw_pitchignoredsoundstooltip>
+
+	<spw_reverbforcedsounds>Yankıya Zorlanan Sesler</spw_reverbforcedsounds>
+	<spw_reverbforcedsoundstooltip>Bu listedeki sesler, mümkünse her zaman yankı efekti alacaktır.\n\nNot: "Dinamik" ve "Statik" efekt modlarına özeldir.</spw_reverbforcedsoundstooltip>
+
+	<spw_airreverbignoredsounds>İç Mekan Yankısında Yok Sayılan Sesler</spw_airreverbignoredsounds>
+	<spw_airreverbignoredsoundstooltip>Bu listedeki sesler asla iç mekan yankı efekti almaz.\n\nNot: "Dinamik" ve "Statik" efekt modlarına özeldir.</spw_airreverbignoredsoundstooltip>
+	
+	<spw_waterreverbignoredsounds>Dış Mekan Yankısında Yok Sayılan Sesler</spw_waterreverbignoredsounds>
+	<spw_waterreverbignoredsoundstooltip>Bu listedeki sesler asla dış mekan yankı efekti almaz.\n\nNot: "Dinamik" efekt moduna özeldir.</spw_waterreverbignoredsoundstooltip>
+	
+	<spw_barrierignoredsounds>Bariyerde Yok Sayılan Sesler</spw_barrierignoredsounds>
+	<spw_barrierignoredsoundstooltip>Bu listedeki sesler tıkanma, duvarlar, kapılar veya su yüzeyleri tarafından boğuklaştırılmaz.</spw_barrierignoredsoundstooltip>
+	
+	<spw_xmlignoredsounds>XML'de Yok Sayılan Sesler</spw_xmlignoredsounds>
+	<spw_xmlignoredsoundstooltip>Bu liste, dahili olarak "dontmuffle" etiketi veya benzeri özelliklerle işaretlenmiş sesler içindir. Bu listedeki sesler her zaman boğuklaştırma için değerlendirilecektir.</spw_xmlignoredsoundstooltip>
+	
+	<spw_lowpassignoredsounds>Alçak Geçirende Yok Sayılan Sesler</spw_lowpassignoredsounds>
+	<spw_lowpassignoredsoundstooltip>Bu listedeki sesler asla boğuklaştırma efektleri almaz.</spw_lowpassignoredsoundstooltip>
+	
+	<spw_containerignoredsounds>Konteynerde Yok Sayılan Sesler</spw_containerignoredsounds>
+	<spw_containerignoredsoundstooltip>Bu listedeki sesler, içinde depolandıkları herhangi bir konteynerden engelsiz geçer.</spw_containerignoredsoundstooltip>
+	
+	<spw_bubbleignorednames>Boğulmadan Muaf Oyuncular</spw_bubbleignorednames>
+	<spw_bubbleignorednamestooltip>Oksijen kaynağı olmadan su altında konuşmanın neden olduğu boğulma baloncukları etkisinden muafiyet tanımak için bu listeye oyuncu adları ekleyin.</spw_bubbleignorednamestooltip>
+
+	<!-- Extra -->
 	<spw_updateserverconfig>ayarları değiştirdi - sunucu yapılandırması güncellendi</spw_updateserverconfig>
-	<spw_disableserverconfig>ayar senkronizasyonunu devre dışı bıraktı - yerel yapılandırmalar artık önceliklidir</spw_disableserverconfig>
-	<spw_hydrophonemonitoring>Hidrofonları İzleme</spw_hydrophonemonitoring>
+	<spw_disableserverconfig>ayar senkronizasyonunu devre dışı bıraktı - artık yerel yapılandırmalar öncelikli</spw_disableserverconfig>
+	<spw_hydrophonemonitoring>Hidrofonları Dinle</spw_hydrophonemonitoring>
+	<spw_serverdiffheader>Aktif sunucu yapılandırmasının yerel yapılandırmanızdan [count] farkı var:</spw_serverdiffheader>
 	<spw_listening>Dinleniyor...</spw_listening>
-	<spw_invalidinput>Geçersiz Giriş</spw_invalidinput>
-	<spw_default>(Varsayılan)</spw_default>
-	<spw_vanilla>(Vanilya)</spw_vanilla>
-	<spw_custom>(Özel)</spw_custom>
+	<spw_loading>Ses arabellekleri yükleniyor...</spw_loading>
+	<spw_invalidinput>Geçersiz Girdi</spw_invalidinput>
+	<spw_enabled>Etkin</spw_enabled>
+	<spw_disabled>Devre Dışı</spw_disabled>
+	<spw_default>Varsayılan</spw_default>
+	<spw_vanilla>Vanilla</spw_vanilla>
+	<spw_custom>Özel</spw_custom>
+	<spw_linear>Doğrusal</spw_linear>
+	<spw_instant>Anlık</spw_instant>
+	<spw_pertick>Tik Başına</spw_pertick>
+	<spw_concave>İçbükey</spw_concave>
+	<spw_convex>Dışbükey</spw_convex>
+	<spw_seconds>sn</spw_seconds>
 	<spw_reset>Sıfırla</spw_reset>
-	<spw_resetall>Hepsini Sıfırla</spw_resetall>
+	<spw_resetall>Tümünü Sıfırla</spw_resetall>
+
+
+	<!-- 2.0 Popup message -->
+	<spw_popupheader>Soundproof Walls 2.0'a Hoş Geldiniz</spw_popupheader>
+	<spw_popupheadersubtext>Soundproof Walls 2.0, orijinal modun tamamen yeniden yazılmış ve genişletilmiş bir versiyonudur ve Barotrauma için eksiksiz bir ses sistemi revizyonu niteliğindedir.</spw_popupheadersubtext>
+
+	<spw_popupbodyheader>Büyük Değişiklikler</spw_popupbodyheader>
+	
+	<spw_popupbodysubheading1>• Çevresel Olarak Simüle Edilmiş Yankı</spw_popupbodysubheading1>
+	<spw_popupbodysubtext1>Sesler ve oyuncu sesleri, odanın boyutuna ve hacmine göre gerçekçi bir şekilde yankılanır. Denizaltının dışında, ses dalgaları Europa'nın donmuş duvarlarından sekerken yüksek seslerin kilometrelerce yayıldığı duyulabilir.</spw_popupbodysubtext1>
+
+	<spw_popupbodysubheading2>• Yan Zincirleme Sıkıştırma Sistemi</spw_popupbodysubheading2>
+	<spw_popupbodysubtext2>Silah sesleri ve patlamalar daha sert vurur, daha geniş ve daha güçlü bir dinamik aralık için daha sessiz sesleri bastırır.</spw_popupbodysubtext2>
+
+	<spw_popupbodysubheading3>• Dinamik Alçak Geçiren Frekansı</spw_popupbodysubheading3>
+	<spw_popupbodysubtext3>Sesler artık tek bir belirli güçte boğuklaştırılmakla sınırlı değildir ve artık duruma ve yolda kaç tane engel olduğuna göre dinamik olarak uyum sağlayacaktır.</spw_popupbodysubtext3>
+
+	<spw_popupbodysubheading4>• Ses Tıkanması</spw_popupbodysubheading4>
+	<spw_popupbodysubtext4>Sesler, oyuncunun kulaklarına giden yolu keşfederken çevredeki seviye geometrisinin şekli tarafından boğuklaştırılır.</spw_popupbodysubtext4>
+
+	<spw_popupbodysubheading5>• Güçlü Distorsiyon</spw_popupbodysubheading5>
+	<spw_popupbodysubtext5>Silah sesleri, patlamalar ve diğer yüksek sesler havada şiddetle bozulur ve suda derinden titreşir.</spw_popupbodysubtext5>
+
+	<spw_popupbodysubheading6>• Daha İyi Sesli Sohbet</spw_popupbodysubheading6>
+	<spw_popupbodysubtext6>Telsizinizi kristal netliğinden tamamen bozuğa kadar ince ayar yapın ve ne kadar yüksek sesle bağırdığınıza bağlı olarak sesinizin ne kadar uzağa taşınacağını dinamik olarak ayarlayan yeni yerel yakınlık sohbet sistemini deneyin.</spw_popupbodysubtext6>
+	
+	<spw_popupbodysubheading7>• Revize Edilmiş Sistemler</spw_popupbodysubheading7>
+	<spw_popupbodysubtext7>Gizlice dinleme ve hidrofon sistemleri, yeni görseller ve ses efektleriyle tam bir makyajdan geçti. Vanilla sistemleri de geliştirildi - yoğun aksiyon sırasında artık atlanan sesler yok ve su akışı artık duvarlar tarafından düzgün bir şekilde boğuklaştırılıyor.</spw_popupbodysubtext7>
+	
+	<spw_popupbodysubheading8>• Mutlak Kontrol</spw_popupbodysubheading8>
+	<spw_popupbodysubtext8>230'dan fazla yeni yapılandırma seçeneği ve yeniden tasarlanmış bir ayarlar menüsü ile her ses üzerinde tam kontrole ve onları özelleştirmek için sonsuz yollara sahipsiniz.</spw_popupbodysubtext8>
+	
+	<spw_popupbodyconclusion>Umarım değişiklikleri beğenirsiniz! Herhangi bir sorunuz veya sorununuz olursa bana bildirin. :) - Plag</spw_popupbodyconclusion>
+
+	<spw_footertext1>Bu sadece görünen kısmı</spw_footertext1>
+	<spw_footertext2>Beni destekle</spw_footertext2>
+	<spw_footertext3>Koda göz at</spw_footertext3>
+	<spw_footerlink1>Steam'deki tüm değişiklik günlüğünü görün!</spw_footerlink1>
+	<spw_footerlink2>Ko-fi'de bana bir kahve ısmarla!</spw_footerlink2>
+	<spw_footerlink3>GitHub'da repoya bir yıldız ver!</spw_footerlink3>
+
+	<spw_popupbutton>Ayarlar</spw_popupbutton>
+
+	<!-- Stats log -->
+	<spw_statsheader>Soundproof Walls İstatistikleri:</spw_statsheader>
+	<spw_stats>Soundproof Walls'u [initcount] kez başlattınız.\nVe mod etkinken [playtime] kadar oynadınız.\nZamanınızın %[percenteavesdrop]'ini gizlice dinleyerek geçirdiniz.\nVe zamanınızın %[percenthydrophone]'ini hidrofonları dinleyerek geçirdiniz.\nToplamda, [soundcount] ses Soundproof Walls tarafından işlendi.</spw_stats>
 </infotexts>

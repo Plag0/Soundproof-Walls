@@ -1,110 +1,692 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <infotexts language="Brazilian Portuguese" nowhitespace="false" translatedname="Português brasileiro">
 
-	<spw_settings>Configurações do Soundproof</spw_settings>
+	<spw_modname>Soundproof Walls [version]</spw_modname>
+	<spw_openmenuhelp>Abre o menu de configurações do Soundproof Walls.</spw_openmenuhelp>
+	<spw_openpopuphelp>Abre o pop-up de boas-vindas do Soundproof Walls.</spw_openpopuphelp>
+	<spw_openworkshophelp>Abre a página da oficina do Soundproof Walls no seu navegador.</spw_openworkshophelp>
+	<spw_guidehelp>Abre a página do Guia de Configuração do Soundproof Walls no seu navegador.</spw_guidehelp>
+	<spw_reporthelp>Abre a página de Relatório de Bugs do Soundproof Walls no seu navegador.</spw_reporthelp>
 
-	<spw_generalsettings>Configurações Gerais</spw_generalsettings>
-	<spw_enabled>Ativado</spw_enabled>
-	<spw_disabled>Desativado</spw_disabled>
-	<spw_enabledtooltip>Ativa ou desativa todas as funcionalidades do mod</spw_enabledtooltip>
+	<initmessage>Soundproof Walls v[version] carregado com sucesso</initmessage>
+	<initmessagefollowup>  > Abra o menu de configurações digitando "spw".\n  > Exiba suas estatísticas com "spw_stats".\n  > Tem uma pergunta? Abra a página da oficina com "spw_workshop" e deixe um comentário.\n  > Encontrou um bug? Abra a página de discussão de bugs com "spw_report" e crie uma postagem.\n  > Saiba mais sobre as opções de configuração com "spw_help".\n  > Reabra o pop-up de primeiro uso digitando "spw_welcome".</initmessagefollowup>
+	
+	<!-- Info Panel -->
+	<spw_syncingenabled>Sincronização Ativada!\nVocê está usando uma configuração enviada ao servidor por [name]. Os valores desta configuração são mostrados entre parênteses ao lado dos seus.</spw_syncingenabled>
+	<spw_syncingenableduploader>Sincronização Ativada!\nSua configuração foi enviada ao servidor e está sendo usada por todos os outros jogadores.</spw_syncingenableduploader>
+	<spw_syncingdisabled>Sincronização Desativada!\nO servidor não tem nenhuma configuração carregada. Você está usando sua configuração local.</spw_syncingdisabled>
+	<spw_offlinemode>Valores padrão são azuis.\nValores personalizados são amarelos.\nValores vanilla são brancos.\n\nProcurando seu arquivo de configuração?\nVocê pode encontrá-lo em:\n[path]</spw_offlinemode>
+
+	<spw_editpermissionhost>Permissão de Edição:\nVocê é o host desta sessão. As alterações serão enviadas ao servidor e usadas por todos os outros jogadores.</spw_editpermissionhost>
+	<spw_editpermissionadmin>Permissão de Edição:\nVocê é um admin nesta sessão. As alterações serão enviadas ao servidor e usadas por todos os outros jogadores.</spw_editpermissionadmin>
+	<spw_editpermissionnothost>Permissão de Edição:\nVocê não é o host desta sessão. As alterações serão salvas localmente, mas não serão aplicadas enquanto a sincronização com o servidor estiver ativada.</spw_editpermissionnothost>
+	<spw_editpermissionnotadmin>Permissão de Edição:\nVocê não é um admin nesta sessão. As alterações serão salvas localmente, mas não serão aplicadas enquanto a sincronização com o servidor estiver ativada.</spw_editpermissionnotadmin>
+
+	<spw_categorymuffle>Abafamento</spw_categorymuffle>
+	<spw_categorygain>Ganho</spw_categorygain>
+	<spw_categoryreverb>Reverberação</spw_categoryreverb>
+	<spw_categorygeneral>Geral</spw_categorygeneral>
+	<spw_categoryvisuals>Visuais</spw_categoryvisuals>
+
+	<!-- General -->
+	<spw_generaltab>Geral</spw_generaltab>
+
+	<spw_enablemod>Ativar Mod</spw_enablemod>
+	<spw_enablemodtooltip>Ativa ou desativa globalmente todos os recursos do mod.</spw_enablemodtooltip>
 	<spw_syncsettings>Sincronizar Configurações</spw_syncsettings>
-	<spw_syncsettingstooltip>Ativa ou desativa a sincronização das configurações entre o host e os clientes</spw_syncsettingstooltip>
-	<spw_syncsettingsalert>Nota: Este servidor tem sincronização ativada - todos os jogadores usarão automaticamente as configurações do host (valores entre parênteses)</spw_syncsettingsalert>
-	<spw_focustargetaudio>Áudio do Alvo de Foco</spw_focustargetaudio>
-	<spw_focustargetaudiotooltip>Simula áudio do ponto de vista do alvo atual (ou seja, você ouve o que a torreta/câmera ouve)</spw_focustargetaudiotooltip>
-	<spw_talkingragdolls>Bonecos Falantes</spw_talkingragdolls>
-	<spw_talkingragdollstooltip>Ouça os jogadores falarem quando estiverem em modo boneco de pano (não se aplica a atordoamentos)</spw_talkingragdollstooltip>
-	<spw_lowpassfrequency>Frequência de Corte (Lowpass)</spw_lowpassfrequency>
-	<spw_lowpassfrequencytooltip>A frequência de corte usada para abafar sons (ajustar essa configuração durante a partida pode congelar o jogo brevemente)</spw_lowpassfrequencytooltip>
-	<spw_voicelowpassfrequency>Frequência de Corte para Voz</spw_voicelowpassfrequency>
-	<spw_voicelowpassfrequencytooltip>A frequência de corte usada para abafar o chat de voz</spw_voicelowpassfrequencytooltip>
-	<spw_soundrange>Alcance do Som</spw_soundrange>
-	<spw_soundrangetooltip>Alcance de sons não relacionados a componentes</spw_soundrangetooltip>
-	<spw_voicerange>Alcance da Voz</spw_voicerange>
+	<spw_syncsettingstooltip>Ativa ou desativa a sincronização de configurações entre jogadores.\n\nSe ativado, o host envia automaticamente sua configuração para o servidor para ser compartilhada com todos os jogadores. Isso ocorre uma vez no início de uma sessão ou sempre que alterações são feitas. Os jogadores são forçados a usar essa configuração, independentemente de suas configurações locais, que permanecem inalteradas.</spw_syncsettingstooltip>
+
+	<spw_effectprocessingmode>Modo de Processamento de Efeitos</spw_effectprocessingmode>
+	<spw_effectprocessingmodetooltip>Como os efeitos de áudio são processados. O modo Dinâmico é recomendado.\n\nNota: Alterar esta configuração durante o jogo pode congelar brevemente o jogo enquanto os buffers são carregados.</spw_effectprocessingmodetooltip>
+
+	<spw_vanillafx>Clássico</spw_vanillafx>
+	<spw_vanillafxtooltip>Abafamento no estilo vanilla com uma predefinição de abafamento. Uso mínimo de recursos.</spw_vanillafxtooltip>
+	<spw_staticfx>Estático</spw_staticfx>
+	<spw_staticfxtooltip>Adiciona predefinições de abafamento leve e médio, além de reverberação opcional. Tempos de carregamento um pouco mais longos e maior uso de memória (~250 MB).</spw_staticfxtooltip>
+	<spw_dynamicfx>Dinâmico</spw_dynamicfx>
+	<spw_dynamicfxtooltip>Efeitos avançados em tempo real via OpenAL. Áudio mais realista com reverberação simulada, distorção e abafamento avançado, com um custo maior de CPU.\n\nNota: Se você estiver preocupado com o desempenho, ative a configuração "Mostrar Desempenho" (aba Avançado) para ver estatísticas detalhadas.</spw_dynamicfxtooltip>
+
+	<spw_focustargetaudio>Focar Áudio do Alvo</spw_focustargetaudio>
+	<spw_focustargetaudiotooltip>Simula o áudio da perspectiva do alvo atual da câmera (ou seja, você ouve o que a torreta ouve).</spw_focustargetaudiotooltip>
+	<spw_attenuatewithapproximatedistance>Decaimento de Som Realista</spw_attenuatewithapproximatedistance>
+	<spw_attenuatewithapproximatedistancetooltip>Calcula o decaimento do volume usando o caminho do som até o ouvinte. Se desativado, a distância em linha reta (Euclidiana) é usada.</spw_attenuatewithapproximatedistancetooltip>
+	<spw_soundrange>Alcance Mestre de Som</spw_soundrange>
+	<spw_soundrangetooltip>Multiplicador de alcance global para todos os sons não contínuos.\n\nNota: Acumula-se multiplicativamente com o multiplicador de alcance específico do som atribuído pela lista "Sons Personalizados" na aba Avançado.</spw_soundrangetooltip>
+	<spw_loopingsoundrange>Alcance Mestre de Som Contínuo</spw_loopingsoundrange>
+	<spw_loopingsoundrangetooltip>Multiplicador de alcance global para todos os sons contínuos.\n\nNota: Acumula-se multiplicativamente com o multiplicador de alcance específico do som atribuído pela lista "Sons Personalizados" na aba Avançado.</spw_loopingsoundrangetooltip>
+
+
+	<!-- Dynamic -->
+	<spw_dynamicfxtab>Modo Dinâmico</spw_dynamicfxtab>
+
+	<spw_occludesounds>Oclusão de Som</spw_occludesounds>
+	<spw_occludesoundstooltip>Abafa sons que não têm uma linha de visão direta com os ouvidos do jogador devido a paredes.</spw_occludesoundstooltip>
+	<spw_maxocclusions>Oclusões Máximas</spw_maxocclusions>
+	<spw_maxocclusionstooltip>Quantas camadas de paredes um som pode ser ocluído.\n\nNota: Limitar a oclusão pode resultar em um abafamento audivelmente mais consistente ao lidar com configurações de parede incomuns. Definir este valor como zero desativa o limite.</spw_maxocclusionstooltip>
+	
+	<spw_overmuffle>Superabafamento</spw_overmuffle>
+	<spw_overmuffletooltip>Reduz dinamicamente o volume de sons próximos e acima da força máxima de abafamento efetiva de 1.0.</spw_overmuffletooltip>
+
+	<spw_dynamicmufflestrengthmaster>Força Mestre de Abafamento</spw_dynamicmufflestrengthmaster>
+	<spw_dynamicmufflestrengthmastertooltip>A força geral do efeito de abafamento dinâmico.</spw_dynamicmufflestrengthmastertooltip>
+
+	<spw_overmufflestrength>Força de Superabafamento</spw_overmufflestrength>
+	<spw_overmufflestrengthtooltip>Quanta influência altos valores de abafamento têm na redução do volume do som.</spw_overmufflestrengthtooltip>
+	
+	<spw_dynamicreverb>Ativar Reverberação</spw_dynamicreverb>
+	<spw_dynamicreverbtooltip>Ativa ou desativa os efeitos de reverberação internos e externos. Se ativado, os sons reverberam dinamicamente com base no tamanho e na amplitude de áudio combinada de seu ambiente (ou seja, os ecos são mais fortes em espaços maiores e mais silenciosos).</spw_dynamicreverbtooltip>
+	<spw_dynamicreverbbloom>Florescimento da Reverberação</spw_dynamicreverbbloom>
+	<spw_dynamicreverbbloomtooltip>Faz o efeito de reverberação aumentar drasticamente em resposta a sons altos em áreas confinadas.</spw_dynamicreverbbloomtooltip>
+	<spw_dynamicreverbwatersubtractsarea>Área de Reverberação Dinâmica</spw_dynamicreverbwatersubtractsarea>
+	<spw_dynamicreverbwatersubtractsareatooltip>Calcula a reverberação usando a área de ar quando fora da água, ou a área de água quando submerso. Se desativado, usa a área de ambos.</spw_dynamicreverbwatersubtractsareatooltip>
+	<spw_dynamicreverbminarea>Área Mínima de Reverberação</spw_dynamicreverbminarea>
+	<spw_dynamicreverbminareatooltip>A área combinada mínima de salas conectadas ao redor do ouvinte necessária para que a reverberação seja aplicada.</spw_dynamicreverbminareatooltip>
+	<spw_dynamicreverbareasizemultiplier>Escala da Área de Reverberação</spw_dynamicreverbareasizemultiplier>
+	<spw_dynamicreverbareasizemultipliertooltip>Dimensiona a área efetiva do ambiente interno atual. Valores maiores aumentam o tempo de decaimento e o atraso das reflexões, fazendo o espaço parecer maior.</spw_dynamicreverbareasizemultipliertooltip>
+	<spw_dynamicreverbwetroomareasizemultiplier>Escala de Reverb em Sala Úmida</spw_dynamicreverbwetroomareasizemultiplier>
+	<spw_dynamicreverbwetroomareasizemultipliertooltip>Multiplica a área efetiva de tanques de lastro e eclusas de ar quando o ouvinte está dentro deles, fazendo essas salas soarem maiores e com mais reverberação.</spw_dynamicreverbwetroomareasizemultipliertooltip>
+	
+	<spw_dynamicreverbairtargetgain>Força da Reverberação Interna</spw_dynamicreverbairtargetgain>
+	<spw_dynamicreverbairtargetgaintooltip>O ganho base do efeito de reverberação quando dentro de um casco.</spw_dynamicreverbairtargetgaintooltip>
+	<spw_dynamicreverbairduration>Duração da Reverberação Interna</spw_dynamicreverbairduration>
+	<spw_dynamicreverbairdurationtooltip>O tempo de decaimento do efeito de reverberação quando dentro de um casco.</spw_dynamicreverbairdurationtooltip>
+	<spw_dynamicreverbairgainhf>Ganho de AF da Reverberação Interna</spw_dynamicreverbairgainhf>
+	<spw_dynamicreverbairgainhftooltip>O ganho de altas frequências no efeito de reverberação quando dentro de um casco.</spw_dynamicreverbairgainhftooltip>
+	<spw_dynamicreverbairamplitudethreshold>Limiar da Reverberação Interna</spw_dynamicreverbairamplitudethreshold>
+	<spw_dynamicreverbairamplitudethresholdtooltip>A amplitude sonora mínima necessária para um som produzir reverberação quando o ouvinte está em um ambiente interno.</spw_dynamicreverbairamplitudethresholdtooltip>
+	
+	<spw_dynamicreverbwatertargetgain>Força da Reverberação Externa</spw_dynamicreverbwatertargetgain>
+	<spw_dynamicreverbwatertargetgaintooltip>O ganho base do efeito de reverberação quando em ambiente externo.</spw_dynamicreverbwatertargetgaintooltip>
+	<spw_dynamicreverbwaterdiffusion>Difusão da Reverberação Externa</spw_dynamicreverbwaterdiffusion>
+	<spw_dynamicreverbwaterdiffusiontooltip>A suavidade do efeito de reverberação quando em ambiente externo.</spw_dynamicreverbwaterdiffusiontooltip>
+	<spw_dynamicreverbwaterduration>Duração da Reverberação Externa</spw_dynamicreverbwaterduration>
+	<spw_dynamicreverbwaterdurationtooltip>O tempo de decaimento do efeito de reverberação quando em ambiente externo.</spw_dynamicreverbwaterdurationtooltip>
+	<spw_dynamicreverbwatergainhf>Ganho de AF da Reverberação Externa</spw_dynamicreverbwatergainhf>
+	<spw_dynamicreverbwatergainhftooltip>O ganho de altas frequências no efeito de reverberação quando em ambiente externo.</spw_dynamicreverbwatergainhftooltip>
+	<spw_dynamicreverbwateramplitudethreshold>Limiar da Reverberação Externa</spw_dynamicreverbwateramplitudethreshold>
+	<spw_dynamicreverbwateramplitudethresholdtooltip>A amplitude sonora mínima necessária para um som produzir reverberação quando o ouvinte está em um ambiente externo.</spw_dynamicreverbwateramplitudethresholdtooltip>
+
+	<spw_categoryloudsounddistortionair>Distorção Fora d'Água</spw_categoryloudsounddistortionair>
+	<spw_categoryloudsounddistortionwater>Distorção Submersa</spw_categoryloudsounddistortionwater>
+
+	<spw_loudsounddistortionair>Ativar Distorção Fora d'Água</spw_loudsounddistortionair>
+	<spw_loudsounddistortionwater>Ativar Distorção Submersa</spw_loudsounddistortionwater>
+	<spw_loudsounddistortiontooltipair>Se o ouvinte não estiver submerso, aplica o efeito de distorção fora d'água aos sons referenciados na lista "Sons Personalizados" (aba Avançado) com a distorção definida como verdadeira.</spw_loudsounddistortiontooltipair>
+	<spw_loudsounddistortiontooltipwater>Se o ouvinte estiver submerso, aplica o efeito de distorção submersa aos sons referenciados na lista "Sons Personalizados" (aba Avançado) com a distorção definida como verdadeira.</spw_loudsounddistortiontooltipwater>
+	<spw_loudsounddistortionmaxmuffle>Requisito de Abafamento para Distorção</spw_loudsounddistortionmaxmuffle>
+	<spw_loudsounddistortionmaxmuffletooltip>A força máxima de abafamento que um som pode ter antes que sua distorção seja desativada.</spw_loudsounddistortionmaxmuffletooltip>
+	<spw_loudsounddistortiontargetgain>Ganho da Distorção</spw_loudsounddistortiontargetgain>
+	<spw_loudsounddistortiontargetgaintooltip>O volume da distorção.</spw_loudsounddistortiontargetgaintooltip>
+	<spw_loudsounddistortiontargetedge>Agressividade da Distorção</spw_loudsounddistortiontargetedge>
+	<spw_loudsounddistortiontargetedgetooltip>A aspereza da distorção. Um valor mais alto resulta em um efeito mais intenso.</spw_loudsounddistortiontargetedgetooltip>
+	<spw_loudsounddistortiontargetfrequency>Frequência da Distorção</spw_loudsounddistortiontargetfrequency>
+	<spw_loudsounddistortiontargetfrequencytooltip>O centro do equalizador da distorção. Frequências próximas a este valor serão mais afetadas pelo efeito.</spw_loudsounddistortiontargetfrequencytooltip>
+	<spw_loudsounddistortionlowpassfrequency>Frequência de Passa-Baixa da Distorção</spw_loudsounddistortionlowpassfrequency>
+	<spw_loudsounddistortionlowpassfrequencytooltip>Um filtro passa-baixa é aplicado ao sinal distorcido em pós-processamento. Esta é a frequência de corte usada por esse filtro.</spw_loudsounddistortionlowpassfrequencytooltip>
+
+	<spw_categoryexperimental>Experimental</spw_categoryexperimental>
+	
+	<spw_removeunusedbuffers>Limpar Buffers Não Utilizados</spw_removeunusedbuffers>
+	<spw_removeunusedbufferstooltip>Carrega sons sem o buffer de abafamento vanilla para economizar ~100MB de memória. Desativado por padrão devido a preocupações com possíveis problemas de compatibilidade com outros mods que interagem com objetos de som em baixo nível. No entanto, na grande maioria dos casos, esta configuração é um ganho gratuito.\n\nNota: Alterar esta configuração durante o jogo pode congelar brevemente o jogo enquanto os buffers são carregados.</spw_removeunusedbufferstooltip>
+
+
+	<!-- StaticFx -->
+	<spw_staticfxtab>Modo Estático</spw_staticfxtab>
+	<spw_heavylowpassfrequency>Frequência de Passa-Baixa Pesada</spw_heavylowpassfrequency>
+	<spw_heavylowpassfrequencytooltip>A frequência de corte usada para abafar sons que estão muito obstruídos. O limiar para aplicar este filtro é configurável na aba Abafamento.\n\nNota: Não se aplica ao chat de voz. Veja os controles deslizantes de frequência de passa-baixa na aba Voz.\n\nNota: Alterar esta configuração durante o jogo pode congelar brevemente o jogo enquanto os buffers são carregados.</spw_heavylowpassfrequencytooltip>
+	<spw_mediumlowpassfrequency>Frequência de Passa-Baixa Média</spw_mediumlowpassfrequency>
+	<spw_mediumlowpassfrequencytooltip>A frequência de corte usada para abafar sons que estão moderadamente obstruídos. O limiar para aplicar este filtro é configurável na aba Abafamento.\n\nNota: Não se aplica ao chat de voz. Veja os controles deslizantes de frequência de passa-baixa na aba Voz.\n\nNota: Alterar esta configuração durante o jogo pode congelar brevemente o jogo enquanto os buffers são carregados.</spw_mediumlowpassfrequencytooltip>
+	<spw_lightlowpassfrequency>Frequência de Passa-Baixa Leve</spw_lightlowpassfrequency>
+	<spw_lightlowpassfrequencytooltip>A frequência de corte usada para abafar sons que estão levemente obstruídos. O limiar para aplicar este filtro é configurável na aba Abafamento.\n\nNota: Não se aplica ao chat de voz. Veja os controles deslizantes de frequência de passa-baixa na aba Voz.\n\nNota: Alterar esta configuração durante o jogo pode congelar brevemente o jogo enquanto os buffers são carregados.</spw_lightlowpassfrequencytooltip>
+
+	<spw_staticreverb>Ativar Buffers de Reverberação</spw_staticreverb>
+	<spw_staticreverbtooltip>Carrega sons com um buffer adicional passado por um filtro de reverberação. Este recurso se aplica apenas a sons não contínuos e não abafados.\n\nNota: Usa ~100MB de memória e aumenta os tempos de carregamento do buffer (piora com a duração).\n\nNota: Alterar esta configuração durante o jogo pode congelar brevemente o jogo enquanto os buffers são carregados.</spw_staticreverbtooltip>
+	<spw_staticreverbalwaysloudsounds>Sempre Reverberar Sons Altos</spw_staticreverbalwaysloudsounds>
+	<spw_staticreverbalwaysloudsoundstooltip>Sons referenciados na lista "Sons Personalizados" (aba Avançado) com um multiplicador de sidechain maior que um ignoram o requisito de área mínima de reverberação.</spw_staticreverbalwaysloudsoundstooltip>
+	<spw_staticreverbduration>Duração da Reverberação</spw_staticreverbduration>
+	<spw_staticreverbdurationtooltip>O tempo de decaimento e o tamanho da reverberação. Aumentar este valor resulta em maior uso de memória e tempos de carregamento de buffer.</spw_staticreverbdurationtooltip>
+	<spw_staticreverbwetdrymix>Mix de Reverberação</spw_staticreverbwetdrymix>
+	<spw_staticreverbwetdrymixtooltip>A mistura dry/wet da reverberação. Um valor mais alto resulta em um efeito mais forte.</spw_staticreverbwetdrymixtooltip>
+	<spw_staticreverbdamping>Amortecimento da Reverberação</spw_staticreverbdamping>
+	<spw_staticreverbdampingtooltip>A força do filtro passa-baixa aplicado ao feedback da reverberação.</spw_staticreverbdampingtooltip>
+	<spw_staticreverbminarea>Área Mínima de Reverberação</spw_staticreverbminarea>
+	<spw_staticreverbminareatooltip>A área combinada mínima de salas conectadas ao redor do ouvinte necessária para que a reverberação seja aplicada a sons não contínuos e não abafados.</spw_staticreverbminareatooltip>
+
+	<!-- Voice -->
+	<spw_voicetab>Voz</spw_voicetab>
+
+	<spw_talkingragdolls>Ragdolls Falantes</spw_talkingragdolls>
+	<spw_talkingragdollstooltip>Ouve jogadores não atordoados falarem quando estão em modo ragdoll.</spw_talkingragdollstooltip>
+	
+	<spw_voicerange>Alcance Local</spw_voicerange>
+	<spw_voicerangetooltip>O alcance do chat de proximidade local.</spw_voicerangetooltip>
 	<spw_radiorange>Alcance do Rádio</spw_radiorange>
+	<spw_radiorangetooltip>O alcance do chat de proximidade por rádio.</spw_radiorangetooltip>
+	<spw_voicevolume>Volume Local</spw_voicevolume>
+	<spw_voicevolumetooltip>O volume do chat de proximidade local.\n\nNota: Esta configuração é independente do controle de volume do chat de voz do Barotrauma.</spw_voicevolumetooltip>
+	<spw_radiovolume>Volume do Rádio</spw_radiovolume>
+	<spw_radiovolumetooltip>O volume do chat de proximidade por rádio.\n\nNota: Esta configuração é independente do controle de volume do chat de voz do Barotrauma.</spw_radiovolumetooltip>
 
-	<spw_volumesettings>Configurações de Volume</spw_volumesettings>
-	<spw_muffledvoicevolume>Volume de Voz Abafada</spw_muffledvoicevolume>
-	<spw_muffledvoicevolumetooltip>Volume de vozes de jogadores abafadas por uma parede/superfície de água</spw_muffledvoicevolumetooltip>
-	<spw_muffledsoundvolume>Volume de Som Abafado</spw_muffledsoundvolume>
-	<spw_muffledsoundvolumetooltip>Volume de sons não repetitivos abafados por uma parede/superfície de água</spw_muffledsoundvolumetooltip>
-	<spw_muffledcomponentvolume>Volume de Componente Abafado</spw_muffledcomponentvolume>
-	<spw_muffledcomponentvolumetooltip>Volume de sons de componentes em loop/efeitos de status abafados por uma parede/superfície de água</spw_muffledcomponentvolumetooltip>
-	<spw_unmuffledcomponentvolume>Volume de Componente Não Abafado</spw_unmuffledcomponentvolume>
-	<spw_submergedvolume>Volume Submerso</spw_submergedvolume>
-	<spw_submergedvolumetooltip>Volume de sons submersos quando o ouvinte também está submerso no mesmo corpo de água</spw_submergedvolumetooltip>
+	<spw_categorydynamicfx>Exclusivo do Modo Dinâmico</spw_categorydynamicfx>
 
-	<spw_eavesdroppingsettings>Configurações de Escuta</spw_eavesdroppingsettings>
-	<spw_eavesdroppingbind>Tecla de Escuta</spw_eavesdroppingbind>
-	<spw_eavesdroppingsoundvolume>Volume de Som de Escuta</spw_eavesdroppingsoundvolume>
-	<spw_eavesdroppingvoicevolume>Volume de Voz de Escuta</spw_eavesdroppingvoicevolume>
-	<spw_eavesdroppingpitch>Tom de Som de Escuta</spw_eavesdroppingpitch>
-	<spw_eavesdroppingmaxdistance>Distância Máxima de Escuta</spw_eavesdroppingmaxdistance>
-	<spw_eavesdroppingmaxdistancetooltip>A distância máxima que a cabeça do jogador pode estar de uma porta enquanto escuta</spw_eavesdroppingmaxdistancetooltip>
+	<spw_dynamicreverblocal>Reverberação Local</spw_dynamicreverblocal>
+	<spw_dynamicreverblocaltooltip>Permite que a reverberação seja aplicada ao chat de proximidade local.\n\nNota: Requer que o efeito de reverberação do modo Dinâmico esteja ativado.</spw_dynamicreverblocaltooltip>
+	<spw_dynamicreverbradio>Reverberação no Rádio</spw_dynamicreverbradio>
+	<spw_dynamicreverbradiotooltip>Permite que a reverberação seja aplicada ao chat de proximidade por rádio.\n\nNota: Requer que o efeito de reverberação do modo Dinâmico esteja ativado.</spw_dynamicreverbradiotooltip>
+	<spw_drowningdistortion>Distorcer Rádio ao Afogar</spw_drowningdistortion>
+	<spw_drowningdistortiontooltip>Aplica distorção ao chat de proximidade por rádio ao se afogar.\n\nNota: Esta configuração reduz o abafamento do chat de proximidade por rádio ao se afogar.</spw_drowningdistortiontooltip>
+	<spw_voiceminlowpassfrequency>Frequência Mínima de Passa-Baixa</spw_voiceminlowpassfrequency>
+	<spw_voiceminlowpassfrequencytooltip>A frequência mínima de passa-baixa aplicada quando totalmente abafado.</spw_voiceminlowpassfrequencytooltip>
+	<spw_voicedynamicmufflemultiplier>Força de Abafamento Dinâmico</spw_voicedynamicmufflemultiplier>
+	<spw_voicedynamicmufflemultipliertooltip>A força das obstruções aplicadas às vozes ao usar o modo Dinâmico.</spw_voicedynamicmufflemultipliertooltip>
 
-	<spw_hydrophonesettings>Configurações de Hidrofone</spw_hydrophonesettings>
-	<spw_hydrophonerange>Alcance do Hidrofone</spw_hydrophonerange>
-	<spw_hydrophonerangetooltip>Alcance dos sons de movimento subaquático e o alcance adicional adicionado a todos os sons fora do submarino</spw_hydrophonerangetooltip>
-	<spw_hydrophonevolume>Volume do Hidrofone</spw_hydrophonevolume>
-	<spw_hydrophonepitch>Tom do Hidrofone</spw_hydrophonepitch>
-	<spw_hydrophonelegacyswitch>Chave de Legado do Hidrofone</spw_hydrophonelegacyswitch>
-	<spw_hydrophonelegacyswitchtooltip>Use a lógica antiga de chaveamento do hidrofone (a chave é desligada quando o sonar ativo está sendo usado)</spw_hydrophonelegacyswitchtooltip>
-	<spw_hydrophoneswitchenabled>Interruptor de Hidrofone Ativado</spw_hydrophoneswitchenabled>
-	<spw_hydrophoneswitchenabledtooltip>Alterna a existência do interruptor de hidrofone (requer reiniciar a rodada)</spw_hydrophoneswitchenabledtooltip>
+	<spw_voiceheavylowpassfrequency>Frequência de Passa-Baixa Pesada para Voz</spw_voiceheavylowpassfrequency>
+	<spw_voiceheavylowpassfrequencytooltip>A frequência de corte usada para abafar vozes que estão muito obstruídas. O limiar para aplicar este filtro é configurável na aba Abafamento.</spw_voiceheavylowpassfrequencytooltip>
+	<spw_voicemediumlowpassfrequency>Frequência de Passa-Baixa Média para Voz</spw_voicemediumlowpassfrequency>
+	<spw_voicemediumlowpassfrequencytooltip>A frequência de corte usada para abafar vozes que estão moderadamente obstruídas. O limiar para aplicar este filtro é configurável na aba Abafamento.</spw_voicemediumlowpassfrequencytooltip>
+	<spw_voicelightlowpassfrequency>Frequência de Passa-Baixa Leve para Voz</spw_voicelightlowpassfrequency>
+	<spw_voicelightlowpassfrequencytooltip>A frequência de corte usada para abafar vozes que estão levemente obstruídas. O limiar para aplicar este filtro é configurável na aba Abafamento.</spw_voicelightlowpassfrequencytooltip>
 
+	<spw_categoryscreammode>Modo Grito</spw_categoryscreammode>
 
-	<spw_ambiencesettings>Configurações de Ambiência</spw_ambiencesettings>
-	<spw_unsubmergedwaterambiencevolume>Volume de Ambiência de Água Não Submersa</spw_unsubmergedwaterambiencevolume>
-	<spw_submergedwaterambiencevolume>Volume de Ambiência de Água Submersa</spw_submergedwaterambiencevolume>
-	<spw_hydrophonewaterambiencevolume>Volume de Ambiência de Água do Hidrofone</spw_hydrophonewaterambiencevolume>
-	<spw_waterambiencetransitionspeed>Velocidade de Transição de Ambiência Aquática</spw_waterambiencetransitionspeed>
-	<spw_waterambiencetransitionspeedtooltip>A velocidade com que a ambiência aquática transita entre os presets de volume</spw_waterambiencetransitionspeedtooltip>
+	<spw_screammode>Modo Grito</spw_screammode>
+	<spw_screammodetooltip>O alcance do chat de proximidade local escala com a amplitude de entrada (gritar é ouvido de mais longe).\n\nNota: Para melhores resultados, ajuste o volume do seu microfone no Barotrauma para que o medidor de atividade de voz ainda tenha espaço para entradas altas. Quanto maior o alcance dinâmico do seu microfone, melhor.</spw_screammodetooltip>
+	<spw_screammodemaxrange>Alcance Máximo do Grito</spw_screammodemaxrange>
+	<spw_screammodemaxrangetooltip>O alcance máximo do chat de proximidade local ao falar no volume máximo com o "Modo Grito" ativado.\n\nNota: Esta configuração é afetada pelo multiplicador de "Alcance Local".</spw_screammodemaxrangetooltip>
+	<spw_screammodeminrange>Alcance Mínimo do Grito</spw_screammodeminrange>
+	<spw_screammodeminrangetooltip>O alcance mínimo do chat de proximidade local com o "Modo Grito" ativado.</spw_screammodeminrangetooltip>
+	<spw_screammodereleaserate>Taxa de Liberação do Grito</spw_screammodereleaserate>
+	<spw_screammodereleaseratetooltip>A taxa na qual o alcance da voz diminui por segundo, uma vez que não é mais sustentado pela amplitude.</spw_screammodereleaseratetooltip>
+	
+	<spw_categorybubbles>Afogamento</spw_categorybubbles>
+	
+	<spw_drowningbubbles>Bolhas de Afogamento</spw_drowningbubbles>
+	<spw_drowningbubblestooltip>Jogadores falando debaixo d'água sem oxigênio emitem bolhas visíveis que podem ser ouvidas localmente ou pelo rádio.</spw_drowningbubblestooltip>
+	<spw_drowningbubbleslocalrange>Alcance Local das Bolhas</spw_drowningbubbleslocalrange>
+	<spw_drowningbubbleslocalrangetooltip>O alcance audível do som das bolhas locais.</spw_drowningbubbleslocalrangetooltip>
+	<spw_drowningbubbleslocalvolume>Volume Local das Bolhas</spw_drowningbubbleslocalvolume>
+	<spw_drowningbubbleslocalvolumetooltip>O volume do som das bolhas locais.</spw_drowningbubbleslocalvolumetooltip>
+	<spw_drowningbubblesradiovolume>Volume das Bolhas no Rádio</spw_drowningbubblesradiovolume>
+	<spw_drowningbubblesradiovolumetooltip>O volume do som das bolhas no rádio.</spw_drowningbubblesradiovolumetooltip>
+	
+	<spw_categorycustomfilter>Filtro de Rádio</spw_categorycustomfilter>
 
-	<spw_advancedsoundsettings>Configurações Avançadas de Som</spw_advancedsoundsettings>
-	<spw_soundvolumemultipliers>Multiplicadores de Volume de Som</spw_soundvolumemultipliers>
-	<spw_ignoredsounds>Sons Ignorados</spw_ignoredsounds>
-	<spw_lowpassignoredsounds>Sons Ignorados por Lowpass</spw_lowpassignoredsounds>
-	<spw_pitchignoredsounds>Sons com Tom Ignorado</spw_pitchignoredsounds>
-	<spw_pathignoredsounds>Sons Ignorados de Caminho</spw_pathignoredsounds>
-	<spw_containerignoredsounds>Sons Ignorados de Contêiner</spw_containerignoredsounds>
-	<spw_waterignoredsounds>Sons de Água Ignorados</spw_waterignoredsounds>
-	<spw_submersionignoredsounds>Sons Submersos Ignorados</spw_submersionignoredsounds>
-	<spw_bubbleignorednames>Nomes de Bolhas Ignorados</spw_bubbleignorednames>
+	<spw_radiocustomfilter>Filtro de Rádio Personalizado</spw_radiocustomfilter>
+	<spw_radiocustomfiltertooltip>Processa o chat de proximidade por rádio com um filtro personalizado que inclui efeitos configuráveis de compressão, distorção e ruído.</spw_radiocustomfiltertooltip>
 
-	<spw_nichesettings>Configurações de Nicho</spw_nichesettings>
+	<spw_customradiopresets>Predefinições de Rádio Personalizadas</spw_customradiopresets>
+	<spw_customradiopresetstooltip>Configurações únicas de filtro de rádio. Selecionar uma dessas opções modificará todos os valores de filtro abaixo.</spw_customradiopresetstooltip>
+	<spw_customradiopresetbroken>Quebrado</spw_customradiopresetbroken>
+	<spw_customradiopresetbrokentooltip>Simplesmente terrível. Usar o rádio é um obstáculo.</spw_customradiopresetbrokentooltip>
+	<spw_customradiopresetdirty>Sujo</spw_customradiopresetdirty>
+	<spw_customradiopresetdirtytooltip>Rádio de baixa qualidade que pode dificultar a compreensão de comunicações frenéticas.</spw_customradiopresetdirtytooltip>
+	<spw_customradiopresetnormal>Padrão</spw_customradiopresetnormal>
+	<spw_customradiopresetnormaltooltip>Rádio vanilla com um som mais estilizado.</spw_customradiopresetnormaltooltip>
+	<spw_customradiopresetclean>Limpo</spw_customradiopresetclean>
+	<spw_customradiopresetcleantooltip>Comunicações de rádio perfeitamente claras.</spw_customradiopresetcleantooltip>
+	
+	<spw_radiobandpassfrequency>Frequência de Passa-Banda do Rádio</spw_radiobandpassfrequency>
+	<spw_radiobandpassfrequencytooltip>A frequência central do filtro passa-banda. Apenas frequências próximas a este ponto são permitidas. \n\nNota: A largura da faixa é definida pelo "Fator Q de Passa-Banda do Rádio" abaixo.</spw_radiobandpassfrequencytooltip>
+	<spw_radiobandpassqualityfactor>Fator Q de Passa-Banda do Rádio</spw_radiobandpassqualityfactor>
+	<spw_radiobandpassqualityfactortooltip>Quão estreito é o filtro passa-banda em torno de sua frequência central. Valores mais altos criam um efeito mais apertado e pronunciado.</spw_radiobandpassqualityfactortooltip>
+	<spw_radiodistortiondrive>Drive de Distorção do Rádio</spw_radiodistortiondrive>
+	<spw_radiodistortiondrivetooltip>Aumenta o sinal de voz antes do clipping. Valores mais altos aumentam a intensidade da distorção.</spw_radiodistortiondrivetooltip>
+	<spw_radiodistortionthreshold>Limiar de Distorção do Rádio</spw_radiodistortionthreshold>
+	<spw_radiodistortionthresholdtooltip>Nível máximo permitido. Amostras que excedem este limite sofrem hard-clipping.</spw_radiodistortionthresholdtooltip>
+	<spw_radiostatic>Estática do Rádio</spw_radiostatic>
+	<spw_radiostatictooltip>A intensidade do ruído de estática adicionado às transmissões de rádio.</spw_radiostatictooltip>
+	<spw_radiocompressionthreshold>Limiar de Compressão do Rádio</spw_radiocompressionthreshold>
+	<spw_radiocompressionthresholdtooltip>O nível de entrada onde a compressão começa. Sons abaixo deste nível não são afetados.</spw_radiocompressionthresholdtooltip>
+	<spw_radiocompressionratio>Taxa de Compressão do Rádio</spw_radiocompressionratio>
+	<spw_radiocompressionratiotooltip>Quanto do volume acima do limiar é reduzido. Taxas mais altas significam compressão mais forte e menos alcance dinâmico.</spw_radiocompressionratiotooltip>
+	<spw_radiopostfilterboost>Aumento de Ganho Pós-Filtro</spw_radiopostfilterboost>
+	<spw_radiopostfilterboosttooltip>O nível de saída geral após a filtragem do rádio.</spw_radiopostfilterboosttooltip>
+	
+	<!-- Muffle -->
+	<spw_muffletab>Abafamento</spw_muffletab>
+	<spw_muffledivingsuit>Abafar Trajes de Mergulho</spw_muffledivingsuit>
+	<spw_muffledivingsuittooltip>Aplica a obstrução "Traje de Mergulho" a todos os sons ao usar um traje de mergulho.</spw_muffledivingsuittooltip>
 	<spw_mufflesubmergedplayer>Abafar Jogador Submerso</spw_mufflesubmergedplayer>
-	<spw_mufflesubmergedplayertooltip>Abafa o áudio quando sua cabeça está debaixo d'água (recomendado)</spw_mufflesubmergedplayertooltip>
-	<spw_mufflesubmergedviewtarget>Abafar Alvo de Visualização Submerso</spw_mufflesubmergedviewtarget>
-	<spw_mufflesubmergedviewtargettooltip>Abafa o áudio quando o alvo visualizado está debaixo d'água (ex: torretas, câmeras, etc)</spw_mufflesubmergedviewtargettooltip>
-	<spw_mufflesubmergedsounds>Abafar Sons Submersos</spw_mufflesubmergedsounds>
-	<spw_mufflesubmergedsoundstooltip>Abafa sons que estão posicionados sob a superfície da água (recomendado)</spw_mufflesubmergedsoundstooltip>
+	<spw_mufflesubmergedplayertooltip>Aplica a obstrução "Corpo d'Água" a sons submersos no mesmo corpo d'água que a cabeça do jogador.</spw_mufflesubmergedplayertooltip>
+	<spw_mufflesubmergedviewtarget>Abafar Alvo de Visão Submerso</spw_mufflesubmergedviewtarget>
+	<spw_mufflesubmergedviewtargettooltip>Aplica a obstrução "Corpo d'Água" a sons submersos no mesmo corpo d'água que o alvo de visão.\n\nNota: Requer que "Focar Áudio do Alvo" (aba Geral) esteja ativado.</spw_mufflesubmergedviewtargettooltip>
+	<spw_mufflewatersurface>Abafar Superfície da Água</spw_mufflewatersurface>
+	<spw_mufflewatersurfacetooltip>Aplica a obstrução "Superfície da Água" a sons no lado oposto de uma barreira ar-água.</spw_mufflewatersurfacetooltip>
+	<spw_muffleflowfirepath>Abafar Caminhos de Fluxo e Fogo</spw_muffleflowfirepath>
+	<spw_muffleflowfirepathtooltip>Abafa sons de fluxo de água e fogo se eles não tiverem um caminho até o ouvinte.\n\nNota: Este recurso usa um sistema preditivo que pode não ser preciso em todas as situações.</spw_muffleflowfirepathtooltip>
 	<spw_muffleflowsounds>Abafar Sons de Fluxo</spw_muffleflowsounds>
-	<spw_muffleflowsoundstooltip>Alterna o abafamento de sons de fluxo de água de vazamentos</spw_muffleflowsoundstooltip>
+	<spw_muffleflowsoundstooltip>Ativa ou desativa o abafamento de sons de fluxo de água de todas as fontes.</spw_muffleflowsoundstooltip>
 	<spw_mufflefiresounds>Abafar Sons de Fogo</spw_mufflefiresounds>
-	<spw_mufflefiresoundstooltip>Alterna o abafamento de sons de fogo</spw_mufflefiresoundstooltip>
-	<spw_muffledivingsuit>Amortecer Trajes de Mergulho</spw_muffledivingsuit>
-	<spw_muffledivingsuittooltip>Alterna o amortecimento dos sons ao usar um traje de mergulho (não recomendado)</spw_muffledivingsuittooltip>
-	<spw_divingsuitpitch>Tom do Traje de Mergulho</spw_divingsuitpitch>
-	<spw_divingsuitpitchtooltip>O tom dos sons quando usando um traje de mergulho (acumulativo)</spw_divingsuitpitchtooltip>
-	<spw_submergedpitch>Tom Submerso</spw_submergedpitch>
-	<spw_submergedpitchtooltip>O tom dos sons quando o ouvinte está submerso (acumulativo)</spw_submergedpitchtooltip>
-	<spw_muffledvoicepitch>Tom de Voz Abafada</spw_muffledvoicepitch>
-	<spw_muffledvoicepitchtooltip>Não recomendado. Apenas por diversão</spw_muffledvoicepitchtooltip>
-	<spw_unmuffledvoicepitch>Tom de Voz Não Abafada</spw_unmuffledvoicepitch>
-	<spw_unmuffledvoicepitchtooltip>Não recomendado. Apenas por diversão</spw_unmuffledvoicepitchtooltip>
-	<spw_muffledcomponentpitch>Tom de Componente Abafado</spw_muffledcomponentpitch>
-	<spw_unmuffledcomponentpitch>Tom de Componente Não Abafado</spw_unmuffledcomponentpitch>
-	<spw_hidesettings>Esconder Botão do Menu</spw_hidesettings>
-	<spw_hidesettingstooltip>Aviso: Ativar esta configuração removerá o botão "Configurações de Isolamento Acústico" da sua UI. Você deve editar ou deletar manualmente seu arquivo de configuração para restaurar esta configuração.</spw_hidesettingstooltip>
+	<spw_mufflefiresoundstooltip>Ativa ou desativa o abafamento de sons de fogo de todas as fontes.</spw_mufflefiresoundstooltip>
+	<spw_classiclowpassfrequency>Frequência de Passa-Baixa Clássica</spw_classiclowpassfrequency>
+	<spw_classiclowpassfrequencytooltip>A frequência de corte usada para abafar sons no modo Clássico. O limiar para aplicar este filtro é configurável na aba Abafamento.\n\nNota: Não se aplica ao chat de voz. Veja os controles deslizantes de frequência de passa-baixa na aba Voz.\n\nNota: Alterar esta configuração durante o jogo pode congelar brevemente o jogo enquanto os buffers são carregados.</spw_classiclowpassfrequencytooltip>
 
+	<spw_categoryobstructions>Força de Abafamento por Obstrução</spw_categoryobstructions>
+
+	<spw_obstructionwatersurface>Superfície da Água</spw_obstructionwatersurface>
+	<spw_obstructionwatersurfacetooltip>A força de abafamento aplicada quando um som cruza uma barreira ar-água.\n\nNota: Acumula-se multiplicativamente (retornos decrescentes).</spw_obstructionwatersurfacetooltip>
+	<spw_obstructionwaterbody>Corpo d'Água</spw_obstructionwaterbody>
+	<spw_obstructionwaterbodytooltip>A força de abafamento aplicada quando um som viaja pela água para alcançar o ouvinte sem cruzar uma barreira ar-água (ou seja, o som começa e termina sua jornada no mesmo corpo d'água).\n\nNota: Acumula-se multiplicativamente (retornos decrescentes).</spw_obstructionwaterbodytooltip>
+	<spw_obstructionwallthick>Parede Grossa</spw_obstructionwallthick>
+	<spw_obstructionwallthicktooltip>A força de abafamento aplicada quando um som passa por uma parede normalmente.\n\nNota: Também se aplica a cada duas portas que o som atravessou ao usar o modo Dinâmico.\n\nNota: Acumula-se multiplicativamente (retornos decrescentes).</spw_obstructionwallthicktooltip>
+	<spw_obstructionwallthin>Parede Fina</spw_obstructionwallthin>
+	<spw_obstructionwallthintooltip>A força de abafamento aplicada quando um som perfura uma parede (propagação ou estruturas de hidrofone) ou tem um caminho parcial até o ouvinte (oclusão).\n\nNota: Acumula-se multiplicativamente (retornos decrescentes).</spw_obstructionwallthintooltip>
+	<spw_obstructiondoorthick>Porta Grossa</spw_obstructiondoorthick>
+	<spw_obstructiondoorthicktooltip>A força de abafamento aplicada quando um som passa por uma porta normalmente.\n\nNota: Acumula-se multiplicativamente (retornos decrescentes).</spw_obstructiondoorthicktooltip>
+	<spw_obstructiondoorthin>Porta Fina</spw_obstructiondoorthin>
+	<spw_obstructiondoorthintooltip>A força de abafamento aplicada quando um som perfura uma porta (escuta secreta, propagação ou dentro de um contêiner).\n\nNota: Acumula-se multiplicativamente (retornos decrescentes).</spw_obstructiondoorthintooltip>
+	<spw_obstructionsuit>Traje de Mergulho</spw_obstructionsuit>
+	<spw_obstructionsuittooltip>A força de abafamento aplicada quando um som passa por um traje de mergulho.\n\nNota: Também se aplica a sons que estão fora do submarino ao usar os hidrofones.\n\nNota: Acumula-se multiplicativamente (retornos decrescentes).</spw_obstructionsuittooltip>
+	<spw_obstructiondrowning>Jogador se Afogando</spw_obstructiondrowning>
+	<spw_obstructiondrowningtooltip>A força de abafamento aplicada à voz de um jogador quando ele fala enquanto se afoga.\n\nNota: Acumula-se multiplicativamente (retornos decrescentes).</spw_obstructiondrowningtooltip>
+	
+	<spw_classicmufflethreshold>Limiar de Abafamento (Clássico)</spw_classicmufflethreshold>
+	<spw_classicmufflethresholdtooltip>O nível de obstrução combinado mínimo necessário para que os sons usem a "Frequência de Passa-Baixa Clássica" (aba Abafamento).</spw_classicmufflethresholdtooltip>
+
+	<spw_staticlightmufflethreshold>Limiar de Abafamento Leve (Estático)</spw_staticlightmufflethreshold>
+	<spw_staticlightmufflethresholdtooltip>O nível de obstrução combinado mínimo necessário para que sons e vozes usem a "Frequência de Passa-Baixa Leve" (aba Estático) ou "Frequência de Passa-Baixa Leve para Voz" (aba Voz).</spw_staticlightmufflethresholdtooltip>
+
+	<spw_staticmediummufflethreshold>Limiar de Abafamento Médio (Estático)</spw_staticmediummufflethreshold>
+	<spw_staticmediummufflethresholdtooltip>O nível de obstrução combinado mínimo necessário para que sons e vozes usem a "Frequência de Passa-Baixa Média" (aba Estático) ou "Frequência de Passa-Baixa Média para Voz" (aba Voz).</spw_staticmediummufflethresholdtooltip>
+
+	<spw_staticheavymufflethreshold>Limiar de Abafamento Pesado (Estático)</spw_staticheavymufflethreshold>
+	<spw_staticheavymufflethresholdtooltip>O nível de obstrução combinado mínimo necessário para que sons e vozes usem a "Frequência de Passa-Baixa Pesada" (aba Estático) ou "Frequência de Passa-Baixa Pesada para Voz" (aba Voz).</spw_staticheavymufflethresholdtooltip>
+
+	<spw_categorythresholds>Limiares de Abafamento</spw_categorythresholds>
+
+	<!-- Volume -->
+	<spw_volumetab>Volume</spw_volumetab>
+
+	<spw_categorysidechaining>Sidechaining</spw_categorysidechaining>
+
+	<spw_sidechaining>Ativar Sidechaining</spw_sidechaining>
+	<spw_sidechainingtooltip>Reduz o volume de todos os sons quando um som alto é reproduzido.\n\nNota: Para que um som seja considerado alto internamente, ele deve ser referenciado na lista "Sons Personalizados" (aba Avançado) com um multiplicador de sidechain maior que zero.</spw_sidechainingtooltip>
+	<spw_sidechainmusic>Sidechain na Música</spw_sidechainmusic>
+	<spw_sidechainmusictooltip>Reduz o volume das faixas de música quando um som alto é reproduzido.</spw_sidechainmusictooltip>
+
+	<spw_sidechainintensitymaster>Intensidade Mestre do Sidechain</spw_sidechainintensitymaster>
+	<spw_sidechainintensitymastertooltip>Multiplicador global aplicado a todos os multiplicadores de sidechain na lista "Sons Personalizados" (aba Avançado).</spw_sidechainintensitymastertooltip>
+	<spw_sidechainreleasemaster>Release Mestre do Sidechain</spw_sidechainreleasemaster>
+	<spw_sidechainreleasemastertooltip>Quantidade fixa de tempo adicionada a todos os releases de sidechain na lista "Sons Personalizados" (aba Avançado).</spw_sidechainreleasemastertooltip>
+	<spw_sidechainreleasecurve>Curva de Release do Sidechain</spw_sidechainreleasecurve>
+	<spw_sidechainreleasecurvetooltip>O expoente usado para calcular a forma da curva de release do sidechain. Valores menores que um liberam lentamente e depois bruscamente no final. Valores acima de um liberam rapidamente e se estabilizam no final.</spw_sidechainreleasecurvetooltip>
+	<spw_sidechainmufflepower>Potência de Abafamento do Sidechain</spw_sidechainmufflepower>
+	<spw_sidechainmufflepowertooltip>Quão forte deve ser o efeito de sidechain de um som abafado. Valores mais altos retêm mais força de sidechain.</spw_sidechainmufflepowertooltip>
+	<spw_sidechainmusicmultiplier>Força do Sidechain na Música</spw_sidechainmusicmultiplier>
+	<spw_sidechainmusicmultipliertooltip>A intensidade do efeito de sidechain na música.</spw_sidechainmusicmultipliertooltip>
+
+	<spw_muffledsoundvolume>Volume de Som Abafado</spw_muffledsoundvolume>
+	<spw_muffledsoundvolumetooltip>O volume de sons não contínuos abafados. Mistura-se com "Volume de Som Não Abafado" com base na força do abafamento.\n\nNota: Acumula-se aditivamente com outros multiplicadores de volume.</spw_muffledsoundvolumetooltip>
+	<spw_unmuffledsoundvolume>Volume de Som Não Abafado</spw_unmuffledsoundvolume>
+	<spw_unmuffledsoundvolumetooltip>O volume de sons não contínuos não abafados. Mistura-se com "Volume de Som Abafado" com base na força do abafamento.\n\nNota: Acumula-se aditivamente com outros multiplicadores de volume.</spw_unmuffledsoundvolumetooltip>
+	<spw_muffledvoicevolume>Volume de Voz Abafada</spw_muffledvoicevolume>
+	<spw_muffledvoicevolumetooltip>O volume de vozes de jogadores abafadas. Mistura-se com "Volume de Voz Não Abafada" com base na força do abafamento.\n\nNota: Acumula-se aditivamente com outros multiplicadores de volume.</spw_muffledvoicevolumetooltip>
+	<spw_unmuffledvoicevolume>Volume de Voz Não Abafada</spw_unmuffledvoicevolume>
+	<spw_unmuffledvoicevolumetooltip>O volume de vozes de jogadores não abafadas. Mistura-se com "Volume de Voz Abafada" com base na força do abafamento.\n\nNota: Acumula-se aditivamente com outros multiplicadores de volume.</spw_unmuffledvoicevolumetooltip>
+	<spw_muffledloopingvolume>Volume Contínuo Abafado</spw_muffledloopingvolume>
+	<spw_muffledloopingvolumetooltip>O volume de sons contínuos abafados. Mistura-se com "Volume Contínuo Não Abafado" com base na força do abafamento.\n\nNota: Acumula-se aditivamente com outros multiplicadores de volume.</spw_muffledloopingvolumetooltip>
+	<spw_unmuffledloopingvolume>Volume Contínuo Não Abafado</spw_unmuffledloopingvolume>
+	<spw_unmuffledloopingvolumetooltip>O volume de sons contínuos não abafados. Mistura-se com "Volume Contínuo Abafado" com base na força do abafamento.\n\nNota: Acumula-se aditivamente com outros multiplicadores de volume.</spw_unmuffledloopingvolumetooltip>
+	<spw_submergedvolume>Volume Submerso em Conjunto</spw_submergedvolume>
+	<spw_submergedvolumetooltip>O volume de sons submersos no mesmo corpo d'água que o ouvinte.\n\nNota: Acumula-se aditivamente com outros multiplicadores de volume.</spw_submergedvolumetooltip>
+	<spw_flowsoundvolume>Volume do Som de Fluxo</spw_flowsoundvolume>
+	<spw_flowsoundvolumetooltip>O volume da água fluindo causada por vazamentos no submarino.</spw_flowsoundvolumetooltip>
+	<spw_firesoundvolume>Volume do Som de Fogo</spw_firesoundvolume>
+	<spw_firesoundvolumetooltip>O volume dos incêndios.</spw_firesoundvolumetooltip>
+	<spw_vanillaexosuitvolume>Volume do Exotraje Vanilla</spw_vanillaexosuitvolume>
+	<spw_vanillaexosuitvolumetooltip>O volume do som de movimento do exotraje vanilla. Alguns jogadores acham este som desagradável de ouvir.\n\nNota: Não afeta sons de exotrajes modificados.</spw_vanillaexosuitvolumetooltip>
+	<spw_loopingcomponentsoundnearmultiplier>Início do Decaimento de Distância de Som de Componente</spw_loopingcomponentsoundnearmultiplier>
+	<spw_loopingcomponentsoundnearmultipliertooltip>A distância necessária antes que o volume do som contínuo de um componente comece a diminuir.</spw_loopingcomponentsoundnearmultipliertooltip>
+	<spw_mindistancefalloffvolume>Volume Mínimo de Decaimento por Distância</spw_mindistancefalloffvolume>
+	<spw_mindistancefalloffvolumetooltip>O volume mínimo de decaimento que um som pode atingir usando o modelo "Decaimento de Som Realista" (aba Geral).</spw_mindistancefalloffvolumetooltip>
+
+
+	<!-- Eavesdropping -->
+	<spw_eavesdroppingtab>Escuta Secreta</spw_eavesdroppingtab>
+	<spw_eavesdroppingenabled>Escuta Secreta Ativada</spw_eavesdroppingenabled>
+	<spw_eavesdroppingenabledtooltip>Ativa ou desativa o recurso de escuta secreta.</spw_eavesdroppingenabledtooltip>
+	<spw_eavesdroppingmuffleself>Abafar Próprio Casco</spw_eavesdroppingmuffleself>
+	<spw_eavesdroppingmuffleselftooltip>Abafa os sons no casco do ouvinte durante a escuta secreta.</spw_eavesdroppingmuffleselftooltip>
+	<spw_eavesdroppingmuffle>Abafar Casco Escutado</spw_eavesdroppingmuffle>
+	<spw_eavesdroppingmuffletooltip>Abafa levemente os sons ouvidos via escuta secreta aplicando a obstrução "Porta Fina".</spw_eavesdroppingmuffletooltip>
+	<spw_eavesdroppingtransition>Transição de Escuta Secreta</spw_eavesdroppingtransition>
+	<spw_eavesdroppingtransitiontooltip>Transiciona suavemente o áudio entre cascos durante a escuta secreta.</spw_eavesdroppingtransitiontooltip>
+	<spw_eavesdroppingducksradio>Escuta Secreta Reduz Rádio</spw_eavesdroppingducksradio>
+	<spw_eavesdroppingducksradiotooltip>Diminui o volume do chat de proximidade por rádio durante a escuta secreta.</spw_eavesdroppingducksradiotooltip>
+
+	<spw_eavesdroppingbind>Atalho da Escuta Secreta</spw_eavesdroppingbind>
+	<spw_eavesdroppingbindtooltip>Qual botão é pressionado para a escuta secreta.\n\nNota: Esta configuração não é sincronizada com outros jogadores ao usar "Sincronizar Configurações" (aba Geral).</spw_eavesdroppingbindtooltip>
+
+	<spw_eavesdroppingsoundvolume>Volume do Som Escutado</spw_eavesdroppingsoundvolume>
+	<spw_eavesdroppingsoundvolumetooltip>O volume dos sons ouvidos na escuta secreta.\n\nNota: Acumula-se aditivamente com outros multiplicadores de volume.</spw_eavesdroppingsoundvolumetooltip>
+	<spw_eavesdroppingvoicevolume>Volume da Voz Escutada</spw_eavesdroppingvoicevolume>
+	<spw_eavesdroppingvoicevolumetooltip>O volume do chat de proximidade local ouvido na escuta secreta.\n\nNota: Acumula-se aditivamente com outros multiplicadores de volume.</spw_eavesdroppingvoicevolumetooltip>
+	<spw_eavesdroppingothervolume>Volume do Próprio Casco</spw_eavesdroppingothervolume>
+	<spw_eavesdroppingothervolumetooltip>O volume do áudio no casco do ouvinte durante a escuta secreta.</spw_eavesdroppingothervolumetooltip>
+	<spw_eavesdroppingsoundpitch>Tom do Som Escutado</spw_eavesdroppingsoundpitch>
+	<spw_eavesdroppingsoundpitchtooltip>O tom dos sons ouvidos na escuta secreta.\n\nNota: Não se aplica ao chat de proximidade local.\n\nNota: Acumula-se aditivamente com outros multiplicadores de tom.</spw_eavesdroppingsoundpitchtooltip>
+	<spw_eavesdroppingmaxdistance>Distância Máx. de Escuta Secreta</spw_eavesdroppingmaxdistance>
+	<spw_eavesdroppingmaxdistancetooltip>A distância máxima que a cabeça do jogador pode estar de uma porta durante a escuta secreta.</spw_eavesdroppingmaxdistancetooltip>
+	<spw_eavesdroppingtransitionduration>Duração da Transição de Escuta Secreta</spw_eavesdroppingtransitionduration>
+	<spw_eavesdroppingtransitiondurationtooltip>Quantos segundos a transição de escuta secreta leva.\n\nNota: Requer que "Transição de Escuta Secreta" esteja ativada.</spw_eavesdroppingtransitiondurationtooltip>
+	<spw_eavesdroppingthreshold>Limiar de Escuta Secreta</spw_eavesdroppingthreshold>
+	<spw_eavesdroppingthresholdtooltip>Até que ponto da transição de escuta secreta o perfil de abafamento muda para o lado oposto da porta.</spw_eavesdroppingthresholdtooltip>
+
+	<spw_eavesdroppingvisualfeedbackenabled>Feedback Visual</spw_eavesdroppingvisualfeedbackenabled>
+	<spw_eavesdroppingvisualfeedbackenabledtooltip>Exibe um efeito de brilho verde suave ao redor das fontes de som escutadas.</spw_eavesdroppingvisualfeedbackenabledtooltip>
+	<spw_eavesdroppingrevealscharacteroutline>Ver Contorno do Personagem</spw_eavesdroppingrevealscharacteroutline>
+	<spw_eavesdroppingrevealscharacteroutlinetooltip>Exibe um contorno aproximado da parte do corpo responsável por fazer o som (ou seja, pernas para passos e cabeças para vozes).</spw_eavesdroppingrevealscharacteroutlinetooltip>
+	<spw_eavesdroppingrevealsall>Ver Sons Inacessíveis</spw_eavesdroppingrevealsall>
+	<spw_eavesdroppingrevealsalltooltip>Exibe o efeito de brilho para sons sem um caminho para a área escutada.\n\nNota: Sons no casco do ouvinte são sempre ignorados.</spw_eavesdroppingrevealsalltooltip>
+	<spw_eavesdroppingspritemaxsize>Tamanho Máximo do Brilho</spw_eavesdroppingspritemaxsize>
+	<spw_eavesdroppingspritemaxsizetooltip>O tamanho máximo do efeito de brilho.</spw_eavesdroppingspritemaxsizetooltip>
+	<spw_eavesdroppingspritesizemultiplier>Multiplicador de Tamanho do Brilho</spw_eavesdroppingspritesizemultiplier>
+	<spw_eavesdroppingspritesizemultipliertooltip>O tamanho do efeito de brilho em relação ao alcance do som.</spw_eavesdroppingspritesizemultipliertooltip>
+	<spw_eavesdroppingspriteopacity>Opacidade do Brilho</spw_eavesdroppingspriteopacity>
+	<spw_eavesdroppingspriteopacitytooltip>A força do efeito de brilho.</spw_eavesdroppingspriteopacitytooltip>
+	<spw_eavesdroppingspritefadecurve>Curva de Desvanecimento do Brilho</spw_eavesdroppingspritefadecurve>
+	<spw_eavesdroppingspritefadecurvetooltip>O expoente usado para calcular a forma da curva de desvanecimento do brilho. Valores menores que um desvanecem lentamente e depois bruscamente no final. Valores acima de um desvanecem rapidamente e se estabilizam no final.</spw_eavesdroppingspritefadecurvetooltip>
+	<spw_eavesdroppingzoom>Zoom da Câmera na Escuta Secreta</spw_eavesdroppingzoom>
+	<spw_eavesdroppingzoomtooltip>O quanto a câmera se aproxima durante a escuta secreta.\n\nNota: Pode não funcionar com outros mods que ajustam o zoom da câmera.</spw_eavesdroppingzoomtooltip>
+	<spw_eavesdroppingvignette>Opacidade da Vinheta</spw_eavesdroppingvignette>
+	<spw_eavesdroppingvignettetooltip>A força do efeito de vinheta ao redor das bordas da tela durante a escuta secreta.</spw_eavesdroppingvignettetooltip>
+
+	<!-- Hydrophone -->
+	<spw_hydrophonestab>Hidrofones</spw_hydrophonestab>
+	<spw_hydrophoneswitchenabled>Interruptor do Hidrofone Ativado</spw_hydrophoneswitchenabled>
+	<spw_hydrophoneswitchenabledtooltip>Ativa ou desativa o recurso de hidrofone.\n\nNota: O interruptor do hidrofone permanecerá até a próxima rodada.</spw_hydrophoneswitchenabledtooltip>
+	<spw_hydrophonemovementsounds>Sons de Movimento</spw_hydrophonemovementsounds>
+	<spw_hydrophonemovementsoundstooltip>Ouve movimentos na água.</spw_hydrophonemovementsoundstooltip>
+	<spw_hydrophonehearengine>Ouvir Motores</spw_hydrophonehearengine>
+	<spw_hydrophonehearenginetooltip>Ouve motores de submarinos, incluindo o seu.</spw_hydrophonehearenginetooltip>
+	<spw_hydrophonehearintostructures>Ouvir Dentro de Estruturas</spw_hydrophonehearintostructures>
+	<spw_hydrophonehearintostructurestooltip>Ouve dentro de outros submarinos ou postos avançados.\n\nNota: Sons nessas estruturas recebem a obstrução "Parede Fina".</spw_hydrophonehearintostructurestooltip>
+	<spw_hydrophonemuffleownsub>Abafar Próprio Submarino</spw_hydrophonemuffleownsub>
+	<spw_hydrophonemuffleownsubtooltip>Abafa sons vindos de dentro da sua própria estrutura.\n\nNota: Aplica a obstrução "Superfície da Água".</spw_hydrophonemuffleownsubtooltip>
+	<spw_hydrophonerange>Alcance do Hidrofone</spw_hydrophonerange>
+	<spw_hydrophonerangetooltip>A que distância você pode ouvir sons através dos hidrofones.\n\nNota: Esta distância é somada ao alcance existente dos sons.</spw_hydrophonerangetooltip>
+	<spw_hydrophonevolume>Volume do Hidrofone</spw_hydrophonevolume>
+	<spw_hydrophonevolumetooltip>O volume dos sons ouvidos através dos hidrofones.</spw_hydrophonevolumetooltip>
+	<spw_hydrophonepitch>Tom do Hidrofone</spw_hydrophonepitch>
+	<spw_hydrophonepitchtooltip>O tom dos sons ouvidos através dos hidrofones.\n\nNota: Não se aplica ao chat de proximidade.</spw_hydrophonepitchtooltip>
+	<spw_hydrophoneambiencevolume>Volume do Ambiente do Hidrofone</spw_hydrophoneambiencevolume>
+	<spw_hydrophoneambiencevolumetooltip>O volume do ambiente oceânico que toca ao escutar os hidrofones.</spw_hydrophoneambiencevolumetooltip>
+	<spw_hydrophonemovementvolume>Volume de Movimento do Hidrofone</spw_hydrophonemovementvolume>
+	<spw_hydrophonemovementvolumetooltip>O volume do som de agitação da água causado por personagens se movendo na água.</spw_hydrophonemovementvolumetooltip>
+	
+	<spw_hydrophonevisualfeedbackenabled>Feedback Visual</spw_hydrophonevisualfeedbackenabled>
+	<spw_hydrophonevisualfeedbackenabledtooltip>Exibe setores coloridos na interface do sonar que representam visualmente a direção, tamanho e distância implícita dos sons na água.\n\nNota: A distância pode ser implícita com base no alcance do som e na largura do setor destacado.</spw_hydrophonevisualfeedbackenabledtooltip>
+	<spw_hydrophoneusagedisablessonarblips>Desativar Sonar Passivo</spw_hydrophoneusagedisablessonarblips>
+	<spw_hydrophoneusagedisablessonarblipstooltip>Para de desenhar os bipes do sonar ao monitorar os hidrofones. Os bipes do sonar são o que exibe visualmente o ambiente.</spw_hydrophoneusagedisablessonarblipstooltip>
+	<spw_hydrophoneusagedisablessuboutline>Desativar Contorno do Submarino</spw_hydrophoneusagedisablessuboutline>
+	<spw_hydrophoneusagedisablessuboutlinetooltip>Para de desenhar o contorno do submarino e suas escotilhas de acoplamento ao monitorar os hidrofones.</spw_hydrophoneusagedisablessuboutlinetooltip>
+	<spw_hydrophonevisualfeedbacksizemultiplier>Tamanho do Feedback Visual</spw_hydrophonevisualfeedbacksizemultiplier>
+	<spw_hydrophonevisualfeedbacksizemultipliertooltip>A espessura dos setores coloridos.</spw_hydrophonevisualfeedbacksizemultipliertooltip>
+	<spw_hydrophonevisualfeedbackopacitymultiplier>Opacidade do Feedback Visual</spw_hydrophonevisualfeedbackopacitymultiplier>
+	<spw_hydrophonevisualfeedbackopacitymultipliertooltip>A transparência dos setores coloridos.</spw_hydrophonevisualfeedbackopacitymultipliertooltip>
+	
+	<spw_hydrophonereverb>Ecos Etéreos</spw_hydrophonereverb>
+	<spw_hydrophonereverbtooltip>Aplica uma reverberação única de hidrofone que imita a forma como sons distantes se difundem, espalham e reverberam através de cavernas de gelo e espaços subaquáticos.\n\nNota: Requer que "Ativar Reverberação" (aba Dinâmico) esteja ativado.</spw_hydrophonereverbtooltip>
+	<spw_hydrophonereverbtargetgain>Força da Reverberação</spw_hydrophonereverbtargetgain>
+	<spw_hydrophonereverbtargetgaintooltip>O ganho base para a reverberação única do hidrofone.</spw_hydrophonereverbtargetgaintooltip>
+	
+	<spw_hydrophonedistortion>Distorcer Hidrofones</spw_hydrophonedistortion>
+	<spw_hydrophonedistortiontooltip>Aplica um efeito de distorção aos sons ouvidos através dos hidrofones.</spw_hydrophonedistortiontooltip>
+	
+	<spw_hydrophonebandpassfilter>Passa-Banda nos Hidrofones</spw_hydrophonebandpassfilter>
+	<spw_hydrophonebandpassfiltertooltip>Aplica um filtro passa-banda aos sons ouvidos através dos hidrofones. Um filtro passa-banda corta frequências altas e baixas, criando um som semelhante ao de rádio.\n\nNota: O abafamento é desativado para sons que usam um filtro passa-banda.</spw_hydrophonebandpassfiltertooltip>
+	<spw_hydrophonebandpassfilterhfgain>Ganho de Alta Frequência do Passa-Banda</spw_hydrophonebandpassfilterhfgain>
+	<spw_hydrophonebandpassfilterhfgaintooltip>O volume das altas frequências do filtro passa-banda.</spw_hydrophonebandpassfilterhfgaintooltip>
+	<spw_hydrophonebandpassfilterlfgain>Ganho de Baixa Frequência do Passa-Banda</spw_hydrophonebandpassfilterlfgain>
+	<spw_hydrophonebandpassfilterlfgaintooltip>O volume das baixas frequências do filtro passa-banda.</spw_hydrophonebandpassfilterlfgaintooltip>
+
+	<spw_categoryadvanced>Avançado</spw_categoryadvanced>
+
+	<spw_hydrophonemuffleignoredsounds>Sons Ignorados no Abafamento</spw_hydrophonemuffleignoredsounds>
+	<spw_hydrophonemuffleignoredsoundstooltip>Sons nesta lista nunca são abafados ao usar os hidrofones.</spw_hydrophonemuffleignoredsoundstooltip>
+	
+	<spw_hydrophonevisualignoredsounds>Sons Ignorados no Feedback Visual</spw_hydrophonevisualignoredsounds>
+	<spw_hydrophonevisualignoredsoundstooltip>Sons nesta lista nunca são exibidos na interface do sonar ao usar os hidrofones.</spw_hydrophonevisualignoredsoundstooltip>
+	
+	<!-- Ambience -->
+	<spw_ambiencetab>Ambiente</spw_ambiencetab>
+	<spw_disablewhitenoise>Desativar Ruído Branco</spw_disablewhitenoise>
+	<spw_disablewhitenoisetooltip>Silencia os loops de ruído do bioma do jogo vanilla.</spw_disablewhitenoisetooltip>
+
+	<spw_categorytrack>Específico da Faixa</spw_categorytrack>
+	<spw_waterambienceinvolume>Volume da Água Interno</spw_waterambienceinvolume>
+	<spw_waterambienceinvolumetooltip>O volume da faixa de ambiente aquático que toca internamente.\n\nNota: Esta faixa continua a tocar em um volume mais baixo sobre a faixa externa.</spw_waterambienceinvolumetooltip>
+	<spw_waterambienceoutvolume>Volume da Água Externo</spw_waterambienceoutvolume>
+	<spw_waterambienceoutvolumetooltip>O volume da faixa de ambiente aquático que toca externamente.</spw_waterambienceoutvolumetooltip>
+	<spw_waterambiencemovingvolume>Volume da Água em Movimento</spw_waterambiencemovingvolume>
+	<spw_waterambiencemovingvolumetooltip>O volume da faixa de ambiente aquático que toca quando o submarino ou o jogador está se movendo pela água.</spw_waterambiencemovingvolumetooltip>
+
+	<spw_categoryenvironment>Específico do Ambiente</spw_categoryenvironment>
+	<spw_unsubmergedsuitwaterambiencevolume>Volume da Água Fora d'Água (Traje)</spw_unsubmergedsuitwaterambiencevolume>
+	<spw_unsubmergedsuitwaterambiencevolumetooltip>O volume das faixas de ambiente aquático quando o ouvinte não está submerso e usa um traje de mergulho.</spw_unsubmergedsuitwaterambiencevolumetooltip>
+	<spw_unsubmergednosuitwaterambiencevolume>Volume da Água Fora d'Água (Sem Traje)</spw_unsubmergednosuitwaterambiencevolume>
+	<spw_unsubmergednosuitwaterambiencevolumetooltip>O volume das faixas de ambiente aquático quando o ouvinte não está submerso e não usa um traje de mergulho.</spw_unsubmergednosuitwaterambiencevolumetooltip>
+	<spw_submergedsuitwaterambiencevolume>Volume da Água Submerso (Traje)</spw_submergedsuitwaterambiencevolume>
+	<spw_submergedsuitwaterambiencevolumetooltip>O volume das faixas de ambiente aquático quando o ouvinte está submerso e usa um traje de mergulho.</spw_submergedsuitwaterambiencevolumetooltip>
+	<spw_submergednosuitwaterambiencevolume>Volume da Água Submerso (Sem Traje)</spw_submergednosuitwaterambiencevolume>
+	<spw_submergednosuitwaterambiencevolumetooltip>O volume das faixas de ambiente aquático quando o ouvinte está submerso e não usa um traje de mergulho.</spw_submergednosuitwaterambiencevolumetooltip>
+	<spw_waterambiencetransitionspeed>Velocidade de Transição do Ambiente Aquático</spw_waterambiencetransitionspeed>
+	<spw_waterambiencetransitionspeedtooltip>A rapidez com que o ambiente aquático transita entre os níveis de volume.</spw_waterambiencetransitionspeedtooltip>
+
+
+	<!-- Pitch -->
+	<spw_pitchtab>Tom</spw_pitchtab>
+	<spw_pitchenabled>Ativar Tom</spw_pitchenabled>
+	<spw_pitchenabledtooltip>Ativa ou desativa globalmente todos os efeitos de tom.\n\nNota: Pode ser útil como uma correção rápida para interações de tom incomuns com sons de outros mods.</spw_pitchenabledtooltip>
+	<spw_pitchstatuseffectsounds>Tom dos Sons de Efeito de Status</spw_pitchstatuseffectsounds>
+	<spw_pitchstatuseffectsoundstooltip>Ativa ou desativa a alteração de tom para sons reproduzidos por efeitos de status XML.</spw_pitchstatuseffectsoundstooltip>
+	<spw_pitchwithdistance>Tom com Distância</spw_pitchwithdistance>
+	<spw_pitchwithdistancetooltip>Diminui dinamicamente o tom de sons abafados com base em sua distância.\n\nNota: Não se aplica a sons contínuos ou chat de proximidade.\n\nNota: Acumula-se aditivamente com outros multiplicadores de tom.</spw_pitchwithdistancetooltip>
+	
+	<spw_divingsuitpitch>Tom do Traje de Mergulho</spw_divingsuitpitch>
+	<spw_divingsuitpitchtooltip>O tom dos sons ao usar um traje de mergulho.\n\nNota: Acumula-se aditivamente com outros multiplicadores de tom.</spw_divingsuitpitchtooltip>
+	<spw_submergedpitch>Tom Submerso</spw_submergedpitch>
+	<spw_submergedpitchtooltip>O tom dos sons quando o ouvinte está submerso.\n\nNota: Acumula-se aditivamente com outros multiplicadores de tom.</spw_submergedpitchtooltip>
+	
+	<spw_muffledsoundpitch>Tom de Som Abafado</spw_muffledsoundpitch>
+	<spw_muffledsoundpitchtooltip>O tom de sons não contínuos abafados. Mistura-se com "Tom de Som Não Abafado" com base na força do abafamento.\n\nNota: Acumula-se aditivamente com outros multiplicadores de tom.</spw_muffledsoundpitchtooltip>
+	<spw_unmuffledsoundpitch>Tom de Som Não Abafado</spw_unmuffledsoundpitch>
+	<spw_unmuffledsoundpitchtooltip>O tom de sons não contínuos não abafados. Mistura-se com "Tom de Som Abafado" com base na força do abafamento.\n\nNota: Acumula-se aditivamente com outros multiplicadores de tom.</spw_unmuffledsoundpitchtooltip>
+	
+	<spw_muffledloopingpitch>Tom Contínuo Abafado</spw_muffledloopingpitch>
+	<spw_muffledloopingpitchtooltip>O tom de sons contínuos abafados. Mistura-se com "Tom Contínuo Não Abafado" com base na força do abafamento.\n\nNota: Acumula-se aditivamente com outros multiplicadores de tom.</spw_muffledloopingpitchtooltip>
+	<spw_unmuffledloopingpitch>Tom Contínuo Não Abafado</spw_unmuffledloopingpitch>
+	<spw_unmuffledloopingpitchtooltip>O tom de sons contínuos não abafados. Mistura-se com "Tom Contínuo Abafado" com base na força do abafamento.\n\nNota: Acumula-se aditivamente com outros multiplicadores de tom.</spw_unmuffledloopingpitchtooltip>
+	
+	<spw_muffledvoicepitch>Tom de Voz Abafada</spw_muffledvoicepitch>
+	<spw_muffledvoicepitchtooltip>O tom do chat de proximidade abafado. Mistura-se com "Tom de Voz Não Abafada" com base na força do abafamento.\n\nNota: Acumula-se aditivamente com outros multiplicadores de tom.\n\nNota: Apenas por diversão :)</spw_muffledvoicepitchtooltip>
+	<spw_unmuffledvoicepitch>Tom de Voz Não Abafada</spw_unmuffledvoicepitch>
+	<spw_unmuffledvoicepitchtooltip>O tom do chat de proximidade não abafado. Mistura-se com "Tom de Voz Abafada" com base na força do abafamento.\n\nNota: Acumula-se aditivamente com outros multiplicadores de tom.\n\nNota: Apenas por diversão :)</spw_unmuffledvoicepitchtooltip>
+
+
+	<!-- Advanced -->
+	<spw_advancedtab>Avançado</spw_advancedtab>
+
+	<spw_debugperformance>Mostrar Desempenho</spw_debugperformance>
+	<spw_debugperformancetooltip>Exibe informações detalhadas de desempenho para o Soundproof Walls.\n\nNota: Esta configuração não é sincronizada com outros jogadores ao usar "Sincronizar Configurações" (aba Geral).</spw_debugperformancetooltip>
+
+	<spw_debugplayingsounds>Mostrar Sons em Reprodução</spw_debugplayingsounds>
+	<spw_debugplayingsoundstooltip>Exibe todos os sons ativamente em reprodução registrados pelo Soundproof Walls.\n\nNota: Esta configuração não é sincronizada com outros jogadores ao usar "Sincronizar Configurações" (aba Geral).</spw_debugplayingsoundstooltip>
+
+	<spw_debugchannelinfo>Mostrar Informações do Canal</spw_debugchannelinfo>
+	<spw_debugchannelinfotooltip>Expande a configuração "Mostrar Sons em Reprodução" para também exibir o ganho, tom, alcance, distância, abafamento e obstruções para todos os sons ativamente em reprodução.\n\nNota: Se "Mostrar Sons em Reprodução" estiver desativado, esta informação é registrada no console do Barotrauma.\n\nNota: Esta configuração não é sincronizada com outros jogadores ao usar "Sincronizar Configurações" (aba Geral).</spw_debugchannelinfotooltip>
+
+	<spw_hidesettings>Ocultar Botão do Menu</spw_hidesettings>
+	<spw_hidesettingstooltip>Remove o botão "Soundproof Walls" do menu de pausa. O menu de configurações do Soundproof Walls ainda pode ser acessado digitando "spw" no console.\n\nNota: Esta configuração não é sincronizada com outros jogadores ao usar "Sincronizar Configurações" (aba Geral).</spw_hidesettingstooltip>
+
+	<spw_remembermenutabandscroll>Lembrar Posição do Menu</spw_remembermenutabandscroll>
+	<spw_remembermenutabandscrolltooltip>Abre o menu na última posição de rolagem e aba visitada.\n\nNota: Esta configuração não é sincronizada com outros jogadores ao usar "Sincronizar Configurações" (aba Geral).</spw_remembermenutabandscrolltooltip>
+
+	<spw_maxsourcecount>Máximo de Sons em Reprodução</spw_maxsourcecount>
+	<spw_maxsourcecounttooltip>Quantos sons podem ser reproduzidos ao mesmo tempo. Valores mais altos evitam que sons sejam pulados, mas podem impactar o desempenho.</spw_maxsourcecounttooltip>
+	
+	<spw_maxsimultaneousinstances>Máximo de Instâncias Simultâneas</spw_maxsimultaneousinstances>
+	<spw_maxsimultaneousinstancestooltip>Quantas instâncias do mesmo som podem ser reproduzidas ao mesmo tempo. Valores mais altos evitam que sons sejam pulados, mas podem impactar o desempenho.</spw_maxsimultaneousinstancestooltip>
+
+	<spw_categoryintervals>Intervalos de Atualização</spw_categoryintervals>
+	<spw_updatenonloopingsounds>Atualizar Sons Não Contínuos</spw_updatenonloopingsounds>
+	<spw_updatenonloopingsoundstooltip>Permite que sons não contínuos sejam modificados enquanto estão tocando, dando potencial de corte a sons que antes não podiam ser interrompidos.\n\nNota: Pode impactar levemente o desempenho.</spw_updatenonloopingsoundstooltip>
+	
+	<spw_nonloopingsoundmuffleupdateinterval>Intervalo de Atualização de Som Não Contínuo</spw_nonloopingsoundmuffleupdateinterval>
+	<spw_nonloopingsoundmuffleupdateintervaltooltip>A quantidade de tempo entre cada atualização de obstrução para sons não contínuos.\n\nNota: Requer que "Atualizar Sons Não Contínuos" esteja ativado.\n\nNota: Aumentar este valor pode melhorar o desempenho.</spw_nonloopingsoundmuffleupdateintervaltooltip>
+	<spw_openaleffectsupdateinterval>Intervalo de Atualização de Efeitos OpenAL</spw_openaleffectsupdateinterval>
+	<spw_openaleffectsupdateintervaltooltip>A quantidade de tempo entre cada atualização de parâmetro de efeito para efeitos no modo Dinâmico.\n\nNota: Aumentar este valor pode melhorar o desempenho.</spw_openaleffectsupdateintervaltooltip>
+	<spw_voicemuffleupdateinterval>Intervalo de Atualização de Voz</spw_voicemuffleupdateinterval>
+	<spw_voicemuffleupdateintervaltooltip>A quantidade de tempo entre cada atualização de obstrução para vozes de jogadores.\n\nNota: Aumentar este valor pode melhorar o desempenho.</spw_voicemuffleupdateintervaltooltip>
+	<spw_componentmuffleupdateinterval>Intervalo de Atualização de Som de Componente</spw_componentmuffleupdateinterval>
+	<spw_componentmuffleupdateintervaltooltip>A quantidade de tempo entre cada atualização de obstrução para sons contínuos de componentes (ex: ventilação, reator, motor).\n\nNota: Aumentar este valor pode melhorar o desempenho.</spw_componentmuffleupdateintervaltooltip>
+	<spw_statuseffectmuffleupdateinterval>Intervalo de Atualização de Som de Efeito de Status</spw_statuseffectmuffleupdateinterval>
+	<spw_statuseffectmuffleupdateintervaltooltip>A quantidade de tempo entre cada atualização de obstrução para sons contínuos de efeitos de status (ex: sons de aflições).\n\nNota: Aumentar este valor pode melhorar o desempenho.</spw_statuseffectmuffleupdateintervaltooltip>
+	
+	<spw_categorytransitions>Transições</spw_categorytransitions>
+	<spw_disablevanillafadeout>Desativar Fade Out Vanilla</spw_disablevanillafadeout>
+	<spw_disablevanillafadeouttooltip>Desativa o método vanilla "FadeOutAndDispose". Ative esta opção apenas se os sons estiverem ficando presos em loop.\n\nNota: Resulta em cortes de áudio menos suaves.</spw_disablevanillafadeouttooltip>
+	<spw_gaintransitionfactor>Velocidade de Transição de Ganho</spw_gaintransitionfactor>
+	<spw_gaintransitionfactortooltip>O quanto o volume de um som pode mudar por segundo. Um valor de zero desativa este recurso para transições instantâneas.</spw_gaintransitionfactortooltip>
+	<spw_pitchtransitionfactor>Velocidade de Transição de Tom</spw_pitchtransitionfactor>
+	<spw_pitchtransitionfactortooltip>O quanto o tom de um som pode mudar por segundo. Um valor de zero desativa este recurso para transições instantâneas.</spw_pitchtransitionfactortooltip>
+	<spw_airreverbgaintransitionfactor>Velocidade de Transição de Reverb Interno</spw_airreverbgaintransitionfactor>
+	<spw_airreverbgaintransitionfactortooltip>O quanto o ganho do efeito de reverberação interna pode mudar por segundo. Um valor de zero desativa este recurso para transições instantâneas.</spw_airreverbgaintransitionfactortooltip>
+	<spw_hydrophonereverbgaintransitionfactor>Velocidade de Transição de Reverb do Hidrofone</spw_hydrophonereverbgaintransitionfactor>
+	<spw_hydrophonereverbgaintransitionfactortooltip>O quanto o ganho do efeito de reverberação do hidrofone pode mudar por segundo. Um valor de zero desativa este recurso para transições instantâneas.</spw_hydrophonereverbgaintransitionfactortooltip>
+	<spw_dynamicmuffletransitionfactor>Velocidade de Transição de Abafamento</spw_dynamicmuffletransitionfactor>
+	<spw_dynamicmuffletransitionfactortooltip>O quanto o efeito de abafamento do modo Dinâmico pode mudar por segundo. Um valor de zero desativa este recurso para transições instantâneas.\n\nNota: Este recurso pode produzir estalos audíveis quando ativado, presumivelmente um sintoma da versão do OpenAL Soft do Barotrauma.</spw_dynamicmuffletransitionfactortooltip>
+	<spw_dynamicmuffletransitionfactorflowfire>Velocidade de Transição de Abafamento de Fluxo e Fogo</spw_dynamicmuffletransitionfactorflowfire>
+	<spw_dynamicmuffletransitionfactorflowfiretooltip>O quanto o efeito de abafamento do modo Dinâmico pode mudar por segundo para sons de fluxo de água e fogo. Um valor de zero desativa este recurso para transições instantâneas.\n\nNota: Este recurso pode produzir estalos audíveis quando ativado, presumivelmente um sintoma da versão do OpenAL Soft do Barotrauma.</spw_dynamicmuffletransitionfactorflowfiretooltip>
+
+	<spw_categorypathfinding>Pathfinding de Som</spw_categorypathfinding>
+	<spw_traversewaterducts>Atravessar Dutos de Água</spw_traversewaterducts>
+	<spw_traversewaterductstooltip>Permite que sons passem por dutos de água abertos sem obstrução.</spw_traversewaterductstooltip>
+	<spw_flowsoundstraversewaterducts>Sons de Fluxo Atravessam Dutos de Água</spw_flowsoundstraversewaterducts>
+	<spw_flowsoundstraversewaterductstooltip>Permite que a estimativa do caminho de um som de fluxo passe por dutos de água abertos sem obstrução.\n\nNota: Requer que "Abafar Caminhos de Fluxo e Fogo" (aba Abafamento) esteja ativado.</spw_flowsoundstraversewaterductstooltip>
+	<spw_opendoorthreshold>Limiar de Porta Aberta</spw_opendoorthreshold>
+	<spw_opendoorthresholdtooltip>O quão aberta uma porta, escotilha ou duto deve estar para o som passar sem obstrução. Um valor de zero permite que sons passem por portas totalmente fechadas sem obstrução.</spw_opendoorthresholdtooltip>
+	<spw_openwallthreshold>Limiar de Parede Aberta</spw_openwallthreshold>
+	<spw_openwallthresholdtooltip>O quão aberta uma fenda em uma parede deve estar para o som passar sem obstrução.</spw_openwallthresholdtooltip>
+	<spw_soundpropagationrange>Alcance de Propagação de Som</spw_soundpropagationrange>
+	<spw_soundpropagationrangetooltip>A distância máxima que um som na lista "Sons que Propagam por Paredes" (aba Avançado) pode procurar por um casco próximo para se propagar.</spw_soundpropagationrangetooltip>
+
+	<spw_categoryai>IA de Personagem</spw_categoryai>
+	<spw_aitargetsoundrange>Alcance de Som da IA</spw_aitargetsoundrange>
+	<spw_aitargetsoundrangetooltip>A distância que a IA de personagem pode ouvir itens e personagens.\n\nNota: Apenas para um jogador.</spw_aitargetsoundrangetooltip>
+	<spw_aitargetsightrange>Alcance de Visão da IA</spw_aitargetsightrange>
+	<spw_aitargetsightrangetooltip>A distância que a IA de personagem pode ver itens e personagens.\n\nNota: Apenas para um jogador.</spw_aitargetsightrangetooltip>
+
+	<spw_categoryrules>Regras de Som</spw_categoryrules>
+	
+	<spw_customsounds>Sons Personalizados</spw_customsounds>
+	<spw_customsoundstooltip>Aplica valores e efeitos personalizados a sons específicos.\n\n"Palavra-chave": Parte do nome do arquivo do som alvo. Não diferencia maiúsculas de minúsculas.\n\n"MultGanho": Multiplicador de volume. Acumula-se aditivamente com outros multiplicadores de volume.\n\n"MultAlcance": Multiplicador de alcance. Acumula-se multiplicativamente com outros multiplicadores de alcance.\n\n"MultSidechain": O volume pelo qual outros sons são reduzidos quando este som toca.\n\n"ReleaseSidechain": A duração da redução de volume.\n\n"Distorção": Ativa o efeito de distorção para este som. Apenas no modo Dinâmico.\n\n"MultTom": Multiplicador de tom. Funciona esticando a duração do som. Varia entre 0.25-4.0.\n\n"InfluênciaAbafamento": Eficácia dos efeitos de abafamento. Valores mais baixos significam menos afetado.\n\n"ExclusõesPalavraChave": Sons que contêm a Palavra-chave fornecida, mas devem ser excluídos. Não diferencia maiúsculas de minúsculas.</spw_customsoundstooltip>
+	<spw_moddedcustomsoundstooltip>Valores de som personalizados de [modname]. Tem prioridade sobre a lista padrão "Sons Personalizados".\n\nEsta lista não é sincronizada com outros jogadores e quaisquer alterações não persistirão além da sessão atual.\n\nO Soundproof Walls não é responsável pelo conteúdo desta lista.</spw_moddedcustomsoundstooltip>
+	
+	<spw_ignoredsounds>Sons Ignorados</spw_ignoredsounds>
+	<spw_ignoredsoundstooltip>Sons nesta lista são ignorados por todo o processamento.</spw_ignoredsoundstooltip>
+	
+	<spw_surfaceignoredsounds>Sons Ignorados na Superfície da Água</spw_surfaceignoredsounds>
+	<spw_surfaceignoredsoundstooltip>Sons nesta lista passam por barreiras ar-água sem obstrução.</spw_surfaceignoredsoundstooltip>
+	
+	<spw_submersionignoredsounds>Sons Ignorados no Corpo d'Água</spw_submersionignoredsounds>
+	<spw_submersionignoredsoundstooltip>Sons nesta lista viajam pela água sem obstrução.\n\nNota: Não afeta como os sons interagem com as superfícies da água.</spw_submersionignoredsoundstooltip>
+	
+	<spw_wallpropagatingsounds>Sons que Propagam por Paredes</spw_wallpropagatingsounds>
+	<spw_wallpropagatingsoundstooltip>Sons nesta lista podem "pular" para cascos próximos para alcançar melhor o jogador, recebendo uma obstrução de "Parede Fina" em vez de "Parede Grossa".</spw_wallpropagatingsoundstooltip>
+	
+	<spw_pitchignoredsounds>Sons com Tom Ignorado</spw_pitchignoredsounds>
+	<spw_pitchignoredsoundstooltip>Sons nesta lista têm seu tom forçado para 1.0.\n\nNota: O multiplicador de tom específico do som na lista "Sons Personalizados" (aba Avançado) sobrepõe esta lista.</spw_pitchignoredsoundstooltip>
+
+	<spw_reverbforcedsounds>Sons com Reverberação Forçada</spw_reverbforcedsounds>
+	<spw_reverbforcedsoundstooltip>Sons nesta lista sempre receberão o efeito de reverberação, se possível.\n\nNota: Exclusivo para os modos de efeito "Dinâmico" e "Estático".</spw_reverbforcedsoundstooltip>
+
+	<spw_airreverbignoredsounds>Sons com Reverberação Interna Ignorada</spw_airreverbignoredsounds>
+	<spw_airreverbignoredsoundstooltip>Sons nesta lista nunca recebem o efeito de reverberação interna.\n\nNota: Exclusivo para os modos de efeito "Dinâmico" e "Estático".</spw_airreverbignoredsoundstooltip>
+	
+	<spw_waterreverbignoredsounds>Sons com Reverberação Externa Ignorada</spw_waterreverbignoredsounds>
+	<spw_waterreverbignoredsoundstooltip>Sons nesta lista nunca recebem o efeito de reverberação externa.\n\nNota: Exclusivo para o modo de efeito "Dinâmico".</spw_waterreverbignoredsoundstooltip>
+	
+	<spw_barrierignoredsounds>Sons com Barreira Ignorada</spw_barrierignoredsounds>
+	<spw_barrierignoredsoundstooltip>Sons nesta lista não são abafados por oclusão, paredes, portas ou superfícies de água.</spw_barrierignoredsoundstooltip>
+	
+	<spw_xmlignoredsounds>Sons Ignorados por XML</spw_xmlignoredsounds>
+	<spw_xmlignoredsoundstooltip>Esta lista é para sons marcados internamente com a tag "dontmuffle" ou propriedades similares. Sons nesta lista sempre serão avaliados para abafamento.</spw_xmlignoredsoundstooltip>
+	
+	<spw_lowpassignoredsounds>Sons com Passa-Baixa Ignorado</spw_lowpassignoredsounds>
+	<spw_lowpassignoredsoundstooltip>Sons nesta lista nunca receberão efeitos de abafamento.</spw_lowpassignoredsoundstooltip>
+	
+	<spw_containerignoredsounds>Sons com Contêiner Ignorado</spw_containerignoredsounds>
+	<spw_containerignoredsoundstooltip>Sons nesta lista passam por quaisquer contêineres em que estejam armazenados sem obstrução.</spw_containerignoredsoundstooltip>
+	
+	<spw_bubbleignorednames>Jogadores Isentos de Afogamento</spw_bubbleignorednames>
+	<spw_bubbleignorednamestooltip>Insira nomes de jogadores nesta lista para conceder-lhes imunidade ao efeito de bolhas de afogamento causado por falar debaixo d'água sem suprimento de oxigênio.</spw_bubbleignorednamestooltip>
+
+	<!-- Extra -->
 	<spw_updateserverconfig>modificou as configurações - a configuração do servidor foi atualizada</spw_updateserverconfig>
 	<spw_disableserverconfig>desativou a sincronização de configurações - as configurações locais agora têm prioridade</spw_disableserverconfig>
-	<spw_hydrophonemonitoring>Monitoramento de Hidrofones</spw_hydrophonemonitoring>
-	<spw_listening>Ouvindo...</spw_listening>
+	<spw_hydrophonemonitoring>Monitorar Hidrofones</spw_hydrophonemonitoring>
+	<spw_serverdiffheader>A configuração ativa do servidor tem [count] alterações em relação à sua configuração local:</spw_serverdiffheader>
+	<spw_listening>Escutando...</spw_listening>
+	<spw_loading>Carregando buffers de áudio...</spw_loading>
 	<spw_invalidinput>Entrada Inválida</spw_invalidinput>
-	<spw_default>(Padrão)</spw_default>
-	<spw_vanilla>(Vanilla)</spw_vanilla>
-	<spw_custom>(Personalizado)</spw_custom>
-	<spw_reset>Resetar</spw_reset>
-	<spw_resetall>Resetar Tudo</spw_resetall>
+	<spw_enabled>Ativado</spw_enabled>
+	<spw_disabled>Desativado</spw_disabled>
+	<spw_default>Padrão</spw_default>
+	<spw_vanilla>Vanilla</spw_vanilla>
+	<spw_custom>Personalizado</spw_custom>
+	<spw_linear>Linear</spw_linear>
+	<spw_instant>Instantâneo</spw_instant>
+	<spw_pertick>Por Tick</spw_pertick>
+	<spw_concave>Côncavo</spw_concave>
+	<spw_convex>Convexo</spw_convex>
+	<spw_seconds>s</spw_seconds>
+	<spw_reset>Redefinir</spw_reset>
+	<spw_resetall>Redefinir Tudo</spw_resetall>
+
+
+	<!-- 2.0 Popup message -->
+	<spw_popupheader>Bem-vindo ao Soundproof Walls 2.0</spw_popupheader>
+	<spw_popupheadersubtext>O Soundproof Walls 2.0 é uma versão totalmente reescrita e expandida do mod original e se apresenta como uma reforma completa do sistema de áudio para o Barotrauma.</spw_popupheadersubtext>
+
+	<spw_popupbodyheader>Principais Mudanças</spw_popupbodyheader>
+	
+	<spw_popupbodysubheading1>• Reverberação Simulada por Ambiente</spw_popupbodysubheading1>
+	<spw_popupbodysubtext1>Sons e vozes de jogadores ecoam realisticamente com base no tamanho e volume da sala. Fora do submarino, sons altos podem ser ouvidos se espalhando por quilômetros enquanto as ondas sonoras ricocheteiam nas paredes congeladas de Europa.</spw_popupbodysubtext1>
+
+	<spw_popupbodysubheading2>• Sistema de Compressão Sidechain</spw_popupbodysubheading2>
+	<spw_popupbodysubtext2>Tiros e explosões têm mais impacto, abafando sons mais baixos para uma faixa dinâmica mais ampla e poderosa.</spw_popupbodysubtext2>
+
+	<spw_popupbodysubheading3>• Frequência de Passa-Baixa Dinâmica</spw_popupbodysubheading3>
+	<spw_popupbodysubtext3>Os sons não estão mais limitados a serem abafados com uma única força definida e agora se adaptarão dinamicamente com base na situação e no número de obstruções no caminho.</spw_popupbodysubtext3>
+
+	<spw_popupbodysubheading4>• Oclusão de Som</spw_popupbodysubheading4>
+	<spw_popupbodysubtext4>Os sons são abafados pela forma da geometria do nível ao redor enquanto exploram seu caminho até os ouvidos do jogador.</spw_popupbodysubtext4>
+
+	<spw_popupbodysubheading5>• Distorção Poderosa</spw_popupbodysubheading5>
+	<spw_popupbodysubtext5>Tiros, explosões e outros sons altos distorcem violentamente no ar e pulsam profundamente na água.</spw_popupbodysubtext5>
+
+	<spw_popupbodysubheading6>• Chat de Voz Melhorado</spw_popupbodysubheading6>
+	<spw_popupbodysubtext6>Ajuste seu rádio de cristalino a completamente quebrado e experimente o novo sistema de chat de proximidade local que ajusta dinamicamente o quão longe sua voz vai com base no quão alto você está gritando.</spw_popupbodysubtext6>
+	
+	<spw_popupbodysubheading7>• Sistemas Reformulados</spw_popupbodysubheading7>
+	<spw_popupbodysubtext7>Os sistemas de escuta secreta e hidrofone receberam uma reforma completa com novos visuais e efeitos sonoros. Os sistemas vanilla também foram aprimorados - chega de sons pulados durante ação intensa, e o fluxo de água agora é devidamente abafado por paredes.</spw_popupbodysubtext7>
+	
+	<spw_popupbodysubheading8>• Controle Absoluto</spw_popupbodysubheading8>
+	<spw_popupbodysubtext8>Com mais de 230 novas opções de configuração e um menu de configurações redesenhado, você tem controle total sobre cada som e infinitas maneiras de personalizá-los.</spw_popupbodysubtext8>
+	
+	<spw_popupbodyconclusion>Espero que gostem das mudanças! Me avisem se tiverem alguma dúvida ou problema. :) - Plag</spw_popupbodyconclusion>
+
+	<spw_footertext1>Isso é apenas a superfície</spw_footertext1>
+	<spw_footertext2>Apoie-me</spw_footertext2>
+	<spw_footertext3>Confira o código</spw_footertext3>
+	<spw_footerlink1>Veja o changelog completo na Steam!</spw_footerlink1>
+	<spw_footerlink2>Pague-me um café no Ko-fi!</spw_footerlink2>
+	<spw_footerlink3>Dê uma estrela ao repositório no GitHub!</spw_footerlink3>
+
+	<spw_popupbutton>Configurações</spw_popupbutton>
+
+	<!-- Stats log -->
+	<spw_statsheader>Estatísticas do Soundproof Walls:</spw_statsheader>
+	<spw_stats>Você inicializou o Soundproof Walls [initcount] vezes.\nE jogou por [playtime] com o mod ativado.\n[percenteavesdrop]% do seu tempo é gasto em escuta secreta.\nE [percenthydrophone]% do seu tempo é gasto monitorando os hidrofones.\nNo total, [soundcount] sons foram processados pelo Soundproof Walls.</spw_stats>
 </infotexts>

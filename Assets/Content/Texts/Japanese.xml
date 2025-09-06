@@ -1,109 +1,692 @@
 <?xml version="1.0" encoding="utf-8"?>
 <infotexts language="Japanese" nowhitespace="false" translatedname="日本語">
 
-	<spw_settings>Soundproofの設定</spw_settings>
+	<spw_modname>Soundproof Walls [version]</spw_modname>
+	<spw_openmenuhelp>Soundproof Wallsの設定メニューを開きます。</spw_openmenuhelp>
+	<spw_openpopuphelp>Soundproof Wallsのウェルカムポップアップを開きます。</spw_openpopuphelp>
+	<spw_openworkshophelp>ブラウザでSoundproof Wallsのワークショップページを開きます。</spw_openworkshophelp>
+	<spw_guidehelp>ブラウザでSoundproof Wallsの設定ガイドページを開きます。</spw_guidehelp>
+	<spw_reporthelp>ブラウザでSoundproof Wallsのバグ報告ページを開きます。</spw_reporthelp>
 
-	<spw_generalsettings>一般的な設定</spw_generalsettings>
-	<spw_enabled>オン</spw_enabled>
-	<spw_disabled>オフ</spw_disabled>
-	<spw_enabledtooltip>全部のモッド機能切り替える</spw_enabledtooltip>
-	<spw_syncsettings>シンクロ（同期化）設定</spw_syncsettings>
-	<spw_syncsettingstooltip>ホストと他のプレイヤーのコンフィグが同期を切り替える</spw_syncsettingstooltip>
-	<spw_syncsettingsalert>※このサーバーがはシンクロ可能性があります。全部プレイヤーがホストの設定を自動的に使います（カッコにホストの設定が値）</spw_syncsettingsalert>
-	<spw_focustargetaudio>対象のオーディオに焦点を当てる</spw_focustargetaudio>
-	<spw_focustargetaudiotooltip>対象としては音を聞こえて模擬する（カメラととかターレットとして音が聞こえる）</spw_focustargetaudiotooltip>
-	<spw_talkingragdolls>話せるラグドール</spw_talkingragdolls>
-	<spw_talkingragdollstooltip>ラグドールの場合プレイヤーのが聞ける（無意識の場合が話せない）</spw_talkingragdollstooltip>
-	<spw_lowpassfrequency>低周波</spw_lowpassfrequency>
-	<spw_lowpassfrequencytooltip>音がこもり始める周波　（ゲーム中に変わるとゲームは一瞬止まっただけです）</spw_lowpassfrequencytooltip>
-	<spw_voicelowpassfrequency>声の低周波</spw_voicelowpassfrequency>
-	<spw_voicelowpassfrequencytooltip>声がこもり始める周波</spw_voicelowpassfrequencytooltip>
-	<spw_soundrange>音の範囲</spw_soundrange>
-	<spw_soundrangetooltip>非構成音の範囲</spw_soundrangetooltip>
-	<spw_voicerange>声の範囲</spw_voicerange>
-	<spw_radiorange>ラジオの範囲</spw_radiorange>
+	<initmessage>Soundproof Walls v[version]の読み込みが完了しました</initmessage>
+	<initmessagefollowup>  > "spw"と入力して設定メニューを開きます。\n  > "spw_stats"であなたの統計を表示します。\n  > 質問がありますか？ "spw_workshop"でワークショップページを開き、コメントを残してください。\n  > バグを見つけましたか？ "spw_report"でバグ報告ページを開き、投稿してください。\n  > "spw_help"で設定オプションについて詳しく学びましょう。\n  > "spw_welcome"と入力して初回起動ポップアップを再度開きます。</initmessagefollowup>
+	
+	<!-- Info Panel -->
+	<spw_syncingenabled>同期が有効です！\nあなたは[name]によってサーバーにアップロードされた設定を使用しています。この設定の値は、あなたの値の隣に括弧で表示されます。</spw_syncingenabled>
+	<spw_syncingenableduploader>同期が有効です！\nあなたの設定はサーバーにアップロードされ、他のすべてのプレイヤーによって使用されています。</spw_syncingenableduploader>
+	<spw_syncingdisabled>同期が無効です！\nサーバーにアップロードされた設定はありません。あなたはローカル設定を使用しています。</spw_syncingdisabled>
+	<spw_offlinemode>デフォルト値は青色です。\nカスタム値は黄色です。\nバニラ値は白色です。\n\n設定ファイルをお探しですか？\n次の場所で見つかります：\n[path]</spw_offlinemode>
 
-	<spw_volumesettings>音量の設定</spw_volumesettings>
-	<spw_muffledvoicevolume>こもり声の音量</spw_muffledvoicevolume>
-	<spw_muffledvoicevolumetooltip>壁とか水後ろから低周波のプレイヤー声の音量</spw_muffledvoicevolumetooltip>
-	<spw_muffledsoundvolume>こもり音の音量</spw_muffledsoundvolume>
-	<spw_muffledsoundvolumetooltip>壁とか水後ろから繰り返しないこもり音の音量</spw_muffledsoundvolumetooltip>
-	<spw_muffledcomponentvolume>こもっている構成の音量</spw_muffledcomponentvolume>
-	<spw_muffledcomponentvolumetooltip>壁とか水後ろから繰り返し低周波の状態結果／構成の音量</spw_muffledcomponentvolumetooltip>
-	<spw_unmuffledcomponentvolume>こもっていない構成の音量</spw_unmuffledcomponentvolume>
-	<spw_submergedvolume>水浸かりの音量</spw_submergedvolume>
-	<spw_submergedvolumetooltip>同じ水域にいて水浸かりの音の音量</spw_submergedvolumetooltip>
+	<spw_editpermissionhost>編集権限：\nあなたはこのセッションのホストです。変更はサーバーにアップロードされ、他のすべてのプレイヤーによって使用されます。</spw_editpermissionhost>
+	<spw_editpermissionadmin>編集権限：\nあなたはこのセッションの管理者です。変更はサーバーにアップロードされ、他のすべてのプレイヤーによって使用されます。</spw_editpermissionadmin>
+	<spw_editpermissionnothost>編集権限：\nあなたはこのセッションのホストではありません。変更はローカルに保存されますが、サーバー同期が有効な間は適用されません。</spw_editpermissionnothost>
+	<spw_editpermissionnotadmin>編集権限：\nあなたはこのセッションの管理者ではありません。変更はローカルに保存されますが、サーバー同期が有効な間は適用されません。</spw_editpermissionnotadmin>
 
-	<spw_eavesdroppingsettings>盗み聞き設定</spw_eavesdroppingsettings>
-	<spw_eavesdroppingbind>聞くキーバインド</spw_eavesdroppingbind>
-	<spw_eavesdroppingsoundvolume>盗み聞き音の音量</spw_eavesdroppingsoundvolume>
-	<spw_eavesdroppingvoicevolume>盗み聞き声の音量</spw_eavesdroppingvoicevolume>
-	<spw_eavesdroppingpitch>盗み聞きの音高</spw_eavesdroppingpitch>
-	<spw_eavesdroppingmaxdistance>盗み聞きの最大範囲</spw_eavesdroppingmaxdistance>
-	<spw_eavesdroppingmaxdistancetooltip>キャラクター頭から盗み聞きできるの最大範囲</spw_eavesdroppingmaxdistancetooltip>
+	<spw_categorymuffle>マッフル</spw_categorymuffle>
+	<spw_categorygain>ゲイン</spw_categorygain>
+	<spw_categoryreverb>リバーブ</spw_categoryreverb>
+	<spw_categorygeneral>全般</spw_categorygeneral>
+	<spw_categoryvisuals>ビジュアル</spw_categoryvisuals>
 
-	<spw_hydrophonesettings>聴音器の設定</spw_hydrophonesettings>
-	<spw_hydrophonerange>聴音器の範囲</spw_hydrophonerange>
-	<spw_hydrophonerangetooltip>水中で動きの音の範囲と、潜水艦外にのすべての音に追加される範囲</spw_hydrophonerangetooltip>
-	<spw_hydrophonevolume>聴音器の音量</spw_hydrophonevolume>
-	<spw_hydrophonepitch>聴音器の音高</spw_hydrophonepitch>
-	<spw_hydrophonelegacyswitch>聴音器のレガシースイッチ</spw_hydrophonelegacyswitch>
-	<spw_hydrophonelegacyswitchtooltip>古い聴音器スイッチのロジックを使用する（アクティブソナー使用時にスイッチがオフになる）</spw_hydrophonelegacyswitchtooltip>
-	<spw_hydrophoneswitchenabled>ハイドロフォンスイッチ有効</spw_hydrophoneswitchenabled>
-	<spw_hydrophoneswitchenabledtooltip>ハイドロフォンスイッチの存在を切り替えます（ラウンドの再起動が必要です）</spw_hydrophoneswitchenabledtooltip>
+	<!-- General -->
+	<spw_generaltab>全般</spw_generaltab>
 
-	<spw_ambiencesettings>環境の設定</spw_ambiencesettings>
-	<spw_unsubmergedwaterambiencevolume>水以外に環境の音量</spw_unsubmergedwaterambiencevolume>
-	<spw_submergedwaterambiencevolume>水中の環境の音量</spw_submergedwaterambiencevolume>
-	<spw_hydrophonewaterambiencevolume>聴音器の水環境の音量</spw_hydrophonewaterambiencevolume>
-	<spw_waterambiencetransitionspeed>水の雰囲気の遷移速度</spw_waterambiencetransitionspeed>
-	<spw_waterambiencetransitionspeedtooltip>水の雰囲気がボリュームプリセット間で遷移する速度</spw_waterambiencetransitionspeedtooltip>
+	<spw_enablemod>Modを有効化</spw_enablemod>
+	<spw_enablemodtooltip>Modのすべての機能を一括で切り替えます。</spw_enablemodtooltip>
+	<spw_syncsettings>設定を同期</spw_syncsettings>
+	<spw_syncsettingstooltip>プレイヤー間の設定の同期を切り替えます。\n\n有効にすると、ホストは自動的に自分の設定をサーバーにアップロードし、すべてのプレイヤーと共有します。このアップロードはセッション開始時、または設定が変更されるたびに行われます。プレイヤーは、変更されないローカル設定に関係なく、この設定の使用を強制されます。</spw_syncsettingstooltip>
 
-	<spw_advancedsoundsettings>詳細の音設定</spw_advancedsoundsettings>
-	<spw_soundvolumemultipliers>音量の倍率</spw_soundvolumemultipliers>
-	<spw_ignoredsounds>無視の音</spw_ignoredsounds>
-	<spw_lowpassignoredsounds>低周波の無視の音</spw_lowpassignoredsounds>
-	<spw_pitchignoredsounds>音高の無視の音</spw_pitchignoredsounds>
-	<spw_pathignoredsounds>壁的の無視の音</spw_pathignoredsounds>
-	<spw_containerignoredsounds>コンテナの無視の音</spw_containerignoredsounds>
-	<spw_waterignoredsounds>水の無視の音</spw_waterignoredsounds>
-	<spw_submersionignoredsounds>水中の無視の音</spw_submersionignoredsounds>
-	<spw_bubbleignorednames>バブルの無視の名前</spw_bubbleignorednames>
+	<spw_effectprocessingmode>エフェクト処理モード</spw_effectprocessingmode>
+	<spw_effectprocessingmodetooltip>オーディオエフェクトの処理方法。ダイナミックモードを推奨します。\n\n注意：プレイ中にこの設定を変更すると、バッファの読み込み中にゲームが一時的にフリーズすることがあります。</spw_effectprocessingmodetooltip>
 
-	<spw_nichesettings>雑の設定</spw_nichesettings>
-	<spw_mufflesubmergedplayer>水中のプレイヤーの音を消す</spw_mufflesubmergedplayer>
-	<spw_mufflesubmergedplayertooltip>頭は水中にいると音を消す（推奨）</spw_mufflesubmergedplayertooltip>
-	<spw_mufflesubmergedviewtarget>水中の対象を消す</spw_mufflesubmergedviewtarget>
-	<spw_mufflesubmergedviewtargettooltip>対象は水中にいると音を消す（対象がカメラとかタレントとして）</spw_mufflesubmergedviewtargettooltip>
-	<spw_mufflesubmergedsounds>水中の音を消す</spw_mufflesubmergedsounds>
-	<spw_mufflesubmergedsoundstooltip>水中に物の音を消す（推奨）</spw_mufflesubmergedsoundstooltip>
-	<spw_muffleflowsounds>流れる水の音を消す</spw_muffleflowsounds>
-	<spw_muffleflowsoundstooltip>漏洩から水の音を消す切り替える</spw_muffleflowsoundstooltip>
-	<spw_mufflefiresounds>火の音を消す</spw_mufflefiresounds>
-	<spw_mufflefiresoundstooltip>火の音を消す切り替える</spw_mufflefiresoundstooltip>
-	<spw_muffledivingsuit>ダイビングスーツの音を抑える</spw_muffledivingsuit>
-	<spw_muffledivingsuittooltip>ダイビングスーツを着用しているときの音の抑制を切り替えます（推奨されません）</spw_muffledivingsuittooltip>
-	<spw_divingsuitpitch>潜水服の音高</spw_divingsuitpitch>
-	<spw_divingsuitpitchtooltip>潜水服を着ってるの音高（加算的に積み重なる）</spw_divingsuitpitchtooltip>
-	<spw_submergedpitch>水中の音高</spw_submergedpitch>
-	<spw_submergedpitchtooltip>水中にいると音の音高（加算的に積み重なる）</spw_submergedpitchtooltip>
-	<spw_muffledvoicepitch>こもっている声の音高</spw_muffledvoicepitch>
-	<spw_muffledvoicepitchtooltip>非推奨、ゲームの音がおかしくなるかもしれません。</spw_muffledvoicepitchtooltip>
-	<spw_unmuffledvoicepitch>こもっていない声の音高</spw_unmuffledvoicepitch>
-	<spw_unmuffledvoicepitchtooltip>非推奨、ゲームの音がおかしくなるかもしれません。</spw_unmuffledvoicepitchtooltip>
-	<spw_muffledcomponentpitch>こもっている構成の音高</spw_muffledcomponentpitch>
-	<spw_unmuffledcomponentpitch>こもっていない構成の音高</spw_unmuffledcomponentpitch>
-	<spw_hidesettings>メニューのボタンを隠れる</spw_hidesettings>
-	<spw_hidesettingstooltip>注意※：この設定を使うとUIから防音の設定を無くす。このボタンを見直して欲しいならば、コンフィグを消しないとか編まないといけないです。</spw_hidesettingstooltip>
+	<spw_vanillafx>クラシック</spw_vanillafx>
+	<spw_vanillafxtooltip>1つのマッフルプリセットを使用したバニラスタイルのマフリング。リソース使用量は最小限です。</spw_vanillafxtooltip>
+	<spw_staticfx>スタティック</spw_staticfx>
+	<spw_staticfxtooltip>軽度および中度のマッフルプリセットと、オプションのリバーブを追加します。読み込み時間がわずかに長くなり、メモリ使用量が増加します（約250MB）。</spw_staticfxtooltip>
+	<spw_dynamicfx>ダイナミック</spw_dynamicfx>
+	<spw_dynamicfxtooltip>OpenALによる高度なリアルタイムエフェクト。シミュレートされたリバーブ、ディストーション、高度なマフリングにより、最もリアルなオーディオを実現しますが、CPUコストが高くなります。\n\n注意：パフォーマンスが心配な場合は、「パフォーマンスを表示」（詳細設定タブ）を有効にして詳細な統計を確認してください。</spw_dynamicfxtooltip>
 
-	<spw_updateserverconfig>は設定を変わりました。サーバーのコンフィグを反映しました。</spw_updateserverconfig>
-	<spw_disableserverconfig>はシンクロの設定をオフにしました。プレイヤークライエントのコンフィグ設定を優先されるようになりました。</spw_disableserverconfig>
-	<spw_hydrophonemonitoring>聴音器を聞く</spw_hydrophonemonitoring>
-	<spw_listening>視聴中、、、</spw_listening>
-	<spw_invalidinput>無効の入力</spw_invalidinput>
-	<spw_default>（デフォルト）</spw_default>
-	<spw_vanilla>（レギュラー、モッドじゃない）</spw_vanilla>
-	<spw_custom>（カスタム）</spw_custom>
+	<spw_focustargetaudio>ターゲットの音声を注視</spw_focustargetaudio>
+	<spw_focustargetaudiotooltip>現在のカメラターゲットの視点から音声をシミュレートします（例：タレットが聞いている音を聞く）。</spw_focustargetaudiotooltip>
+	<spw_attenuatewithapproximatedistance>リアルな音の減衰</spw_attenuatewithapproximatedistance>
+	<spw_attenuatewithapproximatedistancetooltip>リスナーまでの音の経路を使用して音量の減衰を計算します。無効にすると、代わりに単純な直線距離（ユークリッド距離）が使用されます。</spw_attenuatewithapproximatedistancetooltip>
+	<spw_soundrange>サウンド範囲マスター</spw_soundrange>
+	<spw_soundrangetooltip>すべての非ループサウンドに対するグローバルな範囲乗数。\n\n注意：詳細設定タブの「カスタムサウンド」リストで割り当てられたサウンド固有の範囲乗数と乗算で累積します。</spw_soundrangetooltip>
+	<spw_loopingsoundrange>ループサウンド範囲マスター</spw_loopingsoundrange>
+	<spw_loopingsoundrangetooltip>すべてのループサウンドに対するグローバルな範囲乗数。\n\n注意：詳細設定タブの「カスタムサウンド」リストで割り当てられたサウンド固有の範囲乗数と乗算で累積します。</spw_loopingsoundrangetooltip>
+
+
+	<!-- Dynamic -->
+	<spw_dynamicfxtab>ダイナミックモード</spw_dynamicfxtab>
+
+	<spw_occludesounds>サウンドオクルージョン</spw_occludesounds>
+	<spw_occludesoundstooltip>壁によってプレイヤーの耳に直接届かない音をマッフルします。</spw_occludesoundstooltip>
+	<spw_maxocclusions>最大オクルージョン数</spw_maxocclusions>
+	<spw_maxocclusionstooltip>音が遮蔽される壁の層の数。\n\n注意：オクルージョンを制限すると、特殊な壁の配置に直面した際に、より一貫したマッフル効果が得られる場合があります。この値をゼロに設定すると、制限が無効になります。</spw_maxocclusionstooltip>
+	
+	<spw_overmuffle>オーバーマッフル</spw_overmuffle>
+	<spw_overmuffletooltip>最大有効マッフル強度1.0に近い、またはそれ以上の音の音量を動的に減少させます。</spw_overmuffletooltip>
+
+	<spw_dynamicmufflestrengthmaster>マッフル強度マスター</spw_dynamicmufflestrengthmaster>
+	<spw_dynamicmufflestrengthmastertooltip>ダイナミックマッフル効果の全体的な強度。</spw_dynamicmufflestrengthmastertooltip>
+
+	<spw_overmufflestrength>オーバーマッフル強度</spw_overmufflestrength>
+	<spw_overmufflestrengthtooltip>高いマッフル値が音量減少に与える影響の度合い。</spw_overmufflestrengthtooltip>
+	
+	<spw_dynamicreverb>リバーブを有効化</spw_dynamicreverb>
+	<spw_dynamicreverbtooltip>屋内および屋外のリバーブ効果を切り替えます。有効にすると、環境のサイズと合成された音の振幅に基づいて音が動的に反響します（例：より広く静かな空間ではエコーが強くなる）。</spw_dynamicreverbtooltip>
+	<spw_dynamicreverbbloom>リバーブブルーム</spw_dynamicreverbbloom>
+	<spw_dynamicreverbbloomtooltip>狭いエリアでの大きな音に反応して、リバーブ効果が劇的に膨らむようにします。</spw_dynamicreverbbloomtooltip>
+	<spw_dynamicreverbwatersubtractsarea>ダイナミックリバーブエリア</spw_dynamicreverbwatersubtractsarea>
+	<spw_dynamicreverbwatersubtractsareatooltip>水上にいるときは空気エリアを、水中にいるときは水エリアを使用してリバーブを計算します。無効にすると、両方のエリアを使用します。</spw_dynamicreverbwatersubtractsareatooltip>
+	<spw_dynamicreverbminarea>最小リバーブエリア</spw_dynamicreverbminarea>
+	<spw_dynamicreverbminareatooltip>反響が適用されるために必要な、リスナーの周りの接続された部屋の最小合計面積。</spw_dynamicreverbminareatooltip>
+	<spw_dynamicreverbareasizemultiplier>リバーブエリアスケール</spw_dynamicreverbareasizemultiplier>
+	<spw_dynamicreverbareasizemultipliertooltip>現在の屋内環境の有効面積をスケーリングします。値を大きくすると、減衰時間と反射の遅延が増加し、空間がより大きく聞こえるようになります。</spw_dynamicreverbareasizemultipliertooltip>
+	<spw_dynamicreverbwetroomareasizemultiplier>ウェットルームリバーブスケール</spw_dynamicreverbwetroomareasizemultiplier>
+	<spw_dynamicreverbwetroomareasizemultipliertooltip>リスナーがバラストタンクやエアロック内にいる場合、それらの有効面積を乗算し、これらの部屋をより大きく、より反響するように聞こえさせます。</spw_dynamicreverbwetroomareasizemultipliertooltip>
+	
+	<spw_dynamicreverbairtargetgain>屋内リバーブ強度</spw_dynamicreverbairtargetgain>
+	<spw_dynamicreverbairtargetgaintooltip>船殻内にいるときのリバーブ効果の基本ゲイン。</spw_dynamicreverbairtargetgaintooltip>
+	<spw_dynamicreverbairduration>屋内リバーブ持続時間</spw_dynamicreverbairduration>
+	<spw_dynamicreverbairdurationtooltip>船殻内にいるときのリバーブ効果の減衰時間。</spw_dynamicreverbairdurationtooltip>
+	<spw_dynamicreverbairgainhf>屋内リバーブ高周波ゲイン</spw_dynamicreverbairgainhf>
+	<spw_dynamicreverbairgainhftooltip>船殻内にいるときのリバーブ効果における高周波のゲイン。</spw_dynamicreverbairgainhftooltip>
+	<spw_dynamicreverbairamplitudethreshold>屋内リバーブしきい値</spw_dynamicreverbairamplitudethreshold>
+	<spw_dynamicreverbairamplitudethresholdtooltip>リスナーが屋内にいるときに、サウンドがリバーブを生成するために必要な最小音響振幅。</spw_dynamicreverbairamplitudethresholdtooltip>
+	
+	<spw_dynamicreverbwatertargetgain>屋外リバーブ強度</spw_dynamicreverbwatertargetgain>
+	<spw_dynamicreverbwatertargetgaintooltip>屋外にいるときのリバーブ効果の基本ゲイン。</spw_dynamicreverbwatertargetgaintooltip>
+	<spw_dynamicreverbwaterdiffusion>屋外リバーブ拡散</spw_dynamicreverbwaterdiffusion>
+	<spw_dynamicreverbwaterdiffusiontooltip>屋外にいるときのリバーブ効果の滑らかさ。</spw_dynamicreverbwaterdiffusiontooltip>
+	<spw_dynamicreverbwaterduration>屋外リバーブ持続時間</spw_dynamicreverbwaterduration>
+	<spw_dynamicreverbwaterdurationtooltip>屋外にいるときのリバーブ効果の減衰時間。</spw_dynamicreverbwaterdurationtooltip>
+	<spw_dynamicreverbwatergainhf>屋外リバーブ高周波ゲイン</spw_dynamicreverbwatergainhf>
+	<spw_dynamicreverbwatergainhftooltip>屋外にいるときのリバーブ効果における高周波のゲイン。</spw_dynamicreverbwatergainhftooltip>
+	<spw_dynamicreverbwateramplitudethreshold>屋外リバーブしきい値</spw_dynamicreverbwateramplitudethreshold>
+	<spw_dynamicreverbwateramplitudethresholdtooltip>リスナーが屋外にいるときに、サウンドがリバーブを生成するために必要な最小音響振幅。</spw_dynamicreverbwateramplitudethresholdtooltip>
+
+	<spw_categoryloudsounddistortionair>非潜水時ディストーション</spw_categoryloudsounddistortionair>
+	<spw_categoryloudsounddistortionwater>潜水時ディストーション</spw_categoryloudsounddistortionwater>
+
+	<spw_loudsounddistortionair>非潜水時ディストーションを有効化</spw_loudsounddistortionair>
+	<spw_loudsounddistortionwater>潜水時ディストーションを有効化</spw_loudsounddistortionwater>
+	<spw_loudsounddistortiontooltipair>リスナーが潜水していない場合、「カスタムサウンド」リスト（詳細設定タブ）でディストーションがtrueに設定されているサウンドに非潜水時ディストーション効果を適用します。</spw_loudsounddistortiontooltipair>
+	<spw_loudsounddistortiontooltipwater>リスナーが潜水している場合、「カスタムサウンド」リスト（詳細設定タブ）でディストーションがtrueに設定されているサウンドに潜水時ディストーション効果を適用します。</spw_loudsounddistortiontooltipwater>
+	<spw_loudsounddistortionmaxmuffle>ディストーションマッフル要件</spw_loudsounddistortionmaxmuffle>
+	<spw_loudsounddistortionmaxmuffletooltip>サウンドがディストーションを無効にされる前の最大マッフル強度。</spw_loudsounddistortionmaxmuffletooltip>
+	<spw_loudsounddistortiontargetgain>ディストーションゲイン</spw_loudsounddistortiontargetgain>
+	<spw_loudsounddistortiontargetgaintooltip>ディストーションの音量。</spw_loudsounddistortiontargetgaintooltip>
+	<spw_loudsounddistortiontargetedge>ディストーションエッジ</spw_loudsounddistortiontargetedge>
+	<spw_loudsounddistortiontargetedgetooltip>ディストーションの荒々しさ。値が高いほど、より強烈な効果になります。</spw_loudsounddistortiontargetedgetooltip>
+	<spw_loudsounddistortiontargetfrequency>ディストーション周波数</spw_loudsounddistortiontargetfrequency>
+	<spw_loudsounddistortiontargetfrequencytooltip>ディストーションのEQセンター。この値に近い周波数が、より効果の影響を受けます。</spw_loudsounddistortiontargetfrequencytooltip>
+	<spw_loudsounddistortionlowpassfrequency>ディストーションローパス周波数</spw_loudsounddistortionlowpassfrequency>
+	<spw_loudsounddistortionlowpassfrequencytooltip>ディストーションされた信号に後処理でローパスフィルターが適用されます。これは、そのローパスフィルターで使用されるコーナー周波数です。</spw_loudsounddistortionlowpassfrequencytooltip>
+
+	<spw_categoryexperimental>実験的機能</spw_categoryexperimental>
+	
+	<spw_removeunusedbuffers>未使用バッファをクリーンアップ</spw_removeunusedbuffers>
+	<spw_removeunusedbufferstooltip>バニラのマッフルバッファなしでサウンドをロードし、バニラに比べて約100MBのメモリを節約します。サウンドオブジェクトと低レベルで相互作用する他のModとの互換性の問題が懸念されるため、デフォルトでは無効になっています。しかし、ほとんどの場合、この設定は無料でパフォーマンスを向上させます。\n\n注意：プレイ中にこの設定を変更すると、バッファの読み込み中にゲームが一時的にフリーズすることがあります。</spw_removeunusedbufferstooltip>
+
+
+	<!-- StaticFx -->
+	<spw_staticfxtab>スタティックモード</spw_staticfxtab>
+	<spw_heavylowpassfrequency>重度ローパス周波数</spw_heavylowpassfrequency>
+	<spw_heavylowpassfrequencytooltip>重度に遮蔽されたサウンドをマッフルするために使用されるコーナー周波数。このフィルターを適用するしきい値は、マッフルタブで設定可能です。\n\n注意：ボイスチャットには適用されません。ボイスタブのローパス周波数スライダーを参照してください。\n\n注意：プレイ中にこの設定を変更すると、バッファの読み込み中にゲームが一時的にフリーズすることがあります。</spw_heavylowpassfrequencytooltip>
+	<spw_mediumlowpassfrequency>中度ローパス周波数</spw_mediumlowpassfrequency>
+	<spw_mediumlowpassfrequencytooltip>中度に遮蔽されたサウンドをマッフルするために使用されるコーナー周波数。このフィルターを適用するしきい値は、マッフルタブで設定可能です。\n\n注意：ボイスチャットには適用されません。ボイスタブのローパス周波数スライダーを参照してください。\n\n注意：プレイ中にこの設定を変更すると、バッファの読み込み中にゲームが一時的にフリーズすることがあります。</spw_mediumlowpassfrequencytooltip>
+	<spw_lightlowpassfrequency>軽度ローパス周波数</spw_lightlowpassfrequency>
+	<spw_lightlowpassfrequencytooltip>軽度に遮蔽されたサウンドをマッフルするために使用されるコーナー周波数。このフィルターを適用するしきい値は、マッフルタブで設定可能です。\n\n注意：ボイスチャットには適用されません。ボイスタブのローパス周波数スライダーを参照してください。\n\n注意：プレイ中にこの設定を変更すると、バッファの読み込み中にゲームが一時的にフリーズすることがあります。</spw_lightlowpassfrequencytooltip>
+
+	<spw_staticreverb>リバーブバッファを有効化</spw_staticreverb>
+	<spw_staticreverbtooltip>リバーブフィルターを通過した追加のバッファでサウンドをロードします。この機能は、非ループかつマッフルされていないサウンドにのみ適用されます。\n\n注意：約100MBのメモリを使用し、バッファの読み込み時間が長くなります（持続時間が長いほど悪化します）。\n\n注意：プレイ中にこの設定を変更すると、バッファの読み込み中にゲームが一時的にフリーズすることがあります。</spw_staticreverbtooltip>
+	<spw_staticreverbalwaysloudsounds>常に大きな音にリバーブを適用</spw_staticreverbalwaysloudsounds>
+	<spw_staticreverbalwaysloudsoundstooltip>「カスタムサウンド」リスト（詳細設定タブ）でサイドチェイン乗数が1より大きいサウンドは、最小リバーブエリア要件を無視します。</spw_staticreverbalwaysloudsoundstooltip>
+	<spw_staticreverbduration>リバーブ持続時間</spw_staticreverbduration>
+	<spw_staticreverbdurationtooltip>リバーブの減衰時間とサイズ。この値を増やすと、メモリ使用量とバッファ読み込み時間が増加します。</spw_staticreverbdurationtooltip>
+	<spw_staticreverbwetdrymix>リバーブミックス</spw_staticreverbwetdrymix>
+	<spw_staticreverbwetdrymixtooltip>リバーブのドライ/ウェットミックス。値が高いほど、より強い効果になります。</spw_staticreverbwetdrymixtooltip>
+	<spw_staticreverbdamping>リバーブダンピング</spw_staticreverbdamping>
+	<spw_staticreverbdampingtooltip>リバーブのフィードバックに適用されるローパスフィルターの強度。</spw_staticreverbdampingtooltip>
+	<spw_staticreverbminarea>最小リバーブエリア</spw_staticreverbminarea>
+	<spw_staticreverbminareatooltip>非ループかつマッフルされていないサウンドに反響を適用するために必要な、リスナーの周りの接続された部屋の最小合計面積。</spw_staticreverbminareatooltip>
+
+	<!-- Voice -->
+	<spw_voicetab>ボイス</spw_voicetab>
+
+	<spw_talkingragdolls>ラグドール中の会話</spw_talkingragdolls>
+	<spw_talkingragdollstooltip>気絶していないプレイヤーがラグドール状態のときに話す声が聞こえるようになります。</spw_talkingragdollstooltip>
+	
+	<spw_voicerange>ローカル範囲</spw_voicerange>
+	<spw_voicerangetooltip>ローカル近接チャットの範囲。</spw_voicerangetooltip>
+	<spw_radiorange>無線範囲</spw_radiorange>
+	<spw_radiorangetooltip>無線近接チャットの範囲。</spw_radiorangetooltip>
+	<spw_voicevolume>ローカル音量</spw_voicevolume>
+	<spw_voicevolumetooltip>ローカル近接チャットの音量。\n\n注意：この設定はBarotraumaのボイスチャット音量スライダーとは独立しています。</spw_voicevolumetooltip>
+	<spw_radiovolume>無線音量</spw_radiovolume>
+	<spw_radiovolumetooltip>無線近接チャットの音量。\n\n注意：この設定はBarotraumaのボイスチャット音量スライダーとは独立しています。</spw_radiovolumetooltip>
+
+	<spw_categorydynamicfx>ダイナミックモード限定</spw_categorydynamicfx>
+
+	<spw_dynamicreverblocal>ローカルにリバーブ適用</spw_dynamicreverblocal>
+	<spw_dynamicreverblocaltooltip>ローカル近接チャットにリバーブを適用できるようにします。\n\n注意：ダイナミックモードのリバーブ効果が有効である必要があります。</spw_dynamicreverblocaltooltip>
+	<spw_dynamicreverbradio>無線にリバーブ適用</spw_dynamicreverbradio>
+	<spw_dynamicreverbradiotooltip>無線近接チャットにリバーブを適用できるようにします。\n\n注意：ダイナミックモードのリバーブ効果が有効である必要があります。</spw_dynamicreverbradiotooltip>
+	<spw_drowningdistortion>溺れている際の無線を歪ませる</spw_drowningdistortion>
+	<spw_drowningdistortiontooltip>溺れているときに無線近接チャットにディストーションを適用します。\n\n注意：この設定は、溺れているときの無線近接チャットのマッフルを減少させます。</spw_drowningdistortiontooltip>
+	<spw_voiceminlowpassfrequency>最小ローパス周波数</spw_voiceminlowpassfrequency>
+	<spw_voiceminlowpassfrequencytooltip>完全にマッフルされたときに適用される最小ローパス周波数。</spw_voiceminlowpassfrequencytooltip>
+	<spw_voicedynamicmufflemultiplier>ダイナミックマッフル強度</spw_voicedynamicmufflemultiplier>
+	<spw_voicedynamicmufflemultipliertooltip>ダイナミックモード使用時の音声に適用される障害物の強度。</spw_voicedynamicmufflemultipliertooltip>
+
+	<spw_voiceheavylowpassfrequency>重度ボイスローパス周波数</spw_voiceheavylowpassfrequency>
+	<spw_voiceheavylowpassfrequencytooltip>重度に遮蔽された音声をマッフルするために使用されるコーナー周波数。このフィルターを適用するしきい値は、マッフルタブで設定可能です。</spw_voiceheavylowpassfrequencytooltip>
+	<spw_voicemediumlowpassfrequency>中度ボイスローパス周波数</spw_voicemediumlowpassfrequency>
+	<spw_voicemediumlowpassfrequencytooltip>中度に遮蔽された音声をマッフルするために使用されるコーナー周波数。このフィルターを適用するしきい値は、マッフルタブで設定可能です。</spw_voicemediumlowpassfrequencytooltip>
+	<spw_voicelightlowpassfrequency>軽度ボイスローパス周波数</spw_voicelightlowpassfrequency>
+	<spw_voicelightlowpassfrequencytooltip>軽度に遮蔽された音声をマッフルするために使用されるコーナー周波数。このフィルターを適用するしきい値は、マッフルタブで設定可能です。</spw_voicelightlowpassfrequencytooltip>
+
+	<spw_categoryscreammode>絶叫モード</spw_categoryscreammode>
+
+	<spw_screammode>絶叫モード</spw_screammode>
+	<spw_screammodetooltip>ローカル近接チャットの範囲が入力振幅に応じて変化します（叫び声はより遠くまで聞こえます）。\n\n注意：最良の結果を得るには、Barotraumaのマイク音量を調整して、音声アクティビティメーターに大きな入力の余地があるようにしてください。マイクが許容するダイナミックレンジが広いほど良いです。</spw_screammodetooltip>
+	<spw_screammodemaxrange>最大絶叫範囲</spw_screammodemaxrange>
+	<spw_screammodemaxrangetooltip>「絶叫モード」が有効なときに、最大音量で話した場合のローカル近接チャットの最大範囲。\n\n注意：この設定は「ローカル範囲」乗数の影響を受けます。</spw_screammodemaxrangetooltip>
+	<spw_screammodeminrange>最小絶叫範囲</spw_screammodeminrange>
+	<spw_screammodeminrangetooltip>「絶叫モード」が有効なときのローカル近接チャットの最小範囲。</spw_screammodeminrangetooltip>
+	<spw_screammodereleaserate>絶叫リリースレート</spw_screammodereleaserate>
+	<spw_screammodereleaseratetooltip>振幅によって維持されなくなった後、音声範囲が1秒あたりに減少するレート。</spw_screammodereleaseratetooltip>
+	
+	<spw_categorybubbles>溺水</spw_categorybubbles>
+	
+	<spw_drowningbubbles>溺水時の泡</spw_drowningbubbles>
+	<spw_drowningbubblestooltip>酸素なしで水中で話すプレイヤーは、ローカルまたは無線で聞こえる目に見える泡を放出します。</spw_drowningbubblestooltip>
+	<spw_drowningbubbleslocalrange>ローカルの泡の範囲</spw_drowningbubbleslocalrange>
+	<spw_drowningbubbleslocalrangetooltip>ローカルの泡の音の可聴範囲。</spw_drowningbubbleslocalrangetooltip>
+	<spw_drowningbubbleslocalvolume>ローカルの泡の音量</spw_drowningbubbleslocalvolume>
+	<spw_drowningbubbleslocalvolumetooltip>ローカルの泡の音の音量。</spw_drowningbubbleslocalvolumetooltip>
+	<spw_drowningbubblesradiovolume>無線の泡の音量</spw_drowningbubblesradiovolume>
+	<spw_drowningbubblesradiovolumetooltip>無線の泡の音の音量。</spw_drowningbubblesradiovolumetooltip>
+	
+	<spw_categorycustomfilter>無線フィルター</spw_categorycustomfilter>
+
+	<spw_radiocustomfilter>カスタム無線フィルター</spw_radiocustomfilter>
+	<spw_radiocustomfiltertooltip>設定可能なコンプレッション、ディストーション、ノイズ効果を含むカスタムフィルターで無線近接チャットを処理します。</spw_radiocustomfiltertooltip>
+
+	<spw_customradiopresets>カスタム無線プリセット</spw_customradiopresets>
+	<spw_customradiopresetstooltip>ユニークな無線フィルター設定。これらのオプションのいずれかを選択すると、以下のすべてのフィルター値が変更されます。</spw_customradiopresetstooltip>
+	<spw_customradiopresetbroken>壊れている</spw_customradiopresetbroken>
+	<spw_customradiopresetbrokentooltip>とにかくひどい。無線を使うことが妨げになります。</spw_customradiopresetbrokentooltip>
+	<spw_customradiopresetdirty>汚れている</spw_customradiopresetdirty>
+	<spw_customradiopresetdirtytooltip>低品質の無線で、必死の通信を理解するのが難しくなることがあります。</spw_customradiopresetdirtytooltip>
+	<spw_customradiopresetnormal>標準</spw_customradiopresetnormal>
+	<spw_customradiopresetnormaltooltip>より様式化されたサウンドを持つバニラの無線。</spw_customradiopresetnormaltooltip>
+	<spw_customradiopresetclean>クリーン</spw_customradiopresetclean>
+	<spw_customradiopresetcleantooltip>完全にクリアな無線通信。</spw_customradiopresetcleantooltip>
+	
+	<spw_radiobandpassfrequency>無線バンドパス周波数</spw_radiobandpassfrequency>
+	<spw_radiobandpassfrequencytooltip>バンドパスフィルターの中心周波数。この点に近い周波数のみが通過を許可されます。\n\n注意：範囲の幅は下の「無線バンドパスQ値」で設定されます。</spw_radiobandpassfrequencytooltip>
+	<spw_radiobandpassqualityfactor>無線バンドパスQ値</spw_radiobandpassqualityfactor>
+	<spw_radiobandpassqualityfactortooltip>バンドパスフィルターが中心周波数の周りでどれだけ狭いか。値が高いほど、よりタイトで顕著な効果が生まれます。</spw_radiobandpassqualityfactortooltip>
+	<spw_radiodistortiondrive>無線ディストーションドライブ</spw_radiodistortiondrive>
+	<spw_radiodistortiondrivetooltip>クリッピング前に音声信号をブーストします。値が高いほどディストーションの強度が増します。</spw_radiodistortiondrivetooltip>
+	<spw_radiodistortionthreshold>無線ディストーションしきい値</spw_radiodistortionthreshold>
+	<spw_radiodistortionthresholdtooltip>許容される最大レベル。この制限を超えるサンプルはハードクリップされます。</spw_radiodistortionthresholdtooltip>
+	<spw_radiostatic>無線スタティックノイズ</spw_radiostatic>
+	<spw_radiostatictooltip>無線送信に追加されるスタティックノイズの強度。</spw_radiostatictooltip>
+	<spw_radiocompressionthreshold>無線コンプレッションしきい値</spw_radiocompressionthreshold>
+	<spw_radiocompressionthresholdtooltip>コンプレッションが開始される入力レベル。このレベル以下のサウンドは影響を受けません。</spw_radiocompressionthresholdtooltip>
+	<spw_radiocompressionratio>無線コンプレッションレシオ</spw_radiocompressionratio>
+	<spw_radiocompressionratiotooltip>しきい値を超える音量がどれだけ減少するか。レシオが高いほど、より強力なコンプレッションと少ないダイナミックレンジを意味します。</spw_radiocompressionratiotooltip>
+	<spw_radiopostfilterboost>フィルター後ゲインブースト</spw_radiopostfilterboost>
+	<spw_radiopostfilterboosttooltip>無線フィルタリング後の全体的な出力レベル。</spw_radiopostfilterboosttooltip>
+	
+	<!-- Muffle -->
+	<spw_muffletab>マッフル</spw_muffletab>
+	<spw_muffledivingsuit>潜水服をマッフル</spw_muffledivingsuit>
+	<spw_muffledivingsuittooltip>潜水服を着用しているとき、すべてのサウンドに「潜水服」の障害物を適用します。</spw_muffledivingsuittooltip>
+	<spw_mufflesubmergedplayer>潜水中のプレイヤーをマッフル</spw_mufflesubmergedplayer>
+	<spw_mufflesubmergedplayertooltip>プレイヤーの頭と同じ水域に潜っているサウンドに「水塊」の障害物を適用します。</spw_mufflesubmergedplayertooltip>
+	<spw_mufflesubmergedviewtarget>潜水中の視点ターゲットをマッフル</spw_mufflesubmergedviewtarget>
+	<spw_mufflesubmergedviewtargettooltip>視点ターゲットと同じ水域に潜っているサウンドに「水塊」の障害物を適用します。\n\n注意：「ターゲットの音声を注視」（全般タブ）が有効である必要があります。</spw_mufflesubmergedviewtargettooltip>
+	<spw_mufflewatersurface>水面をマッフル</spw_mufflewatersurface>
+	<spw_mufflewatersurfacetooltip>空気と水の境界の反対側にあるサウンドに「水面」の障害物を適用します。</spw_mufflewatersurfacetooltip>
+	<spw_muffleflowfirepath>水流と火災の経路をマッフル</spw_muffleflowfirepath>
+	<spw_muffleflowfirepathtooltip>リスナーへの経路がない場合、水流と火災の音をマッフルします。\n\n注意：この機能は予測システムを使用しており、すべての状況で正確であるとは限りません。</spw_muffleflowfirepathtooltip>
+	<spw_muffleflowsounds>水流音をマッフル</spw_muffleflowsounds>
+	<spw_muffleflowsoundstooltip>すべてのソースからの水流音のマフリングを切り替えます。</spw_muffleflowsoundstooltip>
+	<spw_mufflefiresounds>火災音をマッフル</spw_mufflefiresounds>
+	<spw_mufflefiresoundstooltip>すべてのソースからの火災音のマフリングを切り替えます。</spw_mufflefiresoundstooltip>
+	<spw_classiclowpassfrequency>クラシックローパス周波数</spw_classiclowpassfrequency>
+	<spw_classiclowpassfrequencytooltip>クラシックモードでサウンドをマッフルするために使用されるコーナー周波数。このフィルターを適用するしきい値は、マッフルタブで設定可能です。\n\n注意：ボイスチャットには適用されません。ボイスタブのローパス周波数スライダーを参照してください。\n\n注意：プレイ中にこの設定を変更すると、バッファの読み込み中にゲームが一時的にフリーズすることがあります。</spw_classiclowpassfrequencytooltip>
+
+	<spw_categoryobstructions>障害物マッフル強度</spw_categoryobstructions>
+
+	<spw_obstructionwatersurface>水面</spw_obstructionwatersurface>
+	<spw_obstructionwatersurfacetooltip>サウンドが空気と水の境界を越えるときに適用されるマッフル強度。\n\n注意：乗算で累積します（効果は逓減）。</spw_obstructionwatersurfacetooltip>
+	<spw_obstructionwaterbody>水塊</spw_obstructionwaterbody>
+	<spw_obstructionwaterbodytooltip>サウンドが空気と水の境界を越えずに水中を伝わってリスナーに到達するときに適用されるマッフル強度（つまり、サウンドは同じ水域内で始まり終わる）。\n\n注意：乗算で累積します（効果は逓減）。</spw_obstructionwaterbodytooltip>
+	<spw_obstructionwallthick>厚い壁</spw_obstructionwallthick>
+	<spw_obstructionwallthicktooltip>サウンドが通常通り壁を通過するときに適用されるマッフル強度。\n\n注意：ダイナミックモードを使用している場合、サウンドが通過したドア2枚ごとにも適用されます。\n\n注意：乗算で累積します（効果は逓減）。</spw_obstructionwallthicktooltip>
+	<spw_obstructionwallthin>薄い壁</spw_obstructionwallthin>
+	<spw_obstructionwallthintooltip>サウンドが壁を貫通する（伝播またはハイドロフォン構造物）か、リスナーへの部分的な経路がある（オクルージョン）ときに適用されるマッフル強度。\n\n注意：乗算で累積します（効果は逓減）。</spw_obstructionwallthintooltip>
+	<spw_obstructiondoorthick>厚いドア</spw_obstructiondoorthick>
+	<spw_obstructiondoorthicktooltip>サウンドが通常通りドアを通過するときに適用されるマッフル強度。\n\n注意：乗算で累積します（効果は逓減）。</spw_obstructiondoorthicktooltip>
+	<spw_obstructiondoorthin>薄いドア</spw_obstructiondoorthin>
+	<spw_obstructiondoorthintooltip>サウンドがドアを貫通する（盗み聞き、伝播、またはコンテナ内）ときに適用されるマッフル強度。\n\n注意：乗算で累積します（効果は逓減）。</spw_obstructiondoorthintooltip>
+	<spw_obstructionsuit>潜水服</spw_obstructionsuit>
+	<spw_obstructionsuittooltip>サウンドが潜水服を通過するときに適用されるマッフル強度。\n\n注意：ハイドロフォンを使用しているとき、潜水艦の外にあるサウンドにも適用されます。\n\n注意：乗算で累積します（効果は逓減）。</spw_obstructionsuittooltip>
+	<spw_obstructiondrowning>プレイヤーの溺水</spw_obstructiondrowning>
+	<spw_obstructiondrowningtooltip>プレイヤーが溺れながら話すときに、その声に適用されるマッフル強度。\n\n注意：乗算で累積します（効果は逓減）。</spw_obstructiondrowningtooltip>
+	
+	<spw_classicmufflethreshold>（クラシック）マッフルしきい値</spw_classicmufflethreshold>
+	<spw_classicmufflethresholdtooltip>サウンドが「クラシックローパス周波数」（マッフルタブ）を使用するために必要な最小合計障害物レベル。</spw_classicmufflethresholdtooltip>
+
+	<spw_staticlightmufflethreshold>（スタティック）軽度マッフルしきい値</spw_staticlightmufflethreshold>
+	<spw_staticlightmufflethresholdtooltip>サウンドと音声が「軽度ローパス周波数」（スタティックタブ）または「軽度ボイスローパス周波数」（ボイスタブ）を使用するために必要な最小合計障害物レベル。</spw_staticlightmufflethresholdtooltip>
+
+	<spw_staticmediummufflethreshold>（スタティック）中度マッフルしきい値</spw_staticmediummufflethreshold>
+	<spw_staticmediummufflethresholdtooltip>サウンドと音声が「中度ローパス周波数」（スタティックタブ）または「中度ボイスローパス周波数」（ボイスタブ）を使用するために必要な最小合計障害物レベル。</spw_staticmediummufflethresholdtooltip>
+
+	<spw_staticheavymufflethreshold>（スタティック）重度マッフルしきい値</spw_staticheavymufflethreshold>
+	<spw_staticheavymufflethresholdtooltip>サウンドと音声が「重度ローパス周波数」（スタティックタブ）または「重度ボイスローパス周波数」（ボイスタブ）を使用するために必要な最小合計障害物レベル。</spw_staticheavymufflethresholdtooltip>
+
+	<spw_categorythresholds>マッフルしきい値</spw_categorythresholds>
+
+	<!-- Volume -->
+	<spw_volumetab>音量</spw_volumetab>
+
+	<spw_categorysidechaining>サイドチェイン</spw_categorysidechaining>
+
+	<spw_sidechaining>サイドチェインを有効化</spw_sidechaining>
+	<spw_sidechainingtooltip>大きな音が再生されるときに、すべてのサウンドの音量を下げます。\n\n注意：サウンドが内部的に大きいと見なされるためには、「カスタムサウンド」リスト（詳細設定タブ）でサイドチェイン乗数がゼロより大きいと参照されている必要があります。</spw_sidechainingtooltip>
+	<spw_sidechainmusic>音楽をサイドチェイン</spw_sidechainmusic>
+	<spw_sidechainmusictooltip>大きな音が再生されるときに、音楽トラックの音量を下げます。</spw_sidechainmusictooltip>
+
+	<spw_sidechainintensitymaster>サイドチェイン強度マスター</spw_sidechainintensitymaster>
+	<spw_sidechainintensitymastertooltip>「カスタムサウンド」リスト（詳細設定タブ）のすべてのサイドチェイン乗数に適用されるグローバル乗数。</spw_sidechainintensitymastertooltip>
+	<spw_sidechainreleasemaster>サイドチェインリリースマスター</spw_sidechainreleasemaster>
+	<spw_sidechainreleasemastertooltip>「カスタムサウンド」リスト（詳細設定タブ）のすべてのサイドチェインリリースに追加される固定時間。</spw_sidechainreleasemastertooltip>
+	<spw_sidechainreleasecurve>サイドチェインリリースカーブ</spw_sidechainreleasecurve>
+	<spw_sidechainreleasecurvetooltip>サイドチェインリリースカーブの形状を計算するために使用される指数。1未満の値はゆっくりとリリースし、最後に急激に変化します。1より大きい値は素早くリリースし、最後に平坦になります。</spw_sidechainreleasecurvetooltip>
+	<spw_sidechainmufflepower>サイドチェインマッフルパワー</spw_sidechainmufflepower>
+	<spw_sidechainmufflepowertooltip>マッフルされたサウンドのサイドチェイン効果がどれだけ強いか。値が高いほど、より多くのサイドチェイン強度を保持します。</spw_sidechainmufflepowertooltip>
+	<spw_sidechainmusicmultiplier>サイドチェイン音楽強度</spw_sidechainmusicmultiplier>
+	<spw_sidechainmusicmultipliertooltip>音楽に対するサイドチェイン効果の強度。</spw_sidechainmusicmultipliertooltip>
+
+	<spw_muffledsoundvolume>マッフルされたサウンドの音量</spw_muffledsoundvolume>
+	<spw_muffledsoundvolumetooltip>マッフルされた非ループサウンドの音量。マッフル強度に基づいて「マッフルされていないサウンドの音量」とブレンドされます。\n\n注意：他の音量乗数と加算で累積します。</spw_muffledsoundvolumetooltip>
+	<spw_unmuffledsoundvolume>マッフルされていないサウンドの音量</spw_unmuffledsoundvolume>
+	<spw_unmuffledsoundvolumetooltip>マッフルされていない非ループサウンドの音量。マッフル強度に基づいて「マッフルされたサウンドの音量」とブレンドされます。\n\n注意：他の音量乗数と加算で累積します。</spw_unmuffledsoundvolumetooltip>
+	<spw_muffledvoicevolume>マッフルされたボイスの音量</spw_muffledvoicevolume>
+	<spw_muffledvoicevolumetooltip>マッフルされたプレイヤーボイスの音量。マッフル強度に基づいて「マッフルされていないボイスの音量」とブレンドされます。\n\n注意：他の音量乗数と加算で累積します。</spw_muffledvoicevolumetooltip>
+	<spw_unmuffledvoicevolume>マッフルされていないボイスの音量</spw_unmuffledvoicevolume>
+	<spw_unmuffledvoicevolumetooltip>マッフルされていないプレイヤーボイスの音量。マッフル強度に基づいて「マッフルされたボイスの音量」とブレンドされます。\n\n注意：他の音量乗数と加算で累積します。</spw_unmuffledvoicevolumetooltip>
+	<spw_muffledloopingvolume>マッフルされたループ音の音量</spw_muffledloopingvolume>
+	<spw_muffledloopingvolumetooltip>マッフルされたループサウンドの音量。マッフル強度に基づいて「マッフルされていないループ音の音量」とブレンドされます。\n\n注意：他の音量乗数と加算で累積します。</spw_muffledloopingvolumetooltip>
+	<spw_unmuffledloopingvolume>マッフルされていないループ音の音量</spw_unmuffledloopingvolume>
+	<spw_unmuffledloopingvolumetooltip>マッフルされていないループサウンドの音量。マッフル強度に基づいて「マッフルされたループ音の音量」とブレンドされます。\n\n注意：他の音量乗数と加算で累積します。</spw_unmuffledloopingvolumetooltip>
+	<spw_submergedvolume>共に潜水しているときの音量</spw_submergedvolume>
+	<spw_submergedvolumetooltip>リスナーと同じ水域に潜っているサウンドの音量。\n\n注意：他の音量乗数と加算で累積します。</spw_submergedvolumetooltip>
+	<spw_flowsoundvolume>水流音の音量</spw_flowsoundvolume>
+	<spw_flowsoundvolumetooltip>潜水艦の漏水によって引き起こされる流水の音量。</spw_flowsoundvolumetooltip>
+	<spw_firesoundvolume>火災音の音量</spw_firesoundvolume>
+	<spw_firesoundvolumetooltip>火災の音量。</spw_firesoundvolumetooltip>
+	<spw_vanillaexosuitvolume>バニラエクソスーツの音量</spw_vanillaexosuitvolume>
+	<spw_vanillaexosuitvolumetooltip>バニラのエクソスーツの移動音の音量。一部のプレイヤーはこの音を不快に感じることがあります。\n\n注意：Modで追加されたエクソスーツの音には影響しません。</spw_vanillaexosuitvolumetooltip>
+	<spw_loopingcomponentsoundnearmultiplier>コンポーネント音の距離減衰開始</spw_loopingcomponentsoundnearmultiplier>
+	<spw_loopingcomponentsoundnearmultipliertooltip>ループするコンポーネント音の音量が減衰し始めるまでの距離。</spw_loopingcomponentsoundnearmultipliertooltip>
+	<spw_mindistancefalloffvolume>最小距離減衰音量</spw_mindistancefalloffvolume>
+	<spw_mindistancefalloffvolumetooltip>「リアルな音の減衰」モデル（全般タブ）を使用してサウンドが到達できる最小減衰音量。</spw_mindistancefalloffvolumetooltip>
+
+
+	<!-- Eavesdropping -->
+	<spw_eavesdroppingtab>盗み聞き</spw_eavesdroppingtab>
+	<spw_eavesdroppingenabled>盗み聞きを有効化</spw_eavesdroppingenabled>
+	<spw_eavesdroppingenabledtooltip>盗み聞き機能を切り替えます。</spw_eavesdroppingenabledtooltip>
+	<spw_eavesdroppingmuffleself>自分の船殻をマッフル</spw_eavesdroppingmuffleself>
+	<spw_eavesdroppingmuffleselftooltip>盗み聞き中にリスナーの船殻内の音をマッフルします。</spw_eavesdroppingmuffleselftooltip>
+	<spw_eavesdroppingmuffle>盗み聞き対象の船殻をマッフル</spw_eavesdroppingmuffle>
+	<spw_eavesdroppingmuffletooltip>「薄いドア」の障害物を適用して、盗み聞きで聞こえる音をわずかにマッフルします。</spw_eavesdroppingmuffletooltip>
+	<spw_eavesdroppingtransition>盗み聞きトランジション</spw_eavesdroppingtransition>
+	<spw_eavesdroppingtransitiontooltip>盗み聞き中に船殻間の音声をスムーズに移行させます。</spw_eavesdroppingtransitiontooltip>
+	<spw_eavesdroppingducksradio>盗み聞きで無線音量を下げる</spw_eavesdroppingducksradio>
+	<spw_eavesdroppingducksradiotooltip>盗み聞き中に無線近接チャットの音量を下げます。</spw_eavesdroppingducksradiotooltip>
+
+	<spw_eavesdroppingbind>盗み聞きキー</spw_eavesdroppingbind>
+	<spw_eavesdroppingbindtooltip>盗み聞きするために長押しするボタン。\n\n注意：この設定は、「設定を同期」（全般タブ）を使用しても他のプレイヤーと同期されません。</spw_eavesdroppingbindtooltip>
+
+	<spw_eavesdroppingsoundvolume>盗み聞きしたサウンドの音量</spw_eavesdroppingsoundvolume>
+	<spw_eavesdroppingsoundvolumetooltip>盗み聞きで聞こえるサウンドの音量。\n\n注意：他の音量乗数と加算で累積します。</spw_eavesdroppingsoundvolumetooltip>
+	<spw_eavesdroppingvoicevolume>盗み聞きしたボイスの音量</spw_eavesdroppingvoicevolume>
+	<spw_eavesdroppingvoicevolumetooltip>盗み聞きで聞こえるローカル近接チャットの音量。\n\n注意：他の音量乗数と加算で累積します。</spw_eavesdroppingvoicevolumetooltip>
+	<spw_eavesdroppingothervolume>自分の船殻の音量</spw_eavesdroppingothervolume>
+	<spw_eavesdroppingothervolumetooltip>盗み聞き中のリスナーの船殻内の音声の音量。</spw_eavesdroppingothervolumetooltip>
+	<spw_eavesdroppingsoundpitch>盗み聞きしたサウンドのピッチ</spw_eavesdroppingsoundpitch>
+	<spw_eavesdroppingsoundpitchtooltip>盗み聞きで聞こえるサウンドのピッチ。\n\n注意：ローカル近接チャットには適用されません。\n\n注意：他のピッチ乗数と加算で累積します。</spw_eavesdroppingsoundpitchtooltip>
+	<spw_eavesdroppingmaxdistance>盗み聞き最大距離</spw_eavesdroppingmaxdistance>
+	<spw_eavesdroppingmaxdistancetooltip>盗み聞き中にプレイヤーの頭がドアから離れられる最大距離。</spw_eavesdroppingmaxdistancetooltip>
+	<spw_eavesdroppingtransitionduration>盗み聞きトランジション時間</spw_eavesdroppingtransitionduration>
+	<spw_eavesdroppingtransitiondurationtooltip>盗み聞きトランジションにかかる秒数。\n\n注意：「盗み聞きトランジション」が有効である必要があります。</spw_eavesdroppingtransitiondurationtooltip>
+	<spw_eavesdroppingthreshold>盗み聞きしきい値</spw_eavesdroppingthreshold>
+	<spw_eavesdroppingthresholdtooltip>盗み聞きトランジションのどの時点でマッフルプロファイルがドアの反対側に切り替わるか。</spw_eavesdroppingthresholdtooltip>
+
+	<spw_eavesdroppingvisualfeedbackenabled>視覚フィードバック</spw_eavesdroppingvisualfeedbackenabled>
+	<spw_eavesdroppingvisualfeedbackenabledtooltip>盗み聞きした音源の周りに柔らかな緑色のグロー効果を表示します。</spw_eavesdroppingvisualfeedbackenabledtooltip>
+	<spw_eavesdroppingrevealscharacteroutline>キャラクターの輪郭を表示</spw_eavesdroppingrevealscharacteroutline>
+	<spw_eavesdroppingrevealscharacteroutlinetooltip>音を出している原因の身体部分（足音なら脚、声なら頭）のおおよその輪郭を表示します。</spw_eavesdroppingrevealscharacteroutlinetooltip>
+	<spw_eavesdroppingrevealsall>アクセス不能なサウンドを表示</spw_eavesdroppingrevealsall>
+	<spw_eavesdroppingrevealsalltooltip>盗み聞きエリアへの経路がないサウンドのグロー効果を表示します。\n\n注意：リスナーの船殻内のサウンドは常に無視されます。</spw_eavesdroppingrevealsalltooltip>
+	<spw_eavesdroppingspritemaxsize>最大グローサイズ</spw_eavesdroppingspritemaxsize>
+	<spw_eavesdroppingspritemaxsizetooltip>グロー効果の最大サイズ。</spw_eavesdroppingspritemaxsizetooltip>
+	<spw_eavesdroppingspritesizemultiplier>グローサイズ乗数</spw_eavesdroppingspritesizemultiplier>
+	<spw_eavesdroppingspritesizemultipliertooltip>サウンドの範囲に対するグロー効果のサイズ。</spw_eavesdroppingspritesizemultipliertooltip>
+	<spw_eavesdroppingspriteopacity>グロー不透明度</spw_eavesdroppingspriteopacity>
+	<spw_eavesdroppingspriteopacitytooltip>グロー効果の強さ。</spw_eavesdroppingspriteopacitytooltip>
+	<spw_eavesdroppingspritefadecurve>グローフェードカーブ</spw_eavesdroppingspritefadecurve>
+	<spw_eavesdroppingspritefadecurvetooltip>グローのフェードアウトカーブの形状を計算するために使用される指数。1未満の値はゆっくりとフェードし、最後に急激に変化します。1より大きい値は素早くフェードし、最後に平坦になります。</spw_eavesdroppingspritefadecurvetooltip>
+	<spw_eavesdroppingzoom>盗み聞きカメラズーム</spw_eavesdroppingzoom>
+	<spw_eavesdroppingzoomtooltip>盗み聞き中にカメラがどれだけズームインするか。\n\n注意：カメラズームを調整する他のModと競合する可能性があります。</spw_eavesdroppingzoomtooltip>
+	<spw_eavesdroppingvignette>ビネット不透明度</spw_eavesdroppingvignette>
+	<spw_eavesdroppingvignettetooltip>盗み聞き中に画面の端に表示されるビネット効果の強さ。</spw_eavesdroppingvignettetooltip>
+
+	<!-- Hydrophone -->
+	<spw_hydrophonestab>ハイドロフォン</spw_hydrophonestab>
+	<spw_hydrophoneswitchenabled>ハイドロフォンスイッチを有効化</spw_hydrophoneswitchenabled>
+	<spw_hydrophoneswitchenabledtooltip>ハイドロフォン機能を切り替えます。\n\n注意：ハイドロフォンスイッチは次のラウンドまで残ります。</spw_hydrophoneswitchenabledtooltip>
+	<spw_hydrophonemovementsounds>移動音</spw_hydrophonemovementsounds>
+	<spw_hydrophonemovementsoundstooltip>水中の移動音を聞きます。</spw_hydrophonemovementsoundstooltip>
+	<spw_hydrophonehearengine>エンジン音を聞く</spw_hydrophonehearengine>
+	<spw_hydrophonehearenginetooltip>自分自身のものを含む、潜水艦のエンジン音を聞きます。</spw_hydrophonehearenginetooltip>
+	<spw_hydrophonehearintostructures>構造物内部の音を聞く</spw_hydrophonehearintostructures>
+	<spw_hydrophonehearintostructurestooltip>他の潜水艦や前哨基地の内部の音を聞きます。\n\n注意：これらの構造物内のサウンドには「薄い壁」の障害物が適用されます。</spw_hydrophonehearintostructurestooltip>
+	<spw_hydrophonemuffleownsub>自艦をマッフル</spw_hydrophonemuffleownsub>
+	<spw_hydrophonemuffleownsubtooltip>自身の構造物内から来る音をマッフルします。\n\n注意：「水面」の障害物を適用します。</spw_hydrophonemuffleownsubtooltip>
+	<spw_hydrophonerange>ハイドロフォン範囲</spw_hydrophonerange>
+	<spw_hydrophonerangetooltip>ハイドロフォンを通して音が聞こえる距離。\n\n注意：この距離はサウンドの既存の範囲に加算されます。</spw_hydrophonerangetooltip>
+	<spw_hydrophonevolume>ハイドロフォン音量</spw_hydrophonevolume>
+	<spw_hydrophonevolumetooltip>ハイドロフォンを通して聞こえるサウンドの音量。</spw_hydrophonevolumetooltip>
+	<spw_hydrophonepitch>ハイドロフォンピッチ</spw_hydrophonepitch>
+	<spw_hydrophonepitchtooltip>ハイドロフォンを通して聞こえるサウンドのピッチ。\n\n注意：近接チャットには適用されません。</spw_hydrophonepitchtooltip>
+	<spw_hydrophoneambiencevolume>ハイドロフォン環境音量</spw_hydrophoneambiencevolume>
+	<spw_hydrophoneambiencevolumetooltip>ハイドロフォンを聴いているときに再生される海の環境音の音量。</spw_hydrophoneambiencevolumetooltip>
+	<spw_hydrophonemovementvolume>ハイドロフォン移動音量</spw_hydrophonemovementvolume>
+	<spw_hydrophonemovementvolumetooltip>水中でキャラクターが移動することによって引き起こされる水しぶきの音の音量。</spw_hydrophonemovementvolumetooltip>
+	
+	<spw_hydrophonevisualfeedbackenabled>視覚フィードバック</spw_hydrophonevisualfeedbackenabled>
+	<spw_hydrophonevisualfeedbackenabledtooltip>ソナーUIに色付きのセクターを表示し、水中の音の方向、大きさ、および推定距離を視覚的に表現します。\n\n注意：距離はサウンドの範囲とハイライトされたセクターの幅に基づいて推定できます。</spw_hydrophonevisualfeedbackenabledtooltip>
+	<spw_hydrophoneusagedisablessonarblips>パッシブソナーを無効化</spw_hydrophoneusagedisablessonarblips>
+	<spw_hydrophoneusagedisablessonarblipstooltip>ハイドロフォンを監視している間、ソナーブリップの描画を停止します。ソナーブリップは環境を視覚的に表示するものです。</spw_hydrophoneusagedisablessonarblipstooltip>
+	<spw_hydrophoneusagedisablessuboutline>潜水艦の輪郭を無効化</spw_hydrophoneusagedisablessuboutline>
+	<spw_hydrophoneusagedisablessuboutlinetooltip>ハイドロフォンを監視している間、潜水艦とそのドッキングハッチの輪郭の描画を停止します。</spw_hydrophoneusagedisablessuboutlinetooltip>
+	<spw_hydrophonevisualfeedbacksizemultiplier>視覚フィードバックサイズ</spw_hydrophonevisualfeedbacksizemultiplier>
+	<spw_hydrophonevisualfeedbacksizemultipliertooltip>色付きセクターの太さ。</spw_hydrophonevisualfeedbacksizemultipliertooltip>
+	<spw_hydrophonevisualfeedbackopacitymultiplier>視覚フィードバック不透明度</spw_hydrophonevisualfeedbackopacitymultiplier>
+	<spw_hydrophonevisualfeedbackopacitymultipliertooltip>色付きセクターの透明度。</spw_hydrophonevisualfeedbackopacitymultipliertooltip>
+	
+	<spw_hydrophonereverb>幽玄なエコー</spw_hydrophonereverb>
+	<spw_hydrophonereverbtooltip>遠くの音が氷の洞窟や水中の空間で拡散、散乱、反響する方法を模倣した、ユニークなハイドロフォンリバーブを適用します。\n\n注意：「リバーブを有効化」（ダイナミックタブ）が有効である必要があります。</spw_hydrophonereverbtooltip>
+	<spw_hydrophonereverbtargetgain>リバーブ強度</spw_hydrophonereverbtargetgain>
+	<spw_hydrophonereverbtargetgaintooltip>ユニークなハイドロフォンリバーブの基本ゲイン。</spw_hydrophonereverbtargetgaintooltip>
+	
+	<spw_hydrophonedistortion>ハイドロフォンを歪ませる</spw_hydrophonedistortion>
+	<spw_hydrophonedistortiontooltip>ハイドロフォンを通して聞こえる音にディストーション効果を適用します。</spw_hydrophonedistortiontooltip>
+	
+	<spw_hydrophonebandpassfilter>ハイドロフォンをバンドパス</spw_hydrophonebandpassfilter>
+	<spw_hydrophonebandpassfiltertooltip>ハイドロフォンを通して聞こえる音にバンドパスフィルターを適用します。バンドパスフィルターは高周波と低周波をカットし、ラジオのようなサウンドを作り出します。\n\n注意：バンドパスフィルターを使用するサウンドのマフリングは無効になります。</spw_hydrophonebandpassfiltertooltip>
+	<spw_hydrophonebandpassfilterhfgain>バンドパス高周波ゲイン</spw_hydrophonebandpassfilterhfgain>
+	<spw_hydrophonebandpassfilterhfgaintooltip>バンドパスフィルターの高周波の音量。</spw_hydrophonebandpassfilterhfgaintooltip>
+	<spw_hydrophonebandpassfilterlfgain>バンドパス低周波ゲイン</spw_hydrophonebandpassfilterlfgain>
+	<spw_hydrophonebandpassfilterlfgaintooltip>バンドパスフィルターの低周波の音量。</spw_hydrophonebandpassfilterlfgaintooltip>
+
+	<spw_categoryadvanced>詳細設定</spw_categoryadvanced>
+
+	<spw_hydrophonemuffleignoredsounds>マッフル無視サウンド</spw_hydrophonemuffleignoredsounds>
+	<spw_hydrophonemuffleignoredsoundstooltip>このリストのサウンドは、ハイドロフォン使用時に決してマッフルされません。</spw_hydrophonemuffleignoredsoundstooltip>
+	
+	<spw_hydrophonevisualignoredsounds>視覚フィードバック無視サウンド</spw_hydrophonevisualignoredsounds>
+	<spw_hydrophonevisualignoredsoundstooltip>このリストのサウンドは、ハイドロフォン使用時にソナーUIに決して表示されません。</spw_hydrophonevisualignoredsoundstooltip>
+	
+	<!-- Ambience -->
+	<spw_ambiencetab>環境音</spw_ambiencetab>
+	<spw_disablewhitenoise>ホワイトノイズを無効化</spw_disablewhitenoise>
+	<spw_disablewhitenoisetooltip>バニラゲームのバイオームノイズループをミュートします。</spw_disablewhitenoisetooltip>
+
+	<spw_categorytrack>トラック固有</spw_categorytrack>
+	<spw_waterambienceinvolume>船内水環境音量</spw_waterambienceinvolume>
+	<spw_waterambienceinvolumetooltip>船内で再生される水環境音トラックの音量。\n\n注意：このトラックは船外トラックの上に低い音量で再生され続けます。</spw_waterambienceinvolumetooltip>
+	<spw_waterambienceoutvolume>船外水環境音量</spw_waterambienceoutvolume>
+	<spw_waterambienceoutvolumetooltip>船外で再生される水環境音トラックの音量。</spw_waterambienceoutvolumetooltip>
+	<spw_waterambiencemovingvolume>移動中水環境音量</spw_waterambiencemovingvolume>
+	<spw_waterambiencemovingvolumetooltip>潜水艦またはプレイヤーが水中を移動しているときに再生される水環境音トラックの音量。</spw_waterambiencemovingvolumetooltip>
+
+	<spw_categoryenvironment>環境固有</spw_categoryenvironment>
+	<spw_unsubmergedsuitwaterambiencevolume>非潜水時水環境音量（スーツ）</spw_unsubmergedsuitwaterambiencevolume>
+	<spw_unsubmergedsuitwaterambiencevolumetooltip>リスナーが潜水しておらず、潜水服を着用しているときの水環境音トラックの音量。</spw_unsubmergedsuitwaterambiencevolumetooltip>
+	<spw_unsubmergednosuitwaterambiencevolume>非潜水時水環境音量（スーツなし）</spw_unsubmergednosuitwaterambiencevolume>
+	<spw_unsubmergednosuitwaterambiencevolumetooltip>リスナーが潜水しておらず、潜水服を着用していないときの水環境音トラックの音量。</spw_unsubmergednosuitwaterambiencevolumetooltip>
+	<spw_submergedsuitwaterambiencevolume>潜水時水環境音量（スーツ）</spw_submergedsuitwaterambiencevolume>
+	<spw_submergedsuitwaterambiencevolumetooltip>リスナーが潜水しており、潜水服を着用しているときの水環境音トラックの音量。</spw_submergedsuitwaterambiencevolumetooltip>
+	<spw_submergednosuitwaterambiencevolume>潜水時水環境音量（スーツなし）</spw_submergednosuitwaterambiencevolume>
+	<spw_submergednosuitwaterambiencevolumetooltip>リスナーが潜水しており、潜水服を着用していないときの水環境音トラックの音量。</spw_submergednosuitwaterambiencevolumetooltip>
+	<spw_waterambiencetransitionspeed>水環境音トランジション速度</spw_waterambiencetransitionspeed>
+	<spw_waterambiencetransitionspeedtooltip>水環境音が音量レベル間を移行する速さ。</spw_waterambiencetransitionspeedtooltip>
+
+
+	<!-- Pitch -->
+	<spw_pitchtab>ピッチ</spw_pitchtab>
+	<spw_pitchenabled>ピッチを有効化</spw_pitchenabled>
+	<spw_pitchenabledtooltip>すべてのピッチ効果をグローバルに切り替えます。\n\n注意：他のModのサウンドとの異常なピッチの相互作用に対する簡単な修正として役立つ場合があります。</spw_pitchenabledtooltip>
+	<spw_pitchstatuseffectsounds>ステータス効果音のピッチ</spw_pitchstatuseffectsounds>
+	<spw_pitchstatuseffectsoundstooltip>XMLステータス効果によって再生されるサウンドのピッチングを切り替えます。</spw_pitchstatuseffectsoundstooltip>
+	<spw_pitchwithdistance>距離に応じたピッチ</spw_pitchwithdistance>
+	<spw_pitchwithdistancetooltip>マッフルされたサウンドのピッチを距離に基づいて動的に下げます。\n\n注意：ループサウンドや近接チャットには適用されません。\n\n注意：他のピッチ乗数と加算で累積します。</spw_pitchwithdistancetooltip>
+	
+	<spw_divingsuitpitch>潜水服ピッチ</spw_divingsuitpitch>
+	<spw_divingsuitpitchtooltip>潜水服を着用しているときのサウンドのピッチ。\n\n注意：他のピッチ乗数と加算で累積します。</spw_divingsuitpitchtooltip>
+	<spw_submergedpitch>潜水時ピッチ</spw_submergedpitch>
+	<spw_submergedpitchtooltip>リスナーが潜水しているときのサウンドのピッチ。\n\n注意：他のピッチ乗数と加算で累積します。</spw_submergedpitchtooltip>
+	
+	<spw_muffledsoundpitch>マッフルされたサウンドのピッチ</spw_muffledsoundpitch>
+	<spw_muffledsoundpitchtooltip>マッフルされた非ループサウンドのピッチ。マッフル強度に基づいて「マッフルされていないサウンドのピッチ」とブレンドされます。\n\n注意：他のピッチ乗数と加算で累積します。</spw_muffledsoundpitchtooltip>
+	<spw_unmuffledsoundpitch>マッフルされていないサウンドのピッチ</spw_unmuffledsoundpitch>
+	<spw_unmuffledsoundpitchtooltip>マッフルされていない非ループサウンドのピッチ。マッフル強度に基づいて「マッフルされたサウンドのピッチ」とブレンドされます。\n\n注意：他のピッチ乗数と加算で累積します。</spw_unmuffledsoundpitchtooltip>
+	
+	<spw_muffledloopingpitch>マッフルされたループ音のピッチ</spw_muffledloopingpitch>
+	<spw_muffledloopingpitchtooltip>マッフルされたループサウンドのピッチ。マッフル強度に基づいて「マッフルされていないループ音のピッチ」とブレンドされます。\n\n注意：他のピッチ乗数と加算で累積します。</spw_muffledloopingpitchtooltip>
+	<spw_unmuffledloopingpitch>マッフルされていないループ音のピッチ</spw_unmuffledloopingpitch>
+	<spw_unmuffledloopingpitchtooltip>マッフルされていないループサウンドのピッチ。マッフル強度に基づいて「マッフルされたループ音のピッチ」とブレンドされます。\n\n注意：他のピッチ乗数と加算で累積します。</spw_unmuffledloopingpitchtooltip>
+	
+	<spw_muffledvoicepitch>マッフルされたボイスのピッチ</spw_muffledvoicepitch>
+	<spw_muffledvoicepitchtooltip>マッフルされた近接チャットのピッチ。マッフル強度に基づいて「マッフルされていないボイスのピッチ」とブレンドされます。\n\n注意：他のピッチ乗数と加算で累積します。\n\n注意：お楽しみ機能です :)</spw_muffledvoicepitchtooltip>
+	<spw_unmuffledvoicepitch>マッフルされていないボイスのピッチ</spw_unmuffledvoicepitch>
+	<spw_unmuffledvoicepitchtooltip>マッフルされていない近接チャットのピッチ。マッフル強度に基づいて「マッフルされたボイスのピッチ」とブレンドされます。\n\n注意：他のピッチ乗数と加算で累積します。\n\n注意：お楽しみ機能です :)</spw_unmuffledvoicepitchtooltip>
+
+
+	<!-- Advanced -->
+	<spw_advancedtab>詳細設定</spw_advancedtab>
+
+	<spw_debugperformance>パフォーマンスを表示</spw_debugperformance>
+	<spw_debugperformancetooltip>Soundproof Wallsの詳細なパフォーマンス情報を表示します。\n\n注意：この設定は、「設定を同期」（全般タブ）を使用しても他のプレイヤーと同期されません。</spw_debugperformancetooltip>
+
+	<spw_debugplayingsounds>再生中のサウンドを表示</spw_debugplayingsounds>
+	<spw_debugplayingsoundstooltip>Soundproof Wallsによって登録された、現在再生中のすべてのサウンドを表示します。\n\n注意：この設定は、「設定を同期」（全般タブ）を使用しても他のプレイヤーと同期されません。</spw_debugplayingsoundstooltip>
+
+	<spw_debugchannelinfo>チャンネル情報を表示</spw_debugchannelinfo>
+	<spw_debugchannelinfotooltip>「再生中のサウンドを表示」設定を拡張し、現在再生中のすべてのサウンドのゲイン、ピッチ、範囲、距離、マッフル、および障害物も表示します。\n\n注意：「再生中のサウンドを表示」が無効の場合、この情報はBarotraumaコンソールに記録されます。\n\n注意：この設定は、「設定を同期」（全般タブ）を使用しても他のプレイヤーと同期されません。</spw_debugchannelinfotooltip>
+
+	<spw_hidesettings>メニューボタンを非表示</spw_hidesettings>
+	<spw_hidesettingstooltip>一時停止メニューから「Soundproof Walls」ボタンを削除します。Soundproof Wallsの設定メニューは、コンソールで「spw」と入力することで引き続きアクセスできます。\n\n注意：この設定は、「設定を同期」（全般タブ）を使用しても他のプレイヤーと同期されません。</spw_hidesettingstooltip>
+
+	<spw_remembermenutabandscroll>メニュー位置を記憶</spw_remembermenutabandscroll>
+	<spw_remembermenutabandscrolltooltip>最後に訪れたスクロール位置とタブでメニューを開きます。\n\n注意：この設定は、「設定を同期」（全般タブ）を使用しても他のプレイヤーと同期されません。</spw_remembermenutabandscrolltooltip>
+
+	<spw_maxsourcecount>最大再生サウンド数</spw_maxsourcecount>
+	<spw_maxsourcecounttooltip>同時に再生できるサウンドの数。値を高くするとサウンドがスキップされるのを防ぎますが、パフォーマンスに影響を与える可能性があります。</spw_maxsourcecounttooltip>
+	
+	<spw_maxsimultaneousinstances>最大同時インスタンス数</spw_maxsimultaneousinstances>
+	<spw_maxsimultaneousinstancestooltip>同じサウンドのインスタンスが同時に再生できる数。値を高くするとサウンドがスキップされるのを防ぎますが、パフォーマンスに影響を与える可能性があります。</spw_maxsimultaneousinstancestooltip>
+
+	<spw_categoryintervals>更新間隔</spw_categoryintervals>
+	<spw_updatenonloopingsounds>非ループサウンドを更新</spw_updatenonloopingsounds>
+	<spw_updatenonloopingsoundstooltip>非ループサウンドが再生中に変更されることを許可し、以前は中断できなかったサウンドにカットオフの可能性を与えます。\n\n注意：パフォーマンスにわずかに影響を与える可能性があります。</spw_updatenonloopingsoundstooltip>
+	
+	<spw_nonloopingsoundmuffleupdateinterval>非ループサウンド更新間隔</spw_nonloopingsoundmuffleupdateinterval>
+	<spw_nonloopingsoundmuffleupdateintervaltooltip>非ループサウンドの各障害物更新間の時間。\n\n注意：「非ループサウンドを更新」が有効である必要があります。\n\n注意：この値を増やすとパフォーマンスが向上する可能性があります。</spw_nonloopingsoundmuffleupdateintervaltooltip>
+	<spw_openaleffectsupdateinterval>OpenALエフェクト更新間隔</spw_openaleffectsupdateinterval>
+	<spw_openaleffectsupdateintervaltooltip>ダイナミックモードのエフェクトの各エフェクトパラメータ更新間の時間。\n\n注意：この値を増やすとパフォーマンスが向上する可能性があります。</spw_openaleffectsupdateintervaltooltip>
+	<spw_voicemuffleupdateinterval>ボイス更新間隔</spw_voicemuffleupdateinterval>
+	<spw_voicemuffleupdateintervaltooltip>プレイヤーボイスの各障害物更新間の時間。\n\n注意：この値を増やすとパフォーマンスが向上する可能性があります。</spw_voicemuffleupdateintervaltooltip>
+	<spw_componentmuffleupdateinterval>コンポーネントサウンド更新間隔</spw_componentmuffleupdateinterval>
+	<spw_componentmuffleupdateintervaltooltip>ループするコンポーネントサウンド（例：通気口、リアクター、エンジン）の各障害物更新間の時間。\n\n注意：この値を増やすとパフォーマンスが向上する可能性があります。</spw_componentmuffleupdateintervaltooltip>
+	<spw_statuseffectmuffleupdateinterval>ステータス効果音更新間隔</spw_statuseffectmuffleupdateinterval>
+	<spw_statuseffectmuffleupdateintervaltooltip>ループするステータス効果音（例：状態異常からの音）の各障害物更新間の時間。\n\n注意：この値を増やすとパフォーマンスが向上する可能性があります。</spw_statuseffectmuffleupdateintervaltooltip>
+	
+	<spw_categorytransitions>トランジション</spw_categorytransitions>
+	<spw_disablevanillafadeout>バニラのフェードアウトを無効化</spw_disablevanillafadeout>
+	<spw_disablevanillafadeouttooltip>バニラの「FadeOutAndDispose」メソッドを無効にします。サウンドがループし続ける場合にのみこのオプションを有効にしてください。\n\n注意：音声のカットオフがスムーズでなくなります。</spw_disablevanillafadeouttooltip>
+	<spw_gaintransitionfactor>ゲイントランジション速度</spw_gaintransitionfactor>
+	<spw_gaintransitionfactortooltip>サウンドの音量が1秒あたりに変化できる量。値がゼロの場合、この機能は無効になり、即座にトランジションします。</spw_gaintransitionfactortooltip>
+	<spw_pitchtransitionfactor>ピッチトランジション速度</spw_pitchtransitionfactor>
+	<spw_pitchtransitionfactortooltip>サウンドのピッチが1秒あたりに変化できる量。値がゼロの場合、この機能は無効になり、即座にトランジションします。</spw_pitchtransitionfactortooltip>
+	<spw_airreverbgaintransitionfactor>屋内リバーブトランジション速度</spw_airreverbgaintransitionfactor>
+	<spw_airreverbgaintransitionfactortooltip>屋内リバーブ効果のゲインが1秒あたりに変化できる量。値がゼロの場合、この機能は無効になり、即座にトランジションします。</spw_airreverbgaintransitionfactortooltip>
+	<spw_hydrophonereverbgaintransitionfactor>ハイドロフォンリバーブトランジション速度</spw_hydrophonereverbgaintransitionfactor>
+	<spw_hydrophonereverbgaintransitionfactortooltip>ハイドロフォンリバーブ効果のゲインが1秒あたりに変化できる量。値がゼロの場合、この機能は無効になり、即座にトランジションします。</spw_hydrophonereverbgaintransitionfactortooltip>
+	<spw_dynamicmuffletransitionfactor>マッフル トランジション速度</spw_dynamicmuffletransitionfactor>
+	<spw_dynamicmuffletransitionfactortooltip>ダイナミックモードのマッフル効果が1秒あたりに変化できる量。値がゼロの場合、この機能は無効になり、即座にトランジションします。\n\n注意：この機能を有効にすると、おそらくBarotraumaのOpenAL Softのバージョンの症状として、可聴ポップ音が発生する可能性があります。</spw_dynamicmuffletransitionfactortooltip>
+	<spw_dynamicmuffletransitionfactorflowfire>水流と火災のマッフル トランジション速度</spw_dynamicmuffletransitionfactorflowfire>
+	<spw_dynamicmuffletransitionfactorflowfiretooltip>水流と火災の音に対するダイナミックモードのマッフル効果が1秒あたりに変化できる量。値がゼロの場合、この機能は無効になり、即座にトランジションします。\n\n注意：この機能を有効にすると、おそらくBarotraumaのOpenAL Softのバージョンの症状として、可聴ポップ音が発生する可能性があります。</spw_dynamicmuffletransitionfactorflowfiretooltip>
+
+	<spw_categorypathfinding>サウンド経路探索</spw_categorypathfinding>
+	<spw_traversewaterducts>ウォーターダクトを通過</spw_traversewaterducts>
+	<spw_traversewaterductstooltip>サウンドが開いたウォーターダクトを妨げられずに通過できるようにします。</spw_traversewaterductstooltip>
+	<spw_flowsoundstraversewaterducts>水流音がウォーターダクトを通過</spw_flowsoundstraversewaterducts>
+	<spw_flowsoundstraversewaterductstooltip>水流音の経路の推定が開いたウォーターダクトを妨げられずに通過できるようにします。\n\n注意：「水流と火災の経路をマッフル」（マッフルタブ）が有効である必要があります。</spw_flowsoundstraversewaterductstooltip>
+	<spw_opendoorthreshold>開いたドアのしきい値</spw_opendoorthreshold>
+	<spw_opendoorthresholdtooltip>ドア、ハッチ、またはダクトが音が妨げられずに通過するためにどれだけ開いている必要があるか。値がゼロの場合、完全に閉じたドアを音が妨げられずに通過できます。</spw_opendoorthresholdtooltip>
+	<spw_openwallthreshold>開いた壁のしきい値</spw_openwallthreshold>
+	<spw_openwallthresholdtooltip>壁の隙間が音が妨げられずに通過するためにどれだけ開いている必要があるか。</spw_openwallthresholdtooltip>
+	<spw_soundpropagationrange>サウンド伝播範囲</spw_soundpropagationrange>
+	<spw_soundpropagationrangetooltip>「壁伝播サウンド」リスト（詳細設定タブ）のサウンドが、伝播するために近くの船殻を検索できる最大距離。</spw_soundpropagationrangetooltip>
+
+	<spw_categoryai>キャラクターAI</spw_categoryai>
+	<spw_aitargetsoundrange>AIサウンド範囲</spw_aitargetsoundrange>
+	<spw_aitargetsoundrangetooltip>キャラクターAIがアイテムやキャラクターを聞き取れる距離。\n\n注意：シングルプレイヤーのみ。</spw_aitargetsoundrangetooltip>
+	<spw_aitargetsightrange>AI視界範囲</spw_aitargetsightrange>
+	<spw_aitargetsightrangetooltip>キャラクターAIがアイテムやキャラクターを見ることができる距離。\n\n注意：シングルプレイヤーのみ。</spw_aitargetsightrangetooltip>
+
+	<spw_categoryrules>サウンドルール</spw_categoryrules>
+	
+	<spw_customsounds>カスタムサウンド</spw_customsounds>
+	<spw_customsoundstooltip>特定のサウンドにカスタム値と効果を適用します。\n\n「キーワード」：ターゲットサウンドのファイル名の一部。大文字と小文字を区別しません。\n\n「ゲイン乗数」：音量乗数。他の音量乗数と加算で累積します。\n\n「範囲乗数」：範囲乗数。他の範囲乗数と乗算で累積します。\n\n「サイドチェイン乗数」：このサウンドが再生されるときに他のサウンドが減少する音量。\n\n「サイドチェインリリース」：音量減少が続く時間。\n\n「ディストーション」：このサウンドのディストーション効果を切り替えます。ダイナミックモードのみ。\n\n「ピッチ乗数」：ピッチ乗数。サウンドの長さを伸縮させることで機能します。範囲は0.25～4.0。\n\n「マッフル影響度」：マッフル効果の有効性。値が低いほど影響が少なくなります。\n\n「キーワード除外」：提供されたキーワードを含むが除外すべきサウンド。大文字と小文字を区別しません。</spw_customsoundstooltip>
+	<spw_moddedcustomsoundstooltip>[modname]からのカスタムサウンド値。標準の「カスタムサウンド」リストよりも優先されます。\n\nこのリストは他のプレイヤーと同期されず、変更は現在のセッションを超えて持続しません。\n\nSoundproof Wallsはこのリストの内容について責任を負いません。</spw_moddedcustomsoundstooltip>
+	
+	<spw_ignoredsounds>無視するサウンド</spw_ignoredsounds>
+	<spw_ignoredsoundstooltip>このリストのサウンドはすべての処理から無視されます。</spw_ignoredsoundstooltip>
+	
+	<spw_surfaceignoredsounds>水面を無視するサウンド</spw_surfaceignoredsounds>
+	<spw_surfaceignoredsoundstooltip>このリストのサウンドは空気と水の境界を妨げられずに通過します。</spw_surfaceignoredsoundstooltip>
+	
+	<spw_submersionignoredsounds>水塊を無視するサウンド</spw_submersionignoredsounds>
+	<spw_submersionignoredsoundstooltip>このリストのサウンドは水中を妨げられずに伝わります。\n\n注意：サウンドが水面とどのように相互作用するかには影響しません。</spw_submersionignoredsoundstooltip>
+	
+	<spw_wallpropagatingsounds>壁を伝播するサウンド</spw_wallpropagatingsounds>
+	<spw_wallpropagatingsoundstooltip>このリストのサウンドは、プレイヤーにより良く到達するために近くの船殻に飛び移ることができ、「厚い壁」の代わりに「薄い壁」の障害物を受けます。</spw_wallpropagatingsoundstooltip>
+	
+	<spw_pitchignoredsounds>ピッチを無視するサウンド</spw_pitchignoredsounds>
+	<spw_pitchignoredsoundstooltip>このリストのサウンドはピッチが1.0に強制されます。\n\n注意：「カスタムサウンド」リスト（詳細設定タブ）のサウンド固有のピッチ乗数がこのリストを上書きします。</spw_pitchignoredsoundstooltip>
+
+	<spw_reverbforcedsounds>リバーブを強制するサウンド</spw_reverbforcedsounds>
+	<spw_reverbforcedsoundstooltip>このリストのサウンドは、可能であれば常にリバーブ効果を受けます。\n\n注意：「ダイナミック」および「スタティック」エフェクトモード専用です。</spw_reverbforcedsoundstooltip>
+
+	<spw_airreverbignoredsounds>屋内リバーブを無視するサウンド</spw_airreverbignoredsounds>
+	<spw_airreverbignoredsoundstooltip>このリストのサウンドは屋内リバーブ効果を一切受けません。\n\n注意：「ダイナミック」および「スタティック」エフェクトモード専用です。</spw_airreverbignoredsoundstooltip>
+	
+	<spw_waterreverbignoredsounds>屋外リバーブを無視するサウンド</spw_waterreverbignoredsounds>
+	<spw_waterreverbignoredsoundstooltip>このリストのサウンドは屋外リバーブ効果を一切受けません。\n\n注意：「ダイナミック」エフェクトモード専用です。</spw_waterreverbignoredsoundstooltip>
+	
+	<spw_barrierignoredsounds>障壁を無視するサウンド</spw_barrierignoredsounds>
+	<spw_barrierignoredsoundstooltip>このリストのサウンドは、オクルージョン、壁、ドア、または水面によってマッフルされません。</spw_barrierignoredsoundstooltip>
+	
+	<spw_xmlignoredsounds>XMLで無視されるサウンド</spw_xmlignoredsounds>
+	<spw_xmlignoredsoundstooltip>このリストは、内部的に「dontmuffle」タグまたは同様のプロパティでマークされたサウンド用です。このリストのサウンドは常にマフリングの評価対象となります。</spw_xmlignoredsoundstooltip>
+	
+	<spw_lowpassignoredsounds>ローパスを無視するサウンド</spw_lowpassignoredsounds>
+	<spw_lowpassignoredsoundstooltip>このリストのサウンドはマッフル効果を一切受けません。</spw_lowpassignoredsoundstooltip>
+	
+	<spw_containerignoredsounds>コンテナを無視するサウンド</spw_containerignoredsounds>
+	<spw_containerignoredsoundstooltip>このリストのサウンドは、格納されているコンテナを妨げられずに通過します。</spw_containerignoredsoundstooltip>
+	
+	<spw_bubbleignorednames>溺水免除プレイヤー</spw_bubbleignorednames>
+	<spw_bubbleignorednamestooltip>このリストにプレイヤー名を入力すると、酸素供給なしで水中で話すことによって引き起こされる溺水時の泡効果から免除されます。</spw_bubbleignorednamestooltip>
+
+	<!-- Extra -->
+	<spw_updateserverconfig>が設定を変更しました - サーバー設定が更新されました</spw_updateserverconfig>
+	<spw_disableserverconfig>が設定の同期を無効にしました - ローカル設定が優先されます</spw_disableserverconfig>
+	<spw_hydrophonemonitoring>ハイドロフォンを監視</spw_hydrophonemonitoring>
+	<spw_serverdiffheader>有効なサーバー設定には、あなたのローカル設定と[count]個の違いがあります：</spw_serverdiffheader>
+	<spw_listening>聞き耳を立てています...</spw_listening>
+	<spw_loading>オーディオバッファを読み込み中...</spw_loading>
+	<spw_invalidinput>無効な入力</spw_invalidinput>
+	<spw_enabled>有効</spw_enabled>
+	<spw_disabled>無効</spw_disabled>
+	<spw_default>デフォルト</spw_default>
+	<spw_vanilla>バニラ</spw_vanilla>
+	<spw_custom>カスタム</spw_custom>
+	<spw_linear>リニア</spw_linear>
+	<spw_instant>即時</spw_instant>
+	<spw_pertick>ティック毎</spw_pertick>
+	<spw_concave>凹型</spw_concave>
+	<spw_convex>凸型</spw_convex>
+	<spw_seconds>秒</spw_seconds>
 	<spw_reset>リセット</spw_reset>
-	<spw_resetall>全部リセット</spw_resetall>
+	<spw_resetall>すべてリセット</spw_resetall>
+
+
+	<!-- 2.0 Popup message -->
+	<spw_popupheader>Soundproof Walls 2.0へようこそ</spw_popupheader>
+	<spw_popupheadersubtext>Soundproof Walls 2.0は、オリジナルのModを完全に書き直し、拡張したバージョンであり、Barotraumaのオーディオシステムを完全に刷新するものです。</spw_popupheadersubtext>
+
+	<spw_popupbodyheader>主な変更点</spw_popupbodyheader>
+	
+	<spw_popupbodysubheading1>• 環境シミュレーションによるリバーブ</spw_popupbodysubheading1>
+	<spw_popupbodysubtext1>部屋の広さや音量に応じて、サウンドやプレイヤーの声がリアルに反響します。潜水艦の外では、エウロパの凍てついた壁に音波が跳ね返り、大きな音が何マイルにもわたって響き渡るのを聞くことができます。</spw_popupbodysubtext1>
+
+	<spw_popupbodysubheading2>• サイドチェインコンプレッションシステム</spw_popupbodysubheading2>
+	<spw_popupbodysubtext2>銃声や爆発音がより強く響き、静かな音をかき消すことで、より広く、よりパワフルなダイナミックレンジを実現します。</spw_popupbodysubtext2>
+
+	<spw_popupbodysubheading3>• ダイナミックローパス周波数</spw_popupbodysubheading3>
+	<spw_popupbodysubtext3>サウンドはもはや一つの設定された強度でマッフルされるだけでなく、状況や障害物の数に応じて動的に適応するようになりました。</spw_popupbodysubtext3>
+
+	<spw_popupbodysubheading4>• サウンドオクルージョン</spw_popupbodysubheading4>
+	<spw_popupbodysubtext4>サウンドは、プレイヤーの耳に届くまでの経路を探る際に、周囲のレベルジオメトリの形状によってマッフルされます。</spw_popupbodysubtext4>
+
+	<spw_popupbodysubheading5>• パワフルなディストーション</spw_popupbodysubheading5>
+	<spw_popupbodysubtext5>銃声、爆発音、その他の大きな音は、空気中では激しく歪み、水中では深く脈動します。</spw_popupbodysubtext5>
+
+	<spw_popupbodysubheading6>• より良いボイスチャット</spw_popupbodysubheading6>
+	<spw_popupbodysubtext6>無線をクリアな音質から完全に壊れた状態まで微調整し、叫び声の大きさに応じて声が届く距離を動的に調整する新しいローカル近接チャットシステムを試してみてください。</spw_popupbodysubtext6>
+	
+	<spw_popupbodysubheading7>• 全面的なシステム刷新</spw_popupbodysubheading7>
+	<spw_popupbodysubtext7>盗み聞きとハイドロフォンシステムは、新しいビジュアルとサウンドエフェクトで完全に一新されました。バニラのシステムも改善され、激しいアクション中に音がスキップされることはなくなり、水流も壁によって適切にマッフルされるようになりました。</spw_popupbodysubtext7>
+	
+	<spw_popupbodysubheading8>• 完全なコントロール</spw_popupbodysubheading8>
+	<spw_popupbodysubtext8>230以上の新しい設定オプションと再設計された設定メニューにより、すべてのサウンドを完全にコントロールし、無限の方法でカスタマイズできます。</spw_popupbodysubtext8>
+	
+	<spw_popupbodyconclusion>変更点を楽しんでいただければ幸いです！質問や問題があればお知らせください。 :) - Plag</spw_popupbodyconclusion>
+
+	<spw_footertext1>これはほんの表面です</spw_footertext1>
+	<spw_footertext2>私をサポートする</spw_footertext2>
+	<spw_footertext3>コードをチェックする</spw_footertext3>
+	<spw_footerlink1>Steamで完全な変更履歴を見る！</spw_footerlink1>
+	<spw_footerlink2>Ko-fiでコーヒーを買ってくれる！</spw_footerlink2>
+	<spw_footerlink3>GitHubでリポジトリにスターを付ける！</spw_footerlink3>
+
+	<spw_popupbutton>設定</spw_popupbutton>
+
+	<!-- Stats log -->
+	<spw_statsheader>Soundproof Walls 統計：</spw_statsheader>
+	<spw_stats>あなたはSoundproof Wallsを[initcount]回起動しました。\nそして、Modを有効にして[playtime]プレイしました。\nプレイ時間の[percenteavesdrop]%を盗み聞きに費やしました。\nそして、[percenthydrophone]%をハイドロフォンの監視に費やしました。\n合計で、[soundcount]個のサウンドがSoundproof Wallsによって処理されました。</spw_stats>
 </infotexts>

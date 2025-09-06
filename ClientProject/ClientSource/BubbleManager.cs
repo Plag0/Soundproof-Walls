@@ -187,7 +187,7 @@ namespace SoundproofWalls
                 return;
             }
 
-            float localVolume = 1.0f * voiceChannel.CurrentAmplitude * ConfigManager.Config.DrowningBubblesLocalVolumeMultiplier;
+            float localVolume = 1.0f * voiceChannel.CurrentAmplitude * ConfigManager.Config.DrowningBubblesLocalVolumeMultiplier * ConfigManager.Config.VoiceLocalVolumeMultiplier;
             float radioVolume = 1.0f * voiceChannel.CurrentAmplitude * ConfigManager.Config.DrowningBubblesRadioVolumeMultiplier * ConfigManager.Config.VoiceRadioVolumeMultiplier;
             float localRange = voiceChannel.Far * ConfigManager.Config.DrowningBubblesLocalRangeMultiplier;
 

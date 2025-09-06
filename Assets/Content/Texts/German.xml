@@ -1,109 +1,692 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <infotexts language="German" nowhitespace="false" translatedname="Deutsch">
 
-	<spw_settings>Soundproof-Einstellungen</spw_settings>
+	<spw_modname>Soundproof Walls [version]</spw_modname>
+	<spw_openmenuhelp>Öffnet das Einstellungsmenü von Soundproof Walls.</spw_openmenuhelp>
+	<spw_openpopuphelp>Öffnet das Willkommens-Popup von Soundproof Walls.</spw_openpopuphelp>
+	<spw_openworkshophelp>Öffnet die Workshop-Seite von Soundproof Walls in deinem Browser.</spw_openworkshophelp>
+	<spw_guidehelp>Öffnet die Konfigurationsanleitung von Soundproof Walls in deinem Browser.</spw_guidehelp>
+	<spw_reporthelp>Öffnet die Seite zum Melden von Fehlern für Soundproof Walls in deinem Browser.</spw_reporthelp>
 
-	<spw_generalsettings>Generelle Einstellungen</spw_generalsettings>
+	<initmessage>Soundproof Walls v[version] wurde geladen</initmessage>
+	<initmessagefollowup>  > Öffne das Einstellungsmenü mit dem Befehl "spw".\n  > Zeige deine Statistiken mit "spw_stats" an.\n  > Hast du eine Frage? Öffne die Workshop-Seite mit "spw_workshop" und hinterlasse einen Kommentar.\n  > Einen Fehler gefunden? Öffne die Fehlerdiskussion mit "spw_report" und erstelle einen Beitrag.\n  > Erfahre mehr über Konfigurationsoptionen mit "spw_help".\n  > Öffne das Willkommens-Popup erneut mit "spw_welcome".</initmessagefollowup>
+	
+	<!-- Info Panel -->
+	<spw_syncingenabled>Synchronisierung aktiviert!\nDu verwendest eine Konfiguration, die von [name] auf den Server hochgeladen wurde. Die Werte dieser Konfiguration werden neben deinen in Klammern angezeigt.</spw_syncingenabled>
+	<spw_syncingenableduploader>Synchronisierung aktiviert!\nDeine Konfiguration wurde auf den Server hochgeladen und wird von allen anderen Spielern verwendet.</spw_syncingenableduploader>
+	<spw_syncingdisabled>Synchronisierung deaktiviert!\nAuf dem Server ist keine Konfiguration hochgeladen. Du verwendest deine lokale Konfiguration.</spw_syncingdisabled>
+	<spw_offlinemode>Standardwerte sind blau.\nBenutzerdefinierte Werte sind gelb.\nVanilla-Werte sind weiß.\n\nSuchst du deine Konfigurationsdatei?\nDu findest sie unter:\n[path]</spw_offlinemode>
+
+	<spw_editpermissionhost>Bearbeitungsberechtigung:\nDu bist der Host dieser Sitzung. Änderungen werden auf den Server hochgeladen und von allen anderen Spielern verwendet.</spw_editpermissionhost>
+	<spw_editpermissionadmin>Bearbeitungsberechtigung:\nDu bist ein Admin in dieser Sitzung. Änderungen werden auf den Server hochgeladen und von allen anderen Spielern verwendet.</spw_editpermissionadmin>
+	<spw_editpermissionnothost>Bearbeitungsberechtigung:\nDu bist nicht der Host dieser Sitzung. Änderungen werden lokal gespeichert, aber nicht angewendet, solange die Server-Synchronisierung aktiviert ist.</spw_editpermissionnothost>
+	<spw_editpermissionnotadmin>Bearbeitungsberechtigung:\nDu bist kein Admin in dieser Sitzung. Änderungen werden lokal gespeichert, aber nicht angewendet, solange die Server-Synchronisierung aktiviert ist.</spw_editpermissionnotadmin>
+
+	<spw_categorymuffle>Dämpfung</spw_categorymuffle>
+	<spw_categorygain>Verstärkung</spw_categorygain>
+	<spw_categoryreverb>Hall</spw_categoryreverb>
+	<spw_categorygeneral>Allgemein</spw_categorygeneral>
+	<spw_categoryvisuals>Visuelles</spw_categoryvisuals>
+
+	<!-- General -->
+	<spw_generaltab>Allgemein</spw_generaltab>
+
+	<spw_enablemod>Mod aktivieren</spw_enablemod>
+	<spw_enablemodtooltip>Schaltet alle Funktionen der Mod global ein oder aus.</spw_enablemodtooltip>
+	<spw_syncsettings>Einstellungen synchronisieren</spw_syncsettings>
+	<spw_syncsettingstooltip>Schaltet die Synchronisierung der Einstellungen zwischen Spielern ein oder aus.\n\nWenn aktiviert, lädt der Host automatisch seine Konfiguration auf den Server hoch, um sie mit allen Spielern zu teilen. Dies geschieht einmal zu Beginn einer Sitzung oder bei Änderungen. Spieler müssen diese Konfiguration verwenden, unabhängig von ihren lokalen Einstellungen, die unverändert bleiben.</spw_syncsettingstooltip>
+
+	<spw_effectprocessingmode>Effektverarbeitungsmodus</spw_effectprocessingmode>
+	<spw_effectprocessingmodetooltip>Wie Audioeffekte verarbeitet werden. Der dynamische Modus wird empfohlen.\n\nHinweis: Eine Änderung dieser Einstellung während des Spiels kann das Spiel kurzzeitig einfrieren, während Puffer geladen werden.</spw_effectprocessingmodetooltip>
+
+	<spw_vanillafx>Klassisch</spw_vanillafx>
+	<spw_vanillafxtooltip>Dämpfung im Vanilla-Stil mit einer Voreinstellung. Minimaler Ressourcenverbrauch.</spw_vanillafxtooltip>
+	<spw_staticfx>Statisch</spw_staticfx>
+	<spw_staticfxtooltip>Fügt leichte und mittlere Dämpfungsvoreinstellungen sowie optionalen Hall hinzu. Etwas längere Ladezeiten und höherer Speicherverbrauch (ca. 250 MB).</spw_staticfxtooltip>
+	<spw_dynamicfx>Dynamisch</spw_dynamicfx>
+	<spw_dynamicfxtooltip>Fortschrittliche Echtzeiteffekte über OpenAL. Realistischstes Audio mit simuliertem Hall, Verzerrung und erweiterter Dämpfung bei höherer CPU-Last.\n\nHinweis: Wenn du dir Sorgen um die Leistung machst, aktiviere die Einstellung "Leistung anzeigen" (Reiter "Erweitert"), um detaillierte Statistiken zu sehen.</spw_dynamicfxtooltip>
+
+	<spw_focustargetaudio>Audio auf Ziel fokussieren</spw_focustargetaudio>
+	<spw_focustargetaudiotooltip>Simuliert Audio aus der Perspektive des aktuellen Kameraziels (d. h. du hörst, was der Geschützturm hört).</spw_focustargetaudiotooltip>
+	<spw_attenuatewithapproximatedistance>Realistischer Schallabfall</spw_attenuatewithapproximatedistance>
+	<spw_attenuatewithapproximatedistancetooltip>Berechnet den Lautstärkeabfall anhand des Schallwegs zum Hörer. Wenn deaktiviert, wird stattdessen die einfache geradlinige (euklidische) Entfernung verwendet.</spw_attenuatewithapproximatedistancetooltip>
+	<spw_soundrange>Master-Reichweite für Geräusche</spw_soundrange>
+	<spw_soundrangetooltip>Globaler Reichweitenmultiplikator für alle nicht-loopenden Geräusche.\n\nHinweis: Wird multiplikativ mit dem geräuschspezifischen Reichweitenmultiplikator aus der Liste "Benutzerdefinierte Geräusche" im Reiter "Erweitert" verrechnet.</spw_soundrangetooltip>
+	<spw_loopingsoundrange>Master-Reichweite für loopende Geräusche</spw_loopingsoundrange>
+	<spw_loopingsoundrangetooltip>Globaler Reichweitenmultiplikator für alle loopenden Geräusche.\n\nHinweis: Wird multiplikativ mit dem geräuschspezifischen Reichweitenmultiplikator aus der Liste "Benutzerdefinierte Geräusche" im Reiter "Erweitert" verrechnet.</spw_loopingsoundrangetooltip>
+
+
+	<!-- Dynamic -->
+	<spw_dynamicfxtab>Dynamischer Modus</spw_dynamicfxtab>
+
+	<spw_occludesounds>Schallverdeckung</spw_occludesounds>
+	<spw_occludesoundstooltip>Dämpft Geräusche, die aufgrund von Wänden keine direkte Sichtlinie zu den Ohren des Spielers haben.</spw_occludesoundstooltip>
+	<spw_maxocclusions>Max. Verdeckungen</spw_maxocclusions>
+	<spw_maxocclusionstooltip>Durch wie viele Wandschichten ein Geräusch verdeckt werden kann.\n\nHinweis: Die Begrenzung der Verdeckung kann bei ungewöhnlichen Wandkonfigurationen zu einer hörbar konsistenteren Dämpfung führen. Ein Wert von Null deaktiviert die Begrenzung.</spw_maxocclusionstooltip>
+	
+	<spw_overmuffle>Überdämpfung</spw_overmuffle>
+	<spw_overmuffletooltip>Reduziert dynamisch die Lautstärke von Geräuschen, die sich der maximalen effektiven Dämpfungsstärke von 1,0 nähern oder diese überschreiten.</spw_overmuffletooltip>
+
+	<spw_dynamicmufflestrengthmaster>Master-Dämpfungsstärke</spw_dynamicmufflestrengthmaster>
+	<spw_dynamicmufflestrengthmastertooltip>Die Gesamtstärke des dynamischen Dämpfungseffekts.</spw_dynamicmufflestrengthmastertooltip>
+
+	<spw_overmufflestrength>Überdämpfungsstärke</spw_overmufflestrength>
+	<spw_overmufflestrengthtooltip>Wie stark hohe Dämpfungswerte die Lautstärke von Geräuschen reduzieren.</spw_overmufflestrengthtooltip>
+	
+	<spw_dynamicreverb>Hall aktivieren</spw_dynamicreverb>
+	<spw_dynamicreverbtooltip>Schaltet die Hall-Effekte für Innen- und Außenbereiche ein oder aus. Wenn aktiviert, hallen Geräusche dynamisch basierend auf der Größe und der kombinierten Audioamplitude ihrer Umgebung (d. h. Echos sind in größeren und leiseren Räumen stärker).</spw_dynamicreverbtooltip>
+	<spw_dynamicreverbbloom>Hall-Bloom</spw_dynamicreverbbloom>
+	<spw_dynamicreverbbloomtooltip>Lässt den Hall-Effekt als Reaktion auf laute Geräusche in engen Räumen dramatisch anschwellen.</spw_dynamicreverbbloomtooltip>
+	<spw_dynamicreverbwatersubtractsarea>Dynamische Hallfläche</spw_dynamicreverbwatersubtractsarea>
+	<spw_dynamicreverbwatersubtractsareatooltip>Berechnet den Hall anhand der Luftfläche über Wasser oder der Wasserfläche unter Wasser. Wenn deaktiviert, wird die Fläche von beidem verwendet.</spw_dynamicreverbwatersubtractsareatooltip>
+	<spw_dynamicreverbminarea>Minimale Hallfläche</spw_dynamicreverbminarea>
+	<spw_dynamicreverbminareatooltip>Die minimale kombinierte Fläche verbundener Räume um den Hörer, die für die Anwendung von Hall erforderlich ist.</spw_dynamicreverbminareatooltip>
+	<spw_dynamicreverbareasizemultiplier>Skalierung der Hallfläche</spw_dynamicreverbareasizemultiplier>
+	<spw_dynamicreverbareasizemultipliertooltip>Skaliert die effektive Fläche der aktuellen Innenumgebung. Größere Werte erhöhen die Abklingzeit und die Verzögerung von Reflexionen, wodurch der Raum größer klingt.</spw_dynamicreverbareasizemultipliertooltip>
+	<spw_dynamicreverbwetroomareasizemultiplier>Hall-Skalierung für Nassräume</spw_dynamicreverbwetroomareasizemultiplier>
+	<spw_dynamicreverbwetroomareasizemultipliertooltip>Multipliziert die effektive Fläche von Ballasttanks und Luftschleusen, wenn sich der Hörer darin befindet, wodurch diese Räume größer und hallender klingen.</spw_dynamicreverbwetroomareasizemultipliertooltip>
+	
+	<spw_dynamicreverbairtargetgain>Hallstärke (Innen)</spw_dynamicreverbairtargetgain>
+	<spw_dynamicreverbairtargetgaintooltip>Die Basisverstärkung des Hall-Effekts innerhalb einer Hülle.</spw_dynamicreverbairtargetgaintooltip>
+	<spw_dynamicreverbairduration>Halldauer (Innen)</spw_dynamicreverbairduration>
+	<spw_dynamicreverbairdurationtooltip>Die Abklingzeit des Hall-Effekts innerhalb einer Hülle.</spw_dynamicreverbairdurationtooltip>
+	<spw_dynamicreverbairgainhf>Hall HF-Verstärkung (Innen)</spw_dynamicreverbairgainhf>
+	<spw_dynamicreverbairgainhftooltip>Die Verstärkung hoher Frequenzen im Hall-Effekt innerhalb einer Hülle.</spw_dynamicreverbairgainhftooltip>
+	<spw_dynamicreverbairamplitudethreshold>Hall-Schwellenwert (Innen)</spw_dynamicreverbairamplitudethreshold>
+	<spw_dynamicreverbairamplitudethresholdtooltip>Die minimale Schallamplitude, die ein Geräusch erzeugen muss, um Hall zu erzeugen, wenn sich der Hörer in Innenräumen befindet.</spw_dynamicreverbairamplitudethresholdtooltip>
+	
+	<spw_dynamicreverbwatertargetgain>Hallstärke (Außen)</spw_dynamicreverbwatertargetgain>
+	<spw_dynamicreverbwatertargetgaintooltip>Die Basisverstärkung des Hall-Effekts im Freien.</spw_dynamicreverbwatertargetgaintooltip>
+	<spw_dynamicreverbwaterdiffusion>Hall-Diffusion (Außen)</spw_dynamicreverbwaterdiffusion>
+	<spw_dynamicreverbwaterdiffusiontooltip>Die Glätte des Hall-Effekts im Freien.</spw_dynamicreverbwaterdiffusiontooltip>
+	<spw_dynamicreverbwaterduration>Halldauer (Außen)</spw_dynamicreverbwaterduration>
+	<spw_dynamicreverbwaterdurationtooltip>Die Abklingzeit des Hall-Effekts im Freien.</spw_dynamicreverbwaterdurationtooltip>
+	<spw_dynamicreverbwatergainhf>Hall HF-Verstärkung (Außen)</spw_dynamicreverbwatergainhf>
+	<spw_dynamicreverbwatergainhftooltip>Die Verstärkung hoher Frequenzen im Hall-Effekt im Freien.</spw_dynamicreverbwatergainhftooltip>
+	<spw_dynamicreverbwateramplitudethreshold>Hall-Schwellenwert (Außen)</spw_dynamicreverbwateramplitudethreshold>
+	<spw_dynamicreverbwateramplitudethresholdtooltip>Die minimale Schallamplitude, die ein Geräusch erzeugen muss, um Hall zu erzeugen, wenn sich der Hörer im Freien befindet.</spw_dynamicreverbwateramplitudethresholdtooltip>
+
+	<spw_categoryloudsounddistortionair>Verzerrung (nicht unter Wasser)</spw_categoryloudsounddistortionair>
+	<spw_categoryloudsounddistortionwater>Verzerrung (unter Wasser)</spw_categoryloudsounddistortionwater>
+
+	<spw_loudsounddistortionair>Verzerrung (nicht unter Wasser) aktivieren</spw_loudsounddistortionair>
+	<spw_loudsounddistortionwater>Verzerrung (unter Wasser) aktivieren</spw_loudsounddistortionwater>
+	<spw_loudsounddistortiontooltipair>Wenn der Hörer nicht unter Wasser ist, wird der Verzerrungseffekt für nicht untergetauchte Geräusche angewendet, die in der Liste "Benutzerdefinierte Geräusche" (Reiter "Erweitert") mit Verzerrung=true aufgeführt sind.</spw_loudsounddistortiontooltipair>
+	<spw_loudsounddistortiontooltipwater>Wenn der Hörer unter Wasser ist, wird der Verzerrungseffekt für untergetauchte Geräusche angewendet, die in der Liste "Benutzerdefinierte Geräusche" (Reiter "Erweitert") mit Verzerrung=true aufgeführt sind.</spw_loudsounddistortiontooltipwater>
+	<spw_loudsounddistortionmaxmuffle>Dämpfungsanforderung für Verzerrung</spw_loudsounddistortionmaxmuffle>
+	<spw_loudsounddistortionmaxmuffletooltip>Die maximale Dämpfungsstärke, die ein Geräusch haben kann, bevor seine Verzerrung deaktiviert wird.</spw_loudsounddistortionmaxmuffletooltip>
+	<spw_loudsounddistortiontargetgain>Verzerrungsverstärkung</spw_loudsounddistortiontargetgain>
+	<spw_loudsounddistortiontargetgaintooltip>Die Lautstärke der Verzerrung.</spw_loudsounddistortiontargetgaintooltip>
+	<spw_loudsounddistortiontargetedge>Verzerrungsschärfe</spw_loudsounddistortiontargetedge>
+	<spw_loudsounddistortiontargetedgetooltip>Die Härte der Verzerrung. Ein höherer Wert führt zu einem intensiveren Effekt.</spw_loudsounddistortiontargetedgetooltip>
+	<spw_loudsounddistortiontargetfrequency>Verzerrungsfrequenz</spw_loudsounddistortiontargetfrequency>
+	<spw_loudsounddistortiontargetfrequencytooltip>Das EQ-Zentrum der Verzerrung. Frequenzen in der Nähe dieses Wertes werden stärker vom Effekt beeinflusst.</spw_loudsounddistortiontargetfrequencytooltip>
+	<spw_loudsounddistortionlowpassfrequency>Verzerrungs-Tiefpassfrequenz</spw_loudsounddistortionlowpassfrequency>
+	<spw_loudsounddistortionlowpassfrequencytooltip>Ein Tiefpassfilter wird nachträglich auf das verzerrte Signal angewendet. Dies ist die Grenzfrequenz, die dieser Tiefpassfilter verwendet.</spw_loudsounddistortionlowpassfrequencytooltip>
+
+	<spw_categoryexperimental>Experimentell</spw_categoryexperimental>
+	
+	<spw_removeunusedbuffers>Ungenutzte Puffer bereinigen</spw_removeunusedbuffers>
+	<spw_removeunusedbufferstooltip>Lädt Geräusche ohne ihren Vanilla-Dämpfungspuffer, um ca. 100 MB Speicher im Vergleich zu Vanilla zu sparen. Standardmäßig deaktiviert aufgrund möglicher Kompatibilitätsprobleme mit anderen Mods, die auf niedriger Ebene mit Soundobjekten interagieren. In den allermeisten Fällen ist diese Einstellung jedoch ein kostenloser Leistungsschub.\n\nHinweis: Eine Änderung dieser Einstellung während des Spiels kann das Spiel kurzzeitig einfrieren, während Puffer geladen werden.</spw_removeunusedbufferstooltip>
+
+
+	<!-- StaticFx -->
+	<spw_staticfxtab>Statischer Modus</spw_staticfxtab>
+	<spw_heavylowpassfrequency>Tiefpassfrequenz (Stark)</spw_heavylowpassfrequency>
+	<spw_heavylowpassfrequencytooltip>Die Grenzfrequenz, die verwendet wird, um stark verdeckte Geräusche zu dämpfen. Der Schwellenwert zur Anwendung dieses Filters ist im Reiter "Dämpfung" konfigurierbar.\n\nHinweis: Gilt nicht für den Voice-Chat. Siehe die Tiefpassfrequenz-Schieberegler im Reiter "Stimme".\n\nHinweis: Eine Änderung dieser Einstellung während des Spiels kann das Spiel kurzzeitig einfrieren, während Puffer geladen werden.</spw_heavylowpassfrequencytooltip>
+	<spw_mediumlowpassfrequency>Tiefpassfrequenz (Mittel)</spw_mediumlowpassfrequency>
+	<spw_mediumlowpassfrequencytooltip>Die Grenzfrequenz, die verwendet wird, um mäßig verdeckte Geräusche zu dämpfen. Der Schwellenwert zur Anwendung dieses Filters ist im Reiter "Dämpfung" konfigurierbar.\n\nHinweis: Gilt nicht für den Voice-Chat. Siehe die Tiefpassfrequenz-Schieberegler im Reiter "Stimme".\n\nHinweis: Eine Änderung dieser Einstellung während des Spiels kann das Spiel kurzzeitig einfrieren, während Puffer geladen werden.</spw_mediumlowpassfrequencytooltip>
+	<spw_lightlowpassfrequency>Tiefpassfrequenz (Leicht)</spw_lightlowpassfrequency>
+	<spw_lightlowpassfrequencytooltip>Die Grenzfrequenz, die verwendet wird, um leicht verdeckte Geräusche zu dämpfen. Der Schwellenwert zur Anwendung dieses Filters ist im Reiter "Dämpfung" konfigurierbar.\n\nHinweis: Gilt nicht für den Voice-Chat. Siehe die Tiefpassfrequenz-Schieberegler im Reiter "Stimme".\n\nHinweis: Eine Änderung dieser Einstellung während des Spiels kann das Spiel kurzzeitig einfrieren, während Puffer geladen werden.</spw_lightlowpassfrequencytooltip>
+
+	<spw_staticreverb>Hall-Puffer aktivieren</spw_staticreverb>
+	<spw_staticreverbtooltip>Lädt Geräusche mit einem zusätzlichen Puffer, der durch einen Hall-Filter läuft. Diese Funktion gilt nur für nicht-loopende und nicht gedämpfte Geräusche.\n\nHinweis: Verbraucht ca. 100 MB Speicher und verlängert die Ladezeiten der Puffer (verschlechtert sich mit der Dauer).\n\nHinweis: Eine Änderung dieser Einstellung während des Spiels kann das Spiel kurzzeitig einfrieren, während Puffer geladen werden.</spw_staticreverbtooltip>
+	<spw_staticreverbalwaysloudsounds>Laute Geräusche immer hallen</spw_staticreverbalwaysloudsounds>
+	<spw_staticreverbalwaysloudsoundstooltip>Geräusche, die in der Liste "Benutzerdefinierte Geräusche" (Reiter "Erweitert") mit einem Sidechain-Multiplikator größer als eins aufgeführt sind, ignorieren die Anforderung der minimalen Hallfläche.</spw_staticreverbalwaysloudsoundstooltip>
+	<spw_staticreverbduration>Halldauer</spw_staticreverbduration>
+	<spw_staticreverbdurationtooltip>Die Abklingzeit und Größe des Halls. Eine Erhöhung dieses Wertes führt zu höherem Speicherverbrauch und längeren Puffer-Ladezeiten.</spw_staticreverbdurationtooltip>
+	<spw_staticreverbwetdrymix>Hall-Mischung</spw_staticreverbwetdrymix>
+	<spw_staticreverbwetdrymixtooltip>Die Dry/Wet-Mischung des Halls. Ein höherer Wert führt zu einem stärkeren Effekt.</spw_staticreverbwetdrymixtooltip>
+	<spw_staticreverbdamping>Hall-Dämpfung</spw_staticreverbdamping>
+	<spw_staticreverbdampingtooltip>Die Stärke des Tiefpassfilters, der auf das Hall-Feedback angewendet wird.</spw_staticreverbdampingtooltip>
+	<spw_staticreverbminarea>Minimale Hallfläche</spw_staticreverbminarea>
+	<spw_staticreverbminareatooltip>Die minimale kombinierte Fläche verbundener Räume um den Hörer, die für die Anwendung von Hall auf nicht-loopende und nicht gedämpfte Geräusche erforderlich ist.</spw_staticreverbminareatooltip>
+
+	<!-- Voice -->
+	<spw_voicetab>Stimme</spw_voicetab>
+
+	<spw_talkingragdolls>Sprechende Ragdolls</spw_talkingragdolls>
+	<spw_talkingragdollstooltip>Höre nicht betäubte Spieler sprechen, wenn sie im Ragdoll-Zustand sind.</spw_talkingragdollstooltip>
+	
+	<spw_voicerange>Lokale Reichweite</spw_voicerange>
+	<spw_voicerangetooltip>Die Reichweite des lokalen Näherungs-Chats.</spw_voicerangetooltip>
+	<spw_radiorange>Funkreichweite</spw_radiorange>
+	<spw_radiorangetooltip>Die Reichweite des Funk-Näherungs-Chats.</spw_radiorangetooltip>
+	<spw_voicevolume>Lokale Lautstärke</spw_voicevolume>
+	<spw_voicevolumetooltip>Die Lautstärke des lokalen Näherungs-Chats.\n\nHinweis: Diese Einstellung ist unabhängig vom Voice-Chat-Lautstärkeregler von Barotrauma.</spw_voicevolumetooltip>
+	<spw_radiovolume>Funklautstärke</spw_radiovolume>
+	<spw_radiovolumetooltip>Die Lautstärke des Funk-Näherungs-Chats.\n\nHinweis: Diese Einstellung ist unabhängig vom Voice-Chat-Lautstärkeregler von Barotrauma.</spw_radiovolumetooltip>
+
+	<spw_categorydynamicfx>Exklusiv für dynamischen Modus</spw_categorydynamicfx>
+
+	<spw_dynamicreverblocal>Lokalen Chat hallen</spw_dynamicreverblocal>
+	<spw_dynamicreverblocaltooltip>Ermöglicht die Anwendung von Hall auf den lokalen Näherungs-Chat.\n\nHinweis: Erfordert, dass der Hall-Effekt des dynamischen Modus aktiviert ist.</spw_dynamicreverblocaltooltip>
+	<spw_dynamicreverbradio>Funk hallen</spw_dynamicreverbradio>
+	<spw_dynamicreverbradiotooltip>Ermöglicht die Anwendung von Hall auf den Funk-Näherungs-Chat.\n\nHinweis: Erfordert, dass der Hall-Effekt des dynamischen Modus aktiviert ist.</spw_dynamicreverbradiotooltip>
+	<spw_drowningdistortion>Funk beim Ertrinken verzerren</spw_drowningdistortion>
+	<spw_drowningdistortiontooltip>Wendet Verzerrung auf den Funk-Näherungs-Chat an, wenn man ertrinkt.\n\nHinweis: Diese Einstellung reduziert die Dämpfung des Funk-Näherungs-Chats beim Ertrinken.</spw_drowningdistortiontooltip>
+	<spw_voiceminlowpassfrequency>Min. Tiefpassfrequenz</spw_voiceminlowpassfrequency>
+	<spw_voiceminlowpassfrequencytooltip>Die minimale Tiefpassfrequenz, die bei voller Dämpfung angewendet wird.</spw_voiceminlowpassfrequencytooltip>
+	<spw_voicedynamicmufflemultiplier>Dynamische Dämpfungsstärke</spw_voicedynamicmufflemultiplier>
+	<spw_voicedynamicmufflemultipliertooltip>Die Stärke der Dämpfung durch Hindernisse, die auf Stimmen im dynamischen Modus angewendet wird.</spw_voicedynamicmufflemultipliertooltip>
+
+	<spw_voiceheavylowpassfrequency>Tiefpassfrequenz für Stimmen (Stark)</spw_voiceheavylowpassfrequency>
+	<spw_voiceheavylowpassfrequencytooltip>Die Grenzfrequenz, die verwendet wird, um stark verdeckte Stimmen zu dämpfen. Der Schwellenwert zur Anwendung dieses Filters ist im Reiter "Dämpfung" konfigurierbar.</spw_voiceheavylowpassfrequencytooltip>
+	<spw_voicemediumlowpassfrequency>Tiefpassfrequenz für Stimmen (Mittel)</spw_voicemediumlowpassfrequency>
+	<spw_voicemediumlowpassfrequencytooltip>Die Grenzfrequenz, die verwendet wird, um mäßig verdeckte Stimmen zu dämpfen. Der Schwellenwert zur Anwendung dieses Filters ist im Reiter "Dämpfung" konfigurierbar.</spw_voicemediumlowpassfrequencytooltip>
+	<spw_voicelightlowpassfrequency>Tiefpassfrequenz für Stimmen (Leicht)</spw_voicelightlowpassfrequency>
+	<spw_voicelightlowpassfrequencytooltip>Die Grenzfrequenz, die verwendet wird, um leicht verdeckte Stimmen zu dämpfen. Der Schwellenwert zur Anwendung dieses Filters ist im Reiter "Dämpfung" konfigurierbar.</spw_voicelightlowpassfrequencytooltip>
+
+	<spw_categoryscreammode>Schrei-Modus</spw_categoryscreammode>
+
+	<spw_screammode>Schrei-Modus</spw_screammode>
+	<spw_screammodetooltip>Die Reichweite des lokalen Näherungs-Chats skaliert mit der Eingangsamplitude (Schreien ist aus größerer Entfernung zu hören).\n\nHinweis: Für beste Ergebnisse passe die Mikrofonlautstärke in Barotrauma so an, dass der Sprachaktivitätsmesser noch Platz für laute Eingaben hat. Je mehr Dynamikbereich dein Mikrofon zulässt, desto besser.</spw_screammodetooltip>
+	<spw_screammodemaxrange>Max. Schrei-Reichweite</spw_screammodemaxrange>
+	<spw_screammodemaxrangetooltip>Die maximale Reichweite des lokalen Näherungs-Chats bei voller Lautstärke mit aktiviertem "Schrei-Modus".\n\nHinweis: Diese Einstellung wird vom Multiplikator "Lokale Reichweite" beeinflusst.</spw_screammodemaxrangetooltip>
+	<spw_screammodeminrange>Min. Schrei-Reichweite</spw_screammodeminrange>
+	<spw_screammodeminrangetooltip>Die minimale Reichweite des lokalen Näherungs-Chats mit aktiviertem "Schrei-Modus".</spw_screammodeminrangetooltip>
+	<spw_screammodereleaserate>Schrei-Abklingrate</spw_screammodereleaserate>
+	<spw_screammodereleaseratetooltip>Die Rate, mit der die Sprachreichweite pro Sekunde abnimmt, sobald sie nicht mehr durch die Amplitude aufrechterhalten wird.</spw_screammodereleaseratetooltip>
+	
+	<spw_categorybubbles>Ertrinken</spw_categorybubbles>
+	
+	<spw_drowningbubbles>Blasen beim Ertrinken</spw_drowningbubbles>
+	<spw_drowningbubblestooltip>Spieler, die unter Wasser ohne Sauerstoff sprechen, stoßen sichtbare Blasen aus, die lokal oder über Funk gehört werden können.</spw_drowningbubblestooltip>
+	<spw_drowningbubbleslocalrange>Lokale Blasen-Reichweite</spw_drowningbubbleslocalrange>
+	<spw_drowningbubbleslocalrangetooltip>Die hörbare Reichweite des lokalen Blasengeräuschs.</spw_drowningbubbleslocalrangetooltip>
+	<spw_drowningbubbleslocalvolume>Lokale Blasen-Lautstärke</spw_drowningbubbleslocalvolume>
+	<spw_drowningbubbleslocalvolumetooltip>Die Lautstärke des lokalen Blasengeräuschs.</spw_drowningbubbleslocalvolumetooltip>
+	<spw_drowningbubblesradiovolume>Funk-Blasen-Lautstärke</spw_drowningbubblesradiovolume>
+	<spw_drowningbubblesradiovolumetooltip>Die Lautstärke des Funk-Blasengeräuschs.</spw_drowningbubblesradiovolumetooltip>
+	
+	<spw_categorycustomfilter>Funkfilter</spw_categorycustomfilter>
+
+	<spw_radiocustomfilter>Benutzerdefinierter Funkfilter</spw_radiocustomfilter>
+	<spw_radiocustomfiltertooltip>Verarbeitet den Funk-Näherungs-Chat mit einem benutzerdefinierten Filter, der konfigurierbare Kompression, Verzerrung und Rauscheffekte enthält.</spw_radiocustomfiltertooltip>
+
+	<spw_customradiopresets>Benutzerdefinierte Funk-Voreinstellungen</spw_customradiopresets>
+	<spw_customradiopresetstooltip>Einzigartige Funkfilter-Konfigurationen. Die Auswahl einer dieser Optionen ändert alle unten stehenden Filterwerte.</spw_customradiopresetstooltip>
+	<spw_customradiopresetbroken>Kaputt</spw_customradiopresetbroken>
+	<spw_customradiopresetbrokentooltip>Einfach schrecklich. Die Benutzung des Funks ist ein Hindernis.</spw_customradiopresetbrokentooltip>
+	<spw_customradiopresetdirty>Schmutzig</spw_customradiopresetdirty>
+	<spw_customradiopresetdirtytooltip>Funkgerät von geringer Qualität, das hektische Kommunikation schwer verständlich machen kann.</spw_customradiopresetdirtytooltip>
+	<spw_customradiopresetnormal>Standard</spw_customradiopresetnormal>
+	<spw_customradiopresetnormaltooltip>Vanilla-Funk mit einem stilisierteren Klang.</spw_customradiopresetnormaltooltip>
+	<spw_customradiopresetclean>Sauber</spw_customradiopresetclean>
+	<spw_customradiopresetcleantooltip>Perfekt klare Funkkommunikation.</spw_customradiopresetcleantooltip>
+	
+	<spw_radiobandpassfrequency>Funk-Bandpassfrequenz</spw_radiobandpassfrequency>
+	<spw_radiobandpassfrequencytooltip>Die Mittenfrequenz des Bandpassfilters. Nur Frequenzen in der Nähe dieses Punktes werden durchgelassen.\n\nHinweis: Die Breite des Bereichs wird durch den "Funk-Bandpass-Q-Faktor" unten eingestellt.</spw_radiobandpassfrequencytooltip>
+	<spw_radiobandpassqualityfactor>Funk-Bandpass-Q-Faktor</spw_radiobandpassqualityfactor>
+	<spw_radiobandpassqualityfactortooltip>Wie schmal der Bandpassfilter um seine Mittenfrequenz ist. Höhere Werte erzeugen einen engeren, ausgeprägteren Effekt.</spw_radiobandpassqualityfactortooltip>
+	<spw_radiodistortiondrive>Funk-Verzerrungs-Drive</spw_radiodistortiondrive>
+	<spw_radiodistortiondrivetooltip>Verstärkt das Sprachsignal vor dem Clipping. Höhere Werte erhöhen die Verzerrungsintensität.</spw_radiodistortiondrivetooltip>
+	<spw_radiodistortionthreshold>Funk-Verzerrungsschwelle</spw_radiodistortionthreshold>
+	<spw_radiodistortionthresholdtooltip>Maximal zulässiger Pegel. Samples, die diesen Grenzwert überschreiten, werden hart geclippt.</spw_radiodistortionthresholdtooltip>
+	<spw_radiostatic>Funkrauschen</spw_radiostatic>
+	<spw_radiostatictooltip>Die Intensität des statischen Rauschens, das zu Funkübertragungen hinzugefügt wird.</spw_radiostatictooltip>
+	<spw_radiocompressionthreshold>Funk-Kompressionsschwelle</spw_radiocompressionthreshold>
+	<spw_radiocompressionthresholdtooltip>Der Eingangspegel, bei dem die Kompression beginnt. Geräusche unter diesem Pegel bleiben unberührt.</spw_radiocompressionthresholdtooltip>
+	<spw_radiocompressionratio>Funk-Kompressionsverhältnis</spw_radiocompressionratio>
+	<spw_radiocompressionratiotooltip>Wie stark die Lautstärke über dem Schwellenwert reduziert wird. Höhere Verhältnisse bedeuten stärkere Kompression und weniger Dynamikbereich.</spw_radiocompressionratiotooltip>
+	<spw_radiopostfilterboost>Verstärkung nach Filter</spw_radiopostfilterboost>
+	<spw_radiopostfilterboosttooltip>Der Gesamtausgangspegel nach der Funkfilterung.</spw_radiopostfilterboosttooltip>
+	
+	<!-- Muffle -->
+	<spw_muffletab>Dämpfung</spw_muffletab>
+	<spw_muffledivingsuit>Taucheranzüge dämpfen</spw_muffledivingsuit>
+	<spw_muffledivingsuittooltip>Wendet die Dämpfung "Taucheranzug" auf alle Geräusche an, wenn ein Taucheranzug getragen wird.</spw_muffledivingsuittooltip>
+	<spw_mufflesubmergedplayer>Untergetauchten Spieler dämpfen</spw_mufflesubmergedplayer>
+	<spw_mufflesubmergedplayertooltip>Wendet die Dämpfung "Wasserkörper" auf Geräusche an, die sich im selben Wasserkörper wie der Kopf des Spielers befinden.</spw_mufflesubmergedplayertooltip>
+	<spw_mufflesubmergedviewtarget>Untergetauchtes Ziel dämpfen</spw_mufflesubmergedviewtarget>
+	<spw_mufflesubmergedviewtargettooltip>Wendet die Dämpfung "Wasserkörper" auf Geräusche an, die sich im selben Wasserkörper wie das Sichtziel befinden.\n\nHinweis: Erfordert, dass "Audio auf Ziel fokussieren" (Reiter "Allgemein") aktiviert ist.</spw_mufflesubmergedviewtargettooltip>
+	<spw_mufflewatersurface>Wasseroberfläche dämpfen</spw_mufflewatersurface>
+	<spw_mufflewatersurfacetooltip>Wendet die Dämpfung "Wasseroberfläche" auf Geräusche auf der gegenüberliegenden Seite einer Luft-Wasser-Barriere an.</spw_mufflewatersurfacetooltip>
+	<spw_muffleflowfirepath>Fluss- &amp; Feuerpfade dämpfen</spw_muffleflowfirepath>
+	<spw_muffleflowfirepathtooltip>Dämpft Wasserfluss- und Feuergeräusche, wenn sie keinen Pfad zum Hörer haben.\n\nHinweis: Diese Funktion verwendet ein prädiktives System, das möglicherweise nicht in allen Situationen genau ist.</spw_muffleflowfirepathtooltip>
+	<spw_muffleflowsounds>Flussgeräusche dämpfen</spw_muffleflowsounds>
+	<spw_muffleflowsoundstooltip>Schaltet die Dämpfung von Wasserflussgeräuschen aus allen Quellen ein oder aus.</spw_muffleflowsoundstooltip>
+	<spw_mufflefiresounds>Feuergeräusche dämpfen</spw_mufflefiresounds>
+	<spw_mufflefiresoundstooltip>Schaltet die Dämpfung von Feuergeräuschen aus allen Quellen ein oder aus.</spw_mufflefiresoundstooltip>
+	<spw_classiclowpassfrequency>Klassische Tiefpassfrequenz</spw_classiclowpassfrequency>
+	<spw_classiclowpassfrequencytooltip>Die Grenzfrequenz, die verwendet wird, um Geräusche im klassischen Modus zu dämpfen. Der Schwellenwert zur Anwendung dieses Filters ist im Reiter "Dämpfung" konfigurierbar.\n\nHinweis: Gilt nicht für den Voice-Chat. Siehe die Tiefpassfrequenz-Schieberegler im Reiter "Stimme".\n\nHinweis: Eine Änderung dieser Einstellung während des Spiels kann das Spiel kurzzeitig einfrieren, während Puffer geladen werden.</spw_classiclowpassfrequencytooltip>
+
+	<spw_categoryobstructions>Dämpfungsstärke von Hindernissen</spw_categoryobstructions>
+
+	<spw_obstructionwatersurface>Wasseroberfläche</spw_obstructionwatersurface>
+	<spw_obstructionwatersurfacetooltip>Die Dämpfungsstärke, die angewendet wird, wenn ein Geräusch eine Luft-Wasser-Barriere durchquert.\n\nHinweis: Wird multiplikativ verrechnet (abnehmender Ertrag).</spw_obstructionwatersurfacetooltip>
+	<spw_obstructionwaterbody>Wasserkörper</spw_obstructionwaterbody>
+	<spw_obstructionwaterbodytooltip>Die Dämpfungsstärke, die angewendet wird, wenn ein Geräusch durch Wasser zum Hörer gelangt, ohne eine Luft-Wasser-Barriere zu durchqueren (d. h. das Geräusch beginnt und endet seine Reise im selben Wasserkörper).\n\nHinweis: Wird multiplikativ verrechnet (abnehmender Ertrag).</spw_obstructionwaterbodytooltip>
+	<spw_obstructionwallthick>Dicke Wand</spw_obstructionwallthick>
+	<spw_obstructionwallthicktooltip>Die Dämpfungsstärke, die angewendet wird, wenn ein Geräusch normal durch eine Wand geht.\n\nHinweis: Gilt auch für jeweils zwei Türen, die das Geräusch im dynamischen Modus passiert hat.\n\nHinweis: Wird multiplikativ verrechnet (abnehmender Ertrag).</spw_obstructionwallthicktooltip>
+	<spw_obstructionwallthin>Dünne Wand</spw_obstructionwallthin>
+	<spw_obstructionwallthintooltip>Die Dämpfungsstärke, die angewendet wird, wenn ein Geräusch eine Wand durchdringt (Propagation oder Hydrophon-Strukturen) oder einen teilweisen Pfad zum Hörer hat (Verdeckung).\n\nHinweis: Wird multiplikativ verrechnet (abnehmender Ertrag).</spw_obstructionwallthintooltip>
+	<spw_obstructiondoorthick>Dicke Tür</spw_obstructiondoorthick>
+	<spw_obstructiondoorthicktooltip>Die Dämpfungsstärke, die angewendet wird, wenn ein Geräusch normal durch eine Tür geht.\n\nHinweis: Wird multiplikativ verrechnet (abnehmender Ertrag).</spw_obstructiondoorthicktooltip>
+	<spw_obstructiondoorthin>Dünne Tür</spw_obstructiondoorthin>
+	<spw_obstructiondoorthintooltip>Die Dämpfungsstärke, die angewendet wird, wenn ein Geräusch eine Tür durchdringt (Lauschen, Propagation oder in einem Behälter).\n\nHinweis: Wird multiplikativ verrechnet (abnehmender Ertrag).</spw_obstructiondoorthintooltip>
+	<spw_obstructionsuit>Taucheranzug</spw_obstructionsuit>
+	<spw_obstructionsuittooltip>Die Dämpfungsstärke, die angewendet wird, wenn ein Geräusch durch einen Taucheranzug geht.\n\nHinweis: Gilt auch für Geräusche außerhalb des U-Boots bei Verwendung der Hydrophone.\n\nHinweis: Wird multiplikativ verrechnet (abnehmender Ertrag).</spw_obstructionsuittooltip>
+	<spw_obstructiondrowning>Ertrinkender Spieler</spw_obstructiondrowning>
+	<spw_obstructiondrowningtooltip>Die Dämpfungsstärke, die auf die Stimme eines Spielers angewendet wird, wenn er während des Ertrinkens spricht.\n\nHinweis: Wird multiplikativ verrechnet (abnehmender Ertrag).</spw_obstructiondrowningtooltip>
+	
+	<spw_classicmufflethreshold>(Klassisch) Dämpfungsschwelle</spw_classicmufflethreshold>
+	<spw_classicmufflethresholdtooltip>Der minimale kombinierte Hindernislevel, der erforderlich ist, damit Geräusche die "Klassische Tiefpassfrequenz" (Reiter "Dämpfung") verwenden.</spw_classicmufflethresholdtooltip>
+
+	<spw_staticlightmufflethreshold>(Statisch) Leichte Dämpfungsschwelle</spw_staticlightmufflethreshold>
+	<spw_staticlightmufflethresholdtooltip>Der minimale kombinierte Hindernislevel, der erforderlich ist, damit Geräusche und Stimmen die "Tiefpassfrequenz (Leicht)" (Reiter "Statisch") oder "Tiefpassfrequenz für Stimmen (Leicht)" (Reiter "Stimme") verwenden.</spw_staticlightmufflethresholdtooltip>
+
+	<spw_staticmediummufflethreshold>(Statisch) Mittlere Dämpfungsschwelle</spw_staticmediummufflethreshold>
+	<spw_staticmediummufflethresholdtooltip>Der minimale kombinierte Hindernislevel, der erforderlich ist, damit Geräusche und Stimmen die "Tiefpassfrequenz (Mittel)" (Reiter "Statisch") oder "Tiefpassfrequenz für Stimmen (Mittel)" (Reiter "Stimme") verwenden.</spw_staticmediummufflethresholdtooltip>
+
+	<spw_staticheavymufflethreshold>(Statisch) Starke Dämpfungsschwelle</spw_staticheavymufflethreshold>
+	<spw_staticheavymufflethresholdtooltip>Der minimale kombinierte Hindernislevel, der erforderlich ist, damit Geräusche und Stimmen die "Tiefpassfrequenz (Stark)" (Reiter "Statisch") oder "Tiefpassfrequenz für Stimmen (Stark)" (Reiter "Stimme") verwenden.</spw_staticheavymufflethresholdtooltip>
+
+	<spw_categorythresholds>Dämpfungsschwellen</spw_categorythresholds>
+
+	<!-- Volume -->
+	<spw_volumetab>Lautstärke</spw_volumetab>
+
+	<spw_categorysidechaining>Sidechaining</spw_categorysidechaining>
+
+	<spw_sidechaining>Sidechaining aktivieren</spw_sidechaining>
+	<spw_sidechainingtooltip>Reduziert die Lautstärke aller Geräusche, wenn ein lautes Geräusch abgespielt wird.\n\nHinweis: Damit ein Geräusch intern als laut gilt, muss es in der Liste "Benutzerdefinierte Geräusche" (Reiter "Erweitert") mit einem Sidechain-Multiplikator größer als null aufgeführt sein.</spw_sidechainingtooltip>
+	<spw_sidechainmusic>Musik-Sidechaining</spw_sidechainmusic>
+	<spw_sidechainmusictooltip>Reduziert die Lautstärke von Musiktiteln, wenn ein lautes Geräusch abgespielt wird.</spw_sidechainmusictooltip>
+
+	<spw_sidechainintensitymaster>Master-Sidechain-Intensität</spw_sidechainintensitymaster>
+	<spw_sidechainintensitymastertooltip>Globaler Multiplikator, der auf alle Sidechain-Multiplikatoren in der Liste "Benutzerdefinierte Geräusche" (Reiter "Erweitert") angewendet wird.</spw_sidechainintensitymastertooltip>
+	<spw_sidechainreleasemaster>Master-Sidechain-Release</spw_sidechainreleasemaster>
+	<spw_sidechainreleasemastertooltip>Feste Zeitspanne, die zu allen Sidechain-Releases in der Liste "Benutzerdefinierte Geräusche" (Reiter "Erweitert") hinzugefügt wird.</spw_sidechainreleasemastertooltip>
+	<spw_sidechainreleasecurve>Sidechain-Release-Kurve</spw_sidechainreleasecurve>
+	<spw_sidechainreleasecurvetooltip>Der Exponent, der zur Berechnung der Form der Sidechain-Release-Kurve verwendet wird. Werte unter eins lassen langsam und dann gegen Ende stark los. Werte über eins lassen schnell los und flachen gegen Ende ab.</spw_sidechainreleasecurvetooltip>
+	<spw_sidechainmufflepower>Sidechain-Dämpfungsleistung</spw_sidechainmufflepower>
+	<spw_sidechainmufflepowertooltip>Wie stark der Sidechain-Effekt eines gedämpften Geräuschs sein sollte. Höhere Werte behalten mehr Sidechain-Stärke bei.</spw_sidechainmufflepowertooltip>
+	<spw_sidechainmusicmultiplier>Sidechain-Musikstärke</spw_sidechainmusicmultiplier>
+	<spw_sidechainmusicmultipliertooltip>Die Intensität des Sidechain-Effekts auf Musik.</spw_sidechainmusicmultipliertooltip>
+
+	<spw_muffledsoundvolume>Lautstärke gedämpfter Geräusche</spw_muffledsoundvolume>
+	<spw_muffledsoundvolumetooltip>Die Lautstärke gedämpfter, nicht-loopender Geräusche. Mischt sich mit "Lautstärke ungedämpfter Geräusche" basierend auf der Dämpfungsstärke.\n\nHinweis: Wird additiv mit anderen Lautstärkemultiplikatoren verrechnet.</spw_muffledsoundvolumetooltip>
+	<spw_unmuffledsoundvolume>Lautstärke ungedämpfter Geräusche</spw_unmuffledsoundvolume>
+	<spw_unmuffledsoundvolumetooltip>Die Lautstärke ungedämpfter, nicht-loopender Geräusche. Mischt sich mit "Lautstärke gedämpfter Geräusche" basierend auf der Dämpfungsstärke.\n\nHinweis: Wird additiv mit anderen Lautstärkemultiplikatoren verrechnet.</spw_unmuffledsoundvolumetooltip>
+	<spw_muffledvoicevolume>Lautstärke gedämpfter Stimmen</spw_muffledvoicevolume>
+	<spw_muffledvoicevolumetooltip>Die Lautstärke gedämpfter Spielerstimmen. Mischt sich mit "Lautstärke ungedämpfter Stimmen" basierend auf der Dämpfungsstärke.\n\nHinweis: Wird additiv mit anderen Lautstärkemultiplikatoren verrechnet.</spw_muffledvoicevolumetooltip>
+	<spw_unmuffledvoicevolume>Lautstärke ungedämpfter Stimmen</spw_unmuffledvoicevolume>
+	<spw_unmuffledvoicevolumetooltip>Die Lautstärke ungedämpfter Spielerstimmen. Mischt sich mit "Lautstärke gedämpfter Stimmen" basierend auf der Dämpfungsstärke.\n\nHinweis: Wird additiv mit anderen Lautstärkemultiplikatoren verrechnet.</spw_unmuffledvoicevolumetooltip>
+	<spw_muffledloopingvolume>Lautstärke gedämpfter Loops</spw_muffledloopingvolume>
+	<spw_muffledloopingvolumetooltip>Die Lautstärke gedämpfter, loopender Geräusche. Mischt sich mit "Lautstärke ungedämpfter Loops" basierend auf der Dämpfungsstärke.\n\nHinweis: Wird additiv mit anderen Lautstärkemultiplikatoren verrechnet.</spw_muffledloopingvolumetooltip>
+	<spw_unmuffledloopingvolume>Lautstärke ungedämpfter Loops</spw_unmuffledloopingvolume>
+	<spw_unmuffledloopingvolumetooltip>Die Lautstärke ungedämpfter, loopender Geräusche. Mischt sich mit "Lautstärke gedämpfter Loops" basierend auf der Dämpfungsstärke.\n\nHinweis: Wird additiv mit anderen Lautstärkemultiplikatoren verrechnet.</spw_unmuffledloopingvolumetooltip>
+	<spw_submergedvolume>Lautstärke (gemeinsam unter Wasser)</spw_submergedvolume>
+	<spw_submergedvolumetooltip>Die Lautstärke von Geräuschen, die sich im selben Wasserkörper wie der Hörer befinden.\n\nHinweis: Wird additiv mit anderen Lautstärkemultiplikatoren verrechnet.</spw_submergedvolumetooltip>
+	<spw_flowsoundvolume>Lautstärke von Flussgeräuschen</spw_flowsoundvolume>
+	<spw_flowsoundvolumetooltip>Die Lautstärke von fließendem Wasser, das durch Lecks im U-Boot verursacht wird.</spw_flowsoundvolumetooltip>
+	<spw_firesoundvolume>Lautstärke von Feuergeräuschen</spw_firesoundvolume>
+	<spw_firesoundvolumetooltip>Die Lautstärke von Feuern.</spw_firesoundvolumetooltip>
+	<spw_vanillaexosuitvolume>Vanilla-Exosuit-Lautstärke</spw_vanillaexosuitvolume>
+	<spw_vanillaexosuitvolumetooltip>Die Lautstärke des Vanilla-Exosuit-Bewegungsgeräuschs. Einige Spieler empfinden dieses Geräusch als unangenehm.\n\nHinweis: Beeinflusst keine gemoddeten Exosuit-Geräusche.</spw_vanillaexosuitvolumetooltip>
+	<spw_loopingcomponentsoundnearmultiplier>Start des Distanzabfalls von Komponentengeräuschen</spw_loopingcomponentsoundnearmultiplier>
+	<spw_loopingcomponentsoundnearmultipliertooltip>Die Entfernung, ab der die Lautstärke von loopenden Komponentengeräuschen abzufallen beginnt.</spw_loopingcomponentsoundnearmultipliertooltip>
+	<spw_mindistancefalloffvolume>Min. Lautstärke bei Distanzabfall</spw_mindistancefalloffvolume>
+	<spw_mindistancefalloffvolumetooltip>Die minimale Abfalllautstärke, die ein Geräusch mit dem Modell "Realistischer Schallabfall" (Reiter "Allgemein") erreichen kann.</spw_mindistancefalloffvolumetooltip>
+
+
+	<!-- Eavesdropping -->
+	<spw_eavesdroppingtab>Lauschen</spw_eavesdroppingtab>
+	<spw_eavesdroppingenabled>Lauschen aktiviert</spw_eavesdroppingenabled>
+	<spw_eavesdroppingenabledtooltip>Schaltet die Lauschfunktion ein oder aus.</spw_eavesdroppingenabledtooltip>
+	<spw_eavesdroppingmuffleself>Eigene Hülle dämpfen</spw_eavesdroppingmuffleself>
+	<spw_eavesdroppingmuffleselftooltip>Dämpft Geräusche in der Hülle des Hörers beim Lauschen.</spw_eavesdroppingmuffleselftooltip>
+	<spw_eavesdroppingmuffle>Belauschte Hülle dämpfen</spw_eavesdroppingmuffle>
+	<spw_eavesdroppingmuffletooltip>Dämpft Geräusche, die durch Lauschen gehört werden, leicht, indem die Dämpfung "Dünne Tür" angewendet wird.</spw_eavesdroppingmuffletooltip>
+	<spw_eavesdroppingtransition>Lausch-Übergang</spw_eavesdroppingtransition>
+	<spw_eavesdroppingtransitiontooltip>Ermöglicht einen sanften Audioübergang zwischen Hüllen beim Lauschen.</spw_eavesdroppingtransitiontooltip>
+	<spw_eavesdroppingducksradio>Lauschen reduziert Funklautstärke</spw_eavesdroppingducksradio>
+	<spw_eavesdroppingducksradiotooltip>Verringert die Lautstärke des Funk-Näherungs-Chats beim Lauschen.</spw_eavesdroppingducksradiotooltip>
+
+	<spw_eavesdroppingbind>Lauschen-Taste</spw_eavesdroppingbind>
+	<spw_eavesdroppingbindtooltip>Welche Taste gehalten wird, um zu lauschen.\n\nHinweis: Diese Einstellung wird nicht mit anderen Spielern synchronisiert, wenn "Einstellungen synchronisieren" (Reiter "Allgemein") verwendet wird.</spw_eavesdroppingbindtooltip>
+
+	<spw_eavesdroppingsoundvolume>Lautstärke belauschter Geräusche</spw_eavesdroppingsoundvolume>
+	<spw_eavesdroppingsoundvolumetooltip>Die Lautstärke von Geräuschen, die durch Lauschen gehört werden.\n\nHinweis: Wird additiv mit anderen Lautstärkemultiplikatoren verrechnet.</spw_eavesdroppingsoundvolumetooltip>
+	<spw_eavesdroppingvoicevolume>Lautstärke belauschter Stimmen</spw_eavesdroppingvoicevolume>
+	<spw_eavesdroppingvoicevolumetooltip>Die Lautstärke des lokalen Näherungs-Chats, der durch Lauschen gehört wird.\n\nHinweis: Wird additiv mit anderen Lautstärkemultiplikatoren verrechnet.</spw_eavesdroppingvoicevolumetooltip>
+	<spw_eavesdroppingothervolume>Lautstärke der eigenen Hülle</spw_eavesdroppingothervolume>
+	<spw_eavesdroppingothervolumetooltip>Die Lautstärke des Audios in der Hülle des Hörers beim Lauschen.</spw_eavesdroppingothervolumetooltip>
+	<spw_eavesdroppingsoundpitch>Tonhöhe belauschter Geräusche</spw_eavesdroppingsoundpitch>
+	<spw_eavesdroppingsoundpitchtooltip>Die Tonhöhe von Geräuschen, die durch Lauschen gehört werden.\n\nHinweis: Gilt nicht für den lokalen Näherungs-Chat.\n\nHinweis: Wird additiv mit anderen Tonhöhenmultiplikatoren verrechnet.</spw_eavesdroppingsoundpitchtooltip>
+	<spw_eavesdroppingmaxdistance>Max. Lausch-Distanz</spw_eavesdroppingmaxdistance>
+	<spw_eavesdroppingmaxdistancetooltip>Die maximale Entfernung, die der Kopf des Spielers von einer Tür entfernt sein kann, während er lauscht.</spw_eavesdroppingmaxdistancetooltip>
+	<spw_eavesdroppingtransitionduration>Dauer des Lausch-Übergangs</spw_eavesdroppingtransitionduration>
+	<spw_eavesdroppingtransitiondurationtooltip>Wie viele Sekunden der Lausch-Übergang dauert.\n\nHinweis: Erfordert, dass "Lausch-Übergang" aktiviert ist.</spw_eavesdroppingtransitiondurationtooltip>
+	<spw_eavesdroppingthreshold>Lausch-Schwelle</spw_eavesdroppingthreshold>
+	<spw_eavesdroppingthresholdtooltip>Wie weit im Lausch-Übergang das Dämpfungsprofil auf die gegenüberliegende Seite der Tür wechselt.</spw_eavesdroppingthresholdtooltip>
+
+	<spw_eavesdroppingvisualfeedbackenabled>Visuelles Feedback</spw_eavesdroppingvisualfeedbackenabled>
+	<spw_eavesdroppingvisualfeedbackenabledtooltip>Zeigt einen sanften grünen Leuchteffekt um belauschte Geräuschquellen an.</spw_eavesdroppingvisualfeedbackenabledtooltip>
+	<spw_eavesdroppingrevealscharacteroutline>Charakterumriss sehen</spw_eavesdroppingrevealscharacteroutline>
+	<spw_eavesdroppingrevealscharacteroutlinetooltip>Zeigt einen groben Umriss des Körperteils an, der für das Geräusch verantwortlich ist (d. h. Beine für Schritte und Köpfe für Stimmen).</spw_eavesdroppingrevealscharacteroutlinetooltip>
+	<spw_eavesdroppingrevealsall>Unzugängliche Geräusche sehen</spw_eavesdroppingrevealsall>
+	<spw_eavesdroppingrevealsalltooltip>Zeigt den Leuchteffekt für Geräusche ohne Pfad zum belauschten Bereich an.\n\nHinweis: Geräusche in der Hülle des Hörers werden immer ignoriert.</spw_eavesdroppingrevealsalltooltip>
+	<spw_eavesdroppingspritemaxsize>Max. Leuchtgröße</spw_eavesdroppingspritemaxsize>
+	<spw_eavesdroppingspritemaxsizetooltip>Die maximale Größe des Leuchteffekts.</spw_eavesdroppingspritemaxsizetooltip>
+	<spw_eavesdroppingspritesizemultiplier>Leuchtgrößen-Multiplikator</spw_eavesdroppingspritesizemultiplier>
+	<spw_eavesdroppingspritesizemultipliertooltip>Die Größe des Leuchteffekts im Verhältnis zur Reichweite des Geräuschs.</spw_eavesdroppingspritesizemultipliertooltip>
+	<spw_eavesdroppingspriteopacity>Leuchtopazität</spw_eavesdroppingspriteopacity>
+	<spw_eavesdroppingspriteopacitytooltip>Die Stärke des Leuchteffekts.</spw_eavesdroppingspriteopacitytooltip>
+	<spw_eavesdroppingspritefadecurve>Leucht-Abblendkurve</spw_eavesdroppingspritefadecurve>
+	<spw_eavesdroppingspritefadecurvetooltip>Der Exponent, der zur Berechnung der Form der Leucht-Abblendkurve verwendet wird. Werte unter eins blenden langsam und dann gegen Ende stark ab. Werte über eins blenden schnell ab und flachen gegen Ende ab.</spw_eavesdroppingspritefadecurvetooltip>
+	<spw_eavesdroppingzoom>Kamerazoom beim Lauschen</spw_eavesdroppingzoom>
+	<spw_eavesdroppingzoomtooltip>Wie weit die Kamera beim Lauschen heranzoomt.\n\nHinweis: Funktioniert möglicherweise nicht mit anderen Mods, die den Kamerazoom anpassen.</spw_eavesdroppingzoomtooltip>
+	<spw_eavesdroppingvignette>Vignetten-Opazität</spw_eavesdroppingvignette>
+	<spw_eavesdroppingvignettetooltip>Die Stärke des Vignettierungseffekts an den Rändern des Bildschirms beim Lauschen.</spw_eavesdroppingvignettetooltip>
+
+	<!-- Hydrophone -->
+	<spw_hydrophonestab>Hydrophone</spw_hydrophonestab>
+	<spw_hydrophoneswitchenabled>Hydrophon-Schalter aktiviert</spw_hydrophoneswitchenabled>
+	<spw_hydrophoneswitchenabledtooltip>Schaltet die Hydrophon-Funktion ein oder aus.\n\nHinweis: Der Hydrophon-Schalter bleibt bis zur nächsten Runde bestehen.</spw_hydrophoneswitchenabledtooltip>
+	<spw_hydrophonemovementsounds>Bewegungsgeräusche</spw_hydrophonemovementsounds>
+	<spw_hydrophonemovementsoundstooltip>Höre Bewegungen im Wasser.</spw_hydrophonemovementsoundstooltip>
+	<spw_hydrophonehearengine>Motoren hören</spw_hydrophonehearengine>
+	<spw_hydrophonehearenginetooltip>Höre U-Boot-Motoren, einschließlich deines eigenen.</spw_hydrophonehearenginetooltip>
+	<spw_hydrophonehearintostructures>In Strukturen hören</spw_hydrophonehearintostructures>
+	<spw_hydrophonehearintostructurestooltip>Höre in andere U-Boote oder Außenposten hinein.\n\nHinweis: Geräusche in diesen Strukturen erhalten die Dämpfung "Dünne Wand".</spw_hydrophonehearintostructurestooltip>
+	<spw_hydrophonemuffleownsub>Eigenes U-Boot dämpfen</spw_hydrophonemuffleownsub>
+	<spw_hydrophonemuffleownsubtooltip>Dämpft Geräusche, die aus deiner eigenen Struktur kommen.\n\nHinweis: Wendet die Dämpfung "Wasseroberfläche" an.</spw_hydrophonemuffleownsubtooltip>
+	<spw_hydrophonerange>Hydrophon-Reichweite</spw_hydrophonerange>
+	<spw_hydrophonerangetooltip>Wie weit du Geräusche durch die Hydrophone hören kannst.\n\nHinweis: Diese Entfernung wird zur bestehenden Reichweite der Geräusche addiert.</spw_hydrophonerangetooltip>
+	<spw_hydrophonevolume>Hydrophon-Lautstärke</spw_hydrophonevolume>
+	<spw_hydrophonevolumetooltip>Die Lautstärke von Geräuschen, die durch die Hydrophone gehört werden.</spw_hydrophonevolumetooltip>
+	<spw_hydrophonepitch>Hydrophon-Tonhöhe</spw_hydrophonepitch>
+	<spw_hydrophonepitchtooltip>Die Tonhöhe von Geräuschen, die durch die Hydrophone gehört werden.\n\nHinweis: Gilt nicht für den Näherungs-Chat.</spw_hydrophonepitchtooltip>
+	<spw_hydrophoneambiencevolume>Hydrophon-Umgebungslautstärke</spw_hydrophoneambiencevolume>
+	<spw_hydrophoneambiencevolumetooltip>Die Lautstärke der Ozean-Umgebungsgeräusche, die beim Abhören der Hydrophone abgespielt werden.</spw_hydrophoneambiencevolumetooltip>
+	<spw_hydrophonemovementvolume>Hydrophon-Bewegungslautstärke</spw_hydrophonemovementvolume>
+	<spw_hydrophonemovementvolumetooltip>Die Lautstärke des Wasserplätscherns, das durch sich bewegende Charaktere im Wasser verursacht wird.</spw_hydrophonemovementvolumetooltip>
+	
+	<spw_hydrophonevisualfeedbackenabled>Visuelles Feedback</spw_hydrophonevisualfeedbackenabled>
+	<spw_hydrophonevisualfeedbackenabledtooltip>Zeigt farbige Sektoren auf der Sonar-Benutzeroberfläche an, die die Richtung, Größe und implizite Entfernung von Geräuschen im Wasser visuell darstellen.\n\nHinweis: Die Entfernung kann basierend auf der Reichweite des Geräuschs und der Breite des hervorgehobenen Sektors abgeleitet werden.</spw_hydrophonevisualfeedbackenabledtooltip>
+	<spw_hydrophoneusagedisablessonarblips>Passives Sonar deaktivieren</spw_hydrophoneusagedisablessonarblips>
+	<spw_hydrophoneusagedisablessonarblipstooltip>Stoppt das Zeichnen von Sonar-Blips beim Überwachen der Hydrophone. Sonar-Blips visualisieren die Umgebung.</spw_hydrophoneusagedisablessonarblipstooltip>
+	<spw_hydrophoneusagedisablessuboutline>U-Boot-Umriss deaktivieren</spw_hydrophoneusagedisablessuboutline>
+	<spw_hydrophoneusagedisablessuboutlinetooltip>Stoppt das Zeichnen des Umrisses des U-Boots und seiner Andockluken beim Überwachen der Hydrophone.</spw_hydrophoneusagedisablessuboutlinetooltip>
+	<spw_hydrophonevisualfeedbacksizemultiplier>Größe des visuellen Feedbacks</spw_hydrophonevisualfeedbacksizemultiplier>
+	<spw_hydrophonevisualfeedbacksizemultipliertooltip>Die Dicke der farbigen Sektoren.</spw_hydrophonevisualfeedbacksizemultipliertooltip>
+	<spw_hydrophonevisualfeedbackopacitymultiplier>Opazität des visuellen Feedbacks</spw_hydrophonevisualfeedbackopacitymultiplier>
+	<spw_hydrophonevisualfeedbackopacitymultipliertooltip>Die Transparenz der farbigen Sektoren.</spw_hydrophonevisualfeedbackopacitymultipliertooltip>
+	
+	<spw_hydrophonereverb>Ätherische Echos</spw_hydrophonereverb>
+	<spw_hydrophonereverbtooltip>Wendet einen einzigartigen Hydrophon-Hall an, der die Art und Weise nachahmt, wie entfernte Geräusche durch Eishöhlen und Unterwasserräume diffundieren, streuen und nachhallen.\n\nHinweis: Erfordert, dass "Hall aktivieren" (Reiter "Dynamisch") aktiviert ist.</spw_hydrophonereverbtooltip>
+	<spw_hydrophonereverbtargetgain>Hallstärke</spw_hydrophonereverbtargetgain>
+	<spw_hydrophonereverbtargetgaintooltip>Die Basisverstärkung für den einzigartigen Hydrophon-Hall.</spw_hydrophonereverbtargetgaintooltip>
+	
+	<spw_hydrophonedistortion>Hydrophone verzerren</spw_hydrophonedistortion>
+	<spw_hydrophonedistortiontooltip>Wendet einen Verzerrungseffekt auf Geräusche an, die durch die Hydrophone gehört werden.</spw_hydrophonedistortiontooltip>
+	
+	<spw_hydrophonebandpassfilter>Bandpass für Hydrophone</spw_hydrophonebandpassfilter>
+	<spw_hydrophonebandpassfiltertooltip>Wendet einen Bandpassfilter auf Geräusche an, die durch die Hydrophone gehört werden. Ein Bandpassfilter schneidet hohe und tiefe Frequenzen ab und erzeugt einen radioähnlichen Klang.\n\nHinweis: Die Dämpfung ist für Geräusche, die einen Bandpassfilter verwenden, deaktiviert.</spw_hydrophonebandpassfiltertooltip>
+	<spw_hydrophonebandpassfilterhfgain>Bandpass-Hochfrequenzverstärkung</spw_hydrophonebandpassfilterhfgain>
+	<spw_hydrophonebandpassfilterhfgaintooltip>Die Lautstärke der hohen Frequenzen des Bandpassfilters.</spw_hydrophonebandpassfilterhfgaintooltip>
+	<spw_hydrophonebandpassfilterlfgain>Bandpass-Tieffrequenzverstärkung</spw_hydrophonebandpassfilterlfgain>
+	<spw_hydrophonebandpassfilterlfgaintooltip>Die Lautstärke der tiefen Frequenzen des Bandpassfilters.</spw_hydrophonebandpassfilterlfgaintooltip>
+
+	<spw_categoryadvanced>Erweitert</spw_categoryadvanced>
+
+	<spw_hydrophonemuffleignoredsounds>Ignorierte Geräusche für Dämpfung</spw_hydrophonemuffleignoredsounds>
+	<spw_hydrophonemuffleignoredsoundstooltip>Geräusche in dieser Liste werden bei Verwendung der Hydrophone niemals gedämpft.</spw_hydrophonemuffleignoredsoundstooltip>
+	
+	<spw_hydrophonevisualignoredsounds>Ignorierte Geräusche für visuelles Feedback</spw_hydrophonevisualignoredsounds>
+	<spw_hydrophonevisualignoredsoundstooltip>Geräusche in dieser Liste werden bei Verwendung der Hydrophone niemals auf der Sonar-Benutzeroberfläche angezeigt.</spw_hydrophonevisualignoredsoundstooltip>
+	
+	<!-- Ambience -->
+	<spw_ambiencetab>Umgebung</spw_ambiencetab>
+	<spw_disablewhitenoise>Weißes Rauschen deaktivieren</spw_disablewhitenoise>
+	<spw_disablewhitenoisetooltip>Stummschaltet die Biom-Geräuschschleifen aus dem Vanilla-Spiel.</spw_disablewhitenoisetooltip>
+
+	<spw_categorytrack>Spurspezifisch</spw_categorytrack>
+	<spw_waterambienceinvolume>Wasserlautstärke (Innen)</spw_waterambienceinvolume>
+	<spw_waterambienceinvolumetooltip>Die Lautstärke der Wasser-Umgebungsspur, die im Inneren abgespielt wird.\n\nHinweis: Diese Spur wird weiterhin mit geringerer Lautstärke über der Außenspur abgespielt.</spw_waterambienceinvolumetooltip>
+	<spw_waterambienceoutvolume>Wasserlautstärke (Außen)</spw_waterambienceoutvolume>
+	<spw_waterambienceoutvolumetooltip>Die Lautstärke der Wasser-Umgebungsspur, die im Freien abgespielt wird.</spw_waterambienceoutvolumetooltip>
+	<spw_waterambiencemovingvolume>Wasserlautstärke (Bewegung)</spw_waterambiencemovingvolume>
+	<spw_waterambiencemovingvolumetooltip>Die Lautstärke der Wasser-Umgebungsspur, die abgespielt wird, wenn sich das U-Boot oder der Spieler durch Wasser bewegt.</spw_waterambiencemovingvolumetooltip>
+
+	<spw_categoryenvironment>Umgebungsspezifisch</spw_categoryenvironment>
+	<spw_unsubmergedsuitwaterambiencevolume>Wasserlautstärke (nicht unter Wasser, mit Anzug)</spw_unsubmergedsuitwaterambiencevolume>
+	<spw_unsubmergedsuitwaterambiencevolumetooltip>Die Lautstärke der Wasser-Umgebungsspuren, wenn der Hörer nicht unter Wasser ist und einen Taucheranzug trägt.</spw_unsubmergedsuitwaterambiencevolumetooltip>
+	<spw_unsubmergednosuitwaterambiencevolume>Wasserlautstärke (nicht unter Wasser, ohne Anzug)</spw_unsubmergednosuitwaterambiencevolume>
+	<spw_unsubmergednosuitwaterambiencevolumetooltip>Die Lautstärke der Wasser-Umgebungsspuren, wenn der Hörer nicht unter Wasser ist und keinen Taucheranzug trägt.</spw_unsubmergednosuitwaterambiencevolumetooltip>
+	<spw_submergedsuitwaterambiencevolume>Wasserlautstärke (unter Wasser, mit Anzug)</spw_submergedsuitwaterambiencevolume>
+	<spw_submergedsuitwaterambiencevolumetooltip>Die Lautstärke der Wasser-Umgebungsspuren, wenn der Hörer unter Wasser ist und einen Taucheranzug trägt.</spw_submergedsuitwaterambiencevolumetooltip>
+	<spw_submergednosuitwaterambiencevolume>Wasserlautstärke (unter Wasser, ohne Anzug)</spw_submergednosuitwaterambiencevolume>
+	<spw_submergednosuitwaterambiencevolumetooltip>Die Lautstärke der Wasser-Umgebungsspuren, wenn der Hörer unter Wasser ist und keinen Taucheranzug trägt.</spw_submergednosuitwaterambiencevolumetooltip>
+	<spw_waterambiencetransitionspeed>Übergangsgeschwindigkeit der Wasserumgebung</spw_waterambiencetransitionspeed>
+	<spw_waterambiencetransitionspeedtooltip>Wie schnell die Wasserumgebung zwischen den Lautstärkestufen wechselt.</spw_waterambiencetransitionspeedtooltip>
+
+
+	<!-- Pitch -->
+	<spw_pitchtab>Tonhöhe</spw_pitchtab>
+	<spw_pitchenabled>Tonhöhe aktivieren</spw_pitchenabled>
+	<spw_pitchenabledtooltip>Schaltet alle Tonhöheneffekte global ein oder aus.\n\nHinweis: Kann als schnelle Lösung für ungewöhnliche Tonhöheninteraktionen mit Geräuschen aus anderen Mods hilfreich sein.</spw_pitchenabledtooltip>
+	<spw_pitchstatuseffectsounds>Tonhöhe für Statuseffekt-Geräusche</spw_pitchstatuseffectsounds>
+	<spw_pitchstatuseffectsoundstooltip>Schaltet die Tonhöhenänderung für Geräusche ein oder aus, die durch XML-Statuseffekte abgespielt werden.</spw_pitchstatuseffectsoundstooltip>
+	<spw_pitchwithdistance>Tonhöhe mit Entfernung</spw_pitchwithdistance>
+	<spw_pitchwithdistancetooltip>Senkt die Tonhöhe gedämpfter Geräusche dynamisch basierend auf ihrer Entfernung.\n\nHinweis: Gilt nicht für loopende Geräusche oder den Näherungs-Chat.\n\nHinweis: Wird additiv mit anderen Tonhöhenmultiplikatoren verrechnet.</spw_pitchwithdistancetooltip>
+	
+	<spw_divingsuitpitch>Tonhöhe im Taucheranzug</spw_divingsuitpitch>
+	<spw_divingsuitpitchtooltip>Die Tonhöhe von Geräuschen, wenn ein Taucheranzug getragen wird.\n\nHinweis: Wird additiv mit anderen Tonhöhenmultiplikatoren verrechnet.</spw_divingsuitpitchtooltip>
+	<spw_submergedpitch>Tonhöhe unter Wasser</spw_submergedpitch>
+	<spw_submergedpitchtooltip>Die Tonhöhe von Geräuschen, wenn der Hörer unter Wasser ist.\n\nHinweis: Wird additiv mit anderen Tonhöhenmultiplikatoren verrechnet.</spw_submergedpitchtooltip>
+	
+	<spw_muffledsoundpitch>Tonhöhe gedämpfter Geräusche</spw_muffledsoundpitch>
+	<spw_muffledsoundpitchtooltip>Die Tonhöhe gedämpfter, nicht-loopender Geräusche. Mischt sich mit "Tonhöhe ungedämpfter Geräusche" basierend auf der Dämpfungsstärke.\n\nHinweis: Wird additiv mit anderen Tonhöhenmultiplikatoren verrechnet.</spw_muffledsoundpitchtooltip>
+	<spw_unmuffledsoundpitch>Tonhöhe ungedämpfter Geräusche</spw_unmuffledsoundpitch>
+	<spw_unmuffledsoundpitchtooltip>Die Tonhöhe ungedämpfter, nicht-loopender Geräusche. Mischt sich mit "Tonhöhe gedämpfter Geräusche" basierend auf der Dämpfungsstärke.\n\nHinweis: Wird additiv mit anderen Tonhöhenmultiplikatoren verrechnet.</spw_unmuffledsoundpitchtooltip>
+	
+	<spw_muffledloopingpitch>Tonhöhe gedämpfter Loops</spw_muffledloopingpitch>
+	<spw_muffledloopingpitchtooltip>Die Tonhöhe gedämpfter, loopender Geräusche. Mischt sich mit "Tonhöhe ungedämpfter Loops" basierend auf der Dämpfungsstärke.\n\nHinweis: Wird additiv mit anderen Tonhöhenmultiplikatoren verrechnet.</spw_muffledloopingpitchtooltip>
+	<spw_unmuffledloopingpitch>Tonhöhe ungedämpfter Loops</spw_unmuffledloopingpitch>
+	<spw_unmuffledloopingpitchtooltip>Die Tonhöhe ungedämpfter, loopender Geräusche. Mischt sich mit "Tonhöhe gedämpfter Loops" basierend auf der Dämpfungsstärke.\n\nHinweis: Wird additiv mit anderen Tonhöhenmultiplikatoren verrechnet.</spw_unmuffledloopingpitchtooltip>
+	
+	<spw_muffledvoicepitch>Tonhöhe gedämpfter Stimmen</spw_muffledvoicepitch>
+	<spw_muffledvoicepitchtooltip>Die Tonhöhe des gedämpften Näherungs-Chats. Mischt sich mit "Tonhöhe ungedämpfter Stimmen" basierend auf der Dämpfungsstärke.\n\nHinweis: Wird additiv mit anderen Tonhöhenmultiplikatoren verrechnet.\n\nHinweis: Nur zum Spaß :)</spw_muffledvoicepitchtooltip>
+	<spw_unmuffledvoicepitch>Tonhöhe ungedämpfter Stimmen</spw_unmuffledvoicepitch>
+	<spw_unmuffledvoicepitchtooltip>Die Tonhöhe des ungedämpften Näherungs-Chats. Mischt sich mit "Tonhöhe gedämpfter Stimmen" basierend auf der Dämpfungsstärke.\n\nHinweis: Wird additiv mit anderen Tonhöhenmultiplikatoren verrechnet.\n\nHinweis: Nur zum Spaß :)</spw_unmuffledvoicepitchtooltip>
+
+
+	<!-- Advanced -->
+	<spw_advancedtab>Erweitert</spw_advancedtab>
+
+	<spw_debugperformance>Leistung anzeigen</spw_debugperformance>
+	<spw_debugperformancetooltip>Zeigt detaillierte Leistungsinformationen für Soundproof Walls an.\n\nHinweis: Diese Einstellung wird nicht mit anderen Spielern synchronisiert, wenn "Einstellungen synchronisieren" (Reiter "Allgemein") verwendet wird.</spw_debugperformancetooltip>
+
+	<spw_debugplayingsounds>Abspielende Geräusche anzeigen</spw_debugplayingsounds>
+	<spw_debugplayingsoundstooltip>Zeigt alle aktiv abspielenden Geräusche an, die von Soundproof Walls registriert wurden.\n\nHinweis: Diese Einstellung wird nicht mit anderen Spielern synchronisiert, wenn "Einstellungen synchronisieren" (Reiter "Allgemein") verwendet wird.</spw_debugplayingsoundstooltip>
+
+	<spw_debugchannelinfo>Kanal-Info anzeigen</spw_debugchannelinfo>
+	<spw_debugchannelinfotooltip>Erweitert die Einstellung "Abspielende Geräusche anzeigen", um auch Verstärkung, Tonhöhe, Reichweite, Entfernung, Dämpfung und Hindernisse für alle aktiv abspielenden Geräusche anzuzeigen.\n\nHinweis: Wenn "Abspielende Geräusche anzeigen" deaktiviert ist, werden diese Informationen in der Barotrauma-Konsole protokolliert.\n\nHinweis: Diese Einstellung wird nicht mit anderen Spielern synchronisiert, wenn "Einstellungen synchronisieren" (Reiter "Allgemein") verwendet wird.</spw_debugchannelinfotooltip>
+
+	<spw_hidesettings>Menü-Button ausblenden</spw_hidesettings>
+	<spw_hidesettingstooltip>Entfernt den "Soundproof Walls"-Button aus dem Pausenmenü. Das Einstellungsmenü von Soundproof Walls kann weiterhin durch Eingabe von "spw" in der Konsole aufgerufen werden.\n\nHinweis: Diese Einstellung wird nicht mit anderen Spielern synchronisiert, wenn "Einstellungen synchronisieren" (Reiter "Allgemein") verwendet wird.</spw_hidesettingstooltip>
+
+	<spw_remembermenutabandscroll>Menüposition merken</spw_remembermenutabandscroll>
+	<spw_remembermenutabandscrolltooltip>Öffnet das Menü an der letzten Scroll-Position und dem zuletzt besuchten Reiter.\n\nHinweis: Diese Einstellung wird nicht mit anderen Spielern synchronisiert, wenn "Einstellungen synchronisieren" (Reiter "Allgemein") verwendet wird.</spw_remembermenutabandscrolltooltip>
+
+	<spw_maxsourcecount>Max. abspielende Geräusche</spw_maxsourcecount>
+	<spw_maxsourcecounttooltip>Wie viele Geräusche gleichzeitig abgespielt werden können. Höhere Werte verhindern, dass Geräusche übersprungen werden, können aber die Leistung beeinträchtigen.</spw_maxsourcecounttooltip>
+	
+	<spw_maxsimultaneousinstances>Max. simultane Instanzen</spw_maxsimultaneousinstances>
+	<spw_maxsimultaneousinstancestooltip>Wie viele Instanzen desselben Geräuschs gleichzeitig abgespielt werden können. Höhere Werte verhindern, dass Geräusche übersprungen werden, können aber die Leistung beeinträchtigen.</spw_maxsimultaneousinstancestooltip>
+
+	<spw_categoryintervals>Update-Intervalle</spw_categoryintervals>
+	<spw_updatenonloopingsounds>Nicht-loopende Geräusche aktualisieren</spw_updatenonloopingsounds>
+	<spw_updatenonloopingsoundstooltip>Ermöglicht die Änderung von nicht-loopenden Geräuschen während der Wiedergabe, was Geräuschen, die zuvor nicht unterbrochen werden konnten, ein Abbruchpotenzial verleiht.\n\nHinweis: Kann die Leistung geringfügig beeinträchtigen.</spw_updatenonloopingsoundstooltip>
+	
+	<spw_nonloopingsoundmuffleupdateinterval>Update-Intervall für nicht-loopende Geräusche</spw_nonloopingsoundmuffleupdateinterval>
+	<spw_nonloopingsoundmuffleupdateintervaltooltip>Die Zeit zwischen jeder Hindernis-Aktualisierung für nicht-loopende Geräusche.\n\nHinweis: Erfordert, dass "Nicht-loopende Geräusche aktualisieren" aktiviert ist.\n\nHinweis: Eine Erhöhung dieses Wertes kann die Leistung verbessern.</spw_nonloopingsoundmuffleupdateintervaltooltip>
+	<spw_openaleffectsupdateinterval>Update-Intervall für OpenAL-Effekte</spw_openaleffectsupdateinterval>
+	<spw_openaleffectsupdateintervaltooltip>Die Zeit zwischen jeder Effektparameter-Aktualisierung für Effekte im dynamischen Modus.\n\nHinweis: Eine Erhöhung dieses Wertes kann die Leistung verbessern.</spw_openaleffectsupdateintervaltooltip>
+	<spw_voicemuffleupdateinterval>Update-Intervall für Stimmen</spw_voicemuffleupdateinterval>
+	<spw_voicemuffleupdateintervaltooltip>Die Zeit zwischen jeder Hindernis-Aktualisierung für Spielerstimmen.\n\nHinweis: Eine Erhöhung dieses Wertes kann die Leistung verbessern.</spw_voicemuffleupdateintervaltooltip>
+	<spw_componentmuffleupdateinterval>Update-Intervall für Komponentengeräusche</spw_componentmuffleupdateinterval>
+	<spw_componentmuffleupdateintervaltooltip>Die Zeit zwischen jeder Hindernis-Aktualisierung für loopende Komponentengeräusche (z. B. Lüftung, Reaktor, Motor).\n\nHinweis: Eine Erhöhung dieses Wertes kann die Leistung verbessern.</spw_componentmuffleupdateintervaltooltip>
+	<spw_statuseffectmuffleupdateinterval>Update-Intervall für Statuseffekt-Geräusche</spw_statuseffectmuffleupdateinterval>
+	<spw_statuseffectmuffleupdateintervaltooltip>Die Zeit zwischen jeder Hindernis-Aktualisierung für loopende Statuseffekt-Geräusche (z. B. Geräusche von Gebrechen).\n\nHinweis: Eine Erhöhung dieses Wertes kann die Leistung verbessern.</spw_statuseffectmuffleupdateintervaltooltip>
+	
+	<spw_categorytransitions>Übergänge</spw_categorytransitions>
+	<spw_disablevanillafadeout>Vanilla-Fade-Out deaktivieren</spw_disablevanillafadeout>
+	<spw_disablevanillafadeouttooltip>Deaktiviert die Vanilla-Methode "FadeOutAndDispose". Aktiviere diese Option nur, wenn Geräusche in einer Schleife hängen bleiben.\n\nHinweis: Führt zu weniger sanften Audio-Abbrüchen.</spw_disablevanillafadeouttooltip>
+	<spw_gaintransitionfactor>Geschwindigkeit des Lautstärke-Übergangs</spw_gaintransitionfactor>
+	<spw_gaintransitionfactortooltip>Wie stark sich die Lautstärke eines Geräuschs pro Sekunde ändern kann. Ein Wert von Null deaktiviert diese Funktion für sofortige Übergänge.</spw_gaintransitionfactortooltip>
+	<spw_pitchtransitionfactor>Geschwindigkeit des Tonhöhen-Übergangs</spw_pitchtransitionfactor>
+	<spw_pitchtransitionfactortooltip>Wie stark sich die Tonhöhe eines Geräuschs pro Sekunde ändern kann. Ein Wert von Null deaktiviert diese Funktion für sofortige Übergänge.</spw_pitchtransitionfactortooltip>
+	<spw_airreverbgaintransitionfactor>Übergangsgeschwindigkeit für Innen-Hall</spw_airreverbgaintransitionfactor>
+	<spw_airreverbgaintransitionfactortooltip>Wie stark sich die Verstärkung des Innen-Hall-Effekts pro Sekunde ändern kann. Ein Wert von Null deaktiviert diese Funktion für sofortige Übergänge.</spw_airreverbgaintransitionfactortooltip>
+	<spw_hydrophonereverbgaintransitionfactor>Übergangsgeschwindigkeit für Hydrophon-Hall</spw_hydrophonereverbgaintransitionfactor>
+	<spw_hydrophonereverbgaintransitionfactortooltip>Wie stark sich die Verstärkung des Hydrophon-Hall-Effekts pro Sekunde ändern kann. Ein Wert von Null deaktiviert diese Funktion für sofortige Übergänge.</spw_hydrophonereverbgaintransitionfactortooltip>
+	<spw_dynamicmuffletransitionfactor>Geschwindigkeit des Dämpfungs-Übergangs</spw_dynamicmuffletransitionfactor>
+	<spw_dynamicmuffletransitionfactortooltip>Wie stark sich der Dämpfungseffekt des dynamischen Modus pro Sekunde ändern kann. Ein Wert von Null deaktiviert diese Funktion für sofortige Übergänge.\n\nHinweis: Diese Funktion kann bei Aktivierung hörbare Knackser erzeugen, vermutlich ein Symptom der OpenAL Soft-Version von Barotrauma.</spw_dynamicmuffletransitionfactortooltip>
+	<spw_dynamicmuffletransitionfactorflowfire>Dämpfungs-Übergangsgeschwindigkeit für Fluss &amp; Feuer</spw_dynamicmuffletransitionfactorflowfire>
+	<spw_dynamicmuffletransitionfactorflowfiretooltip>Wie stark sich der Dämpfungseffekt des dynamischen Modus pro Sekunde für Wasserfluss- und Feuergeräusche ändern kann. Ein Wert von Null deaktiviert diese Funktion für sofortige Übergänge.\n\nHinweis: Diese Funktion kann bei Aktivierung hörbare Knackser erzeugen, vermutlich ein Symptom der OpenAL Soft-Version von Barotrauma.</spw_dynamicmuffletransitionfactorflowfiretooltip>
+
+	<spw_categorypathfinding>Schall-Pfadfindung</spw_categorypathfinding>
+	<spw_traversewaterducts>Durch Wasserkanäle gehen</spw_traversewaterducts>
+	<spw_traversewaterductstooltip>Ermöglicht Geräuschen, ungehindert durch offene Wasserkanäle zu gelangen.</spw_traversewaterductstooltip>
+	<spw_flowsoundstraversewaterducts>Flussgeräusche gehen durch Wasserkanäle</spw_flowsoundstraversewaterducts>
+	<spw_flowsoundstraversewaterductstooltip>Ermöglicht der Schätzung des Pfades eines Flussgeräuschs, ungehindert durch offene Wasserkanäle zu gelangen.\n\nHinweis: Erfordert, dass "Fluss- &amp; Feuerpfade dämpfen" (Reiter "Dämpfung") aktiviert ist.</spw_flowsoundstraversewaterductstooltip>
+	<spw_opendoorthreshold>Schwelle für offene Türen</spw_opendoorthreshold>
+	<spw_opendoorthresholdtooltip>Wie weit eine Tür, Luke oder ein Kanal geöffnet sein muss, damit Schall ungehindert hindurchtreten kann. Ein Wert von Null ermöglicht es Geräuschen, ungehindert durch vollständig geschlossene Türen zu gelangen.</spw_opendoorthresholdtooltip>
+	<spw_openwallthreshold>Schwelle für offene Wände</spw_openwallthreshold>
+	<spw_openwallthresholdtooltip>Wie weit eine Lücke in einer Wand geöffnet sein muss, damit Schall ungehindert hindurchtreten kann.</spw_openwallthresholdtooltip>
+	<spw_soundpropagationrange>Schallausbreitungsreichweite</spw_soundpropagationrange>
+	<spw_soundpropagationrangetooltip>Die maximale Entfernung, die ein Geräusch in der Liste "Wandpropagierende Geräusche" (Reiter "Erweitert") nach einer nahegelegenen Hülle suchen kann, um sich dorthin auszubreiten.</spw_soundpropagationrangetooltip>
+
+	<spw_categoryai>Charakter-KI</spw_categoryai>
+	<spw_aitargetsoundrange>KI-Hörreichweite</spw_aitargetsoundrange>
+	<spw_aitargetsoundrangetooltip>Die Entfernung, aus der die Charakter-KI Gegenstände und Charaktere hören kann.\n\nHinweis: Nur Einzelspieler.</spw_aitargetsoundrangetooltip>
+	<spw_aitargetsightrange>KI-Sichtweite</spw_aitargetsightrange>
+	<spw_aitargetsightrangetooltip>Die Entfernung, aus der die Charakter-KI Gegenstände und Charaktere sehen kann.\n\nHinweis: Nur Einzelspieler.</spw_aitargetsightrangetooltip>
+
+	<spw_categoryrules>Geräuschregeln</spw_categoryrules>
+	
+	<spw_customsounds>Benutzerdefinierte Geräusche</spw_customsounds>
+	<spw_customsoundstooltip>Wendet benutzerdefinierte Werte und Effekte auf bestimmte Geräusche an.\n\n"Schlüsselwort": Teil des Dateinamens des Zielgeräuschs. Groß-/Kleinschreibung wird nicht beachtet.\n\n"Verstärkungs-Mult.": Lautstärkemultiplikator. Wird additiv mit anderen Lautstärkemultiplikatoren verrechnet.\n\n"Reichweiten-Mult.": Reichweitenmultiplikator. Wird multiplikativ mit anderen Reichweitenmultiplikatoren verrechnet.\n\n"Sidechain-Mult.": Die Lautstärkenreduzierung anderer Geräusche, wenn dieses Geräusch abgespielt wird.\n\n"Sidechain-Release": Die Dauer der Lautstärkenreduzierung.\n\n"Verzerrung": Schaltet den Verzerrungseffekt für dieses Geräusch ein/aus. Nur im dynamischen Modus.\n\n"Tonhöhen-Mult.": Tonhöhenmultiplikator. Funktioniert durch Dehnung der Geräuschlänge. Bereich zwischen 0,25-4,0.\n\n"Dämpfungseinfluss": Wirksamkeit von Dämpfungseffekten. Niedrigere Werte bedeuten weniger Beeinflussung.\n\n"Schlüsselwort-Ausschlüsse": Geräusche, die das angegebene Schlüsselwort enthalten, aber ausgeschlossen werden sollen. Groß-/Kleinschreibung wird nicht beachtet.</spw_customsoundstooltip>
+	<spw_moddedcustomsoundstooltip>Benutzerdefinierte Geräuschwerte von [modname]. Hat Vorrang vor der Standardliste "Benutzerdefinierte Geräusche".\n\nDiese Liste wird nicht mit anderen Spielern synchronisiert und Änderungen bleiben nicht über die aktuelle Sitzung hinaus bestehen.\n\nSoundproof Walls ist nicht für den Inhalt dieser Liste verantwortlich.</spw_moddedcustomsoundstooltip>
+	
+	<spw_ignoredsounds>Ignorierte Geräusche</spw_ignoredsounds>
+	<spw_ignoredsoundstooltip>Geräusche in dieser Liste werden von jeglicher Verarbeitung ignoriert.</spw_ignoredsoundstooltip>
+	
+	<spw_surfaceignoredsounds>Ignorierte Geräusche (Wasseroberfläche)</spw_surfaceignoredsounds>
+	<spw_surfaceignoredsoundstooltip>Geräusche in dieser Liste durchdringen Luft-Wasser-Barrieren ungehindert.</spw_surfaceignoredsoundstooltip>
+	
+	<spw_submersionignoredsounds>Ignorierte Geräusche (Wasserkörper)</spw_submersionignoredsounds>
+	<spw_submersionignoredsoundstooltip>Geräusche in dieser Liste bewegen sich ungehindert durch Wasser.\n\nHinweis: Beeinflusst nicht, wie Geräusche mit Wasseroberflächen interagieren.</spw_submersionignoredsoundstooltip>
+	
+	<spw_wallpropagatingsounds>Wandpropagierende Geräusche</spw_wallpropagatingsounds>
+	<spw_wallpropagatingsoundstooltip>Geräusche in dieser Liste können in nahegelegene Hüllen springen, um den Spieler besser zu erreichen, und erhalten eine "Dünne Wand"-Dämpfung anstelle von "Dicke Wand".</spw_wallpropagatingsoundstooltip>
+	
+	<spw_pitchignoredsounds>Ignorierte Geräusche (Tonhöhe)</spw_pitchignoredsounds>
+	<spw_pitchignoredsoundstooltip>Die Tonhöhe von Geräuschen in dieser Liste wird auf 1,0 gezwungen.\n\nHinweis: Der geräuschspezifische Tonhöhenmultiplikator in der Liste "Benutzerdefinierte Geräusche" (Reiter "Erweitert") überschreibt diese Liste.</spw_pitchignoredsoundstooltip>
+
+	<spw_reverbforcedsounds>Erzwungene Hall-Geräusche</spw_reverbforcedsounds>
+	<spw_reverbforcedsoundstooltip>Geräusche in dieser Liste erhalten immer den Hall-Effekt, wenn möglich.\n\nHinweis: Exklusiv für die Effektmodi "Dynamisch" und "Statisch".</spw_reverbforcedsoundstooltip>
+
+	<spw_airreverbignoredsounds>Ignorierte Geräusche (Innen-Hall)</spw_airreverbignoredsounds>
+	<spw_airreverbignoredsoundstooltip>Geräusche in dieser Liste erhalten niemals den Innen-Hall-Effekt.\n\nHinweis: Exklusiv für die Effektmodi "Dynamisch" und "Statisch".</spw_airreverbignoredsoundstooltip>
+	
+	<spw_waterreverbignoredsounds>Ignorierte Geräusche (Außen-Hall)</spw_waterreverbignoredsounds>
+	<spw_waterreverbignoredsoundstooltip>Geräusche in dieser Liste erhalten niemals den Außen-Hall-Effekt.\n\nHinweis: Exklusiv für den Effektmodus "Dynamisch".</spw_waterreverbignoredsoundstooltip>
+	
+	<spw_barrierignoredsounds>Ignorierte Geräusche (Barrieren)</spw_barrierignoredsounds>
+	<spw_barrierignoredsoundstooltip>Geräusche in dieser Liste werden nicht durch Verdeckung, Wände, Türen oder Wasseroberflächen gedämpft.</spw_barrierignoredsoundstooltip>
+	
+	<spw_xmlignoredsounds>Ignorierte Geräusche (XML)</spw_xmlignoredsounds>
+	<spw_xmlignoredsoundstooltip>Diese Liste ist für Geräusche, die intern mit dem Tag "dontmuffle" oder ähnlichen Eigenschaften markiert sind. Geräusche in dieser Liste werden immer auf Dämpfung geprüft.</spw_xmlignoredsoundstooltip>
+	
+	<spw_lowpassignoredsounds>Ignorierte Geräusche (Tiefpass)</spw_lowpassignoredsounds>
+	<spw_lowpassignoredsoundstooltip>Geräusche in dieser Liste erhalten niemals Dämpfungseffekte.</spw_lowpassignoredsoundstooltip>
+	
+	<spw_containerignoredsounds>Ignorierte Geräusche (Behälter)</spw_containerignoredsounds>
+	<spw_containerignoredsoundstooltip>Geräusche in dieser Liste durchdringen alle Behälter, in denen sie gelagert sind, ungehindert.</spw_containerignoredsoundstooltip>
+	
+	<spw_bubbleignorednames>Vom Ertrinken ausgenommene Spieler</spw_bubbleignorednames>
+	<spw_bubbleignorednamestooltip>Füge Spielernamen in diese Liste ein, um sie immun gegen den Ertrinkungsblasen-Effekt zu machen, der durch Sprechen unter Wasser ohne Sauerstoffversorgung verursacht wird.</spw_bubbleignorednamestooltip>
+
+	<!-- Extra -->
+	<spw_updateserverconfig>einstellungen geändert - die Server-Konfiguration wurde aktualisiert</spw_updateserverconfig>
+	<spw_disableserverconfig>synchronisierung der Einstellungen deaktiviert - lokale Konfigurationen haben jetzt Vorrang</spw_disableserverconfig>
+	<spw_hydrophonemonitoring>Hydrophone überwachen</spw_hydrophonemonitoring>
+	<spw_serverdiffheader>Die aktive Server-Konfiguration hat [count] Änderungen gegenüber deiner lokalen Konfiguration:</spw_serverdiffheader>
+	<spw_listening>Lauschen...</spw_listening>
+	<spw_loading>Lade Audio-Puffer...</spw_loading>
+	<spw_invalidinput>Ungültige Eingabe</spw_invalidinput>
 	<spw_enabled>Aktiviert</spw_enabled>
 	<spw_disabled>Deaktiviert</spw_disabled>
-	<spw_enabledtooltip>Aktiviert jede Funktion der Mod</spw_enabledtooltip>
-	<spw_syncsettings>Synchronisationseinstellungen</spw_syncsettings>
-	<spw_syncsettingstooltip>Aktiviert die Synchronisation von Host und Client Konfigurationen </spw_syncsettingstooltip>
-	<spw_syncsettingsalert>Hinweis: Dieser Server hat Synchronisierung aktiviert - alle Spieler werden automatisch die Einstellungen des Hosts benutzen (values in parentheses)</spw_syncsettingsalert>
-	<spw_focustargetaudio>Fokusiere Audio am Sichtfeld</spw_focustargetaudio>
-	<spw_focustargetaudiotooltip>Simuliert Audio, vom POV des aktuellen Ziels (d.h., Man hört, was die Kamera / das Geschütz hört)</spw_focustargetaudiotooltip>
-	<spw_talkingragdolls>Sprechende Ragdolls</spw_talkingragdolls>
-	<spw_talkingragdollstooltip>Spieler hören, die Ragdolls sind (Ändert nichts bei Betäubung)</spw_talkingragdollstooltip>
-	<spw_lowpassfrequency>Lowpass-Frequenz</spw_lowpassfrequency>
-	<spw_lowpassfrequencytooltip>Die Grenzfrequenz, die benutz wird, um Audio zu dämpfen (Mitten in der Runde freezt diese Option das Spiel kurz)</spw_lowpassfrequencytooltip>
-	<spw_voicelowpassfrequency>Grenzfrequenz (Stimme)</spw_voicelowpassfrequency>
-	<spw_voicelowpassfrequencytooltip>Die Grenzfrequenz, die benutz wird, um Chat zu dämpfen</spw_voicelowpassfrequencytooltip>
-	<spw_soundrange>Geräuschdistanz</spw_soundrange>
-	<spw_soundrangetooltip>Reichweite von Geräuschen außerhalb von Komponent</spw_soundrangetooltip>
-	<spw_voicerange>Stimmenreichweite</spw_voicerange>
-	<spw_radiorange>Radioreichweite</spw_radiorange>
+	<spw_default>Standard</spw_default>
+	<spw_vanilla>Vanilla</spw_vanilla>
+	<spw_custom>Benutzerdefiniert</spw_custom>
+	<spw_linear>Linear</spw_linear>
+	<spw_instant>Sofort</spw_instant>
+	<spw_pertick>Pro Tick</spw_pertick>
+	<spw_concave>Konkav</spw_concave>
+	<spw_convex>Konvex</spw_convex>
+	<spw_seconds>s</spw_seconds>
+	<spw_reset>Zurücksetzen</spw_reset>
+	<spw_resetall>Alle zurücksetzen</spw_resetall>
 
-	<spw_volumesettings>Lautstärke</spw_volumesettings>
-	<spw_muffledvoicevolume>Gedämpfte Stimmlautstärke</spw_muffledvoicevolume>
-	<spw_muffledvoicevolumetooltip>Lautstärke von Spielern, die gedämpft werden</spw_muffledvoicevolumetooltip>
-	<spw_muffledsoundvolume>Gedämpfte Lautstärke</spw_muffledsoundvolume>
-	<spw_muffledsoundvolumetooltip>Lautstärke von nicht-loopenden, gedämpften Geräuschen im Hintergrund</spw_muffledsoundvolumetooltip>
-	<spw_muffledcomponentvolume>Gedämpfte Komponenten-Lautstärke</spw_muffledcomponentvolume>
-	<spw_muffledcomponentvolumetooltip>Lautstärke von gedämpften Komponenten im Hintergrund</spw_muffledcomponentvolumetooltip>
-	<spw_unmuffledcomponentvolume>Ungedämpfte Komponenten-Lautstärke</spw_unmuffledcomponentvolume>
-	<spw_submergedvolume>Unterwasser-Lautstärke</spw_submergedvolume>
-	<spw_submergedvolumetooltip>Die Lautstärke von Geräuschen unterwasser, während der Spieler sich unterwasser befindet</spw_submergedvolumetooltip>
 
-	<spw_eavesdroppingsettings>Lauschoptionen</spw_eavesdroppingsettings>
-	<spw_eavesdroppingbind>Lausch-Taste</spw_eavesdroppingbind>
-	<spw_eavesdroppingsoundvolume>Lausch-Lautstärke</spw_eavesdroppingsoundvolume>
-	<spw_eavesdroppingvoicevolume>Lausch-Lautstärke (Stimmen)</spw_eavesdroppingvoicevolume>
-	<spw_eavesdroppingpitch>Lausch-Tonhöhe</spw_eavesdroppingpitch>
-	<spw_eavesdroppingmaxdistance>Lausch-Distanz</spw_eavesdroppingmaxdistance>
-	<spw_eavesdroppingmaxdistancetooltip>Die maximale Distanz, die der Kopf das spielers von einer Tür entfernt sein kann, um zu lauschen</spw_eavesdroppingmaxdistancetooltip>
+	<!-- 2.0 Popup message -->
+	<spw_popupheader>Willkommen bei Soundproof Walls 2.0</spw_popupheader>
+	<spw_popupheadersubtext>Soundproof Walls 2.0 ist eine komplett neu geschriebene und erweiterte Version der ursprünglichen Mod und stellt eine vollständige Überarbeitung des Audiosystems von Barotrauma dar.</spw_popupheadersubtext>
 
-	<spw_hydrophonesettings>Hydrophon-Einstellungen</spw_hydrophonesettings>
-	<spw_hydrophonerange>Hydrophon-Reichweite</spw_hydrophonerange>
-	<spw_hydrophonerangetooltip>Reichweite von Unterwasser geräuschen, sowie die Zusätzliche Reichweite, die zu allen Tönen außerhalb des U-Boots hinzugegeben wird </spw_hydrophonerangetooltip>
-	<spw_hydrophonevolume>Hydrophon Lautstärke</spw_hydrophonevolume>
-	<spw_hydrophonepitch>Hydrophon-Tonhöhe</spw_hydrophonepitch>
-	<spw_hydrophonelegacyswitch>Hydrophon Legacy Schalter</spw_hydrophonelegacyswitch>
-	<spw_hydrophonelegacyswitchtooltip>Verwenden Sie die alte Hydrophon-Schalterlogik (Schalter wird bei Verwendung von aktivem Sonar ausgeschaltet)</spw_hydrophonelegacyswitchtooltip>
-	<spw_hydrophoneswitchenabled>Hydrophonenschalter Aktiviert</spw_hydrophoneswitchenabled>
-	<spw_hydrophoneswitchenabledtooltip>Schaltet das Vorhandensein des Hydrophonenschalters um (erfordert einen Neustart der Runde)</spw_hydrophoneswitchenabledtooltip>
+	<spw_popupbodyheader>Wichtige Änderungen</spw_popupbodyheader>
+	
+	<spw_popupbodysubheading1>• Umgebungssimulierter Hall</spw_popupbodysubheading1>
+	<spw_popupbodysubtext1>Geräusche und Spielerstimmen hallen realistisch je nach Größe und Lautstärke des Raumes. Außerhalb des U-Boots hört man laute Geräusche meilenweit streuen, während die Schallwellen von den gefrorenen Wänden Europas abprallen.</spw_popupbodysubtext1>
 
-	<spw_ambiencesettings>Ambiente-Einstellungen</spw_ambiencesettings>
-	<spw_unsubmergedwaterambiencevolume>Lautstärke des nicht untergetauchten Wasserambientes</spw_unsubmergedwaterambiencevolume>
-	<spw_submergedwaterambiencevolume>Lautstärke des untergetauchten Wasserambientes</spw_submergedwaterambiencevolume>
-	<spw_hydrophonewaterambiencevolume>Lautstärke des Hydrophon-Wasserambientes</spw_hydrophonewaterambiencevolume>
-	<spw_waterambiencetransitionspeed>Wasserambiente-Übergangsgeschwindigkeit</spw_waterambiencetransitionspeed>
-	<spw_waterambiencetransitionspeedtooltip>Die Geschwindigkeit, mit der das Wasserambiente zwischen den Lautstärkevoreinstellungen wechselt</spw_waterambiencetransitionspeedtooltip>
+	<spw_popupbodysubheading2>• Sidechain-Kompressionssystem</spw_popupbodysubheading2>
+	<spw_popupbodysubtext2>Schüsse und Explosionen klingen wuchtiger und übertönen leisere Geräusche für einen breiteren, kraftvolleren Dynamikbereich.</spw_popupbodysubtext2>
 
-	<spw_advancedsoundsettings>Fortgeschrittene Einstellungen</spw_advancedsoundsettings>
-	<spw_soundvolumemultipliers>Lautstärke-Multiplikation</spw_soundvolumemultipliers>
-	<spw_ignoredsounds>Ignorierte Geräusche</spw_ignoredsounds>
-	<spw_lowpassignoredsounds>Dämpfung Ignorierte geräusche</spw_lowpassignoredsounds>
-	<spw_pitchignoredsounds>Tonhöhe ignorierter Geräusche</spw_pitchignoredsounds>
-	<spw_pathignoredsounds>Die Wand ignorierte Geräusche</spw_pathignoredsounds>
-	<spw_containerignoredsounds>Vom Container ignorierte Geräusche</spw_containerignoredsounds>
-	<spw_waterignoredsounds>Wasser ignorierte Geräusche</spw_waterignoredsounds>
-	<spw_submersionignoredsounds>Unterwasser ignorierte Geräusche</spw_submersionignoredsounds>
-	<spw_bubbleignorednames>Ignorierte Bubble-Namen</spw_bubbleignorednames>
+	<spw_popupbodysubheading3>• Dynamische Tiefpassfrequenz</spw_popupbodysubheading3>
+	<spw_popupbodysubtext3>Geräusche sind nicht mehr auf eine feste Dämpfungsstärke beschränkt und passen sich nun dynamisch an die Situation und die Anzahl der Hindernisse an.</spw_popupbodysubtext3>
 
-	<spw_nichesettings>Diverse Einstellungen</spw_nichesettings>
-	<spw_mufflesubmergedplayer>Spieler unterwasser dämpfen</spw_mufflesubmergedplayer>
-	<spw_mufflesubmergedplayertooltip>Dämpft geräusche, wenn man sich Unterwasser befindet (empfohlen)</spw_mufflesubmergedplayertooltip>
-	<spw_mufflesubmergedviewtarget>Dämpfe Sichtpunkt </spw_mufflesubmergedviewtarget>
-	<spw_mufflesubmergedviewtargettooltip>Dämpfe Geräusche, wenn Sichtziel sich unterwasser befindet (z.b Kameras, Geschüutze etc.)</spw_mufflesubmergedviewtargettooltip>
-	<spw_mufflesubmergedsounds>Dämpfe Unterwasser-Geräusche</spw_mufflesubmergedsounds>
-	<spw_mufflesubmergedsoundstooltip>Dämpft geräusche, die sich unterwasser befinden (empfohlen)</spw_mufflesubmergedsoundstooltip>
-	<spw_muffleflowsounds>Dämpfe Strömgeräusche</spw_muffleflowsounds>
-	<spw_muffleflowsoundstooltip>Aktiviere die Dämpfung von Wasserlecks</spw_muffleflowsoundstooltip>
-	<spw_mufflefiresounds>Dämpfe Feuergeräusche</spw_mufflefiresounds>
-	<spw_mufflefiresoundstooltip>Aktiviere die Dämpfung von Feuer</spw_mufflefiresoundstooltip>
-	<spw_muffledivingsuit>Taucheranzüge Dämpfen</spw_muffledivingsuit>
-	<spw_muffledivingsuittooltip>Schaltet die Dämpfung von Geräuschen beim Tragen eines Taucheranzugs um (nicht empfohlen)</spw_muffledivingsuittooltip>
-	<spw_divingsuitpitch>Tonhöhe (Taucheranzug)</spw_divingsuitpitch>
-	<spw_divingsuitpitchtooltip>Tonhöhe von Geräuschen, während der Spieler im Taucheranzug ist (Additiv)</spw_divingsuitpitchtooltip>
-	<spw_submergedpitch>Tonhöhe (Unterwasser)</spw_submergedpitch>
-	<spw_submergedpitchtooltip>Tonhöhe von Geräuschen, während der Spieler Unterwasser ist (Additiv)</spw_submergedpitchtooltip>
-	<spw_muffledvoicepitch>Tonhöhe (Gedämpfte Stimmen)</spw_muffledvoicepitch>
-	<spw_muffledvoicepitchtooltip>Wirklich nicht empfohlen, aber lustig.</spw_muffledvoicepitchtooltip>
-	<spw_unmuffledvoicepitch>Tonhöhe (Ungedämpfte Stimmen)</spw_unmuffledvoicepitch>
-	<spw_unmuffledvoicepitchtooltip>Wirklich nicht empfohlen, aber lustig.</spw_unmuffledvoicepitchtooltip>
-	<spw_muffledcomponentpitch>Tonhöhe (Gedämpfte Komponenten)</spw_muffledcomponentpitch>
-	<spw_unmuffledcomponentpitch>Tonhöhe (Ungedämpfte Komponenten)</spw_unmuffledcomponentpitch>
-	<spw_hidesettings>Menü-Button verstecken</spw_hidesettings>
-	<spw_hidesettingstooltip>ACHTUNG: Wird diese Einstellung aktiviert, verschwindet die "Schallicht-Einstellungen" Taste von der UI. Die Konfig-Datei muss manuell geändert werden, um diese wiederherzustellen</spw_hidesettingstooltip>
+	<spw_popupbodysubheading4>• Schallverdeckung</spw_popupbodysubheading4>
+	<spw_popupbodysubtext4>Geräusche werden durch die Form der umgebenden Levelgeometrie gedämpft, während sie ihren Weg zu den Ohren des Spielers finden.</spw_popupbodysubtext4>
 
-	<spw_updateserverconfig>Einstellungen geändert - Serverkonfig modifiziert</spw_updateserverconfig>
-	<spw_disableserverconfig>Synchronization deaktiviert - Lokalkonfigs nehmen Priorität</spw_disableserverconfig>
-	<spw_hydrophonemonitoring>Überwache Hydrophone</spw_hydrophonemonitoring>
-	<spw_listening>Lauschen...</spw_listening>
-	<spw_invalidinput>Invalider Input</spw_invalidinput>
-	<spw_default>(Default)</spw_default>
-	<spw_vanilla>(Vanilla)</spw_vanilla>
-	<spw_custom>(Custom)</spw_custom>
-	<spw_reset>Resetten</spw_reset>
-	<spw_resetall>ALLE Resetten</spw_resetall>
+	<spw_popupbodysubheading5>• Kraftvolle Verzerrung</spw_popupbodysubheading5>
+	<spw_popupbodysubtext5>Schüsse, Explosionen und andere laute Geräusche verzerren heftig in der Luft und pulsieren tief im Wasser.</spw_popupbodysubtext5>
+
+	<spw_popupbodysubheading6>• Besserer Voice-Chat</spw_popupbodysubheading6>
+	<spw_popupbodysubtext6>Stelle dein Funkgerät von kristallklar bis komplett kaputt ein und probiere das neue lokale Näherungs-Chat-System aus, das dynamisch anpasst, wie weit deine Stimme trägt, je nachdem, wie laut du schreist.</spw_popupbodysubtext6>
+	
+	<spw_popupbodysubheading7>• Überarbeitete Systeme</spw_popupbodysubheading7>
+	<spw_popupbodysubtext7>Die Lausch- und Hydrophonsysteme wurden komplett überarbeitet und mit neuen visuellen und akustischen Effekten versehen. Auch die Vanilla-Systeme wurden verbessert – keine übersprungenen Geräusche mehr bei heftiger Action, und Wasserfluss wird jetzt korrekt von Wänden gedämpft.</spw_popupbodysubtext7>
+	
+	<spw_popupbodysubheading8>• Absolute Kontrolle</spw_popupbodysubheading8>
+	<spw_popupbodysubtext8>Mit über 230 neuen Konfigurationsoptionen und einem neu gestalteten Einstellungsmenü hast du die volle Kontrolle über jeden Sound und endlose Möglichkeiten, ihn anzupassen.</spw_popupbodysubtext8>
+	
+	<spw_popupbodyconclusion>Ich hoffe, dir gefallen die Änderungen! Lass es mich wissen, wenn du Fragen oder Probleme hast. :) - Plag</spw_popupbodyconclusion>
+
+	<spw_footertext1>Das ist nur die Spitze des Eisbergs</spw_footertext1>
+	<spw_footertext2>Unterstütze mich</spw_footertext2>
+	<spw_footertext3>Schau dir den Code an</spw_footertext3>
+	<spw_footerlink1>Sieh dir den vollständigen Changelog auf Steam an!</spw_footerlink1>
+	<spw_footerlink2>Kauf mir einen Kaffee auf Ko-fi!</spw_footerlink2>
+	<spw_footerlink3>Gib dem Repo einen Stern auf GitHub!</spw_footerlink3>
+
+	<spw_popupbutton>Einstellungen</spw_popupbutton>
+
+	<!-- Stats log -->
+	<spw_statsheader>Soundproof Walls Statistiken:</spw_statsheader>
+	<spw_stats>Du hast Soundproof Walls [initcount] Mal initialisiert.\nUnd [playtime] mit aktivierter Mod gespielt.\n[percenteavesdrop]% deiner Zeit verbringst du mit Lauschen.\nUnd [percenthydrophone]% deiner Zeit mit dem Überwachen der Hydrophone.\nInsgesamt wurden [soundcount] Geräusche von Soundproof Walls verarbeitet.</spw_stats>
 </infotexts>

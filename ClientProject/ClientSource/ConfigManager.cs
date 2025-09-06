@@ -25,8 +25,7 @@ namespace SoundproofWalls
             { 
                 serverConfig = value;
                 // Refresh menu if it's open.
-                Color externalUpdateFlashColor = new Color(95, 54, 15);
-                if (Menu.Instance != null) { Menu.Create(startAtUnsavedValues: true, flashColor: externalUpdateFlashColor); } 
+                if (Menu.Instance != null) { Menu.Create(startAtUnsavedValues: true); } 
             } 
         }
         public static Client? ServerConfigUploader = null;
@@ -75,11 +74,9 @@ namespace SoundproofWalls
             ModStateManager.State.TimeSpentPlaying += Timing.Step;
 
             // Open a welcome popup on first launch. Included in the update loop so we can check if the player is in-game.
-            if (ModStateManager.State.FirstLaunch && Util.RoundStarted)
+            if (!ModStateManager.State.SeenWelcomePopup && Util.RoundStarted)
             {
                 Menu.ShowWelcomePopup();
-                ModStateManager.State.FirstLaunch = false;
-                ModStateManager.SaveState(ModStateManager.State);
             }
 
             if (GameMain.IsMultiplayer && ServerConfig == null && Timing.TotalTime > lastRequestTime + 10)

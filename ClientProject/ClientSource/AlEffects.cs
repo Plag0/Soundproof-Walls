@@ -1,5 +1,4 @@
-﻿
-using Barotrauma;
+﻿using Barotrauma;
 using OpenAL;
 using System.Runtime.InteropServices;
 

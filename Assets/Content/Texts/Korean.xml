@@ -1,110 +1,692 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <infotexts language="Korean" nowhitespace="false" translatedname="한국어">
 
-	<spw_settings>Soundproof 설정</spw_settings>
+	<spw_modname>Soundproof Walls [version]</spw_modname>
+	<spw_openmenuhelp>Soundproof Walls 설정 메뉴를 엽니다.</spw_openmenuhelp>
+	<spw_openpopuphelp>Soundproof Walls 환영 팝업을 엽니다.</spw_openpopuphelp>
+	<spw_openworkshophelp>브라우저에서 Soundproof Walls 창작마당 페이지를 엽니다.</spw_openworkshophelp>
+	<spw_guidehelp>브라우저에서 Soundproof Walls 설정 가이드 페이지를 엽니다.</spw_guidehelp>
+	<spw_reporthelp>브라우저에서 Soundproof Walls 버그 제보 페이지를 엽니다.</spw_reporthelp>
 
-	<spw_generalsettings>일반 설정</spw_generalsettings>
+	<initmessage>Soundproof Walls v[version] 로딩 완료</initmessage>
+	<initmessagefollowup>  > "spw"를 입력하여 설정 메뉴를 여세요.\n  > "spw_stats"로 통계를 출력하세요.\n  > 질문이 있으신가요? "spw_workshop"으로 창작마당 페이지를 열고 댓글을 남겨주세요.\n  > 버그를 발견하셨나요? "spw_report"로 버그 토론 페이지를 열고 게시글을 작성해주세요.\n  > "spw_help"로 설정 옵션에 대해 더 알아보세요.\n  > "spw_welcome"을 입력하여 첫 실행 팝업을 다시 여세요.</initmessagefollowup>
+	
+	<!-- Info Panel -->
+	<spw_syncingenabled>동기화 활성화!\n[name] 님이 서버에 업로드한 설정을 사용 중입니다. 해당 설정의 값은 당신의 값 옆 괄호 안에 표시됩니다.</spw_syncingenabled>
+	<spw_syncingenableduploader>동기화 활성화!\n당신의 설정이 서버에 업로드되어 모든 플레이어가 사용 중입니다.</spw_syncingenableduploader>
+	<spw_syncingdisabled>동기화 비활성화!\n서버에 업로드된 설정이 없습니다. 로컬 설정을 사용 중입니다.</spw_syncingdisabled>
+	<spw_offlinemode>기본값은 파란색입니다.\n사용자 지정 값은 노란색입니다.\n바닐라 값은 흰색입니다.\n\n설정 파일을 찾고 계신가요?\n파일 위치:\n[path]</spw_offlinemode>
+
+	<spw_editpermissionhost>수정 권한:\n당신은 이 세션의 호스트입니다. 변경 사항은 서버에 업로드되어 모든 플레이어에게 적용됩니다.</spw_editpermissionhost>
+	<spw_editpermissionadmin>수정 권한:\n당신은 이 세션의 관리자입니다. 변경 사항은 서버에 업로드되어 모든 플레이어에게 적용됩니다.</spw_editpermissionadmin>
+	<spw_editpermissionnothost>수정 권한:\n당신은 이 세션의 호스트가 아닙니다. 변경 사항은 로컬에 저장되지만, 서버 동기화가 활성화된 동안에는 적용되지 않습니다.</spw_editpermissionnothost>
+	<spw_editpermissionnotadmin>수정 권한:\n당신은 이 세션의 관리자가 아닙니다. 변경 사항은 로컬에 저장되지만, 서버 동기화가 활성화된 동안에는 적용되지 않습니다.</spw_editpermissionnotadmin>
+
+	<spw_categorymuffle>소리 약화</spw_categorymuffle>
+	<spw_categorygain>증폭</spw_categorygain>
+	<spw_categoryreverb>잔향</spw_categoryreverb>
+	<spw_categorygeneral>일반</spw_categorygeneral>
+	<spw_categoryvisuals>시각 효과</spw_categoryvisuals>
+
+	<!-- General -->
+	<spw_generaltab>일반</spw_generaltab>
+
+	<spw_enablemod>모드 활성화</spw_enablemod>
+	<spw_enablemodtooltip>모드의 모든 기능을 전역적으로 켜고 끕니다.</spw_enablemodtooltip>
+	<spw_syncsettings>설정 동기화</spw_syncsettings>
+	<spw_syncsettingstooltip>플레이어 간 설정 동기화를 켜고 끕니다.\n\n활성화하면, 호스트가 자신의 설정을 서버에 자동으로 업로드하여 모든 플레이어와 공유합니다. 업로드는 세션 시작 시 또는 설정 변경 시에 이루어집니다. 플레이어들은 자신의 로컬 설정과 관계없이 이 설정을 강제로 사용하게 되며, 로컬 설정은 변경되지 않습니다.</spw_syncsettingstooltip>
+
+	<spw_effectprocessingmode>효과 처리 모드</spw_effectprocessingmode>
+	<spw_effectprocessingmodetooltip>오디오 효과 처리 방식입니다. 동적 모드를 권장합니다.\n\n참고: 플레이 중에 이 설정을 변경하면 버퍼를 로드하는 동안 게임이 잠시 멈출 수 있습니다.</spw_effectprocessingmodetooltip>
+
+	<spw_vanillafx>클래식</spw_vanillafx>
+	<spw_vanillafxtooltip>하나의 약화 프리셋을 사용하는 바닐라 스타일의 소리 약화. 자원 사용량이 최소화됩니다.</spw_vanillafxtooltip>
+	<spw_staticfx>정적</spw_staticfx>
+	<spw_staticfxtooltip>약함 및 중간 약화 프리셋과 선택적 잔향을 추가합니다. 로딩 시간이 약간 길어지고 메모리 사용량이 증가합니다(약 250MB).</spw_staticfxtooltip>
+	<spw_dynamicfx>동적</spw_dynamicfx>
+	<spw_dynamicfxtooltip>OpenAL을 통한 고급 실시간 효과. 시뮬레이션된 잔향, 왜곡, 고급 소리 약화 기능으로 가장 현실적인 오디오를 제공하지만 CPU 사용량이 높습니다.\n\n참고: 성능이 걱정된다면, '고급' 탭의 "성능 표시" 설정을 활성화하여 상세 통계를 확인하세요.</spw_dynamicfxtooltip>
+
+	<spw_focustargetaudio>대상 오디오 집중</spw_focustargetaudio>
+	<spw_focustargetaudiotooltip>현재 카메라 대상의 시점에서 오디오를 시뮬레이션합니다 (예: 포탑이 듣는 소리를 듣게 됩니다).</spw_focustargetaudiotooltip>
+	<spw_attenuatewithapproximatedistance>현실적인 소리 감쇠</spw_attenuatewithapproximatedistance>
+	<spw_attenuatewithapproximatedistancetooltip>소리가 청자에게 도달하는 경로를 사용하여 볼륨 감쇠를 계산합니다. 비활성화하면, 단순 직선(유클리드) 거리가 대신 사용됩니다.</spw_attenuatewithapproximatedistancetooltip>
+	<spw_soundrange>사운드 범위 마스터</spw_soundrange>
+	<spw_soundrangetooltip>모든 비반복 사운드에 대한 전역 범위 배율입니다.\n\n참고: '고급' 탭의 "사용자 지정 사운드" 목록에서 지정된 사운드별 범위 배율과 곱연산으로 중첩됩니다.</spw_soundrangetooltip>
+	<spw_loopingsoundrange>반복 사운드 범위 마스터</spw_loopingsoundrange>
+	<spw_loopingsoundrangetooltip>모든 반복 사운드에 대한 전역 범위 배율입니다.\n\n참고: '고급' 탭의 "사용자 지정 사운드" 목록에서 지정된 사운드별 범위 배율과 곱연산으로 중첩됩니다.</spw_loopingsoundrangetooltip>
+
+
+	<!-- Dynamic -->
+	<spw_dynamicfxtab>동적 모드</spw_dynamicfxtab>
+
+	<spw_occludesounds>사운드 차폐</spw_occludesounds>
+	<spw_occludesoundstooltip>벽 때문에 플레이어의 귀까지 직선 경로가 없는 소리를 약화시킵니다.</spw_occludesoundstooltip>
+	<spw_maxocclusions>최대 차폐 수</spw_maxocclusions>
+	<spw_maxocclusionstooltip>소리가 차폐될 수 있는 벽의 최대 겹 수입니다.\n\n참고: 차폐를 제한하면 특이한 벽 구조에서 더 일관된 소리 약화 효과를 얻을 수 있습니다. 이 값을 0으로 설정하면 제한이 비활성화됩니다.</spw_maxocclusionstooltip>
+	
+	<spw_overmuffle>과도 약화</spw_overmuffle>
+	<spw_overmuffletooltip>유효 약화 강도 1.0에 가깝거나 그 이상인 소리의 볼륨을 동적으로 줄입니다.</spw_overmuffletooltip>
+
+	<spw_dynamicmufflestrengthmaster>약화 강도 마스터</spw_dynamicmufflestrengthmaster>
+	<spw_dynamicmufflestrengthmastertooltip>동적 약화 효과의 전반적인 강도입니다.</spw_dynamicmufflestrengthmastertooltip>
+
+	<spw_overmufflestrength>과도 약화 강도</spw_overmufflestrength>
+	<spw_overmufflestrengthtooltip>높은 약화 값이 소리 볼륨 감소에 미치는 영향의 정도입니다.</spw_overmufflestrengthtooltip>
+	
+	<spw_dynamicreverb>잔향 활성화</spw_dynamicreverb>
+	<spw_dynamicreverbtooltip>실내 및 실외 잔향 효과를 켜고 끕니다. 활성화하면, 소리는 환경의 크기와 결합된 오디오 진폭에 따라 동적으로 울립니다 (예: 더 크고 조용한 공간에서 메아리가 더 강해집니다).</spw_dynamicreverbtooltip>
+	<spw_dynamicreverbbloom>잔향 블룸</spw_dynamicreverbbloom>
+	<spw_dynamicreverbbloomtooltip>제한된 공간에서 큰 소리에 반응하여 잔향 효과가 극적으로 부풀어 오르게 합니다.</spw_dynamicreverbbloomtooltip>
+	<spw_dynamicreverbwatersubtractsarea>동적 잔향 공간</spw_dynamicreverbwatersubtractsarea>
+	<spw_dynamicreverbwatersubtractsareatooltip>물 위에 있을 때는 공기 공간을, 물속에 있을 때는 물 공간을 사용하여 잔향을 계산합니다. 비활성화하면, 두 공간을 모두 사용합니다.</spw_dynamicreverbwatersubtractsareatooltip>
+	<spw_dynamicreverbminarea>최소 잔향 공간</spw_dynamicreverbminarea>
+	<spw_dynamicreverbminareatooltip>잔향이 적용되기 위해 필요한 청자 주변 연결된 방들의 최소 결합 면적입니다.</spw_dynamicreverbminareatooltip>
+	<spw_dynamicreverbareasizemultiplier>잔향 공간 스케일</spw_dynamicreverbareasizemultiplier>
+	<spw_dynamicreverbareasizemultipliertooltip>현재 실내 환경의 유효 면적을 조절합니다. 값이 클수록 감쇠 시간과 반사 지연이 증가하여 공간이 더 크게 들립니다.</spw_dynamicreverbareasizemultipliertooltip>
+	<spw_dynamicreverbwetroomareasizemultiplier>침수실 잔향 스케일</spw_dynamicreverbwetroomareasizemultiplier>
+	<spw_dynamicreverbwetroomareasizemultipliertooltip>청자가 밸러스트 탱크나 에어락 안에 있을 때 해당 공간의 유효 면적을 곱하여, 이 방들이 더 크고 울림이 강하게 들리도록 합니다.</spw_dynamicreverbwetroomareasizemultipliertooltip>
+	
+	<spw_dynamicreverbairtargetgain>실내 잔향 강도</spw_dynamicreverbairtargetgain>
+	<spw_dynamicreverbairtargetgaintooltip>선체 내부에 있을 때 잔향 효과의 기본 증폭 값입니다.</spw_dynamicreverbairtargetgaintooltip>
+	<spw_dynamicreverbairduration>실내 잔향 지속 시간</spw_dynamicreverbairduration>
+	<spw_dynamicreverbairdurationtooltip>선체 내부에 있을 때 잔향 효과의 감쇠 시간입니다.</spw_dynamicreverbairdurationtooltip>
+	<spw_dynamicreverbairgainhf>실내 잔향 고주파 증폭</spw_dynamicreverbairgainhf>
+	<spw_dynamicreverbairgainhftooltip>선체 내부에 있을 때 잔향 효과의 고주파 증폭 값입니다.</spw_dynamicreverbairgainhftooltip>
+	<spw_dynamicreverbairamplitudethreshold>실내 잔향 임계값</spw_dynamicreverbairamplitudethreshold>
+	<spw_dynamicreverbairamplitudethresholdtooltip>청자가 실내에 있을 때 소리가 잔향을 생성하기 위해 필요한 최소 사운드 진폭입니다.</spw_dynamicreverbairamplitudethresholdtooltip>
+	
+	<spw_dynamicreverbwatertargetgain>실외 잔향 강도</spw_dynamicreverbwatertargetgain>
+	<spw_dynamicreverbwatertargetgaintooltip>외부에 있을 때 잔향 효과의 기본 증폭 값입니다.</spw_dynamicreverbwatertargetgaintooltip>
+	<spw_dynamicreverbwaterdiffusion>실외 잔향 확산</spw_dynamicreverbwaterdiffusion>
+	<spw_dynamicreverbwaterdiffusiontooltip>외부에 있을 때 잔향 효과의 부드러움 정도입니다.</spw_dynamicreverbwaterdiffusiontooltip>
+	<spw_dynamicreverbwaterduration>실외 잔향 지속 시간</spw_dynamicreverbwaterduration>
+	<spw_dynamicreverbwaterdurationtooltip>외부에 있을 때 잔향 효과의 감쇠 시간입니다.</spw_dynamicreverbwaterdurationtooltip>
+	<spw_dynamicreverbwatergainhf>실외 잔향 고주파 증폭</spw_dynamicreverbwatergainhf>
+	<spw_dynamicreverbwatergainhftooltip>외부에 있을 때 잔향 효과의 고주파 증폭 값입니다.</spw_dynamicreverbwatergainhftooltip>
+	<spw_dynamicreverbwateramplitudethreshold>실외 잔향 임계값</spw_dynamicreverbwateramplitudethreshold>
+	<spw_dynamicreverbwateramplitudethresholdtooltip>청자가 외부에 있을 때 소리가 잔향을 생성하기 위해 필요한 최소 사운드 진폭입니다.</spw_dynamicreverbwateramplitudethresholdtooltip>
+
+	<spw_categoryloudsounddistortionair>비잠수 시 왜곡</spw_categoryloudsounddistortionair>
+	<spw_categoryloudsounddistortionwater>잠수 시 왜곡</spw_categoryloudsounddistortionwater>
+
+	<spw_loudsounddistortionair>비잠수 시 왜곡 활성화</spw_loudsounddistortionair>
+	<spw_loudsounddistortionwater>잠수 시 왜곡 활성화</spw_loudsounddistortionwater>
+	<spw_loudsounddistortiontooltipair>청자가 잠수하지 않은 경우, '고급' 탭의 "사용자 지정 사운드" 목록에서 왜곡이 true로 설정된 사운드에 비잠수 왜곡 효과를 적용합니다.</spw_loudsounddistortiontooltipair>
+	<spw_loudsounddistortiontooltipwater>청자가 잠수한 경우, '고급' 탭의 "사용자 지정 사운드" 목록에서 왜곡이 true로 설정된 사운드에 잠수 왜곡 효과를 적용합니다.</spw_loudsounddistortiontooltipwater>
+	<spw_loudsounddistortionmaxmuffle>왜곡 약화 요구치</spw_loudsounddistortionmaxmuffle>
+	<spw_loudsounddistortionmaxmuffletooltip>왜곡 효과가 비활성화되기 전 사운드가 가질 수 있는 최대 약화 강도입니다.</spw_loudsounddistortionmaxmuffletooltip>
+	<spw_loudsounddistortiontargetgain>왜곡 증폭</spw_loudsounddistortiontargetgain>
+	<spw_loudsounddistortiontargetgaintooltip>왜곡의 볼륨입니다.</spw_loudsounddistortiontargetgaintooltip>
+	<spw_loudsounddistortiontargetedge>왜곡 날카로움</spw_loudsounddistortiontargetedge>
+	<spw_loudsounddistortiontargetedgetooltip>왜곡의 거친 정도입니다. 값이 높을수록 효과가 더 강렬해집니다.</spw_loudsounddistortiontargetedgetooltip>
+	<spw_loudsounddistortiontargetfrequency>왜곡 주파수</spw_loudsounddistortiontargetfrequency>
+	<spw_loudsounddistortiontargetfrequencytooltip>왜곡의 EQ 중심입니다. 이 값에 가까운 주파수가 효과에 더 큰 영향을 받습니다.</spw_loudsounddistortiontargetfrequencytooltip>
+	<spw_loudsounddistortionlowpassfrequency>왜곡 저역 통과 주파수</spw_loudsounddistortionlowpassfrequency>
+	<spw_loudsounddistortionlowpassfrequencytooltip>왜곡된 신호에 후처리로 저역 통과 필터가 적용됩니다. 이 값은 해당 저역 통과 필터가 사용하는 코너 주파수입니다.</spw_loudsounddistortionlowpassfrequencytooltip>
+
+	<spw_categoryexperimental>실험적 기능</spw_categoryexperimental>
+	
+	<spw_removeunusedbuffers>미사용 버퍼 정리</spw_removeunusedbuffers>
+	<spw_removeunusedbufferstooltip>바닐라의 약화 버퍼 없이 사운드를 로드하여 바닐라 대비 약 100MB의 메모리를 절약합니다. 사운드 객체와 낮은 수준에서 상호작용하는 다른 모드와의 잠재적 호환성 문제 우려로 기본적으로 비활성화되어 있습니다. 하지만 대부분의 경우 이 설정은 무료 성능 향상 효과를 줍니다.\n\n참고: 플레이 중에 이 설정을 변경하면 버퍼를 로드하는 동안 게임이 잠시 멈출 수 있습니다.</spw_removeunusedbufferstooltip>
+
+
+	<!-- StaticFx -->
+	<spw_staticfxtab>정적 모드</spw_staticfxtab>
+	<spw_heavylowpassfrequency>강한 저역 통과 주파수</spw_heavylowpassfrequency>
+	<spw_heavylowpassfrequencytooltip>심하게 방해받는 소리를 약화시키는 데 사용되는 코너 주파수입니다. 이 필터를 적용하는 임계값은 '소리 약화' 탭에서 설정할 수 있습니다.\n\n참고: 음성 채팅에는 적용되지 않습니다. '음성' 탭의 저역 통과 주파수 슬라이더를 참조하세요.\n\n참고: 플레이 중에 이 설정을 변경하면 버퍼를 로드하는 동안 게임이 잠시 멈출 수 있습니다.</spw_heavylowpassfrequencytooltip>
+	<spw_mediumlowpassfrequency>중간 저역 통과 주파수</spw_mediumlowpassfrequency>
+	<spw_mediumlowpassfrequencytooltip>적당히 방해받는 소리를 약화시키는 데 사용되는 코너 주파수입니다. 이 필터를 적용하는 임계값은 '소리 약화' 탭에서 설정할 수 있습니다.\n\n참고: 음성 채팅에는 적용되지 않습니다. '음성' 탭의 저역 통과 주파수 슬라이더를 참조하세요.\n\n참고: 플레이 중에 이 설정을 변경하면 버퍼를 로드하는 동안 게임이 잠시 멈출 수 있습니다.</spw_mediumlowpassfrequencytooltip>
+	<spw_lightlowpassfrequency>약한 저역 통과 주파수</spw_lightlowpassfrequency>
+	<spw_lightlowpassfrequencytooltip>가볍게 방해받는 소리를 약화시키는 데 사용되는 코너 주파수입니다. 이 필터를 적용하는 임계값은 '소리 약화' 탭에서 설정할 수 있습니다.\n\n참고: 음성 채팅에는 적용되지 않습니다. '음성' 탭의 저역 통과 주파수 슬라이더를 참조하세요.\n\n참고: 플레이 중에 이 설정을 변경하면 버퍼를 로드하는 동안 게임이 잠시 멈출 수 있습니다.</spw_lightlowpassfrequencytooltip>
+
+	<spw_staticreverb>잔향 버퍼 활성화</spw_staticreverb>
+	<spw_staticreverbtooltip>잔향 필터를 통과한 추가 버퍼와 함께 사운드를 로드합니다. 이 기능은 비반복 및 약화되지 않은 사운드에만 적용됩니다.\n\n참고: 약 100MB의 메모리를 사용하며 버퍼 로딩 시간을 늘립니다(지속 시간에 따라 악화됨).\n\n참고: 플레이 중에 이 설정을 변경하면 버퍼를 로드하는 동안 게임이 잠시 멈출 수 있습니다.</spw_staticreverbtooltip>
+	<spw_staticreverbalwaysloudsounds>큰 소리는 항상 잔향 적용</spw_staticreverbalwaysloudsounds>
+	<spw_staticreverbalwaysloudsoundstooltip>'고급' 탭의 "사용자 지정 사운드" 목록에서 사이드체인 배율이 1보다 큰 사운드는 최소 잔향 공간 요구 사항을 무시합니다.</spw_staticreverbalwaysloudsoundstooltip>
+	<spw_staticreverbduration>잔향 지속 시간</spw_staticreverbduration>
+	<spw_staticreverbdurationtooltip>잔향의 감쇠 시간과 크기입니다. 이 값을 높이면 메모리 사용량과 버퍼 로딩 시간이 증가합니다.</spw_staticreverbdurationtooltip>
+	<spw_staticreverbwetdrymix>잔향 믹스</spw_staticreverbwetdrymix>
+	<spw_staticreverbwetdrymixtooltip>잔향의 드라이/웻 믹스입니다. 값이 높을수록 효과가 강해집니다.</spw_staticreverbwetdrymixtooltip>
+	<spw_staticreverbdamping>잔향 댐핑</spw_staticreverbdamping>
+	<spw_staticreverbdampingtooltip>잔향 피드백에 적용되는 저역 통과 필터의 강도입니다.</spw_staticreverbdampingtooltip>
+	<spw_staticreverbminarea>최소 잔향 공간</spw_staticreverbminarea>
+	<spw_staticreverbminareatooltip>비반복 및 약화되지 않은 사운드에 잔향이 적용되기 위해 필요한 청자 주변 연결된 방들의 최소 결합 면적입니다.</spw_staticreverbminareatooltip>
+
+	<!-- Voice -->
+	<spw_voicetab>음성</spw_voicetab>
+
+	<spw_talkingragdolls>래그돌 상태에서 말하기</spw_talkingragdolls>
+	<spw_talkingragdollstooltip>기절하지 않은 플레이어가 래그돌 상태일 때 말하는 것을 듣습니다.</spw_talkingragdollstooltip>
+	
+	<spw_voicerange>근거리 범위</spw_voicerange>
+	<spw_voicerangetooltip>근거리 채팅의 범위입니다.</spw_voicerangetooltip>
+	<spw_radiorange>무전기 범위</spw_radiorange>
+	<spw_radiorangetooltip>무전 채팅의 범위입니다.</spw_radiorangetooltip>
+	<spw_voicevolume>근거리 볼륨</spw_voicevolume>
+	<spw_voicevolumetooltip>근거리 채팅의 볼륨입니다.\n\n참고: 이 설정은 바닐라트라우마의 음성 채팅 볼륨 슬라이더와는 별개입니다.</spw_voicevolumetooltip>
+	<spw_radiovolume>무전기 볼륨</spw_radiovolume>
+	<spw_radiovolumetooltip>무전 채팅의 볼륨입니다.\n\n참고: 이 설정은 바닐라트라우마의 음성 채팅 볼륨 슬라이더와는 별개입니다.</spw_radiovolumetooltip>
+
+	<spw_categorydynamicfx>동적 모드 전용</spw_categorydynamicfx>
+
+	<spw_dynamicreverblocal>근거리 잔향</spw_dynamicreverblocal>
+	<spw_dynamicreverblocaltooltip>근거리 채팅에 잔향을 적용할 수 있게 합니다.\n\n참고: 동적 모드의 잔향 효과가 활성화되어 있어야 합니다.</spw_dynamicreverblocaltooltip>
+	<spw_dynamicreverbradio>무전기 잔향</spw_dynamicreverbradio>
+	<spw_dynamicreverbradiotooltip>무전 채팅에 잔향을 적용할 수 있게 합니다.\n\n참고: 동적 모드의 잔향 효과가 활성화되어 있어야 합니다.</spw_dynamicreverbradiotooltip>
+	<spw_drowningdistortion>익사 시 무전기 왜곡</spw_drowningdistortion>
+	<spw_drowningdistortiontooltip>익사 시 무전 채팅에 왜곡을 적용합니다.\n\n참고: 이 설정은 익사 시 무전 채팅의 약화 효과를 줄입니다.</spw_drowningdistortiontooltip>
+	<spw_voiceminlowpassfrequency>최소 저역 통과 주파수</spw_voiceminlowpassfrequency>
+	<spw_voiceminlowpassfrequencytooltip>완전히 약화되었을 때 적용되는 최소 저역 통과 주파수입니다.</spw_voiceminlowpassfrequencytooltip>
+	<spw_voicedynamicmufflemultiplier>동적 약화 강도</spw_voicedynamicmufflemultiplier>
+	<spw_voicedynamicmufflemultipliertooltip>동적 모드 사용 시 음성에 적용되는 장애물의 강도입니다.</spw_voicedynamicmufflemultipliertooltip>
+
+	<spw_voiceheavylowpassfrequency>강한 음성 저역 통과 주파수</spw_voiceheavylowpassfrequency>
+	<spw_voiceheavylowpassfrequencytooltip>심하게 방해받는 음성을 약화시키는 데 사용되는 코너 주파수입니다. 이 필터를 적용하는 임계값은 '소리 약화' 탭에서 설정할 수 있습니다.</spw_voiceheavylowpassfrequencytooltip>
+	<spw_voicemediumlowpassfrequency>중간 음성 저역 통과 주파수</spw_voicemediumlowpassfrequency>
+	<spw_voicemediumlowpassfrequencytooltip>적당히 방해받는 음성을 약화시키는 데 사용되는 코너 주파수입니다. 이 필터를 적용하는 임계값은 '소리 약화' 탭에서 설정할 수 있습니다.</spw_voicemediumlowpassfrequencytooltip>
+	<spw_voicelightlowpassfrequency>약한 음성 저역 통과 주파수</spw_voicelightlowpassfrequency>
+	<spw_voicelightlowpassfrequencytooltip>가볍게 방해받는 음성을 약화시키는 데 사용되는 코너 주파수입니다. 이 필터를 적용하는 임계값은 '소리 약화' 탭에서 설정할 수 있습니다.</spw_voicelightlowpassfrequencytooltip>
+
+	<spw_categoryscreammode>비명 모드</spw_categoryscreammode>
+
+	<spw_screammode>비명 모드</spw_screammode>
+	<spw_screammodetooltip>근거리 채팅 범위가 입력 진폭에 따라 조절됩니다 (소리 지르면 더 멀리서 들립니다).\n\n참고: 최상의 결과를 위해, 바닐라트라우마 마이크 볼륨을 조절하여 음성 활동 미터에 큰 입력에 대한 여유 공간이 있도록 하세요. 마이크의 다이내믹 레인지가 넓을수록 좋습니다.</spw_screammodetooltip>
+	<spw_screammodemaxrange>최대 비명 범위</spw_screammodemaxrange>
+	<spw_screammodemaxrangetooltip>"비명 모드" 활성화 시 최대 볼륨으로 말할 때의 근거리 채팅 최대 범위입니다.\n\n참고: 이 설정은 "근거리 범위" 배율의 영향을 받습니다.</spw_screammodemaxrangetooltip>
+	<spw_screammodeminrange>최소 비명 범위</spw_screammodeminrange>
+	<spw_screammodeminrangetooltip>"비명 모드" 활성화 시 근거리 채팅의 최소 범위입니다.</spw_screammodeminrangetooltip>
+	<spw_screammodereleaserate>비명 해제 속도</spw_screammodereleaserate>
+	<spw_screammodereleaseratetooltip>음성 범위가 진폭에 의해 더 이상 유지되지 않을 때 초당 감소하는 속도입니다.</spw_screammodereleaseratetooltip>
+	
+	<spw_categorybubbles>익사</spw_categorybubbles>
+	
+	<spw_drowningbubbles>익사 시 거품</spw_drowningbubbles>
+	<spw_drowningbubblestooltip>산소 없이 물속에서 말하는 플레이어는 근거리 또는 무전기로 들을 수 있는 보이는 거품을 방출합니다.</spw_drowningbubblestooltip>
+	<spw_drowningbubbleslocalrange>근거리 거품 범위</spw_drowningbubbleslocalrange>
+	<spw_drowningbubbleslocalrangetooltip>근거리 거품 소리의 가청 범위입니다.</spw_drowningbubbleslocalrangetooltip>
+	<spw_drowningbubbleslocalvolume>근거리 거품 볼륨</spw_drowningbubbleslocalvolume>
+	<spw_drowningbubbleslocalvolumetooltip>근거리 거품 소리의 볼륨입니다.</spw_drowningbubbleslocalvolumetooltip>
+	<spw_drowningbubblesradiovolume>무전기 거품 볼륨</spw_drowningbubblesradiovolume>
+	<spw_drowningbubblesradiovolumetooltip>무전기 거품 소리의 볼륨입니다.</spw_drowningbubblesradiovolumetooltip>
+	
+	<spw_categorycustomfilter>무전기 필터</spw_categorycustomfilter>
+
+	<spw_radiocustomfilter>사용자 지정 무전기 필터</spw_radiocustomfilter>
+	<spw_radiocustomfiltertooltip>설정 가능한 압축, 왜곡, 노이즈 효과가 포함된 사용자 지정 필터로 무전 채팅을 처리합니다.</spw_radiocustomfiltertooltip>
+
+	<spw_customradiopresets>사용자 지정 무전기 프리셋</spw_customradiopresets>
+	<spw_customradiopresetstooltip>독특한 무전기 필터 설정입니다. 이 옵션 중 하나를 선택하면 아래의 모든 필터 값이 수정됩니다.</spw_customradiopresetstooltip>
+	<spw_customradiopresetbroken>고장남</spw_customradiopresetbroken>
+	<spw_customradiopresetbrokentooltip>끔찍합니다. 무전기 사용이 방해가 됩니다.</spw_customradiopresetbrokentooltip>
+	<spw_customradiopresetdirty>지지직거림</spw_customradiopresetdirty>
+	<spw_customradiopresetdirtytooltip>품질이 낮은 무전기로, 긴박한 통신을 이해하기 어렵게 만들 수 있습니다.</spw_customradiopresetdirtytooltip>
+	<spw_customradiopresetnormal>표준</spw_customradiopresetnormal>
+	<spw_customradiopresetnormaltooltip>더 스타일리시한 사운드를 가진 바닐라 무전기입니다.</spw_customradiopresetnormaltooltip>
+	<spw_customradiopresetclean>깨끗함</spw_customradiopresetclean>
+	<spw_customradiopresetcleantooltip>완벽하게 깨끗한 무전 통신입니다.</spw_customradiopresetcleantooltip>
+	
+	<spw_radiobandpassfrequency>무전기 대역 통과 주파수</spw_radiobandpassfrequency>
+	<spw_radiobandpassfrequencytooltip>대역 통과 필터의 중심 주파수입니다. 이 지점 근처의 주파수만 통과됩니다.\n\n참고: 범위의 너비는 아래의 "무전기 대역 통과 Q 팩터"로 설정됩니다.</spw_radiobandpassfrequencytooltip>
+	<spw_radiobandpassqualityfactor>무전기 대역 통과 Q 팩터</spw_radiobandpassqualityfactor>
+	<spw_radiobandpassqualityfactortooltip>대역 통과 필터가 중심 주파수 주변에서 얼마나 좁은지를 나타냅니다. 값이 높을수록 더 좁고 뚜렷한 효과를 만듭니다.</spw_radiobandpassqualityfactortooltip>
+	<spw_radiodistortiondrive>무전기 왜곡 드라이브</spw_radiodistortiondrive>
+	<spw_radiodistortiondrivetooltip>클리핑 전에 음성 신호를 증폭합니다. 값이 높을수록 왜곡 강도가 증가합니다.</spw_radiodistortiondrivetooltip>
+	<spw_radiodistortionthreshold>무전기 왜곡 임계값</spw_radiodistortionthreshold>
+	<spw_radiodistortionthresholdtooltip>허용되는 최대 레벨입니다. 이 한계를 초과하는 샘플은 하드 클리핑됩니다.</spw_radiodistortionthresholdtooltip>
+	<spw_radiostatic>무전기 잡음</spw_radiostatic>
+	<spw_radiostatictooltip>무전 송신에 추가되는 잡음의 강도입니다.</spw_radiostatictooltip>
+	<spw_radiocompressionthreshold>무전기 압축 임계값</spw_radiocompressionthreshold>
+	<spw_radiocompressionthresholdtooltip>압축이 시작되는 입력 레벨입니다. 이 레벨 이하의 소리는 영향을 받지 않습니다.</spw_radiocompressionthresholdtooltip>
+	<spw_radiocompressionratio>무전기 압축 비율</spw_radiocompressionratio>
+	<spw_radiocompressionratiotooltip>임계값 이상의 볼륨이 얼마나 감소하는지를 나타냅니다. 비율이 높을수록 압축이 강해지고 다이내믹 레인지가 줄어듭니다.</spw_radiocompressionratiotooltip>
+	<spw_radiopostfilterboost>후처리 필터 증폭</spw_radiopostfilterboost>
+	<spw_radiopostfilterboosttooltip>무전기 필터링 후의 전체 출력 레벨입니다.</spw_radiopostfilterboosttooltip>
+	
+	<!-- Muffle -->
+	<spw_muffletab>소리 약화</spw_muffletab>
+	<spw_muffledivingsuit>잠수복 소리 약화</spw_muffledivingsuit>
+	<spw_muffledivingsuittooltip>잠수복을 착용했을 때 모든 소리에 "잠수복" 장애물을 적용합니다.</spw_muffledivingsuittooltip>
+	<spw_mufflesubmergedplayer>잠수한 플레이어 소리 약화</spw_mufflesubmergedplayer>
+	<spw_mufflesubmergedplayertooltip>플레이어의 머리와 같은 수역에 잠긴 소리에 "수중" 장애물을 적용합니다.</spw_mufflesubmergedplayertooltip>
+	<spw_mufflesubmergedviewtarget>잠수한 시점 대상 소리 약화</spw_mufflesubmergedviewtarget>
+	<spw_mufflesubmergedviewtargettooltip>시점 대상과 같은 수역에 잠긴 소리에 "수중" 장애물을 적용합니다.\n\n참고: '일반' 탭의 "대상 오디오 집중"이 활성화되어 있어야 합니다.</spw_mufflesubmergedviewtargettooltip>
+	<spw_mufflewatersurface>수면 소리 약화</spw_mufflewatersurface>
+	<spw_mufflewatersurfacetooltip>공기와 물의 경계 반대편에 있는 소리에 "수면" 장애물을 적용합니다.</spw_mufflewatersurfacetooltip>
+	<spw_muffleflowfirepath>물 흐름 &amp; 화재 경로 약화</spw_muffleflowfirepath>
+	<spw_muffleflowfirepathtooltip>물 흐름과 화재 소리가 청자에게 도달하는 경로가 없으면 약화시킵니다.\n\n참고: 이 기능은 예측 시스템을 사용하므로 모든 상황에서 정확하지 않을 수 있습니다.</spw_muffleflowfirepathtooltip>
+	<spw_muffleflowsounds>물 흐름 소리 약화</spw_muffleflowsounds>
+	<spw_muffleflowsoundstooltip>모든 출처의 물 흐름 소리 약화를 켜고 끕니다.</spw_muffleflowsoundstooltip>
+	<spw_mufflefiresounds>화재 소리 약화</spw_mufflefiresounds>
+	<spw_mufflefiresoundstooltip>모든 출처의 화재 소리 약화를 켜고 끕니다.</spw_mufflefiresoundstooltip>
+	<spw_classiclowpassfrequency>클래식 저역 통과 주파수</spw_classiclowpassfrequency>
+	<spw_classiclowpassfrequencytooltip>클래식 모드에서 소리를 약화시키는 데 사용되는 코너 주파수입니다. 이 필터를 적용하는 임계값은 '소리 약화' 탭에서 설정할 수 있습니다.\n\n참고: 음성 채팅에는 적용되지 않습니다. '음성' 탭의 저역 통과 주파수 슬라이더를 참조하세요.\n\n참고: 플레이 중에 이 설정을 변경하면 버퍼를 로드하는 동안 게임이 잠시 멈출 수 있습니다.</spw_classiclowpassfrequencytooltip>
+
+	<spw_categoryobstructions>장애물 약화 강도</spw_categoryobstructions>
+
+	<spw_obstructionwatersurface>수면</spw_obstructionwatersurface>
+	<spw_obstructionwatersurfacetooltip>소리가 공기-물 경계를 통과할 때 적용되는 약화 강도입니다.\n\n참고: 곱연산으로 중첩됩니다 (수익 체감).</spw_obstructionwatersurfacetooltip>
+	<spw_obstructionwaterbody>수중</spw_obstructionwaterbody>
+	<spw_obstructionwaterbodytooltip>소리가 공기-물 경계를 통과하지 않고 물을 통해 청자에게 도달할 때 적용되는 약화 강도입니다 (즉, 소리가 같은 수역에서 시작하고 끝남).\n\n참고: 곱연산으로 중첩됩니다 (수익 체감).</spw_obstructionwaterbodytooltip>
+	<spw_obstructionwallthick>두꺼운 벽</spw_obstructionwallthick>
+	<spw_obstructionwallthicktooltip>소리가 벽을 정상적으로 통과할 때 적용되는 약화 강도입니다.\n\n참고: 동적 모드 사용 시 소리가 통과한 문 두 개마다 적용됩니다.\n\n참고: 곱연산으로 중첩됩니다 (수익 체감).</spw_obstructionwallthicktooltip>
+	<spw_obstructionwallthin>얇은 벽</spw_obstructionwallthin>
+	<spw_obstructionwallthintooltip>소리가 벽을 뚫고 지나가거나(전파 또는 수중 청음 구조물) 청자에게 부분적인 경로가 있을 때(차폐) 적용되는 약화 강도입니다.\n\n참고: 곱연산으로 중첩됩니다 (수익 체감).</spw_obstructionwallthintooltip>
+	<spw_obstructiondoorthick>두꺼운 문</spw_obstructiondoorthick>
+	<spw_obstructiondoorthicktooltip>소리가 문을 정상적으로 통과할 때 적용되는 약화 강도입니다.\n\n참고: 곱연산으로 중첩됩니다 (수익 체감).</spw_obstructiondoorthicktooltip>
+	<spw_obstructiondoorthin>얇은 문</spw_obstructiondoorthin>
+	<spw_obstructiondoorthintooltip>소리가 문을 뚫고 지나갈 때(엿듣기, 전파 또는 컨테이너 내부) 적용되는 약화 강도입니다.\n\n참고: 곱연산으로 중첩됩니다 (수익 체감).</spw_obstructiondoorthintooltip>
+	<spw_obstructionsuit>잠수복</spw_obstructionsuit>
+	<spw_obstructionsuittooltip>소리가 잠수복을 통과할 때 적용되는 약화 강도입니다.\n\n참고: 수중 청음기를 사용할 때 잠수함 외부에 있는 소리에도 적용됩니다.\n\n참고: 곱연산으로 중첩됩니다 (수익 체감).</spw_obstructionsuittooltip>
+	<spw_obstructiondrowning>플레이어 익사</spw_obstructiondrowning>
+	<spw_obstructiondrowningtooltip>플레이어가 익사 중에 말할 때 음성에 적용되는 약화 강도입니다.\n\n참고: 곱연산으로 중첩됩니다 (수익 체감).</spw_obstructiondrowningtooltip>
+	
+	<spw_classicmufflethreshold>(클래식) 약화 임계값</spw_classicmufflethreshold>
+	<spw_classicmufflethresholdtooltip>소리가 "클래식 저역 통과 주파수"('소리 약화' 탭)를 사용하기 위해 필요한 최소 결합 장애물 레벨입니다.</spw_classicmufflethresholdtooltip>
+
+	<spw_staticlightmufflethreshold>(정적) 약한 약화 임계값</spw_staticlightmufflethreshold>
+	<spw_staticlightmufflethresholdtooltip>소리와 음성이 "약한 저역 통과 주파수"('정적' 탭) 또는 "약한 음성 저역 통과 주파수"('음성' 탭)를 사용하기 위해 필요한 최소 결합 장애물 레벨입니다.</spw_staticlightmufflethresholdtooltip>
+
+	<spw_staticmediummufflethreshold>(정적) 중간 약화 임계값</spw_staticmediummufflethreshold>
+	<spw_staticmediummufflethresholdtooltip>소리와 음성이 "중간 저역 통과 주파수"('정적' 탭) 또는 "중간 음성 저역 통과 주파수"('음성' 탭)를 사용하기 위해 필요한 최소 결합 장애물 레벨입니다.</spw_staticmediummufflethresholdtooltip>
+
+	<spw_staticheavymufflethreshold>(정적) 강한 약화 임계값</spw_staticheavymufflethreshold>
+	<spw_staticheavymufflethresholdtooltip>소리와 음성이 "강한 저역 통과 주파수"('정적' 탭) 또는 "강한 음성 저역 통과 주파수"('음성' 탭)를 사용하기 위해 필요한 최소 결합 장애물 레벨입니다.</spw_staticheavymufflethresholdtooltip>
+
+	<spw_categorythresholds>약화 임계값</spw_categorythresholds>
+
+	<!-- Volume -->
+	<spw_volumetab>볼륨</spw_volumetab>
+
+	<spw_categorysidechaining>사이드체인</spw_categorysidechaining>
+
+	<spw_sidechaining>사이드체인 활성화</spw_sidechaining>
+	<spw_sidechainingtooltip>큰 소리가 재생될 때 모든 소리의 볼륨을 줄입니다.\n\n참고: 소리가 내부적으로 크다고 간주되려면, '고급' 탭의 "사용자 지정 사운드" 목록에서 사이드체인 배율이 0보다 커야 합니다.</spw_sidechainingtooltip>
+	<spw_sidechainmusic>음악 사이드체인</spw_sidechainmusic>
+	<spw_sidechainmusictooltip>큰 소리가 재생될 때 음악 트랙의 볼륨을 줄입니다.</spw_sidechainmusictooltip>
+
+	<spw_sidechainintensitymaster>사이드체인 강도 마스터</spw_sidechainintensitymaster>
+	<spw_sidechainintensitymastertooltip>'고급' 탭의 "사용자 지정 사운드" 목록에 있는 모든 사이드체인 배율에 적용되는 전역 배율입니다.</spw_sidechainintensitymastertooltip>
+	<spw_sidechainreleasemaster>사이드체인 해제 마스터</spw_sidechainreleasemaster>
+	<spw_sidechainreleasemastertooltip>'고급' 탭의 "사용자 지정 사운드" 목록에 있는 모든 사이드체인 해제 시간에 추가되는 고정 시간입니다.</spw_sidechainreleasemastertooltip>
+	<spw_sidechainreleasecurve>사이드체인 해제 곡선</spw_sidechainreleasecurve>
+	<spw_sidechainreleasecurvetooltip>사이드체인 해제 곡선의 모양을 계산하는 데 사용되는 지수입니다. 1보다 작은 값은 느리게 시작하여 끝에서 급격히 해제됩니다. 1보다 큰 값은 빠르게 시작하여 끝에서 완만해집니다.</spw_sidechainreleasecurvetooltip>
+	<spw_sidechainmufflepower>사이드체인 약화 파워</spw_sidechainmufflepower>
+	<spw_sidechainmufflepowertooltip>약화된 소리의 사이드체인 효과가 얼마나 강해야 하는지를 나타냅니다. 값이 높을수록 더 많은 사이드체인 강도를 유지합니다.</spw_sidechainmufflepowertooltip>
+	<spw_sidechainmusicmultiplier>음악 사이드체인 강도</spw_sidechainmusicmultiplier>
+	<spw_sidechainmusicmultipliertooltip>음악에 대한 사이드체인 효과의 강도입니다.</spw_sidechainmusicmultipliertooltip>
+
+	<spw_muffledsoundvolume>약화된 사운드 볼륨</spw_muffledsoundvolume>
+	<spw_muffledsoundvolumetooltip>약화된 비반복 사운드의 볼륨입니다. 약화 강도에 따라 "약화되지 않은 사운드 볼륨"과 혼합됩니다.\n\n참고: 다른 볼륨 배율과 합연산으로 중첩됩니다.</spw_muffledsoundvolumetooltip>
+	<spw_unmuffledsoundvolume>약화되지 않은 사운드 볼륨</spw_unmuffledsoundvolume>
+	<spw_unmuffledsoundvolumetooltip>약화되지 않은 비반복 사운드의 볼륨입니다. 약화 강도에 따라 "약화된 사운드 볼륨"과 혼합됩니다.\n\n참고: 다른 볼륨 배율과 합연산으로 중첩됩니다.</spw_unmuffledsoundvolumetooltip>
+	<spw_muffledvoicevolume>약화된 음성 볼륨</spw_muffledvoicevolume>
+	<spw_muffledvoicevolumetooltip>약화된 플레이어 음성의 볼륨입니다. 약화 강도에 따라 "약화되지 않은 음성 볼륨"과 혼합됩니다.\n\n참고: 다른 볼륨 배율과 합연산으로 중첩됩니다.</spw_muffledvoicevolumetooltip>
+	<spw_unmuffledvoicevolume>약화되지 않은 음성 볼륨</spw_unmuffledvoicevolume>
+	<spw_unmuffledvoicevolumetooltip>약화되지 않은 플레이어 음성의 볼륨입니다. 약화 강도에 따라 "약화된 음성 볼륨"과 혼합됩니다.\n\n참고: 다른 볼륨 배율과 합연산으로 중첩됩니다.</spw_unmuffledvoicevolumetooltip>
+	<spw_muffledloopingvolume>약화된 반복 사운드 볼륨</spw_muffledloopingvolume>
+	<spw_muffledloopingvolumetooltip>약화된 반복 사운드의 볼륨입니다. 약화 강도에 따라 "약화되지 않은 반복 사운드 볼륨"과 혼합됩니다.\n\n참고: 다른 볼륨 배율과 합연산으로 중첩됩니다.</spw_muffledloopingvolumetooltip>
+	<spw_unmuffledloopingvolume>약화되지 않은 반복 사운드 볼륨</spw_unmuffledloopingvolume>
+	<spw_unmuffledloopingvolumetooltip>약화되지 않은 반복 사운드의 볼륨입니다. 약화 강도에 따라 "약화된 반복 사운드 볼륨"과 혼합됩니다.\n\n참고: 다른 볼륨 배율과 합연산으로 중첩됩니다.</spw_unmuffledloopingvolumetooltip>
+	<spw_submergedvolume>함께 잠수 시 볼륨</spw_submergedvolume>
+	<spw_submergedvolumetooltip>청자와 같은 수역에 잠긴 소리의 볼륨입니다.\n\n참고: 다른 볼륨 배율과 합연산으로 중첩됩니다.</spw_submergedvolumetooltip>
+	<spw_flowsoundvolume>물 흐름 소리 볼륨</spw_flowsoundvolume>
+	<spw_flowsoundvolumetooltip>잠수함의 누수로 인한 물 흐름 소리의 볼륨입니다.</spw_flowsoundvolumetooltip>
+	<spw_firesoundvolume>화재 소리 볼륨</spw_firesoundvolume>
+	<spw_firesoundvolumetooltip>화재 소리의 볼륨입니다.</spw_firesoundvolumetooltip>
+	<spw_vanillaexosuitvolume>바닐라 외골격 슈트 볼륨</spw_vanillaexosuitvolume>
+	<spw_vanillaexosuitvolumetooltip>바닐라 외골격 슈트 움직임 소리의 볼륨입니다. 일부 플레이어는 이 소리를 불쾌하게 느낍니다.\n\n참고: 모드로 추가된 외골격 슈트 소리에는 영향을 주지 않습니다.</spw_vanillaexosuitvolumetooltip>
+	<spw_loopingcomponentsoundnearmultiplier>부품 사운드 거리 감쇠 시작</spw_loopingcomponentsoundnearmultiplier>
+	<spw_loopingcomponentsoundnearmultipliertooltip>반복되는 부품 사운드 볼륨이 감소하기 시작하는 데 필요한 거리입니다.</spw_loopingcomponentsoundnearmultipliertooltip>
+	<spw_mindistancefalloffvolume>최소 거리 감쇠 볼륨</spw_mindistancefalloffvolume>
+	<spw_mindistancefalloffvolumetooltip>"현실적인 소리 감쇠" 모델('일반' 탭)을 사용하여 소리가 도달할 수 있는 최소 감쇠 볼륨입니다.</spw_mindistancefalloffvolumetooltip>
+
+
+	<!-- Eavesdropping -->
+	<spw_eavesdroppingtab>엿듣기</spw_eavesdroppingtab>
+	<spw_eavesdroppingenabled>엿듣기 활성화</spw_eavesdroppingenabled>
+	<spw_eavesdroppingenabledtooltip>엿듣기 기능을 켜고 끕니다.</spw_eavesdroppingenabledtooltip>
+	<spw_eavesdroppingmuffleself>자신의 선체 소리 약화</spw_eavesdroppingmuffleself>
+	<spw_eavesdroppingmuffleselftooltip>엿들을 때 청자의 선체에 있는 소리를 약화시킵니다.</spw_eavesdroppingmuffleselftooltip>
+	<spw_eavesdroppingmuffle>엿듣는 선체 소리 약화</spw_eavesdroppingmuffle>
+	<spw_eavesdroppingmuffletooltip>"얇은 문" 장애물을 적용하여 엿듣는 소리를 약간 약화시킵니다.</spw_eavesdroppingmuffletooltip>
+	<spw_eavesdroppingtransition>엿듣기 전환 효과</spw_eavesdroppingtransition>
+	<spw_eavesdroppingtransitiontooltip>엿들을 때 선체 간 오디오를 부드럽게 전환합니다.</spw_eavesdroppingtransitiontooltip>
+	<spw_eavesdroppingducksradio>엿듣기 시 무전기 볼륨 감소</spw_eavesdroppingducksradio>
+	<spw_eavesdroppingducksradiotooltip>엿들을 때 무전 채팅의 볼륨을 낮춥니다.</spw_eavesdroppingducksradiotooltip>
+
+	<spw_eavesdroppingbind>엿듣기 키</spw_eavesdroppingbind>
+	<spw_eavesdroppingbindtooltip>엿듣기 위해 누르고 있어야 하는 버튼입니다.\n\n참고: 이 설정은 "설정 동기화"('일반' 탭) 사용 시 다른 플레이어와 동기화되지 않습니다.</spw_eavesdroppingbindtooltip>
+
+	<spw_eavesdroppingsoundvolume>엿듣는 사운드 볼륨</spw_eavesdroppingsoundvolume>
+	<spw_eavesdroppingsoundvolumetooltip>엿듣는 소리의 볼륨입니다.\n\n참고: 다른 볼륨 배율과 합연산으로 중첩됩니다.</spw_eavesdroppingsoundvolumetooltip>
+	<spw_eavesdroppingvoicevolume>엿듣는 음성 볼륨</spw_eavesdroppingvoicevolume>
+	<spw_eavesdroppingvoicevolumetooltip>엿듣는 근거리 채팅의 볼륨입니다.\n\n참고: 다른 볼륨 배율과 합연산으로 중첩됩니다.</spw_eavesdroppingvoicevolumetooltip>
+	<spw_eavesdroppingothervolume>자신의 선체 볼륨</spw_eavesdroppingothervolume>
+	<spw_eavesdroppingothervolumetooltip>엿들을 때 청자의 선체에 있는 오디오의 볼륨입니다.</spw_eavesdroppingothervolumetooltip>
+	<spw_eavesdroppingsoundpitch>엿듣는 사운드 피치</spw_eavesdroppingsoundpitch>
+	<spw_eavesdroppingsoundpitchtooltip>엿듣는 소리의 피치입니다.\n\n참고: 근거리 채팅에는 적용되지 않습니다.\n\n참고: 다른 피치 배율과 합연산으로 중첩됩니다.</spw_eavesdroppingsoundpitchtooltip>
+	<spw_eavesdroppingmaxdistance>엿듣기 최대 거리</spw_eavesdroppingmaxdistance>
+	<spw_eavesdroppingmaxdistancetooltip>엿듣는 동안 플레이어의 머리가 문에서 떨어질 수 있는 최대 거리입니다.</spw_eavesdroppingmaxdistancetooltip>
+	<spw_eavesdroppingtransitionduration>엿듣기 전환 지속 시간</spw_eavesdroppingtransitionduration>
+	<spw_eavesdroppingtransitiondurationtooltip>엿듣기 전환에 걸리는 시간(초)입니다.\n\n참고: "엿듣기 전환 효과"가 활성화되어 있어야 합니다.</spw_eavesdroppingtransitiondurationtooltip>
+	<spw_eavesdroppingthreshold>엿듣기 임계값</spw_eavesdroppingthreshold>
+	<spw_eavesdroppingthresholdtooltip>엿듣기 전환 중 어느 지점에서 약화 프로필이 문의 반대편으로 전환되는지를 나타냅니다.</spw_eavesdroppingthresholdtooltip>
+
+	<spw_eavesdroppingvisualfeedbackenabled>시각적 피드백</spw_eavesdroppingvisualfeedbackenabled>
+	<spw_eavesdroppingvisualfeedbackenabledtooltip>엿듣는 소리 출처 주위에 부드러운 녹색 발광 효과를 표시합니다.</spw_eavesdroppingvisualfeedbackenabledtooltip>
+	<spw_eavesdroppingrevealscharacteroutline>캐릭터 윤곽선 보기</spw_eavesdroppingrevealscharacteroutline>
+	<spw_eavesdroppingrevealscharacteroutlinetooltip>소리를 내는 신체 부위(예: 발소리는 다리, 목소리는 머리)의 대략적인 윤곽선을 표시합니다.</spw_eavesdroppingrevealscharacteroutlinetooltip>
+	<spw_eavesdroppingrevealsall>접근 불가 사운드 보기</spw_eavesdroppingrevealsall>
+	<spw_eavesdroppingrevealsalltooltip>엿듣는 영역으로 경로가 없는 소리에 대해 발광 효과를 표시합니다.\n\n참고: 청자의 선체에 있는 소리는 항상 무시됩니다.</spw_eavesdroppingrevealsalltooltip>
+	<spw_eavesdroppingspritemaxsize>최대 발광 크기</spw_eavesdroppingspritemaxsize>
+	<spw_eavesdroppingspritemaxsizetooltip>발광 효과의 최대 크기입니다.</spw_eavesdroppingspritemaxsizetooltip>
+	<spw_eavesdroppingspritesizemultiplier>발광 크기 배율</spw_eavesdroppingspritesizemultiplier>
+	<spw_eavesdroppingspritesizemultipliertooltip>소리의 범위에 비례한 발광 효과의 크기입니다.</spw_eavesdroppingspritesizemultipliertooltip>
+	<spw_eavesdroppingspriteopacity>발광 불투명도</spw_eavesdroppingspriteopacity>
+	<spw_eavesdroppingspriteopacitytooltip>발광 효과의 강도입니다.</spw_eavesdroppingspriteopacitytooltip>
+	<spw_eavesdroppingspritefadecurve>발광 페이드 곡선</spw_eavesdroppingspritefadecurve>
+	<spw_eavesdroppingspritefadecurvetooltip>발광 페이드 아웃 곡선의 모양을 계산하는 데 사용되는 지수입니다. 1보다 작은 값은 느리게 시작하여 끝에서 급격히 사라집니다. 1보다 큰 값은 빠르게 시작하여 끝에서 완만해집니다.</spw_eavesdroppingspritefadecurvetooltip>
+	<spw_eavesdroppingzoom>엿듣기 카메라 줌</spw_eavesdroppingzoom>
+	<spw_eavesdroppingzoomtooltip>엿들을 때 카메라가 얼마나 확대되는지를 나타냅니다.\n\n참고: 카메라 줌을 조절하는 다른 모드와 호환되지 않을 수 있습니다.</spw_eavesdroppingzoomtooltip>
+	<spw_eavesdroppingvignette>비네트 불투명도</spw_eavesdroppingvignette>
+	<spw_eavesdroppingvignettetooltip>엿들을 때 화면 가장자리에 나타나는 비네트 효과의 강도입니다.</spw_eavesdroppingvignettetooltip>
+
+	<!-- Hydrophone -->
+	<spw_hydrophonestab>수중 청음기</spw_hydrophonestab>
+	<spw_hydrophoneswitchenabled>수중 청음기 스위치 활성화</spw_hydrophoneswitchenabled>
+	<spw_hydrophoneswitchenabledtooltip>수중 청음기 기능을 켜고 끕니다.\n\n참고: 수중 청음기 스위치는 다음 라운드까지 유지됩니다.</spw_hydrophoneswitchenabledtooltip>
+	<spw_hydrophonemovementsounds>움직임 소리</spw_hydrophonemovementsounds>
+	<spw_hydrophonemovementsoundstooltip>물속에서의 움직임을 듣습니다.</spw_hydrophonemovementsoundstooltip>
+	<spw_hydrophonehearengine>엔진 소리 듣기</spw_hydrophonehearengine>
+	<spw_hydrophonehearenginetooltip>자신의 잠수함을 포함한 잠수함 엔진 소리를 듣습니다.</spw_hydrophonehearenginetooltip>
+	<spw_hydrophonehearintostructures>구조물 내부 소리 듣기</spw_hydrophonehearintostructures>
+	<spw_hydrophonehearintostructurestooltip>다른 잠수함이나 전초기지 내부의 소리를 듣습니다.\n\n참고: 이 구조물 내의 소리는 "얇은 벽" 장애물을 받습니다.</spw_hydrophonehearintostructurestooltip>
+	<spw_hydrophonemuffleownsub>자신의 잠수함 소리 약화</spw_hydrophonemuffleownsub>
+	<spw_hydrophonemuffleownsubtooltip>자신의 구조물 내부에서 나는 소리를 약화시킵니다.\n\n참고: "수면" 장애물을 적용합니다.</spw_hydrophonemuffleownsubtooltip>
+	<spw_hydrophonerange>수중 청음기 범위</spw_hydrophonerange>
+	<spw_hydrophonerangetooltip>수중 청음기를 통해 소리를 들을 수 있는 거리입니다.\n\n참고: 이 거리는 기존 소리의 범위에 합산됩니다.</spw_hydrophonerangetooltip>
+	<spw_hydrophonevolume>수중 청음기 볼륨</spw_hydrophonevolume>
+	<spw_hydrophonevolumetooltip>수중 청음기를 통해 듣는 소리의 볼륨입니다.</spw_hydrophonevolumetooltip>
+	<spw_hydrophonepitch>수중 청음기 피치</spw_hydrophonepitch>
+	<spw_hydrophonepitchtooltip>수중 청음기를 통해 듣는 소리의 피치입니다.\n\n참고: 근거리 채팅에는 적용되지 않습니다.</spw_hydrophonepitchtooltip>
+	<spw_hydrophoneambiencevolume>수중 청음기 주변 소리 볼륨</spw_hydrophoneambiencevolume>
+	<spw_hydrophoneambiencevolumetooltip>수중 청음기를 들을 때 재생되는 바다 주변 소리의 볼륨입니다.</spw_hydrophoneambiencevolumetooltip>
+	<spw_hydrophonemovementvolume>수중 청음기 움직임 볼륨</spw_hydrophonemovementvolume>
+	<spw_hydrophonemovementvolumetooltip>물속에서 캐릭터가 움직일 때 나는 물 첨벙거리는 소리의 볼륨입니다.</spw_hydrophonemovementvolumetooltip>
+	
+	<spw_hydrophonevisualfeedbackenabled>시각적 피드백</spw_hydrophonevisualfeedbackenabled>
+	<spw_hydrophonevisualfeedbackenabledtooltip>소나 UI에 색깔 있는 섹터를 표시하여 물속 소리의 방향, 크기, 암시된 거리를 시각적으로 나타냅니다.\n\n참고: 거리는 소리의 범위와 강조된 섹터의 너비를 기반으로 암시될 수 있습니다.</spw_hydrophonevisualfeedbackenabledtooltip>
+	<spw_hydrophoneusagedisablessonarblips>패시브 소나 비활성화</spw_hydrophoneusagedisablessonarblips>
+	<spw_hydrophoneusagedisablessonarblipstooltip>수중 청음기를 모니터링할 때 소나 블립 그리기를 중지합니다. 소나 블립은 환경을 시각적으로 표시하는 것입니다.</spw_hydrophoneusagedisablessonarblipstooltip>
+	<spw_hydrophoneusagedisablessuboutline>잠수함 윤곽선 비활성화</spw_hydrophoneusagedisablessuboutline>
+	<spw_hydrophoneusagedisablessuboutlinetooltip>수중 청음기를 모니터링할 때 잠수함과 도킹 해치의 윤곽선 그리기를 중지합니다.</spw_hydrophoneusagedisablessuboutlinetooltip>
+	<spw_hydrophonevisualfeedbacksizemultiplier>시각적 피드백 크기</spw_hydrophonevisualfeedbacksizemultiplier>
+	<spw_hydrophonevisualfeedbacksizemultipliertooltip>색깔 있는 섹터의 두께입니다.</spw_hydrophonevisualfeedbacksizemultipliertooltip>
+	<spw_hydrophonevisualfeedbackopacitymultiplier>시각적 피드백 불투명도</spw_hydrophonevisualfeedbackopacitymultiplier>
+	<spw_hydrophonevisualfeedbackopacitymultipliertooltip>색깔 있는 섹터의 투명도입니다.</spw_hydrophonevisualfeedbackopacitymultipliertooltip>
+	
+	<spw_hydrophonereverb>미묘한 메아리</spw_hydrophonereverb>
+	<spw_hydrophonereverbtooltip>먼 소리가 얼음 동굴과 수중 공간을 통해 확산, 산란, 반향하는 방식을 모방한 독특한 수중 청음기 잔향을 적용합니다.\n\n참고: '동적' 탭의 "잔향 활성화"가 활성화되어 있어야 합니다.</spw_hydrophonereverbtooltip>
+	<spw_hydrophonereverbtargetgain>잔향 강도</spw_hydrophonereverbtargetgain>
+	<spw_hydrophonereverbtargetgaintooltip>독특한 수중 청음기 잔향의 기본 증폭 값입니다.</spw_hydrophonereverbtargetgaintooltip>
+	
+	<spw_hydrophonedistortion>수중 청음기 왜곡</spw_hydrophonedistortion>
+	<spw_hydrophonedistortiontooltip>수중 청음기를 통해 듣는 소리에 왜곡 효과를 적용합니다.</spw_hydrophonedistortiontooltip>
+	
+	<spw_hydrophonebandpassfilter>수중 청음기 대역 통과</spw_hydrophonebandpassfilter>
+	<spw_hydrophonebandpassfiltertooltip>수중 청음기를 통해 듣는 소리에 대역 통과 필터를 적용합니다. 대역 통과 필터는 고주파와 저주파를 차단하여 라디오 같은 소리를 만듭니다.\n\n참고: 대역 통과 필터를 사용하는 소리는 약화되지 않습니다.</spw_hydrophonebandpassfiltertooltip>
+	<spw_hydrophonebandpassfilterhfgain>대역 통과 고주파 증폭</spw_hydrophonebandpassfilterhfgain>
+	<spw_hydrophonebandpassfilterhfgaintooltip>대역 통과 필터의 고주파 볼륨입니다.</spw_hydrophonebandpassfilterhfgaintooltip>
+	<spw_hydrophonebandpassfilterlfgain>대역 통과 저주파 증폭</spw_hydrophonebandpassfilterlfgain>
+	<spw_hydrophonebandpassfilterlfgaintooltip>대역 통과 필터의 저주파 볼륨입니다.</spw_hydrophonebandpassfilterlfgaintooltip>
+
+	<spw_categoryadvanced>고급</spw_categoryadvanced>
+
+	<spw_hydrophonemuffleignoredsounds>약화 무시 사운드</spw_hydrophonemuffleignoredsounds>
+	<spw_hydrophonemuffleignoredsoundstooltip>이 목록의 소리는 수중 청음기 사용 시 절대 약화되지 않습니다.</spw_hydrophonemuffleignoredsoundstooltip>
+	
+	<spw_hydrophonevisualignoredsounds>시각적 피드백 무시 사운드</spw_hydrophonevisualignoredsounds>
+	<spw_hydrophonevisualignoredsoundstooltip>이 목록의 소리는 수중 청음기 사용 시 소나 UI에 절대 표시되지 않습니다.</spw_hydrophonevisualignoredsoundstooltip>
+	
+	<!-- Ambience -->
+	<spw_ambiencetab>주변 소리</spw_ambiencetab>
+	<spw_disablewhitenoise>백색 소음 비활성화</spw_disablewhitenoise>
+	<spw_disablewhitenoisetooltip>바닐라 게임의 생물 군계 소음 루프를 음소거합니다.</spw_disablewhitenoisetooltip>
+
+	<spw_categorytrack>트랙별</spw_categorytrack>
+	<spw_waterambienceinvolume>실내 물소리 볼륨</spw_waterambienceinvolume>
+	<spw_waterambienceinvolumetooltip>실내에서 재생되는 물 주변 소리 트랙의 볼륨입니다.\n\n참고: 이 트랙은 실외 트랙 위에서 더 낮은 볼륨으로 계속 재생됩니다.</spw_waterambienceinvolumetooltip>
+	<spw_waterambienceoutvolume>실외 물소리 볼륨</spw_waterambienceoutvolume>
+	<spw_waterambienceoutvolumetooltip>실외에서 재생되는 물 주변 소리 트랙의 볼륨입니다.</spw_waterambienceoutvolumetooltip>
+	<spw_waterambiencemovingvolume>움직이는 물소리 볼륨</spw_waterambiencemovingvolume>
+	<spw_waterambiencemovingvolumetooltip>잠수함이나 플레이어가 물속을 움직일 때 재생되는 물 주변 소리 트랙의 볼륨입니다.</spw_waterambiencemovingvolumetooltip>
+
+	<spw_categoryenvironment>환경별</spw_categoryenvironment>
+	<spw_unsubmergedsuitwaterambiencevolume>비잠수 시 물소리 볼륨 (슈트)</spw_unsubmergedsuitwaterambiencevolume>
+	<spw_unsubmergedsuitwaterambiencevolumetooltip>청자가 잠수하지 않고 잠수복을 착용했을 때 물 주변 소리 트랙의 볼륨입니다.</spw_unsubmergedsuitwaterambiencevolumetooltip>
+	<spw_unsubmergednosuitwaterambiencevolume>비잠수 시 물소리 볼륨 (슈트 없음)</spw_unsubmergednosuitwaterambiencevolume>
+	<spw_unsubmergednosuitwaterambiencevolumetooltip>청자가 잠수하지 않고 잠수복을 착용하지 않았을 때 물 주변 소리 트랙의 볼륨입니다.</spw_unsubmergednosuitwaterambiencevolumetooltip>
+	<spw_submergedsuitwaterambiencevolume>잠수 시 물소리 볼륨 (슈트)</spw_submergedsuitwaterambiencevolume>
+	<spw_submergedsuitwaterambiencevolumetooltip>청자가 잠수하고 잠수복을 착용했을 때 물 주변 소리 트랙의 볼륨입니다.</spw_submergedsuitwaterambiencevolumetooltip>
+	<spw_submergednosuitwaterambiencevolume>잠수 시 물소리 볼륨 (슈트 없음)</spw_submergednosuitwaterambiencevolume>
+	<spw_submergednosuitwaterambiencevolumetooltip>청자가 잠수하고 잠수복을 착용하지 않았을 때 물 주변 소리 트랙의 볼륨입니다.</spw_submergednosuitwaterambiencevolumetooltip>
+	<spw_waterambiencetransitionspeed>물소리 전환 속도</spw_waterambiencetransitionspeed>
+	<spw_waterambiencetransitionspeedtooltip>물 주변 소리가 볼륨 레벨 간에 전환되는 속도입니다.</spw_waterambiencetransitionspeedtooltip>
+
+
+	<!-- Pitch -->
+	<spw_pitchtab>피치</spw_pitchtab>
+	<spw_pitchenabled>피치 활성화</spw_pitchenabled>
+	<spw_pitchenabledtooltip>모든 피치 효과를 전역적으로 켜고 끕니다.\n\n참고: 다른 모드의 소리와의 비정상적인 피치 상호작용에 대한 빠른 해결책으로 유용할 수 있습니다.</spw_pitchenabledtooltip>
+	<spw_pitchstatuseffectsounds>상태 이상 효과 사운드 피치</spw_pitchstatuseffectsounds>
+	<spw_pitchstatuseffectsoundstooltip>XML 상태 이상 효과로 재생되는 소리의 피치 조절을 켜고 끕니다.</spw_pitchstatuseffectsoundstooltip>
+	<spw_pitchwithdistance>거리에 따른 피치</spw_pitchwithdistance>
+	<spw_pitchwithdistancetooltip>약화된 소리의 거리에 따라 피치를 동적으로 낮춥니다.\n\n참고: 반복 사운드나 근거리 채팅에는 적용되지 않습니다.\n\n참고: 다른 피치 배율과 합연산으로 중첩됩니다.</spw_pitchwithdistancetooltip>
+	
+	<spw_divingsuitpitch>잠수복 피치</spw_divingsuitpitch>
+	<spw_divingsuitpitchtooltip>잠수복을 착용했을 때 소리의 피치입니다.\n\n참고: 다른 피치 배율과 합연산으로 중첩됩니다.</spw_divingsuitpitchtooltip>
+	<spw_submergedpitch>잠수 시 피치</spw_submergedpitch>
+	<spw_submergedpitchtooltip>청자가 잠수했을 때 소리의 피치입니다.\n\n참고: 다른 피치 배율과 합연산으로 중첩됩니다.</spw_submergedpitchtooltip>
+	
+	<spw_muffledsoundpitch>약화된 사운드 피치</spw_muffledsoundpitch>
+	<spw_muffledsoundpitchtooltip>약화된 비반복 사운드의 피치입니다. 약화 강도에 따라 "약화되지 않은 사운드 피치"와 혼합됩니다.\n\n참고: 다른 피치 배율과 합연산으로 중첩됩니다.</spw_muffledsoundpitchtooltip>
+	<spw_unmuffledsoundpitch>약화되지 않은 사운드 피치</spw_unmuffledsoundpitch>
+	<spw_unmuffledsoundpitchtooltip>약화되지 않은 비반복 사운드의 피치입니다. 약화 강도에 따라 "약화된 사운드 피치"와 혼합됩니다.\n\n참고: 다른 피치 배율과 합연산으로 중첩됩니다.</spw_unmuffledsoundpitchtooltip>
+	
+	<spw_muffledloopingpitch>약화된 반복 사운드 피치</spw_muffledloopingpitch>
+	<spw_muffledloopingpitchtooltip>약화된 반복 사운드의 피치입니다. 약화 강도에 따라 "약화되지 않은 반복 사운드 피치"와 혼합됩니다.\n\n참고: 다른 피치 배율과 합연산으로 중첩됩니다.</spw_muffledloopingpitchtooltip>
+	<spw_unmuffledloopingpitch>약화되지 않은 반복 사운드 피치</spw_unmuffledloopingpitch>
+	<spw_unmuffledloopingpitchtooltip>약화되지 않은 반복 사운드의 피치입니다. 약화 강도에 따라 "약화된 반복 사운드 피치"와 혼합됩니다.\n\n참고: 다른 피치 배율과 합연산으로 중첩됩니다.</spw_unmuffledloopingpitchtooltip>
+	
+	<spw_muffledvoicepitch>약화된 음성 피치</spw_muffledvoicepitch>
+	<spw_muffledvoicepitchtooltip>약화된 근거리 채팅의 피치입니다. 약화 강도에 따라 "약화되지 않은 음성 피치"와 혼합됩니다.\n\n참고: 다른 피치 배율과 합연산으로 중첩됩니다.\n\n참고: 재미로 넣어봤습니다 :)</spw_muffledvoicepitchtooltip>
+	<spw_unmuffledvoicepitch>약화되지 않은 음성 피치</spw_unmuffledvoicepitch>
+	<spw_unmuffledvoicepitchtooltip>약화되지 않은 근거리 채팅의 피치입니다. 약화 강도에 따라 "약화된 음성 피치"와 혼합됩니다.\n\n참고: 다른 피치 배율과 합연산으로 중첩됩니다.\n\n참고: 재미로 넣어봤습니다 :)</spw_unmuffledvoicepitchtooltip>
+
+
+	<!-- Advanced -->
+	<spw_advancedtab>고급</spw_advancedtab>
+
+	<spw_debugperformance>성능 표시</spw_debugperformance>
+	<spw_debugperformancetooltip>Soundproof Walls의 상세 성능 정보를 표시합니다.\n\n참고: 이 설정은 "설정 동기화"('일반' 탭) 사용 시 다른 플레이어와 동기화되지 않습니다.</spw_debugperformancetooltip>
+
+	<spw_debugplayingsounds>재생 중인 사운드 표시</spw_debugplayingsounds>
+	<spw_debugplayingsoundstooltip>Soundproof Walls에 의해 등록된 모든 활성 재생 사운드를 표시합니다.\n\n참고: 이 설정은 "설정 동기화"('일반' 탭) 사용 시 다른 플레이어와 동기화되지 않습니다.</spw_debugplayingsoundstooltip>
+
+	<spw_debugchannelinfo>채널 정보 표시</spw_debugchannelinfo>
+	<spw_debugchannelinfotooltip>"재생 중인 사운드 표시" 설정을 확장하여 모든 활성 재생 사운드의 증폭, 피치, 범위, 거리, 약화, 장애물 정보를 표시합니다.\n\n참고: "재생 중인 사운드 표시"가 비활성화된 경우, 이 정보는 바닐라트라우마 콘솔에 기록됩니다.\n\n참고: 이 설정은 "설정 동기화"('일반' 탭) 사용 시 다른 플레이어와 동기화되지 않습니다.</spw_debugchannelinfotooltip>
+
+	<spw_hidesettings>메뉴 버튼 숨기기</spw_hidesettings>
+	<spw_hidesettingstooltip>일시 정지 메뉴에서 "Soundproof Walls" 버튼을 제거합니다. Soundproof Walls 설정 메뉴는 콘솔에 "spw"를 입력하여 여전히 접근할 수 있습니다.\n\n참고: 이 설정은 "설정 동기화"('일반' 탭) 사용 시 다른 플레이어와 동기화되지 않습니다.</spw_hidesettingstooltip>
+
+	<spw_remembermenutabandscroll>메뉴 위치 기억</spw_remembermenutabandscroll>
+	<spw_remembermenutabandscrolltooltip>마지막으로 방문한 탭과 스크롤 위치에서 메뉴를 엽니다.\n\n참고: 이 설정은 "설정 동기화"('일반' 탭) 사용 시 다른 플레이어와 동기화되지 않습니다.</spw_remembermenutabandscrolltooltip>
+
+	<spw_maxsourcecount>최대 동시 재생 사운드</spw_maxsourcecount>
+	<spw_maxsourcecounttooltip>동시에 재생할 수 있는 사운드의 수입니다. 값이 높을수록 사운드가 건너뛰는 것을 방지하지만 성능에 영향을 줄 수 있습니다.</spw_maxsourcecounttooltip>
+	
+	<spw_maxsimultaneousinstances>최대 동시 인스턴스</spw_maxsimultaneousinstances>
+	<spw_maxsimultaneousinstancestooltip>동시에 재생할 수 있는 동일한 사운드의 인스턴스 수입니다. 값이 높을수록 사운드가 건너뛰는 것을 방지하지만 성능에 영향을 줄 수 있습니다.</spw_maxsimultaneousinstancestooltip>
+
+	<spw_categoryintervals>업데이트 간격</spw_categoryintervals>
+	<spw_updatenonloopingsounds>비반복 사운드 업데이트</spw_updatenonloopingsounds>
+	<spw_updatenonloopingsoundstooltip>비반복 사운드가 재생 중에 수정될 수 있도록 하여, 이전에 중단될 수 없었던 사운드를 중단할 수 있게 합니다.\n\n참고: 성능에 약간의 영향을 줄 수 있습니다.</spw_updatenonloopingsoundstooltip>
+	
+	<spw_nonloopingsoundmuffleupdateinterval>비반복 사운드 업데이트 간격</spw_nonloopingsoundmuffleupdateinterval>
+	<spw_nonloopingsoundmuffleupdateintervaltooltip>비반복 사운드의 각 장애물 업데이트 사이의 시간입니다.\n\n참고: "비반복 사운드 업데이트"가 활성화되어 있어야 합니다.\n\n참고: 이 값을 높이면 성능이 향상될 수 있습니다.</spw_nonloopingsoundmuffleupdateintervaltooltip>
+	<spw_openaleffectsupdateinterval>OpenAL 효과 업데이트 간격</spw_openaleffectsupdateinterval>
+	<spw_openaleffectsupdateintervaltooltip>동적 모드의 효과에 대한 각 효과 매개변수 업데이트 사이의 시간입니다.\n\n참고: 이 값을 높이면 성능이 향상될 수 있습니다.</spw_openaleffectsupdateintervaltooltip>
+	<spw_voicemuffleupdateinterval>음성 업데이트 간격</spw_voicemuffleupdateinterval>
+	<spw_voicemuffleupdateintervaltooltip>플레이어 음성의 각 장애물 업데이트 사이의 시간입니다.\n\n참고: 이 값을 높이면 성능이 향상될 수 있습니다.</spw_voicemuffleupdateintervaltooltip>
+	<spw_componentmuffleupdateinterval>부품 사운드 업데이트 간격</spw_componentmuffleupdateinterval>
+	<spw_componentmuffleupdateintervaltooltip>반복되는 부품 사운드(예: 환풍구, 원자로, 엔진)의 각 장애물 업데이트 사이의 시간입니다.\n\n참고: 이 값을 높이면 성능이 향상될 수 있습니다.</spw_componentmuffleupdateintervaltooltip>
+	<spw_statuseffectmuffleupdateinterval>상태 이상 효과 사운드 업데이트 간격</spw_statuseffectmuffleupdateinterval>
+	<spw_statuseffectmuffleupdateintervaltooltip>반복되는 상태 이상 효과 사운드(예: 질병으로 인한 소리)의 각 장애물 업데이트 사이의 시간입니다.\n\n참고: 이 값을 높이면 성능이 향상될 수 있습니다.</spw_statuseffectmuffleupdateintervaltooltip>
+	
+	<spw_categorytransitions>전환 효과</spw_categorytransitions>
+	<spw_disablevanillafadeout>바닐라 페이드 아웃 비활성화</spw_disablevanillafadeout>
+	<spw_disablevanillafadeouttooltip>바닐라 "FadeOutAndDispose" 메서드를 비활성화합니다. 소리가 반복 재생되는 문제가 있을 경우에만 이 옵션을 활성화하세요.\n\n참고: 오디오 중단이 덜 부드러워집니다.</spw_disablevanillafadeouttooltip>
+	<spw_gaintransitionfactor>증폭 전환 속도</spw_gaintransitionfactor>
+	<spw_gaintransitionfactortooltip>사운드의 볼륨이 초당 얼마나 변할 수 있는지를 나타냅니다. 값이 0이면 이 기능이 비활성화되어 즉시 전환됩니다.</spw_gaintransitionfactortooltip>
+	<spw_pitchtransitionfactor>피치 전환 속도</spw_pitchtransitionfactor>
+	<spw_pitchtransitionfactortooltip>사운드의 피치가 초당 얼마나 변할 수 있는지를 나타냅니다. 값이 0이면 이 기능이 비활성화되어 즉시 전환됩니다.</spw_pitchtransitionfactortooltip>
+	<spw_airreverbgaintransitionfactor>실내 잔향 전환 속도</spw_airreverbgaintransitionfactor>
+	<spw_airreverbgaintransitionfactortooltip>실내 잔향 효과의 증폭이 초당 얼마나 변할 수 있는지를 나타냅니다. 값이 0이면 이 기능이 비활성화되어 즉시 전환됩니다.</spw_airreverbgaintransitionfactortooltip>
+	<spw_hydrophonereverbgaintransitionfactor>수중 청음기 잔향 전환 속도</spw_hydrophonereverbgaintransitionfactor>
+	<spw_hydrophonereverbgaintransitionfactortooltip>수중 청음기 잔향 효과의 증폭이 초당 얼마나 변할 수 있는지를 나타냅니다. 값이 0이면 이 기능이 비활성화되어 즉시 전환됩니다.</spw_hydrophonereverbgaintransitionfactortooltip>
+	<spw_dynamicmuffletransitionfactor>약화 전환 속도</spw_dynamicmuffletransitionfactor>
+	<spw_dynamicmuffletransitionfactortooltip>동적 모드의 약화 효과가 초당 얼마나 변할 수 있는지를 나타냅니다. 값이 0이면 이 기능이 비활성화되어 즉시 전환됩니다.\n\n참고: 이 기능을 활성화하면 오디오 팝 노이즈가 발생할 수 있으며, 이는 바닐라트라우마의 OpenAL Soft 버전 문제로 추정됩니다.</spw_dynamicmuffletransitionfactortooltip>
+	<spw_dynamicmuffletransitionfactorflowfire>물 흐름 &amp; 화재 약화 전환 속도</spw_dynamicmuffletransitionfactorflowfire>
+	<spw_dynamicmuffletransitionfactorflowfiretooltip>물 흐름과 화재 소리에 대한 동적 모드의 약화 효과가 초당 얼마나 변할 수 있는지를 나타냅니다. 값이 0이면 이 기능이 비활성화되어 즉시 전환됩니다.\n\n참고: 이 기능을 활성화하면 오디오 팝 노이즈가 발생할 수 있으며, 이는 바닐라트라우마의 OpenAL Soft 버전 문제로 추정됩니다.</spw_dynamicmuffletransitionfactorflowfiretooltip>
+
+	<spw_categorypathfinding>사운드 경로 탐색</spw_categorypathfinding>
+	<spw_traversewaterducts>급수관 통과</spw_traversewaterducts>
+	<spw_traversewaterductstooltip>소리가 열린 급수관을 방해 없이 통과하도록 허용합니다.</spw_traversewaterductstooltip>
+	<spw_flowsoundstraversewaterducts>물 흐름 소리 급수관 통과</spw_flowsoundstraversewaterducts>
+	<spw_flowsoundstraversewaterductstooltip>물 흐름 소리의 경로 추정이 열린 급수관을 방해 없이 통과하도록 허용합니다.\n\n참고: '소리 약화' 탭의 "물 흐름 &amp; 화재 경로 약화"가 활성화되어 있어야 합니다.</spw_flowsoundstraversewaterductstooltip>
+	<spw_opendoorthreshold>열린 문 임계값</spw_opendoorthreshold>
+	<spw_opendoorthresholdtooltip>문, 해치 또는 덕트가 소리가 방해 없이 통과하기 위해 얼마나 열려 있어야 하는지를 나타냅니다. 값이 0이면 완전히 닫힌 문을 통해서도 소리가 방해 없이 통과할 수 있습니다.</spw_opendoorthresholdtooltip>
+	<spw_openwallthreshold>열린 벽 임계값</spw_openwallthreshold>
+	<spw_openwallthresholdtooltip>벽의 틈이 소리가 방해 없이 통과하기 위해 얼마나 열려 있어야 하는지를 나타냅니다.</spw_openwallthresholdtooltip>
+	<spw_soundpropagationrange>사운드 전파 범위</spw_soundpropagationrange>
+	<spw_soundpropagationrangetooltip>"벽 전파 사운드" 목록('고급' 탭)에 있는 소리가 전파될 근처 선체를 검색할 수 있는 최대 거리입니다.</spw_soundpropagationrangetooltip>
+
+	<spw_categoryai>캐릭터 AI</spw_categoryai>
+	<spw_aitargetsoundrange>AI 사운드 감지 범위</spw_aitargetsoundrange>
+	<spw_aitargetsoundrangetooltip>캐릭터 AI가 아이템과 캐릭터를 들을 수 있는 거리입니다.\n\n참고: 싱글플레이어 전용입니다.</spw_aitargetsoundrangetooltip>
+	<spw_aitargetsightrange>AI 시야 범위</spw_aitargetsightrange>
+	<spw_aitargetsightrangetooltip>캐릭터 AI가 아이템과 캐릭터를 볼 수 있는 거리입니다.\n\n참고: 싱글플레이어 전용입니다.</spw_aitargetsightrangetooltip>
+
+	<spw_categoryrules>사운드 규칙</spw_categoryrules>
+	
+	<spw_customsounds>사용자 지정 사운드</spw_customsounds>
+	<spw_customsoundstooltip>특정 사운드에 사용자 지정 값과 효과를 적용합니다.\n\n"Keyword": 대상 사운드 파일 이름의 일부. 대소문자를 구분하지 않습니다.\n\n"GainMult": 볼륨 배율. 다른 볼륨 배율과 합연산으로 중첩됩니다.\n\n"RangeMult": 범위 배율. 다른 범위 배율과 곱연산으로 중첩됩니다.\n\n"SidechainMult": 이 사운드가 재생될 때 다른 사운드의 볼륨이 감소하는 정도입니다.\n\n"SidechainRelease": 볼륨 감소가 지속되는 시간입니다.\n\n"Distortion": 이 사운드의 왜곡 효과를 켜고 끕니다. 동적 모드 전용입니다.\n\n"PitchMult": 피치 배율. 사운드의 길이를 늘려 작동합니다. 0.25-4.0 범위입니다.\n\n"MuffleInfluence": 약화 효과의 효율성. 값이 낮을수록 영향을 덜 받습니다.\n\n"KeywordExclusions": 제공된 키워드를 포함하지만 제외해야 하는 사운드. 대소문자를 구분하지 않습니다.</spw_customsoundstooltip>
+	<spw_moddedcustomsoundstooltip>[modname]의 사용자 지정 사운드 값입니다. 표준 "사용자 지정 사운드" 목록보다 우선 적용됩니다.\n\n이 목록은 다른 플레이어와 동기화되지 않으며, 변경 사항은 현재 세션에서만 유지됩니다.\n\nSoundproof Walls는 이 목록의 내용에 대해 책임지지 않습니다.</spw_moddedcustomsoundstooltip>
+	
+	<spw_ignoredsounds>무시되는 사운드</spw_ignoredsounds>
+	<spw_ignoredsoundstooltip>이 목록의 소리는 모든 처리에서 무시됩니다.</spw_ignoredsoundstooltip>
+	
+	<spw_surfaceignoredsounds>수면 무시 사운드</spw_surfaceignoredsounds>
+	<spw_surfaceignoredsoundstooltip>이 목록의 소리는 공기-물 경계를 방해 없이 통과합니다.</spw_surfaceignoredsoundstooltip>
+	
+	<spw_submersionignoredsounds>수중 무시 사운드</spw_submersionignoredsounds>
+	<spw_submersionignoredsoundstooltip>이 목록의 소리는 물속을 방해 없이 이동합니다.\n\n참고: 소리가 수면과 상호작용하는 방식에는 영향을 주지 않습니다.</spw_submersionignoredsoundstooltip>
+	
+	<spw_wallpropagatingsounds>벽 전파 사운드</spw_wallpropagatingsounds>
+	<spw_wallpropagatingsoundstooltip>이 목록의 소리는 플레이어에게 더 잘 도달하기 위해 근처 선체로 점프할 수 있으며, "두꺼운 벽" 대신 "얇은 벽" 장애물을 받습니다.</spw_wallpropagatingsoundstooltip>
+	
+	<spw_pitchignoredsounds>피치 무시 사운드</spw_pitchignoredsounds>
+	<spw_pitchignoredsoundstooltip>이 목록의 소리는 피치가 1.0으로 강제됩니다.\n\n참고: "사용자 지정 사운드" 목록('고급' 탭)의 사운드별 피치 배율이 이 목록을 재정의합니다.</spw_pitchignoredsoundstooltip>
+
+	<spw_reverbforcedsounds>잔향 강제 적용 사운드</spw_reverbforcedsounds>
+	<spw_reverbforcedsoundstooltip>이 목록의 소리는 가능한 경우 항상 잔향 효과를 받습니다.\n\n참고: "동적" 및 "정적" 효과 모드 전용입니다.</spw_reverbforcedsoundstooltip>
+
+	<spw_airreverbignoredsounds>실내 잔향 무시 사운드</spw_airreverbignoredsounds>
+	<spw_airreverbignoredsoundstooltip>이 목록의 소리는 절대 실내 잔향 효과를 받지 않습니다.\n\n참고: "동적" 및 "정적" 효과 모드 전용입니다.</spw_airreverbignoredsoundstooltip>
+	
+	<spw_waterreverbignoredsounds>실외 잔향 무시 사운드</spw_waterreverbignoredsounds>
+	<spw_waterreverbignoredsoundstooltip>이 목록의 소리는 절대 실외 잔향 효과를 받지 않습니다.\n\n참고: "동적" 효과 모드 전용입니다.</spw_waterreverbignoredsoundstooltip>
+	
+	<spw_barrierignoredsounds>장벽 무시 사운드</spw_barrierignoredsounds>
+	<spw_barrierignoredsoundstooltip>이 목록의 소리는 차폐, 벽, 문 또는 수면에 의해 약화되지 않습니다.</spw_barrierignoredsoundstooltip>
+	
+	<spw_xmlignoredsounds>XML 무시 사운드</spw_xmlignoredsounds>
+	<spw_xmlignoredsoundstooltip>이 목록은 내부적으로 "dontmuffle" 태그 또는 유사한 속성으로 표시된 사운드를 위한 것입니다. 이 목록의 소리는 항상 약화 여부가 평가됩니다.</spw_xmlignoredsoundstooltip>
+	
+	<spw_lowpassignoredsounds>저역 통과 무시 사운드</spw_lowpassignoredsounds>
+	<spw_lowpassignoredsoundstooltip>이 목록의 소리는 절대 약화 효과를 받지 않습니다.</spw_lowpassignoredsoundstooltip>
+	
+	<spw_containerignoredsounds>컨테이너 무시 사운드</spw_containerignoredsounds>
+	<spw_containerignoredsoundstooltip>이 목록의 소리는 보관된 모든 컨테이너를 방해 없이 통과합니다.</spw_containerignoredsoundstooltip>
+	
+	<spw_bubbleignorednames>익사 효과 면제 플레이어</spw_bubbleignorednames>
+	<spw_bubbleignorednamestooltip>산소 공급 없이 물속에서 말할 때 발생하는 익사 거품 효과에 대한 면역을 부여하려면 이 목록에 플레이어 이름을 삽입하세요.</spw_bubbleignorednamestooltip>
+
+	<!-- Extra -->
+	<spw_updateserverconfig>설정을 수정했습니다 - 서버 설정이 업데이트되었습니다</spw_updateserverconfig>
+	<spw_disableserverconfig>설정 동기화를 비활성화했습니다 - 이제 로컬 설정이 우선 적용됩니다</spw_disableserverconfig>
+	<spw_hydrophonemonitoring>수중 청음기 모니터링</spw_hydrophonemonitoring>
+	<spw_serverdiffheader>활성 서버 설정은 로컬 설정과 [count]개의 차이점이 있습니다:</spw_serverdiffheader>
+	<spw_listening>엿듣는 중...</spw_listening>
+	<spw_loading>오디오 버퍼 로딩 중...</spw_loading>
+	<spw_invalidinput>잘못된 입력</spw_invalidinput>
 	<spw_enabled>활성화됨</spw_enabled>
 	<spw_disabled>비활성화됨</spw_disabled>
-	<spw_enabledtooltip>모드의 모든 기능을 토글합니다</spw_enabledtooltip>
-	<spw_syncsettings>설정 동기화</spw_syncsettings>
-	<spw_syncsettingstooltip>호스트와 클라이언트 구성의 동기화를 토글합니다</spw_syncsettingstooltip>
-	<spw_syncsettingsalert>주의: 이 서버는 동기화가 활성화되어 있습니다 - 모든 플레이어가 호스트의 설정을 자동으로 사용합니다 (괄호 안의 값)</spw_syncsettingsalert>
-	<spw_focustargetaudio>대상 오디오 집중</spw_focustargetaudio>
-	<spw_focustargetaudiotooltip>현재 대상의 시점에서 오디오를 시뮬레이션합니다 (즉, 터렛/카메라가 듣는 소리를 듣습니다)</spw_focustargetaudiotooltip>
-	<spw_talkingragdolls>말하는 래그돌</spw_talkingragdolls>
-	<spw_talkingragdollstooltip>래그돌 상태일 때 플레이어가 말하는 것을 들을 수 있습니다 (기절에는 적용되지 않음)</spw_talkingragdollstooltip>
-	<spw_lowpassfrequency>로우패스 주파수</spw_lowpassfrequency>
-	<spw_lowpassfrequencytooltip>소리를 머플링하기 위해 사용되는 코너 주파수입니다 (이 설정을 중간에 조정하면 게임이 잠시 멈출 수 있습니다)</spw_lowpassfrequencytooltip>
-	<spw_voicelowpassfrequency>음성 로우패스 주파수</spw_voicelowpassfrequency>
-	<spw_voicelowpassfrequencytooltip>음성 채팅을 머플링하기 위해 사용되는 코너 주파수</spw_voicelowpassfrequencytooltip>
-	<spw_soundrange>사운드 범위</spw_soundrange>
-	<spw_soundrangetooltip>컴포넌트가 아닌 소리의 범위</spw_soundrangetooltip>
-	<spw_voicerange>음성 범위</spw_voicerange>
-	<spw_radiorange>라디오 범위</spw_radiorange>
-
-	<spw_volumesettings>볼륨 설정</spw_volumesettings>
-	<spw_muffledvoicevolume>머플된 음성 볼륨</spw_muffledvoicevolume>
-	<spw_muffledvoicevolumetooltip>벽이나 물 표면 뒤에 있는 로우패스 처리된 플레이어 음성의 볼륨</spw_muffledvoicevolumetooltip>
-	<spw_muffledsoundvolume>머플된 사운드 볼륨</spw_muffledsoundvolume>
-	<spw_muffledsoundvolumetooltip>벽이나 물 표면 뒤에 있는 로우패스 처리된 비루프 사운드의 볼륨</spw_muffledsoundvolumetooltip>
-	<spw_muffledcomponentvolume>머플된 컴포넌트 볼륨</spw_muffledcomponentvolume>
-	<spw_muffledcomponentvolumetooltip>벽이나 물 표면 뒤에 있는 로우패스 처리된 루프 컴포넌트/상태 효과 사운드의 볼륨</spw_muffledcomponentvolumetooltip>
-	<spw_unmuffledcomponentvolume>머플되지 않은 컴포넌트 볼륨</spw_unmuffledcomponentvolume>
-	<spw_submergedvolume>수중 볼륨</spw_submergedvolume>
-	<spw_submergedvolumetooltip>청취자도 같은 물속에 잠겨 있을 때 수중 사운드의 볼륨</spw_submergedvolumetooltip>
-
-	<spw_eavesdroppingsettings>도청 설정</spw_eavesdroppingsettings>
-	<spw_eavesdroppingbind>도청 키 바인드</spw_eavesdroppingbind>
-	<spw_eavesdroppingsoundvolume>도청 사운드 볼륨</spw_eavesdroppingsoundvolume>
-	<spw_eavesdroppingvoicevolume>도청 음성 볼륨</spw_eavesdroppingvoicevolume>
-	<spw_eavesdroppingpitch>도청 사운드 피치</spw_eavesdroppingpitch>
-	<spw_eavesdroppingmaxdistance>도청 최대 거리</spw_eavesdroppingmaxdistance>
-	<spw_eavesdroppingmaxdistancetooltip>도청 시 플레이어의 머리가 문에서 떨어질 수 있는 최대 거리</spw_eavesdroppingmaxdistancetooltip>
-
-	<spw_hydrophonesettings>수중 청음기 설정</spw_hydrophonesettings>
-	<spw_hydrophonerange>수중 청음기 범위</spw_hydrophonerange>
-	<spw_hydrophonerangetooltip>수중 이동 소리의 범위와 잠수함 외부의 모든 소리에 추가되는 추가 범위</spw_hydrophonerangetooltip>
-	<spw_hydrophonevolume>수중 청음기 볼륨</spw_hydrophonevolume>
-	<spw_hydrophonepitch>수중 청음기 피치</spw_hydrophonepitch>
-	<spw_hydrophonelegacyswitch>수중 청음기 레거시 스위치</spw_hydrophonelegacyswitch>
-	<spw_hydrophonelegacyswitchtooltip>오래된 수중 청음기 스위치 로직 사용 (활성 소나 사용 시 스위치가 꺼짐)</spw_hydrophonelegacyswitchtooltip>
-	<spw_hydrophoneswitchenabled>하이드로폰 스위치 활성화됨</spw_hydrophoneswitchenabled>
-	<spw_hydrophoneswitchenabledtooltip>하이드로폰 스위치의 존재를 전환합니다 (라운드 재시작 필요)</spw_hydrophoneswitchenabledtooltip>
-
-	<spw_ambiencesettings>환경 설정</spw_ambiencesettings>
-	<spw_unsubmergedwaterambiencevolume>비수중 환경 볼륨</spw_unsubmergedwaterambiencevolume>
-	<spw_submergedwaterambiencevolume>수중 환경 볼륨</spw_submergedwaterambiencevolume>
-	<spw_hydrophonewaterambiencevolume>수중 청음기 환경 볼륨</spw_hydrophonewaterambiencevolume>
-	<spw_waterambiencetransitionspeed>환경 전환 속도</spw_waterambiencetransitionspeed>
-	<spw_waterambiencetransitionspeedtooltip>환경 볼륨 사이의 전환 속도</spw_waterambiencetransitionspeedtooltip>
-
-	<spw_advancedsoundsettings>고급 사운드 설정</spw_advancedsoundsettings>
-	<spw_soundvolumemultipliers>사운드 볼륨 배수</spw_soundvolumemultipliers>
-	<spw_ignoredsounds>무시된 사운드</spw_ignoredsounds>
-	<spw_lowpassignoredsounds>로우패스 무시된 사운드</spw_lowpassignoredsounds>
-	<spw_pitchignoredsounds>피치 무시된 사운드</spw_pitchignoredsounds>
-	<spw_pathignoredsounds>벽 무시된 사운드</spw_pathignoredsounds>
-	<spw_containerignoredsounds>컨테이너 무시된 사운드</spw_containerignoredsounds>
-	<spw_waterignoredsounds>물 무시된 사운드</spw_waterignoredsounds>
-	<spw_submersionignoredsounds>수중 무시된 사운드</spw_submersionignoredsounds>
-	<spw_bubbleignorednames>버블 무시된 이름</spw_bubbleignorednames>
-
-	<spw_nichesettings>특정 설정</spw_nichesettings>
-	<spw_mufflesubmergedplayer>수중 플레이어 소리 감소</spw_mufflesubmergedplayer>
-	<spw_mufflesubmergedplayertooltip>머리가 물속에 있을 때 오디오를 감소시킵니다 (권장)</spw_mufflesubmergedplayertooltip>
-	<spw_mufflesubmergedviewtarget>수중 시야 대상 소리 감소</spw_mufflesubmergedviewtarget>
-	<spw_mufflesubmergedviewtargettooltip>조회 대상이 물속에 있을 때 오디오를 감소시킵니다 (예: 터렛, 카메라 등)</spw_mufflesubmergedviewtargettooltip>
-	<spw_mufflesubmergedsounds>수중 소리 감소</spw_mufflesubmergedsounds>
-	<spw_mufflesubmergedsoundstooltip>물 표면 아래에 위치한 소리를 감소시킵니다 (권장)</spw_mufflesubmergedsoundstooltip>
-	<spw_muffleflowsounds>유동 소리 감소</spw_muffleflowsounds>
-	<spw_muffleflowsoundstooltip>누수로 인한 물 흐름 소리의 감소를 토글합니다</spw_muffleflowsoundstooltip>
-	<spw_mufflefiresounds>불 소리 감소</spw_mufflefiresounds>
-	<spw_mufflefiresoundstooltip>불 소리의 감소를 토글합니다</spw_mufflefiresoundstooltip>
-	<spw_muffledivingsuit>다이빙 슈트 소리 줄이기</spw_muffledivingsuit>
-	<spw_muffledivingsuittooltip>다이빙 슈트를 착용할 때 소리 줄이기를 전환합니다 (권장되지 않음)</spw_muffledivingsuittooltip>
-	<spw_divingsuitpitch>잠수복 피치</spw_divingsuitpitch>
-	<spw_divingsuitpitchtooltip>잠수복 착용 시 소리의 피치 (추가적으로 적용됩니다)</spw_divingsuitpitchtooltip>
-	<spw_submergedpitch>수중 피치</spw_submergedpitch>
-	<spw_submergedpitchtooltip>청취자가 수중일 때 소리의 피치 (추가적으로 적용됩니다)</spw_submergedpitchtooltip>
-	<spw_muffledvoicepitch>머플된 음성 피치</spw_muffledvoicepitch>
-	<spw_muffledvoicepitchtooltip>권장하지 않습니다. 재미를 위한 것입니다</spw_muffledvoicepitchtooltip>
-	<spw_unmuffledvoicepitch>머플되지 않은 음성 피치</spw_unmuffledvoicepitch>
-	<spw_unmuffledvoicepitchtooltip>권장하지 않습니다. 재미를 위한 것입니다</spw_unmuffledvoicepitchtooltip>
-	<spw_muffledcomponentpitch>머플된 컴포넌트 피치</spw_muffledcomponentpitch>
-	<spw_unmuffledcomponentpitch>머플되지 않은 컴포넌트 피치</spw_unmuffledcomponentpitch>
-	<spw_hidesettings>메뉴 버튼 숨기기</spw_hidesettings>
-	<spw_hidesettingstooltip>경고: 이 설정을 활성화하면 UI에서 "방음 설정" 버튼이 제거됩니다. 이 설정을 복원하려면 구성 파일을 수동으로 편집하거나 삭제해야 합니다.</spw_hidesettingstooltip>
-
-	<spw_updateserverconfig>가 설정을 수정했습니다 - 서버 구성이 업데이트되었습니다</spw_updateserverconfig>
-	<spw_disableserverconfig>가 설정 동기화를 비활성화했습니다 - 로컬 구성이 우선합니다</spw_disableserverconfig>
-	<spw_hydrophonemonitoring>수중 청음기 모니터링</spw_hydrophonemonitoring>
-	<spw_listening>청취 중...</spw_listening>
-	<spw_invalidinput>잘못된 입력</spw_invalidinput>
-	<spw_default>(기본)</spw_default>
-	<spw_vanilla>(바닐라)</spw_vanilla>
-	<spw_custom>(사용자 정의)</spw_custom>
+	<spw_default>기본값</spw_default>
+	<spw_vanilla>바닐라</spw_vanilla>
+	<spw_custom>사용자 지정</spw_custom>
+	<spw_linear>선형</spw_linear>
+	<spw_instant>즉시</spw_instant>
+	<spw_pertick>틱당</spw_pertick>
+	<spw_concave>오목</spw_concave>
+	<spw_convex>볼록</spw_convex>
+	<spw_seconds>초</spw_seconds>
 	<spw_reset>초기화</spw_reset>
-	<spw_resetall>전체 초기화</spw_resetall>
+	<spw_resetall>모두 초기화</spw_resetall>
 
+
+	<!-- 2.0 Popup message -->
+	<spw_popupheader>Soundproof Walls 2.0에 오신 것을 환영합니다</spw_popupheader>
+	<spw_popupheadersubtext>Soundproof Walls 2.0은 기존 모드를 완전히 재작성하고 확장한 버전으로, 바닐라트라우마의 오디오 시스템을 전면 개편합니다.</spw_popupheadersubtext>
+
+	<spw_popupbodyheader>주요 변경 사항</spw_popupbodyheader>
+	
+	<spw_popupbodysubheading1>• 환경 시뮬레이션 잔향</spw_popupbodysubheading1>
+	<spw_popupbodysubtext1>소리와 플레이어 음성이 방의 크기와 볼륨에 따라 현실적으로 울려 퍼집니다. 잠수함 밖에서는 유로파의 얼어붙은 벽에 음파가 반사되면서 큰 소리가 수 마일에 걸쳐 흩어지는 것을 들을 수 있습니다.</spw_popupbodysubtext1>
+
+	<spw_popupbodysubheading2>• 사이드체인 압축 시스템</spw_popupbodysubheading2>
+	<spw_popupbodysubtext2>총성과 폭발음이 더 강렬하게 들리며, 조용한 소리를 덮어 더 넓고 강력한 다이내믹 레인지를 제공합니다.</spw_popupbodysubtext2>
+
+	<spw_popupbodysubheading3>• 동적 저역 통과 주파수</spw_popupbodysubheading3>
+	<spw_popupbodysubtext3>소리는 더 이상 정해진 강도로만 약화되지 않으며, 이제 상황과 장애물 수에 따라 동적으로 조절됩니다.</spw_popupbodysubtext3>
+
+	<spw_popupbodysubheading4>• 사운드 차폐</spw_popupbodysubheading4>
+	<spw_popupbodysubtext4>소리는 플레이어의 귀에 도달하는 경로를 탐색하면서 주변 레벨 지형의 형태에 의해 약화됩니다.</spw_popupbodysubtext4>
+
+	<spw_popupbodysubheading5>• 강력한 왜곡</spw_popupbodysubheading5>
+	<spw_popupbodysubtext5>총성, 폭발음 및 기타 큰 소리는 공기 중에서 격렬하게 왜곡되고 물속에서는 깊게 울립니다.</spw_popupbodysubtext5>
+
+	<spw_popupbodysubheading6>• 개선된 음성 채팅</spw_popupbodysubheading6>
+	<spw_popupbodysubtext6>무전기를 수정처럼 맑은 소리부터 완전히 고장 난 소리까지 미세 조정하고, 얼마나 크게 소리치는지에 따라 음성이 전달되는 거리를 동적으로 조절하는 새로운 근거리 채팅 시스템을 사용해 보세요.</spw_popupbodysubtext6>
+	
+	<spw_popupbodysubheading7>• 전면 개편된 시스템</spw_popupbodysubheading7>
+	<spw_popupbodysubtext7>엿듣기 및 수중 청음기 시스템이 새로운 시각 효과와 음향 효과로 완전히 개편되었습니다. 바닐라 시스템도 개선되어 격렬한 상황에서 더 이상 소리가 끊기지 않으며, 물 흐름 소리도 이제 벽에 의해 제대로 약화됩니다.</spw_popupbodysubtext7>
+	
+	<spw_popupbodysubheading8>• 완벽한 제어</spw_popupbodysubheading8>
+	<spw_popupbodysubtext8>230개 이상의 새로운 설정 옵션과 새롭게 디자인된 설정 메뉴를 통해 모든 사운드를 완벽하게 제어하고 무한한 방법으로 사용자 지정할 수 있습니다.</spw_popupbodysubtext8>
+	
+	<spw_popupbodyconclusion>변경 사항을 즐기시길 바랍니다! 질문이나 문제가 있으면 알려주세요. :) - Plag</spw_popupbodyconclusion>
+
+	<spw_footertext1>이것은 빙산의 일각일 뿐입니다</spw_footertext1>
+	<spw_footertext2>후원하기</spw_footertext2>
+	<spw_footertext3>코드 확인하기</spw_footertext3>
+	<spw_footerlink1>Steam에서 전체 변경 로그 보기!</spw_footerlink1>
+	<spw_footerlink2>Ko-fi에서 커피 사주기!</spw_footerlink2>
+	<spw_footerlink3>GitHub에서 저장소에 별 주기!</spw_footerlink3>
+
+	<spw_popupbutton>설정</spw_popupbutton>
+
+	<!-- Stats log -->
+	<spw_statsheader>Soundproof Walls 통계:</spw_statsheader>
+	<spw_stats>Soundproof Walls를 [initcount]번 초기화했습니다.\n모드가 활성화된 상태로 [playtime] 동안 플레이했습니다.\n플레이 시간의 [percenteavesdrop]%를 엿듣는 데 사용했습니다.\n그리고 플레이 시간의 [percenthydrophone]%를 수중 청음기 모니터링에 사용했습니다.\n총 [soundcount]개의 사운드가 Soundproof Walls에 의해 처리되었습니다.</spw_stats>
 </infotexts>

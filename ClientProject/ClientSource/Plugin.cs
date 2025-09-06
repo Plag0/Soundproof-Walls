@@ -176,13 +176,13 @@ namespace SoundproofWalls
                 typeof(SoundPlayer).GetMethod(nameof(SoundPlayer.PlaySound), new Type[] { typeof(Sound), typeof(Vector2), typeof(float), typeof(float), typeof(float), typeof(Hull), typeof(bool), typeof(bool) }),
                 new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_SoundPlayer_PlaySound))));
             
-            // ItemComponent_PlaySound prefix REPLACEMENT.
+            // ItemComponent_PlaySound prefix REPLACEMENT 1.
             // Increase range of component sounds.
             harmony.Patch(
                 typeof(ItemComponent).GetMethod(nameof(ItemComponent.PlaySound), BindingFlags.Public | BindingFlags.Instance, new Type[] { typeof(ActionType), typeof(Character) }),
                 new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_ItemComponent_PlaySound), BindingFlags.Static | BindingFlags.Public, new Type[] { typeof(ItemComponent), typeof(ActionType), typeof(Character) })));
 
-            // ItemComponent_PlaySound prefix REPLACEMENT.
+            // ItemComponent_PlaySound prefix REPLACEMENT 2.
             // Increase range of component sounds.
             harmony.Patch(
                 typeof(ItemComponent).GetMethod(nameof(ItemComponent.PlaySound), BindingFlags.NonPublic | BindingFlags.Instance, new Type[] { typeof(ItemSound), typeof(Vector2) }),
@@ -398,7 +398,7 @@ namespace SoundproofWalls
                 Util.ResizeSoundManagerPools(config.MaxSourceCount);
             }
 
-            LuaCsLogger.Log(TextManager.GetWithVariable("initmessage", "[version]", ModStateManager.State.Version).Value, color: Color.LimeGreen);
+            LuaCsLogger.Log(TextManager.GetWithVariable("initmessage", "[version]", ModState.Version).Value, color: Color.LimeGreen);
             LuaCsLogger.Log(TextManager.Get("initmessagefollowup").Value, color: Color.LightGreen);
             
             ModStateManager.State.TimesInitialized++;
@@ -1589,8 +1589,7 @@ namespace SoundproofWalls
 
             SoundChannel instance = __instance;
 
-            // Hand over control to default setter if sound is not extended or has no sound info.
-            uint sourceId = instance.Sound.Owner.GetSourceFromIndex(instance.Sound.SourcePoolIndex, instance.ALSourceIndex);
+            // Hand over control to default setter if sound is not extended or has no info.
             if (!config.Enabled ||
                 instance.Sound is not ExtendedOggSound extendedSound ||
                 !ChannelInfoManager.TryGetChannelInfo(instance, out ChannelInfo? soundInfo) ||
@@ -1599,7 +1598,13 @@ namespace SoundproofWalls
                 return true; 
             }
 
-            // Real time processing doesn't use the muffled property so it is essentially turned off.
+            // Hand over control to default setter for classic muffling if dynamic effects manager hasn't loaded on dynamicFx mode.
+            if (EffectsManager == null && (config.DynamicFx || instance.Sound is ReducedOggSound))
+            {
+                return true;
+            }
+
+            // DynamicFx uses its own muffling effect so we stop the original function here.
             if (config.DynamicFx || instance.Sound is ReducedOggSound)
             {
                 return false;
@@ -1794,9 +1799,9 @@ namespace SoundproofWalls
                 soundHull = speakingClient.Character?.CurrentHull;
             }
 
-            ChannelInfo soundInfo = ChannelInfoManager.EnsureUpdateChannelInfo(instance, soundHull: soundHull, speakingClient: speakingClient, messageType: messageType, dontMuffle: !muffle);
+            ChannelInfo channelInfo = ChannelInfoManager.EnsureUpdateChannelInfo(instance, soundHull: soundHull, speakingClient: speakingClient, messageType: messageType, dontMuffle: !muffle);
 
-            uint alBuffer = soundInfo.Muffled || sound.Owner.GetCategoryMuffle(instance.Category) ? sound.Buffers.AlMuffledBuffer : sound.Buffers.AlBuffer;
+            uint alBuffer = channelInfo.Muffled || sound.Owner.GetCategoryMuffle(instance.Category) ? sound.Buffers.AlMuffledBuffer : sound.Buffers.AlBuffer;
 
             Al.Sourcei(sourceId, Al.Buffer, (int)alBuffer);
 
@@ -2128,17 +2133,39 @@ namespace SoundproofWalls
             if (!config.Enabled) { return true; }
 
             ItemComponent instance = __instance;
-            UpdateComponentOneshotSoundChannels(instance);
-
             Item item = instance.item;
             ItemSound loopingSound = instance.loopingSound;
-            SoundChannel channel = instance.loopingSoundChannel;
+            SoundChannel loopingChannel = instance.loopingSoundChannel;
 
-            if (loopingSound == null || channel == null || !channel.IsPlaying) { return false; }
+            if (loopingSound != null && loopingChannel != null && loopingChannel.IsPlaying)
+            {
 
-            channel.Position = new Vector3(item.WorldPosition, 0.0f);
+                ChannelInfo channelInfo = ChannelInfoManager.EnsureUpdateChannelInfo(loopingChannel, itemComp: instance);
+                if (channelInfo.Ignored) 
+                {
+                    float targetGain = instance.GetSoundVolume(loopingSound);
+                    float gainDiff = targetGain - loopingChannel.Gain;
+                    loopingChannel.Gain += Math.Abs(gainDiff) < 0.1f ? gainDiff : Math.Sign(gainDiff) * 0.1f;
+                }
 
-            ChannelInfoManager.EnsureUpdateChannelInfo(channel, itemComp: instance);
+                loopingChannel.Position = new Vector3(item.WorldPosition, 0.0f);
+                loopingSound.RoundSound.LastStreamSeekPos = loopingChannel.StreamSeekPos;
+            }
+
+            List<SoundChannel> playingOneshotSoundChannels = instance.playingOneshotSoundChannels;
+            for (int i = 0; i < playingOneshotSoundChannels.Count; i++)
+            {
+                if (!playingOneshotSoundChannels[i].IsPlaying)
+                {
+                    playingOneshotSoundChannels[i].Dispose();
+                    playingOneshotSoundChannels[i] = null;
+                }
+            }
+            playingOneshotSoundChannels.RemoveAll(ch => ch == null);
+            foreach (SoundChannel channel in playingOneshotSoundChannels)
+            {
+                channel.Position = new Vector3(item.WorldPosition, 0.0f);
+            }
 
             return false;
         }
@@ -2187,26 +2214,6 @@ namespace SoundproofWalls
             ActiveLoopingSounds.RemoveWhere(s => s.soundChannel == null);
 
             return false;
-        }
-
-        private static void UpdateComponentOneshotSoundChannels(ItemComponent itemComponent)
-        {
-            List<SoundChannel> playingOneshotSoundChannels = itemComponent.playingOneshotSoundChannels;
-            Item item = itemComponent.item;
-
-            for (int i = 0; i < playingOneshotSoundChannels.Count; i++)
-            {
-                if (!playingOneshotSoundChannels[i].IsPlaying)
-                {
-                    playingOneshotSoundChannels[i].Dispose();
-                    playingOneshotSoundChannels[i] = null;
-                }
-            }
-            playingOneshotSoundChannels.RemoveAll(ch => ch == null);
-            foreach (SoundChannel channel in playingOneshotSoundChannels)
-            {
-                channel.Position = new Vector3(item.WorldPosition, 0.0f);
-            }
         }
 
         public static void SPW_UpdateTransform(Camera __instance)

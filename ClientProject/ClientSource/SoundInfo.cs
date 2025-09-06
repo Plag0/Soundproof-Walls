@@ -74,7 +74,6 @@ namespace SoundproofWalls
                 IgnoreSurface = IgnoreLowpass || !config.MuffleWaterSurface || Util.StringHasKeyword(filename, config.SurfaceIgnoredSounds);
                 IgnoreSubmersion = IgnoreLowpass || Util.StringHasKeyword(filename, config.SubmersionIgnoredSounds, exclude: "Barotrauma/Content/Characters/Human/");
                 IgnoreContainer = IgnoreLowpass || Util.StringHasKeyword(filename, config.ContainerIgnoredSounds);
-                IgnoreAll = IgnoreLowpass && IgnorePitch;
                 PropagateWalls = !IgnoreAll && !IgnoreLowpass && Util.StringHasKeyword(filename, config.PropagatingSounds);
                 IgnoreHydrophoneMuffle = Util.StringHasKeyword(filename, config.HydrophoneMuffleIgnoredSounds);
                 IgnoreHydrophoneVisuals = Util.StringHasKeyword(filename, config.HydrophoneVisualIgnoredSounds);

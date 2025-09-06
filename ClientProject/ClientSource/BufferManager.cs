@@ -32,7 +32,7 @@ namespace SoundproofWalls
         {
             if (!ActiveReloadRequest.HasValue) { return; }
 
-            LocalizedString modName = TextManager.GetWithVariable("spw_modname", "[version]", ModStateManager.State.Version);
+            LocalizedString modName = TextManager.GetWithVariable("spw_modname", "[version]", ModState.Version);
             Vector2 modNameSize = GUIStyle.LargeFont.MeasureString(modName);
             Vector2 modNamePos = new Vector2(GameMain.GraphicsWidth / 2 - modNameSize.X / 2, GameMain.GraphicsHeight / 2 - modNameSize.Y / 2);
 

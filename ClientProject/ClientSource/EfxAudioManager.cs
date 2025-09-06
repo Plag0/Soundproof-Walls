@@ -373,7 +373,7 @@ namespace SoundproofWalls
              
             float reflectionsBaseGain = 5.1f - (roomSizeFactor * 0.95f);
             float reflectionsMult = loudRoomPenalty * submersionBonus * 0.3f;
-            float reflectionsTargetGain =  reflectionsBaseGain * reflectionsMult;
+            float reflectionsTargetGain = reflectionsBaseGain * reflectionsMult;
 
 
             float diffusion = 0.55f + (roomSizeFactor * 0.15f);
@@ -416,18 +416,23 @@ namespace SoundproofWalls
             // Must be strong enough to support the very long decay time.
             float lateReverbGain = targetReverbGain * 1.5f;
 
+            float durationMult = ConfigManager.Config.DynamicReverbWaterDurationMultiplier;
+            float decayTime = 18.0f * durationMult;
+            float reflectionsDelay = 0.3f * durationMult;
+            float lateReverbDelay = 0.1f * durationMult;
+
             return new ReverbConfiguration()
             {
                 Density = 1.0f,
-                Diffusion = 0.25f,
+                Diffusion = Config.DynamicReverbWaterDiffusion,
                 Gain = targetReverbGain,
-                GainHf = 0.04f,
-                DecayTime = 20.0f,
+                GainHf = Config.DynamicReverbWaterGainHf,
+                DecayTime = decayTime,
                 DecayHfRatio = 0.1f,
                 ReflectionsGain = 0.42f,
-                ReflectionsDelay = 0.3f,
+                ReflectionsDelay = reflectionsDelay,
                 LateReverbGain = lateReverbGain,
-                LateReverbDelay = 0.1f,
+                LateReverbDelay = lateReverbDelay,
                 AirAbsorptionGainHf = 0.994f, // Default value
                 RoomRolloffFactor = 0.0f, // Default value
                 DecayHfLimit = Al.True // Default value

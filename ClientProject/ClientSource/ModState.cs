@@ -1,5 +1,4 @@
 ﻿using Barotrauma;
-using System.Drawing;
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -8,8 +7,9 @@ namespace SoundproofWalls
 {
     public class ModState
     {
-        public string Version { get; set; } = "2.0";
-        public bool FirstLaunch { get; set; } = true;
+        [JsonIgnore]
+        public const string Version = "2.0";
+        public bool SeenWelcomePopup { get; set; } = false;
 
         // Stat tracking for fun
         public long TimesInitialized { get; set; } = 0;

@@ -1,109 +1,692 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <infotexts language="Traditional Chinese" nowhitespace="false" translatedname="中文(繁體)">
 
-	<spw_settings>Soundproof設定</spw_settings>
+	<spw_modname>Soundproof Walls [version]</spw_modname>
+	<spw_openmenuhelp>開啟 Soundproof Walls 設定選單。</spw_openmenuhelp>
+	<spw_openpopuphelp>開啟 Soundproof Walls 歡迎彈出視窗。</spw_openpopuphelp>
+	<spw_openworkshophelp>在您的瀏覽器中開啟 Soundproof Walls 工作坊頁面。</spw_openworkshophelp>
+	<spw_guidehelp>在您的瀏覽器中開啟 Soundproof Walls 設定指南頁面。</spw_guidehelp>
+	<spw_reporthelp>在您的瀏覽器中開啟 Soundproof Walls 錯誤回報頁面。</spw_reporthelp>
 
-	<spw_generalsettings>一般設定</spw_generalsettings>
-	<spw_enabled>已啟用</spw_enabled>
-	<spw_disabled>已禁用</spw_disabled>
-	<spw_enabledtooltip>切換mod的所有功能</spw_enabledtooltip>
+	<initmessage>Soundproof Walls v[version] 已載入完成</initmessage>
+	<initmessagefollowup>  > 輸入「spw」開啟設定選單。\n  > 輸入「spw_stats」列印您的統計資料。\n  > 有問題嗎？輸入「spw_workshop」開啟工作坊頁面並留言。\n  > 發現錯誤？輸入「spw_report」開啟錯誤討論頁面並發文。\n  > 輸入「spw_help」了解更多關於設定選項的資訊。\n  > 輸入「spw_welcome」重新開啟首次啟動的彈出視窗。</initmessagefollowup>
+	
+	<!-- Info Panel -->
+	<spw_syncingenabled>同步已啟用！\n您正在使用由 [name] 上傳至伺服器的設定檔。該設定檔的數值會顯示在您的數值旁的括號中。</spw_syncingenabled>
+	<spw_syncingenableduploader>同步已啟用！\n您的設定檔已上傳至伺服器，並供所有其他玩家使用。</spw_syncingenableduploader>
+	<spw_syncingdisabled>同步已停用！\n伺服器沒有上傳任何設定檔。您正在使用您的本地設定檔。</spw_syncingdisabled>
+	<spw_offlinemode>預設值為藍色。\n自訂值為黃色。\n原版值為白色。\n\n正在尋找您的設定檔嗎？\n您可以在此處找到：\n[path]</spw_offlinemode>
+
+	<spw_editpermissionhost>編輯權限：\n您是此遊戲的主機。變更將會上傳至伺服器並供所有其他玩家使用。</spw_editpermissionhost>
+	<spw_editpermissionadmin>編輯權限：\n您是此遊戲的管理員。變更將會上傳至伺服器並供所有其他玩家使用。</spw_editpermissionadmin>
+	<spw_editpermissionnothost>編輯權限：\n您不是此遊戲的主機。變更將會儲存在本地，但在伺服器同步啟用時不會生效。</spw_editpermissionnothost>
+	<spw_editpermissionnotadmin>編輯權限：\n您不是此遊戲的管理員。變更將會儲存在本地，但在伺服器同步啟用時不會生效。</spw_editpermissionnotadmin>
+
+	<spw_categorymuffle>消音</spw_categorymuffle>
+	<spw_categorygain>增益</spw_categorygain>
+	<spw_categoryreverb>殘響</spw_categoryreverb>
+	<spw_categorygeneral>一般</spw_categorygeneral>
+	<spw_categoryvisuals>視覺效果</spw_categoryvisuals>
+
+	<!-- General -->
+	<spw_generaltab>一般</spw_generaltab>
+
+	<spw_enablemod>啟用模組</spw_enablemod>
+	<spw_enablemodtooltip>全域切換模組的所有功能。</spw_enablemodtooltip>
 	<spw_syncsettings>同步設定</spw_syncsettings>
-	<spw_syncsettingstooltip>切換主機和客戶端配置的同步</spw_syncsettingstooltip>
-	<spw_syncsettingsalert>注意：此服務器已啟用同步 - 所有玩家將自動使用主機的設置（括號中的值）</spw_syncsettingsalert>
-	<spw_focustargetaudio>焦點目標音頻</spw_focustargetaudio>
-	<spw_focustargetaudiotooltip>模擬當前目標的音頻視角（即，您聽到炮塔/攝像頭聽到的聲音）</spw_focustargetaudiotooltip>
-	<spw_talkingragdolls>說話的布偶</spw_talkingragdolls>
-	<spw_talkingragdollstooltip>當玩家處於布偶狀態時聽到他們說話（不適用於昏厥）</spw_talkingragdollstooltip>
-	<spw_lowpassfrequency>低通頻率</spw_lowpassfrequency>
-	<spw_lowpassfrequencytooltip>用於消音的截止頻率（調整此設置會短暫凍結遊戲）</spw_lowpassfrequencytooltip>
-	<spw_voicelowpassfrequency>語音低通頻率</spw_voicelowpassfrequency>
-	<spw_voicelowpassfrequencytooltip>用於消音語音聊天的截止頻率</spw_voicelowpassfrequencytooltip>
-	<spw_soundrange>聲音範圍</spw_soundrange>
-	<spw_soundrangetooltip>非組件聲音的範圍</spw_soundrangetooltip>
-	<spw_voicerange>語音範圍</spw_voicerange>
+	<spw_syncsettingstooltip>切換玩家之間的設定同步。\n\n若啟用，主機會自動將其設定檔上傳至伺服器，與所有玩家共享。此上傳會在遊戲開始時或每次變更設定時進行一次。玩家將被強制使用此設定檔，無論其本地設定檔為何，本地設定檔將保持不變。</spw_syncsettingstooltip>
+
+	<spw_effectprocessingmode>效果處理模式</spw_effectprocessingmode>
+	<spw_effectprocessingmodetooltip>音訊效果的處理方式。建議使用動態模式。\n\n注意：在遊戲中變更此設定可能會因載入緩衝區而導致遊戲短暫凍結。</spw_effectprocessingmodetooltip>
+
+	<spw_vanillafx>經典</spw_vanillafx>
+	<spw_vanillafxtooltip>原版風格的消音，只有一種消音預設。資源使用量最低。</spw_vanillafxtooltip>
+	<spw_staticfx>靜態</spw_staticfx>
+	<spw_staticfxtooltip>增加輕度和中度消音預設，以及可選的殘響效果。載入時間稍長，記憶體使用量較高（約 250 MB）。</spw_staticfxtooltip>
+	<spw_dynamicfx>動態</spw_dynamicfx>
+	<spw_dynamicfxtooltip>透過 OpenAL 實現的進階即時效果。提供最逼真的音訊，包含模擬殘響、失真和進階消音，但 CPU 成本較高。\n\n注意：如果您擔心效能，請啟用「顯示效能」設定（進階分頁）以查看詳細統計資料。</spw_dynamicfxtooltip>
+
+	<spw_focustargetaudio>聚焦目標音訊</spw_focustargetaudio>
+	<spw_focustargetaudiotooltip>從目前攝影機目標的視角模擬音訊（例如，您聽到砲塔聽到的聲音）。</spw_focustargetaudiotooltip>
+	<spw_attenuatewithapproximatedistance>真實聲音衰減</spw_attenuatewithapproximatedistance>
+	<spw_attenuatewithapproximatedistancetooltip>使用聲音到聽者的路徑來計算音量衰減。若停用，則改用簡單的直線（歐幾里得）距離。</spw_attenuatewithapproximatedistancetooltip>
+	<spw_soundrange>非循環音效範圍主控</spw_soundrange>
+	<spw_soundrangetooltip>所有非循環音效的全域範圍乘數。\n\n注意：與「進階」分頁中「自訂音效」列表指定的特定音效範圍乘數以乘法疊加。</spw_soundrangetooltip>
+	<spw_loopingsoundrange>循環音效範圍主控</spw_loopingsoundrange>
+	<spw_loopingsoundrangetooltip>所有循環音效的全域範圍乘數。\n\n注意：與「進階」分頁中「自訂音效」列表指定的特定音效範圍乘數以乘法疊加。</spw_loopingsoundrangetooltip>
+
+
+	<!-- Dynamic -->
+	<spw_dynamicfxtab>動態模式</spw_dynamicfxtab>
+
+	<spw_occludesounds>聲音遮蔽</spw_occludesounds>
+	<spw_occludesoundstooltip>因牆壁阻擋而沒有直接視線到達玩家耳朵的聲音會被消音。</spw_occludesoundstooltip>
+	<spw_maxocclusions>最大遮蔽層數</spw_maxocclusions>
+	<spw_maxocclusionstooltip>一個聲音可以被多少層牆壁遮蔽。\n\n注意：限制遮蔽層數可以在面對不尋常的牆壁配置時，產生聽覺上更一致的消音效果。將此值設為零可停用限制。</spw_maxocclusionstooltip>
+	
+	<spw_overmuffle>過度消音</spw_overmuffle>
+	<spw_overmuffletooltip>動態降低接近或超過最大有效消音強度 1.0 的聲音音量。</spw_overmuffletooltip>
+
+	<spw_dynamicmufflestrengthmaster>消音強度主控</spw_dynamicmufflestrengthmaster>
+	<spw_dynamicmufflestrengthmastertooltip>動態消音效果的整體強度。</spw_dynamicmufflestrengthmastertooltip>
+
+	<spw_overmufflestrength>過度消音強度</spw_overmufflestrength>
+	<spw_overmufflestrengthtooltip>高消音值對降低聲音音量的影響程度。</spw_overmufflestrengthtooltip>
+	
+	<spw_dynamicreverb>啟用殘響</spw_dynamicreverb>
+	<spw_dynamicreverbtooltip>切換室內和室外殘響效果。若啟用，聲音會根據環境的大小和綜合音訊振幅動態產生殘響（即，在更大、更安靜的空間中回音更強）。</spw_dynamicreverbtooltip>
+	<spw_dynamicreverbbloom>殘響綻放</spw_dynamicreverbbloom>
+	<spw_dynamicreverbbloomtooltip>使殘響效果在密閉區域對大聲響應時急劇增強。</spw_dynamicreverbbloomtooltip>
+	<spw_dynamicreverbwatersubtractsarea>動態殘響區域</spw_dynamicreverbwatersubtractsarea>
+	<spw_dynamicreverbwatersubtractsareatooltip>在水面上時使用空氣區域計算殘響，在水下時使用水域面積計算。若停用，則同時使用兩者的面積。</spw_dynamicreverbwatersubtractsareatooltip>
+	<spw_dynamicreverbminarea>最小殘響區域</spw_dynamicreverbminarea>
+	<spw_dynamicreverbminareatooltip>聽者周圍相連房間所需的最小總面積，以應用殘響效果。</spw_dynamicreverbminareatooltip>
+	<spw_dynamicreverbareasizemultiplier>殘響區域規模</spw_dynamicreverbareasizemultiplier>
+	<spw_dynamicreverbareasizemultipliertooltip>調整目前室內環境的有效面積。較大的值會增加衰減時間和反射延遲，使空間聽起來更大。</spw_dynamicreverbareasizemultipliertooltip>
+	<spw_dynamicreverbwetroomareasizemultiplier>潮濕房間殘響規模</spw_dynamicreverbwetroomareasizemultiplier>
+	<spw_dynamicreverbwetroomareasizemultipliertooltip>當聽者位於壓載艙和氣閘艙內時，乘以其有效面積，使這些房間聽起來更大、殘響更強。</spw_dynamicreverbwetroomareasizemultipliertooltip>
+	
+	<spw_dynamicreverbairtargetgain>室內殘響強度</spw_dynamicreverbairtargetgain>
+	<spw_dynamicreverbairtargetgaintooltip>在船體內時殘響效果的基礎增益。</spw_dynamicreverbairtargetgaintooltip>
+	<spw_dynamicreverbairduration>室內殘響持續時間</spw_dynamicreverbairduration>
+	<spw_dynamicreverbairdurationtooltip>在船體內時殘響效果的衰減時間。</spw_dynamicreverbairdurationtooltip>
+	<spw_dynamicreverbairgainhf>室內殘響高頻增益</spw_dynamicreverbairgainhf>
+	<spw_dynamicreverbairgainhftooltip>在船體內時殘響效果中高頻的增益。</spw_dynamicreverbairgainhftooltip>
+	<spw_dynamicreverbairamplitudethreshold>室內殘響閾值</spw_dynamicreverbairamplitudethreshold>
+	<spw_dynamicreverbairamplitudethresholdtooltip>當聽者在室內時，聲音產生殘響所需的最小聲音振幅。</spw_dynamicreverbairamplitudethresholdtooltip>
+	
+	<spw_dynamicreverbwatertargetgain>室外殘響強度</spw_dynamicreverbwatertargetgain>
+	<spw_dynamicreverbwatertargetgaintooltip>在室外時殘響效果的基礎增益。</spw_dynamicreverbwatertargetgaintooltip>
+	<spw_dynamicreverbwaterdiffusion>室外殘響擴散</spw_dynamicreverbwaterdiffusion>
+	<spw_dynamicreverbwaterdiffusiontooltip>在室外時殘響效果的平滑度。</spw_dynamicreverbwaterdiffusiontooltip>
+	<spw_dynamicreverbwaterduration>室外殘響持續時間</spw_dynamicreverbwaterduration>
+	<spw_dynamicreverbwaterdurationtooltip>在室外時殘響效果的衰減時間。</spw_dynamicreverbwaterdurationtooltip>
+	<spw_dynamicreverbwatergainhf>室外殘響高頻增益</spw_dynamicreverbwatergainhf>
+	<spw_dynamicreverbwatergainhftooltip>在室外時殘響效果中高頻的增益。</spw_dynamicreverbwatergainhftooltip>
+	<spw_dynamicreverbwateramplitudethreshold>室外殘響閾值</spw_dynamicreverbwateramplitudethreshold>
+	<spw_dynamicreverbwateramplitudethresholdtooltip>當聽者在室外時，聲音產生殘響所需的最小聲音振幅。</spw_dynamicreverbwateramplitudethresholdtooltip>
+
+	<spw_categoryloudsounddistortionair>非水下失真</spw_categoryloudsounddistortionair>
+	<spw_categoryloudsounddistortionwater>水下失真</spw_categoryloudsounddistortionwater>
+
+	<spw_loudsounddistortionair>啟用非水下失真</spw_loudsounddistortionair>
+	<spw_loudsounddistortionwater>啟用水下失真</spw_loudsounddistortionwater>
+	<spw_loudsounddistortiontooltipair>若聽者不在水下，則對「進階」分頁中「自訂音效」列表裡失真設定為 true 的音效應用非水下失真效果。</spw_loudsounddistortiontooltipair>
+	<spw_loudsounddistortiontooltipwater>若聽者在水下，則對「進階」分頁中「自訂音效」列表裡失真設定為 true 的音效應用水下失真效果。</spw_loudsounddistortiontooltipwater>
+	<spw_loudsounddistortionmaxmuffle>失真消音需求</spw_loudsounddistortionmaxmuffle>
+	<spw_loudsounddistortionmaxmuffletooltip>聲音在失真效果被停用前所能擁有的最大消音強度。</spw_loudsounddistortionmaxmuffletooltip>
+	<spw_loudsounddistortiontargetgain>失真增益</spw_loudsounddistortiontargetgain>
+	<spw_loudsounddistortiontargetgaintooltip>失真效果的音量。</spw_loudsounddistortiontargetgaintooltip>
+	<spw_loudsounddistortiontargetedge>失真邊緣</spw_loudsounddistortiontargetedge>
+	<spw_loudsounddistortiontargetedgetooltip>失真的刺耳程度。較高的值會產生更強烈的效果。</spw_loudsounddistortiontargetedgetooltip>
+	<spw_loudsounddistortiontargetfrequency>失真頻率</spw_loudsounddistortiontargetfrequency>
+	<spw_loudsounddistortiontargetfrequencytooltip>失真的等化器中心。接近此值的頻率會受到效果更大的影響。</spw_loudsounddistortiontargetfrequencytooltip>
+	<spw_loudsounddistortionlowpassfrequency>失真低通頻率</spw_loudsounddistortionlowpassfrequency>
+	<spw_loudsounddistortionlowpassfrequencytooltip>在後製中會對失真訊號應用一個低通濾波器。這是該低通濾波器使用的截止頻率。</spw_loudsounddistortionlowpassfrequencytooltip>
+
+	<spw_categoryexperimental>實驗性</spw_categoryexperimental>
+	
+	<spw_removeunusedbuffers>清理未使用的緩衝區</spw_removeunusedbuffers>
+	<spw_removeunusedbufferstooltip>載入音效時不使用其原版消音緩衝區，以比原版節省約 100MB 的記憶體。預設為停用，因為擔心與其他在低層級與音效物件互動的模組產生相容性問題。然而，在絕大多數情況下，此設定是免費的效能提升。\n\n注意：在遊戲中變更此設定可能會因載入緩衝區而導致遊戲短暫凍結。</spw_removeunusedbufferstooltip>
+
+
+	<!-- StaticFx -->
+	<spw_staticfxtab>靜態模式</spw_staticfxtab>
+	<spw_heavylowpassfrequency>重度低通頻率</spw_heavylowpassfrequency>
+	<spw_heavylowpassfrequencytooltip>用於消音嚴重受阻聲音的截止頻率。應用此濾波器的閾值可在「消音」分頁中設定。\n\n注意：不適用於語音聊天。請參閱「語音」分頁中的低通頻率滑桿。\n\n注意：在遊戲中變更此設定可能會因載入緩衝區而導致遊戲短暫凍結。</spw_heavylowpassfrequencytooltip>
+	<spw_mediumlowpassfrequency>中度低通頻率</spw_mediumlowpassfrequency>
+	<spw_mediumlowpassfrequencytooltip>用於消音中度受阻聲音的截止頻率。應用此濾波器的閾值可在「消音」分頁中設定。\n\n注意：不適用於語音聊天。請參閱「語音」分頁中的低通頻率滑桿。\n\n注意：在遊戲中變更此設定可能會因載入緩衝區而導致遊戲短暫凍結。</spw_mediumlowpassfrequencytooltip>
+	<spw_lightlowpassfrequency>輕度低通頻率</spw_lightlowpassfrequency>
+	<spw_lightlowpassfrequencytooltip>用於消音輕度受阻聲音的截止頻率。應用此濾波器的閾值可在「消音」分頁中設定。\n\n注意：不適用於語音聊天。請參閱「語音」分頁中的低通頻率滑桿。\n\n注意：在遊戲中變更此設定可能會因載入緩衝區而導致遊戲短暫凍結。</spw_lightlowpassfrequencytooltip>
+
+	<spw_staticreverb>啟用殘響緩衝區</spw_staticreverb>
+	<spw_staticreverbtooltip>載入音效時使用一個額外的、經過殘響濾波器處理的緩衝區。此功能僅適用於非循環且未被消音的音效。\n\n注意：會使用約 100MB 的記憶體並延長緩衝區載入時間（持續時間越長越嚴重）。\n\n注意：在遊戲中變更此設定可能會因載入緩衝區而導致遊戲短暫凍結。</spw_staticreverbtooltip>
+	<spw_staticreverbalwaysloudsounds>總是對大聲響應用殘響</spw_staticreverbalwaysloudsounds>
+	<spw_staticreverbalwaysloudsoundstooltip>在「進階」分頁的「自訂音效」列表中，側鏈乘數大於一的音效會忽略最小殘響區域需求。</spw_staticreverbalwaysloudsoundstooltip>
+	<spw_staticreverbduration>殘響持續時間</spw_staticreverbduration>
+	<spw_staticreverbdurationtooltip>殘響的衰減時間和大小。增加此值會導致更高的記憶體使用量和緩衝區載入時間。</spw_staticreverbdurationtooltip>
+	<spw_staticreverbwetdrymix>殘響混合比例</spw_staticreverbwetdrymix>
+	<spw_staticreverbwetdrymixtooltip>殘響的乾/濕訊號混合比例。較高的值會產生更強的效果。</spw_staticreverbwetdrymixtooltip>
+	<spw_staticreverbdamping>殘響阻尼</spw_staticreverbdamping>
+	<spw_staticreverbdampingtooltip>應用於殘響回饋的低通濾波器強度。</spw_staticreverbdampingtooltip>
+	<spw_staticreverbminarea>最小殘響區域</spw_staticreverbminarea>
+	<spw_staticreverbminareatooltip>聽者周圍相連房間所需的最小總面積，以對非循環且未被消音的音效應用殘響效果。</spw_staticreverbminareatooltip>
+
+	<!-- Voice -->
+	<spw_voicetab>語音</spw_voicetab>
+
+	<spw_talkingragdolls>布娃娃說話</spw_talkingragdolls>
+	<spw_talkingragdollstooltip>當玩家處於布娃娃狀態但未被擊暈時，可以聽到他們說話。</spw_talkingragdollstooltip>
+	
+	<spw_voicerange>本地範圍</spw_voicerange>
+	<spw_voicerangetooltip>本地近距離聊天的範圍。</spw_voicerangetooltip>
 	<spw_radiorange>無線電範圍</spw_radiorange>
+	<spw_radiorangetooltip>無線電近距離聊天的範圍。</spw_radiorangetooltip>
+	<spw_voicevolume>本地音量</spw_voicevolume>
+	<spw_voicevolumetooltip>本地近距離聊天的音量。\n\n注意：此設定獨立於《Barotrauma》的語音聊天音量滑桿。</spw_voicevolumetooltip>
+	<spw_radiovolume>無線電音量</spw_radiovolume>
+	<spw_radiovolumetooltip>無線電近距離聊天的音量。\n\n注意：此設定獨立於《Barotrauma》的語音聊天音量滑桿。</spw_radiovolumetooltip>
 
-	<spw_volumesettings>音量設置</spw_volumesettings>
-	<spw_muffledvoicevolume>消音語音音量</spw_muffledvoicevolume>
-	<spw_muffledvoicevolumetooltip>牆壁/水面後低通處理的玩家語音的音量</spw_muffledvoicevolumetooltip>
-	<spw_muffledsoundvolume>消音聲音音量</spw_muffledsoundvolume>
-	<spw_muffledsoundvolumetooltip>牆壁/水面後低通處理的非循環聲音的音量</spw_muffledsoundvolumetooltip>
-	<spw_muffledcomponentvolume>消音組件音量</spw_muffledcomponentvolume>
-	<spw_muffledcomponentvolumetooltip>牆壁/水面後低通處理的循環組件/狀態效果聲音的音量</spw_muffledcomponentvolumetooltip>
-	<spw_unmuffledcomponentvolume>未消音組件音量</spw_unmuffledcomponentvolume>
-	<spw_submergedvolume>淹沒音量</spw_submergedvolume>
-	<spw_submergedvolumetooltip>聽眾也在同一水體中淹沒時的淹沒聲音音量</spw_submergedvolumetooltip>
+	<spw_categorydynamicfx>動態模式專屬</spw_categorydynamicfx>
 
-	<spw_eavesdroppingsettings>竊聽設置</spw_eavesdroppingsettings>
-	<spw_eavesdroppingbind>監聽綁定</spw_eavesdroppingbind>
-	<spw_eavesdroppingsoundvolume>竊聽聲音音量</spw_eavesdroppingsoundvolume>
-	<spw_eavesdroppingvoicevolume>竊聽語音音量</spw_eavesdroppingvoicevolume>
-	<spw_eavesdroppingpitch>竊聽聲音音調</spw_eavesdroppingpitch>
+	<spw_dynamicreverblocal>本地殘響</spw_dynamicreverblocal>
+	<spw_dynamicreverblocaltooltip>允許對本地近距離聊天應用殘響效果。\n\n注意：需要啟用動態模式的殘響效果。</spw_dynamicreverblocaltooltip>
+	<spw_dynamicreverbradio>無線電殘響</spw_dynamicreverbradio>
+	<spw_dynamicreverbradiotooltip>允許對無線電近距離聊天應用殘響效果。\n\n注意：需要啟用動態模式的殘響效果。</spw_dynamicreverbradiotooltip>
+	<spw_drowningdistortion>溺水無線電失真</spw_drowningdistortion>
+	<spw_drowningdistortiontooltip>在溺水時對無線電近距離聊天應用失真效果。\n\n注意：此設定會降低溺水時無線電近距離聊天的消音效果。</spw_drowningdistortiontooltip>
+	<spw_voiceminlowpassfrequency>最小低通頻率</spw_voiceminlowpassfrequency>
+	<spw_voiceminlowpassfrequencytooltip>完全消音時應用的最小低通頻率。</spw_voiceminlowpassfrequencytooltip>
+	<spw_voicedynamicmufflemultiplier>動態消音強度</spw_voicedynamicmufflemultiplier>
+	<spw_voicedynamicmufflemultipliertooltip>使用動態模式時，阻礙物對語音的消音強度。</spw_voicedynamicmufflemultipliertooltip>
+
+	<spw_voiceheavylowpassfrequency>重度語音低通頻率</spw_voiceheavylowpassfrequency>
+	<spw_voiceheavylowpassfrequencytooltip>用於消音嚴重受阻語音的截止頻率。應用此濾波器的閾值可在「消音」分頁中設定。</spw_voiceheavylowpassfrequencytooltip>
+	<spw_voicemediumlowpassfrequency>中度語音低通頻率</spw_voicemediumlowpassfrequency>
+	<spw_voicemediumlowpassfrequencytooltip>用於消音中度受阻語音的截止頻率。應用此濾波器的閾值可在「消音」分頁中設定。</spw_voicemediumlowpassfrequencytooltip>
+	<spw_voicelightlowpassfrequency>輕度語音低通頻率</spw_voicelightlowpassfrequency>
+	<spw_voicelightlowpassfrequencytooltip>用於消音輕度受阻語音的截止頻率。應用此濾波器的閾值可在「消音」分頁中設定。</spw_voicelightlowpassfrequencytooltip>
+
+	<spw_categoryscreammode>尖叫模式</spw_categoryscreammode>
+
+	<spw_screammode>尖叫模式</spw_screammode>
+	<spw_screammodetooltip>本地近距離聊天的範圍會隨輸入振幅調整（尖叫聲可以從更遠的地方聽到）。\n\n注意：為獲得最佳效果，請調整您的《Barotrauma》麥克風音量，使語音活動計量表仍有空間容納大聲輸入。您的麥克風允許的動態範圍越大越好。</spw_screammodetooltip>
+	<spw_screammodemaxrange>最大尖叫範圍</spw_screammodemaxrange>
+	<spw_screammodemaxrangetooltip>啟用「尖叫模式」並以最大音量說話時，本地近距離聊天的最大範圍。\n\n注意：此設定受「本地範圍」乘數影響。</spw_screammodemaxrangetooltip>
+	<spw_screammodeminrange>最小尖叫範圍</spw_screammodeminrange>
+	<spw_screammodeminrangetooltip>啟用「尖叫模式」時本地近距離聊天的最小範圍。</spw_screammodeminrangetooltip>
+	<spw_screammodereleaserate>尖叫釋放速率</spw_screammodereleaserate>
+	<spw_screammodereleaseratetooltip>當語音範圍不再由振幅維持時，每秒降低的速率。</spw_screammodereleaseratetooltip>
+	
+	<spw_categorybubbles>溺水</spw_categorybubbles>
+	
+	<spw_drowningbubbles>溺水氣泡</spw_drowningbubbles>
+	<spw_drowningbubblestooltip>在水下沒有氧氣說話的玩家會發出可見的氣泡，這些氣泡可以透過本地或無線電聽到。</spw_drowningbubblestooltip>
+	<spw_drowningbubbleslocalrange>本地氣泡範圍</spw_drowningbubbleslocalrange>
+	<spw_drowningbubbleslocalrangetooltip>本地氣泡聲的可聽範圍。</spw_drowningbubbleslocalrangetooltip>
+	<spw_drowningbubbleslocalvolume>本地氣泡音量</spw_drowningbubbleslocalvolume>
+	<spw_drowningbubbleslocalvolumetooltip>本地氣泡聲的音量。</spw_drowningbubbleslocalvolumetooltip>
+	<spw_drowningbubblesradiovolume>無線電氣泡音量</spw_drowningbubblesradiovolume>
+	<spw_drowningbubblesradiovolumetooltip>無線電氣泡聲的音量。</spw_drowningbubblesradiovolumetooltip>
+	
+	<spw_categorycustomfilter>無線電濾波器</spw_categorycustomfilter>
+
+	<spw_radiocustomfilter>自訂無線電濾波器</spw_radiocustomfilter>
+	<spw_radiocustomfiltertooltip>使用包含可設定的壓縮、失真和噪音效果的自訂濾波器處理無線電近距離聊天。</spw_radiocustomfiltertooltip>
+
+	<spw_customradiopresets>自訂無線電預設</spw_customradiopresets>
+	<spw_customradiopresetstooltip>獨特的無線電濾波器設定。選擇其中一個選項將修改下方所有的濾波器數值。</spw_customradiopresetstooltip>
+	<spw_customradiopresetbroken>損壞</spw_customradiopresetbroken>
+	<spw_customradiopresetbrokentooltip>糟透了。使用無線電是一種阻礙。</spw_customradiopresetbrokentooltip>
+	<spw_customradiopresetdirty>嘈雜</spw_customradiopresetdirty>
+	<spw_customradiopresetdirtytooltip>低品質的無線電，可能使混亂的通訊難以理解。</spw_customradiopresetdirtytooltip>
+	<spw_customradiopresetnormal>標準</spw_customradiopresetnormal>
+	<spw_customradiopresetnormaltooltip>具有更風格化聲音的原版無線電。</spw_customradiopresetnormaltooltip>
+	<spw_customradiopresetclean>清晰</spw_customradiopresetclean>
+	<spw_customradiopresetcleantooltip>完美清晰的無線電通訊。</spw_customradiopresetcleantooltip>
+	
+	<spw_radiobandpassfrequency>無線電帶通頻率</spw_radiobandpassfrequency>
+	<spw_radiobandpassfrequencytooltip>帶通濾波器的中心頻率。只有接近此點的頻率才能通過。\n\n注意：範圍的寬度由下方的「無線電帶通 Q 因數」設定。</spw_radiobandpassfrequencytooltip>
+	<spw_radiobandpassqualityfactor>無線電帶通 Q 因數</spw_radiobandpassqualityfactor>
+	<spw_radiobandpassqualityfactortooltip>帶通濾波器圍繞其中心頻率的狹窄程度。較高的值會產生更緊湊、更顯著的效果。</spw_radiobandpassqualityfactortooltip>
+	<spw_radiodistortiondrive>無線電失真驅動</spw_radiodistortiondrive>
+	<spw_radiodistortiondrivetooltip>在削波前增強語音訊號。較高的值會增加失真強度。</spw_radiodistortiondrivetooltip>
+	<spw_radiodistortionthreshold>無線電失真閾值</spw_radiodistortionthreshold>
+	<spw_radiodistortionthresholdtooltip>允許的最大電平。超過此限制的樣本將被硬削波。</spw_radiodistortionthresholdtooltip>
+	<spw_radiostatic>無線電靜電噪音</spw_radiostatic>
+	<spw_radiostatictooltip>添加到無線電傳輸中的靜電噪音強度。</spw_radiostatictooltip>
+	<spw_radiocompressionthreshold>無線電壓縮閾值</spw_radiocompressionthreshold>
+	<spw_radiocompressionthresholdtooltip>壓縮開始的輸入電平。低於此電平的聲音不受影響。</spw_radiocompressionthresholdtooltip>
+	<spw_radiocompressionratio>無線電壓縮比</spw_radiocompressionratio>
+	<spw_radiocompressionratiotooltip>超過閾值的音量被降低的程度。較高的比率意味著更強的壓縮和更小的動態範圍。</spw_radiocompressionratiotooltip>
+	<spw_radiopostfilterboost>濾波後增益提升</spw_radiopostfilterboost>
+	<spw_radiopostfilterboosttooltip>無線電濾波後的整體輸出電平。</spw_radiopostfilterboosttooltip>
+	
+	<!-- Muffle -->
+	<spw_muffletab>消音</spw_muffletab>
+	<spw_muffledivingsuit>消音潛水衣</spw_muffledivingsuit>
+	<spw_muffledivingsuittooltip>穿著潛水衣時，對所有聲音應用「潛水衣」阻礙。</spw_muffledivingsuittooltip>
+	<spw_mufflesubmergedplayer>消音水下玩家</spw_mufflesubmergedplayer>
+	<spw_mufflesubmergedplayertooltip>對與玩家頭部處於同一水體中的聲音應用「水體」阻礙。</spw_mufflesubmergedplayertooltip>
+	<spw_mufflesubmergedviewtarget>消音水下視角目標</spw_mufflesubmergedviewtarget>
+	<spw_mufflesubmergedviewtargettooltip>對與視角目標處於同一水體中的聲音應用「水體」阻礙。\n\n注意：需要啟用「聚焦目標音訊」（一般分頁）。</spw_mufflesubmergedviewtargettooltip>
+	<spw_mufflewatersurface>消音水面</spw_mufflewatersurface>
+	<spw_mufflewatersurfacetooltip>對位於空氣-水屏障另一側的聲音應用「水面」阻礙。</spw_mufflewatersurfacetooltip>
+	<spw_muffleflowfirepath>消音水流與火焰路徑</spw_muffleflowfirepath>
+	<spw_muffleflowfirepathtooltip>如果水流和火焰聲沒有到達聽者的路徑，則對其進行消音。\n\n注意：此功能使用預測系統，可能在所有情況下都不準確。</spw_muffleflowfirepathtooltip>
+	<spw_muffleflowsounds>消音水流聲</spw_muffleflowsounds>
+	<spw_muffleflowsoundstooltip>切換對所有來源的水流聲的消音。</spw_muffleflowsoundstooltip>
+	<spw_mufflefiresounds>消音火焰聲</spw_mufflefiresounds>
+	<spw_mufflefiresoundstooltip>切換對所有來源的火焰聲的消音。</spw_mufflefiresoundstooltip>
+	<spw_classiclowpassfrequency>經典低通頻率</spw_classiclowpassfrequency>
+	<spw_classiclowpassfrequencytooltip>在經典模式中用於消音的截止頻率。應用此濾波器的閾值可在「消音」分頁中設定。\n\n注意：不適用於語音聊天。請參閱「語音」分頁中的低通頻率滑桿。\n\n注意：在遊戲中變更此設定可能會因載入緩衝區而導致遊戲短暫凍結。</spw_classiclowpassfrequencytooltip>
+
+	<spw_categoryobstructions>阻礙消音強度</spw_categoryobstructions>
+
+	<spw_obstructionwatersurface>水面</spw_obstructionwatersurface>
+	<spw_obstructionwatersurfacetooltip>當聲音穿過空氣-水屏障時應用的消音強度。\n\n注意：以乘法疊加（收益遞減）。</spw_obstructionwatersurfacetooltip>
+	<spw_obstructionwaterbody>水體</spw_obstructionwaterbody>
+	<spw_obstructionwaterbodytooltip>當聲音在水中傳播至聽者而未穿過空氣-水屏障時應用的消音強度（即，聲音在同一水體中開始和結束其旅程）。\n\n注意：以乘法疊加（收益遞減）。</spw_obstructionwaterbodytooltip>
+	<spw_obstructionwallthick>厚牆</spw_obstructionwallthick>
+	<spw_obstructionwallthicktooltip>當聲音正常穿過牆壁時應用的消音強度。\n\n注意：在使用動態模式時，聲音每穿過兩扇門也會應用此效果。\n\n注意：以乘法疊加（收益遞減）。</spw_obstructionwallthicktooltip>
+	<spw_obstructionwallthin>薄牆</spw_obstructionwallthin>
+	<spw_obstructionwallthintooltip>當聲音穿透牆壁（傳播或水下麥克風結構）或有部分路徑到達聽者（遮蔽）時應用的消音強度。\n\n注意：以乘法疊加（收益遞減）。</spw_obstructionwallthintooltip>
+	<spw_obstructiondoorthick>厚門</spw_obstructiondoorthick>
+	<spw_obstructiondoorthicktooltip>當聲音正常穿過門時應用的消音強度。\n\n注意：以乘法疊加（收益遞減）。</spw_obstructiondoorthicktooltip>
+	<spw_obstructiondoorthin>薄門</spw_obstructiondoorthin>
+	<spw_obstructiondoorthintooltip>當聲音穿透門（竊聽、傳播或在容器內）時應用的消音強度。\n\n注意：以乘法疊加（收益遞減）。</spw_obstructiondoorthintooltip>
+	<spw_obstructionsuit>潛水衣</spw_obstructionsuit>
+	<spw_obstructionsuittooltip>當聲音穿過潛水衣時應用的消音強度。\n\n注意：在使用水下麥克風時，也適用於潛艇外的聲音。\n\n注意：以乘法疊加（收益遞減）。</spw_obstructionsuittooltip>
+	<spw_obstructiondrowning>玩家溺水</spw_obstructiondrowning>
+	<spw_obstructiondrowningtooltip>當玩家在溺水時說話，對其語音應用的消音強度。\n\n注意：以乘法疊加（收益遞減）。</spw_obstructiondrowningtooltip>
+	
+	<spw_classicmufflethreshold>（經典）消音閾值</spw_classicmufflethreshold>
+	<spw_classicmufflethresholdtooltip>聲音使用「經典低通頻率」（消音分頁）所需的最小綜合阻礙等級。</spw_classicmufflethresholdtooltip>
+
+	<spw_staticlightmufflethreshold>（靜態）輕度消音閾值</spw_staticlightmufflethreshold>
+	<spw_staticlightmufflethresholdtooltip>聲音和語音使用「輕度低通頻率」（靜態分頁）或「輕度語音低通頻率」（語音分頁）所需的最小綜合阻礙等級。</spw_staticlightmufflethresholdtooltip>
+
+	<spw_staticmediummufflethreshold>（靜態）中度消音閾值</spw_staticmediummufflethreshold>
+	<spw_staticmediummufflethresholdtooltip>聲音和語音使用「中度低通頻率」（靜態分頁）或「中度語音低通頻率」（語音分頁）所需的最小綜合阻礙等級。</spw_staticmediummufflethresholdtooltip>
+
+	<spw_staticheavymufflethreshold>（靜態）重度消音閾值</spw_staticheavymufflethreshold>
+	<spw_staticheavymufflethresholdtooltip>聲音和語音使用「重度低通頻率」（靜態分頁）或「重度語音低通頻率」（語音分頁）所需的最小綜合阻礙等級。</spw_staticheavymufflethresholdtooltip>
+
+	<spw_categorythresholds>消音閾值</spw_categorythresholds>
+
+	<!-- Volume -->
+	<spw_volumetab>音量</spw_volumetab>
+
+	<spw_categorysidechaining>側鏈壓縮</spw_categorysidechaining>
+
+	<spw_sidechaining>啟用側鏈壓縮</spw_sidechaining>
+	<spw_sidechainingtooltip>當有大聲響播放時，降低所有聲音的音量。\n\n注意：要讓一個聲音在內部被視為大聲，它必須在「進階」分頁的「自訂音效」列表中被引用，且側鏈乘數大於零。</spw_sidechainingtooltip>
+	<spw_sidechainmusic>側鏈壓縮音樂</spw_sidechainmusic>
+	<spw_sidechainmusictooltip>當有大聲響播放時，降低音樂曲目的音量。</spw_sidechainmusictooltip>
+
+	<spw_sidechainintensitymaster>側鏈壓縮強度主控</spw_sidechainintensitymaster>
+	<spw_sidechainintensitymastertooltip>應用於「進階」分頁「自訂音效」列表中所有側鏈乘數的全域乘數。</spw_sidechainintensitymastertooltip>
+	<spw_sidechainreleasemaster>側鏈壓縮釋放主控</spw_sidechainreleasemaster>
+	<spw_sidechainreleasemastertooltip>添加到「進階」分頁「自訂音效」列表中所有側鏈釋放時間的固定時間量。</spw_sidechainreleasemastertooltip>
+	<spw_sidechainreleasecurve>側鏈壓縮釋放曲線</spw_sidechainreleasecurve>
+	<spw_sidechainreleasecurvetooltip>用於計算側鏈釋放曲線形狀的指數。小於一的值會緩慢釋放，然後在結尾急劇釋放。大於一的值會快速釋放，然後在結尾趨於平緩。</spw_sidechainreleasecurvetooltip>
+	<spw_sidechainmufflepower>側鏈壓縮消音強度</spw_sidechainmufflepower>
+	<spw_sidechainmufflepowertooltip>被消音的聲音其側鏈效果應有多強。較高的值會保留更多的側鏈強度。</spw_sidechainmufflepowertooltip>
+	<spw_sidechainmusicmultiplier>側鏈壓縮音樂強度</spw_sidechainmusicmultiplier>
+	<spw_sidechainmusicmultipliertooltip>對音樂的側鏈效果強度。</spw_sidechainmusicmultipliertooltip>
+
+	<spw_muffledsoundvolume>消音後音效音量</spw_muffledsoundvolume>
+	<spw_muffledsoundvolumetooltip>消音後非循環音效的音量。根據消音強度與「未消音音效音量」混合。\n\n注意：與其他音量乘數以加法疊加。</spw_muffledsoundvolumetooltip>
+	<spw_unmuffledsoundvolume>未消音音效音量</spw_unmuffledsoundvolume>
+	<spw_unmuffledsoundvolumetooltip>未消音非循環音效的音量。根據消音強度與「消音後音效音量」混合。\n\n注意：與其他音量乘數以加法疊加。</spw_unmuffledsoundvolumetooltip>
+	<spw_muffledvoicevolume>消音後語音音量</spw_muffledvoicevolume>
+	<spw_muffledvoicevolumetooltip>消音後玩家語音的音量。根據消音強度與「未消音語音音量」混合。\n\n注意：與其他音量乘數以加法疊加。</spw_muffledvoicevolumetooltip>
+	<spw_unmuffledvoicevolume>未消音語音音量</spw_unmuffledvoicevolume>
+	<spw_unmuffledvoicevolumetooltip>未消音玩家語音的音量。根據消音強度與「消音後語音音量」混合。\n\n注意：與其他音量乘數以加法疊加。</spw_unmuffledvoicevolumetooltip>
+	<spw_muffledloopingvolume>消音後循環音效音量</spw_muffledloopingvolume>
+	<spw_muffledloopingvolumetooltip>消音後循環音效的音量。根據消音強度與「未消音循環音效音量」混合。\n\n注意：與其他音量乘數以加法疊加。</spw_muffledloopingvolumetooltip>
+	<spw_unmuffledloopingvolume>未消音循環音效音量</spw_unmuffledloopingvolume>
+	<spw_unmuffledloopingvolumetooltip>未消音循環音效的音量。根據消音強度與「消音後循環音效音量」混合。\n\n注意：與其他音量乘數以加法疊加。</spw_unmuffledloopingvolumetooltip>
+	<spw_submergedvolume>共同水下音量</spw_submergedvolume>
+	<spw_submergedvolumetooltip>與聽者處於同一水體中的聲音音量。\n\n注意：與其他音量乘數以加法疊加。</spw_submergedvolumetooltip>
+	<spw_flowsoundvolume>水流聲音量</spw_flowsoundvolume>
+	<spw_flowsoundvolumetooltip>潛艇洩漏造成的水流聲音量。</spw_flowsoundvolumetooltip>
+	<spw_firesoundvolume>火焰聲音量</spw_firesoundvolume>
+	<spw_firesoundvolumetooltip>火焰的音量。</spw_firesoundvolumetooltip>
+	<spw_vanillaexosuitvolume>原版外骨骼裝甲音量</spw_vanillaexosuitvolume>
+	<spw_vanillaexosuitvolumetooltip>原版外骨骼裝甲移動聲的音量。有些玩家覺得這個聲音很刺耳。\n\n注意：不影響模組修改的外骨骼裝甲聲音。</spw_vanillaexosuitvolumetooltip>
+	<spw_loopingcomponentsoundnearmultiplier>組件音效距離衰減起始點</spw_loopingcomponentsoundnearmultiplier>
+	<spw_loopingcomponentsoundnearmultipliertooltip>循環組件音效音量開始衰減所需的距離。</spw_loopingcomponentsoundnearmultipliertooltip>
+	<spw_mindistancefalloffvolume>最小距離衰減音量</spw_mindistancefalloffvolume>
+	<spw_mindistancefalloffvolumetooltip>使用「真實聲音衰減」模型（一般分頁）時，聲音可達到的最小衰減音量。</spw_mindistancefalloffvolumetooltip>
+
+
+	<!-- Eavesdropping -->
+	<spw_eavesdroppingtab>竊聽</spw_eavesdroppingtab>
+	<spw_eavesdroppingenabled>啟用竊聽</spw_eavesdroppingenabled>
+	<spw_eavesdroppingenabledtooltip>切換竊聽功能。</spw_eavesdroppingenabledtooltip>
+	<spw_eavesdroppingmuffleself>消音自身船體</spw_eavesdroppingmuffleself>
+	<spw_eavesdroppingmuffleselftooltip>竊聽時消音聽者所在船體的聲音。</spw_eavesdroppingmuffleselftooltip>
+	<spw_eavesdroppingmuffle>消音被竊聽的船體</spw_eavesdroppingmuffle>
+	<spw_eavesdroppingmuffletooltip>透過應用「薄門」阻礙，輕微消音竊聽到的聲音。</spw_eavesdroppingmuffletooltip>
+	<spw_eavesdroppingtransition>竊聽過渡</spw_eavesdroppingtransition>
+	<spw_eavesdroppingtransitiontooltip>竊聽時在船體之間平滑過渡音訊。</spw_eavesdroppingtransitiontooltip>
+	<spw_eavesdroppingducksradio>竊聽時降低無線電音量</spw_eavesdroppingducksradio>
+	<spw_eavesdroppingducksradiotooltip>竊聽時降低無線電近距離聊天的音量。</spw_eavesdroppingducksradiotooltip>
+
+	<spw_eavesdroppingbind>竊聽按鍵</spw_eavesdroppingbind>
+	<spw_eavesdroppingbindtooltip>按住哪個按鍵進行竊聽。\n\n注意：使用「同步設定」（一般分頁）時，此設定不會與其他玩家同步。</spw_eavesdroppingbindtooltip>
+
+	<spw_eavesdroppingsoundvolume>竊聽到的音效音量</spw_eavesdroppingsoundvolume>
+	<spw_eavesdroppingsoundvolumetooltip>竊聽到的音效音量。\n\n注意：與其他音量乘數以加法疊加。</spw_eavesdroppingsoundvolumetooltip>
+	<spw_eavesdroppingvoicevolume>竊聽到的語音音量</spw_eavesdroppingvoicevolume>
+	<spw_eavesdroppingvoicevolumetooltip>竊聽到的本地近距離聊天音量。\n\n注意：與其他音量乘數以加法疊加。</spw_eavesdroppingvoicevolumetooltip>
+	<spw_eavesdroppingothervolume>自身船體音量</spw_eavesdroppingothervolume>
+	<spw_eavesdroppingothervolumetooltip>竊聽時聽者所在船體的音訊音量。</spw_eavesdroppingothervolumetooltip>
+	<spw_eavesdroppingsoundpitch>竊聽到的音效音高</spw_eavesdroppingsoundpitch>
+	<spw_eavesdroppingsoundpitchtooltip>竊聽到的音效音高。\n\n注意：不適用於本地近距離聊天。\n\n注意：與其他音高乘數以加法疊加。</spw_eavesdroppingsoundpitchtooltip>
 	<spw_eavesdroppingmaxdistance>竊聽最大距離</spw_eavesdroppingmaxdistance>
-	<spw_eavesdroppingmaxdistancetooltip>玩家頭部與門之間竊聽時的最大距離</spw_eavesdroppingmaxdistancetooltip>
+	<spw_eavesdroppingmaxdistancetooltip>竊聽時玩家頭部與門的最大距離。</spw_eavesdroppingmaxdistancetooltip>
+	<spw_eavesdroppingtransitionduration>竊聽過渡持續時間</spw_eavesdroppingtransitionduration>
+	<spw_eavesdroppingtransitiondurationtooltip>竊聽過渡所需的時間（秒）。\n\n注意：需要啟用「竊聽過渡」。</spw_eavesdroppingtransitiondurationtooltip>
+	<spw_eavesdroppingthreshold>竊聽閾值</spw_eavesdroppingthreshold>
+	<spw_eavesdroppingthresholdtooltip>竊聽過渡到多遠時，消音設定檔會切換到門的另一側。</spw_eavesdroppingthresholdtooltip>
 
-	<spw_hydrophonesettings>水聽器設置</spw_hydrophonesettings>
-	<spw_hydrophonerange>水聽器範圍</spw_hydrophonerange>
-	<spw_hydrophonerangetooltip>水下移動聲音的範圍以及加到潛艇外所有聲音上的額外範圍</spw_hydrophonerangetooltip>
-	<spw_hydrophonevolume>水聽器音量</spw_hydrophonevolume>
-	<spw_hydrophonepitch>水聽器音調</spw_hydrophonepitch>
-	<spw_hydrophonelegacyswitch>水聽器傳統開關</spw_hydrophonelegacyswitch>
-	<spw_hydrophonelegacyswitchtooltip>使用舊的水聽器開關邏輯（使用主動聲納時關閉開關）</spw_hydrophonelegacyswitchtooltip>
-	<spw_hydrophoneswitchenabled>水聽器開關已啟用</spw_hydrophoneswitchenabled>
-	<spw_hydrophoneswitchenabledtooltip>切換水聽器開關的存在（需要重新啟動回合）</spw_hydrophoneswitchenabledtooltip>
+	<spw_eavesdroppingvisualfeedbackenabled>視覺回饋</spw_eavesdroppingvisualfeedbackenabled>
+	<spw_eavesdroppingvisualfeedbackenabledtooltip>在被竊聽的音源周圍顯示柔和的綠色光暈效果。</spw_eavesdroppingvisualfeedbackenabledtooltip>
+	<spw_eavesdroppingrevealscharacteroutline>看見角色輪廓</spw_eavesdroppingrevealscharacteroutline>
+	<spw_eavesdroppingrevealscharacteroutlinetooltip>顯示發出聲音的身體部位的大致輪廓（例如，腳步聲顯示腿部，語音顯示頭部）。</spw_eavesdroppingrevealscharacteroutlinetooltip>
+	<spw_eavesdroppingrevealsall>看見無法觸及的聲音</spw_eavesdroppingrevealsall>
+	<spw_eavesdroppingrevealsalltooltip>對沒有路徑到達竊聽區域的聲音顯示光暈效果。\n\n注意：聽者所在船體的聲音總是會被忽略。</spw_eavesdroppingrevealsalltooltip>
+	<spw_eavesdroppingspritemaxsize>最大光暈尺寸</spw_eavesdroppingspritemaxsize>
+	<spw_eavesdroppingspritemaxsizetooltip>光暈效果的最大尺寸。</spw_eavesdroppingspritemaxsizetooltip>
+	<spw_eavesdroppingspritesizemultiplier>光暈尺寸乘數</spw_eavesdroppingspritesizemultiplier>
+	<spw_eavesdroppingspritesizemultipliertooltip>光暈效果相對於聲音範圍的尺寸。</spw_eavesdroppingspritesizemultipliertooltip>
+	<spw_eavesdroppingspriteopacity>光暈不透明度</spw_eavesdroppingspriteopacity>
+	<spw_eavesdroppingspriteopacitytooltip>光暈效果的強度。</spw_eavesdroppingspriteopacitytooltip>
+	<spw_eavesdroppingspritefadecurve>光暈淡出曲線</spw_eavesdroppingspritefadecurve>
+	<spw_eavesdroppingspritefadecurvetooltip>用於計算光暈淡出曲線形狀的指數。小於一的值會緩慢淡出，然後在結尾急劇淡出。大於一的值會快速淡出，然後在結尾趨於平緩。</spw_eavesdroppingspritefadecurvetooltip>
+	<spw_eavesdroppingzoom>竊聽攝影機縮放</spw_eavesdroppingzoom>
+	<spw_eavesdroppingzoomtooltip>竊聽時攝影機放大的程度。\n\n注意：可能與其他調整攝影機縮放的模組不相容。</spw_eavesdroppingzoomtooltip>
+	<spw_eavesdroppingvignette>暈影不透明度</spw_eavesdroppingvignette>
+	<spw_eavesdroppingvignettetooltip>竊聽時螢幕邊緣暈影效果的強度。</spw_eavesdroppingvignettetooltip>
 
-	<spw_ambiencesettings>環境設置</spw_ambiencesettings>
-	<spw_unsubmergedwaterambiencevolume>非淹沒水環境音量</spw_unsubmergedwaterambiencevolume>
-	<spw_submergedwaterambiencevolume>淹沒水環境音量</spw_submergedwaterambiencevolume>
-	<spw_hydrophonewaterambiencevolume>水聽器水環境音量</spw_hydrophonewaterambiencevolume>
-	<spw_waterambiencetransitionspeed>水環境過渡速度</spw_waterambiencetransitionspeed>
-	<spw_waterambiencetransitionspeedtooltip>水環境之間過渡的速度</spw_waterambiencetransitionspeedtooltip>
+	<!-- Hydrophone -->
+	<spw_hydrophonestab>水下麥克風</spw_hydrophonestab>
+	<spw_hydrophoneswitchenabled>啟用水下麥克風開關</spw_hydrophoneswitchenabled>
+	<spw_hydrophoneswitchenabledtooltip>切換水下麥克風功能。\n\n注意：水下麥克風開關將保留至下一回合。</spw_hydrophoneswitchenabledtooltip>
+	<spw_hydrophonemovementsounds>移動聲</spw_hydrophonemovementsounds>
+	<spw_hydrophonemovementsoundstooltip>聽到水中的移動聲。</spw_hydrophonemovementsoundstooltip>
+	<spw_hydrophonehearengine>聽到引擎聲</spw_hydrophonehearengine>
+	<spw_hydrophonehearenginetooltip>聽到潛艇引擎聲，包括您自己的。</spw_hydrophonehearenginetooltip>
+	<spw_hydrophonehearintostructures>聽到結構內部</spw_hydrophonehearintostructures>
+	<spw_hydrophonehearintostructurestooltip>聽到其他潛艇或前哨站內部的聲音。\n\n注意：這些結構中的聲音會受到「薄牆」阻礙。</spw_hydrophonehearintostructurestooltip>
+	<spw_hydrophonemuffleownsub>消音自身潛艇</spw_hydrophonemuffleownsub>
+	<spw_hydrophonemuffleownsubtooltip>消音來自您自己結構內部的聲音。\n\n注意：應用「水面」阻礙。</spw_hydrophonemuffleownsubtooltip>
+	<spw_hydrophonerange>水下麥克風範圍</spw_hydrophonerange>
+	<spw_hydrophonerangetooltip>您可以透過水下麥克風聽到聲音的距離。\n\n注意：此距離會與聲音現有範圍相加。</spw_hydrophonerangetooltip>
+	<spw_hydrophonevolume>水下麥克風音量</spw_hydrophonevolume>
+	<spw_hydrophonevolumetooltip>透過水下麥克風聽到的聲音音量。</spw_hydrophonevolumetooltip>
+	<spw_hydrophonepitch>水下麥克風音高</spw_hydrophonepitch>
+	<spw_hydrophonepitchtooltip>透過水下麥克風聽到的聲音音高。\n\n注意：不適用於近距離聊天。</spw_hydrophonepitchtooltip>
+	<spw_hydrophoneambiencevolume>水下麥克風環境音量</spw_hydrophoneambiencevolume>
+	<spw_hydrophoneambiencevolumetooltip>監聽水下麥克風時播放的海洋環境音量。</spw_hydrophoneambiencevolumetooltip>
+	<spw_hydrophonemovementvolume>水下麥克風移動音量</spw_hydrophonemovementvolume>
+	<spw_hydrophonemovementvolumetooltip>水中移動角色造成的水花聲的音量。</spw_hydrophonemovementvolumetooltip>
+	
+	<spw_hydrophonevisualfeedbackenabled>視覺回饋</spw_hydrophonevisualfeedbackenabled>
+	<spw_hydrophonevisualfeedbackenabledtooltip>在聲納使用者介面上顯示有色扇形，以視覺化方式表示水中聲音的方向、大小和隱含距離。\n\n注意：距離可以根據聲音的範圍和高亮扇形的寬度來推斷。</spw_hydrophonevisualfeedbackenabledtooltip>
+	<spw_hydrophoneusagedisablessonarblips>停用被動聲納</spw_hydrophoneusagedisablessonarblips>
+	<spw_hydrophoneusagedisablessonarblipstooltip>監聽水下麥克風時停止繪製聲納光點。聲納光點是用於視覺化顯示環境的。</spw_hydrophoneusagedisablessonarblipstooltip>
+	<spw_hydrophoneusagedisablessuboutline>停用潛艇輪廓</spw_hydrophoneusagedisablessuboutline>
+	<spw_hydrophoneusagedisablessuboutlinetooltip>監聽水下麥克風時停止繪製潛艇及其對接艙口的輪廓。</spw_hydrophoneusagedisablessuboutlinetooltip>
+	<spw_hydrophonevisualfeedbacksizemultiplier>視覺回饋大小</spw_hydrophonevisualfeedbacksizemultiplier>
+	<spw_hydrophonevisualfeedbacksizemultipliertooltip>有色扇形的厚度。</spw_hydrophonevisualfeedbacksizemultipliertooltip>
+	<spw_hydrophonevisualfeedbackopacitymultiplier>視覺回饋不透明度</spw_hydrophonevisualfeedbackopacitymultiplier>
+	<spw_hydrophonevisualfeedbackopacitymultipliertooltip>有色扇形的透明度。</spw_hydrophonevisualfeedbackopacitymultipliertooltip>
+	
+	<spw_hydrophonereverb>空靈回音</spw_hydrophonereverb>
+	<spw_hydrophonereverbtooltip>應用獨特的水下麥克風殘響，模擬遠處聲音在冰洞和水下空間中擴散、散射和迴響的方式。\n\n注意：需要啟用「啟用殘響」（動態分頁）。</spw_hydrophonereverbtooltip>
+	<spw_hydrophonereverbtargetgain>殘響強度</spw_hydrophonereverbtargetgain>
+	<spw_hydrophonereverbtargetgaintooltip>獨特水下麥克風殘響的基礎增益。</spw_hydrophonereverbtargetgaintooltip>
+	
+	<spw_hydrophonedistortion>失真水下麥克風</spw_hydrophonedistortion>
+	<spw_hydrophonedistortiontooltip>對透過水下麥克風聽到的聲音應用失真效果。</spw_hydrophonedistortiontooltip>
+	
+	<spw_hydrophonebandpassfilter>帶通水下麥克風</spw_hydrophonebandpassfilter>
+	<spw_hydrophonebandpassfiltertooltip>對透過水下麥克風聽到的聲音應用帶通濾波器。帶通濾波器會切除高頻和低頻，產生類似無線電的聲音。\n\n注意：使用帶通濾波器的聲音會停用消音效果。</spw_hydrophonebandpassfiltertooltip>
+	<spw_hydrophonebandpassfilterhfgain>帶通高頻增益</spw_hydrophonebandpassfilterhfgain>
+	<spw_hydrophonebandpassfilterhfgaintooltip>帶通濾波器高頻的音量。</spw_hydrophonebandpassfilterhfgaintooltip>
+	<spw_hydrophonebandpassfilterlfgain>帶通低頻增益</spw_hydrophonebandpassfilterlfgain>
+	<spw_hydrophonebandpassfilterlfgaintooltip>帶通濾波器低頻的音量。</spw_hydrophonebandpassfilterlfgaintooltip>
 
-	<spw_advancedsoundsettings>進階聲音設置</spw_advancedsoundsettings>
-	<spw_soundvolumemultipliers>聲音音量倍增器</spw_soundvolumemultipliers>
-	<spw_ignoredsounds>忽略的聲音</spw_ignoredsounds>
-	<spw_lowpassignoredsounds>低通過濾忽略的聲音</spw_lowpassignoredsounds>
-	<spw_pitchignoredsounds>音調忽略的聲音</spw_pitchignoredsounds>
-	<spw_pathignoredsounds>路徑忽略的聲音</spw_pathignoredsounds>
-	<spw_containerignoredsounds>容器忽略的聲音</spw_containerignoredsounds>
-	<spw_waterignoredsounds>水聲忽略</spw_waterignoredsounds>
-	<spw_submersionignoredsounds>淹沒聲音忽略</spw_submersionignoredsounds>
-	<spw_bubbleignorednames>氣泡忽略的名稱</spw_bubbleignorednames>
+	<spw_categoryadvanced>進階</spw_categoryadvanced>
 
-	<spw_nichesettings>特定設置</spw_nichesettings>
-	<spw_mufflesubmergedplayer>淹沒玩家聲音消音</spw_mufflesubmergedplayer>
-	<spw_mufflesubmergedplayertooltip>當您的頭部在水下時消音音頻（推薦）</spw_mufflesubmergedplayertooltip>
-	<spw_mufflesubmergedviewtarget>淹沒視圖目標聲音消音</spw_mufflesubmergedviewtarget>
-	<spw_mufflesubmergedviewtargettooltip>當您查看的目標在水下時消音音頻（例如，炮塔，攝像機等）</spw_mufflesubmergedviewtargettooltip>
-	<spw_mufflesubmergedsounds>淹沒聲音消音</spw_mufflesubmergedsounds>
-	<spw_mufflesubmergedsoundstooltip>消音位於水面下的聲音（推薦）</spw_mufflesubmergedsoundstooltip>
-	<spw_muffleflowsounds>流動聲音消音</spw_muffleflowsounds>
-	<spw_muffleflowsoundstooltip>切換泄漏水流聲音的消音</spw_muffleflowsoundstooltip>
-	<spw_mufflefiresounds>火焰聲音消音</spw_mufflefiresounds>
-	<spw_mufflefiresoundstooltip>切換火焰聲音的消音</spw_mufflefiresoundstooltip>
-	<spw_muffledivingsuit>減弱潛水服聲音</spw_muffledivingsuit>
-	<spw_muffledivingsuittooltip>切換穿戴潛水服時聲音的減弱（不推薦）</spw_muffledivingsuittooltip>
-	<spw_divingsuitpitch>潛水衣音調</spw_divingsuitpitch>
-	<spw_divingsuitpitchtooltip>穿戴潛水衣時聲音的音調（累加）</spw_divingsuitpitchtooltip>
-	<spw_submergedpitch>淹沒音調</spw_submergedpitch>
-	<spw_submergedpitchtooltip>聽眾淹沒時聲音的音調（累加）</spw_submergedpitchtooltip>
-	<spw_muffledvoicepitch>消音語音音調</spw_muffledvoicepitch>
-	<spw_muffledvoicepitchtooltip>不推薦。僅供娛樂</spw_muffledvoicepitchtooltip>
-	<spw_unmuffledvoicepitch>未消音語音音調</spw_unmuffledvoicepitch>
-	<spw_unmuffledvoicepitchtooltip>不推薦。僅供娛樂</spw_unmuffledvoicepitchtooltip>
-	<spw_muffledcomponentpitch>消音組件音調</spw_muffledcomponentpitch>
-	<spw_unmuffledcomponentpitch>未消音組件音調</spw_unmuffledcomponentpitch>
-	<spw_hidesettings>隱藏菜單按鈕</spw_hidesettings>
-	<spw_hidesettingstooltip>警告：啟用此設置將從您的UI中移除“隔音設置”按鈕。您必須手動編輯或刪除配置文件以恢復此設置。</spw_hidesettingstooltip>
+	<spw_hydrophonemuffleignoredsounds>消音忽略音效</spw_hydrophonemuffleignoredsounds>
+	<spw_hydrophonemuffleignoredsoundstooltip>此列表中的聲音在使用水下麥克風時永遠不會被消音。</spw_hydrophonemuffleignoredsoundstooltip>
+	
+	<spw_hydrophonevisualignoredsounds>視覺回饋忽略音效</spw_hydrophonevisualignoredsounds>
+	<spw_hydrophonevisualignoredsoundstooltip>此列表中的聲音在使用水下麥克風時永遠不會顯示在聲納使用者介面上。</spw_hydrophonevisualignoredsoundstooltip>
+	
+	<!-- Ambience -->
+	<spw_ambiencetab>環境音</spw_ambiencetab>
+	<spw_disablewhitenoise>停用白噪音</spw_disablewhitenoise>
+	<spw_disablewhitenoisetooltip>靜音原版遊戲中的生態環境噪音循環。</spw_disablewhitenoisetooltip>
 
-	<spw_updateserverconfig>修改了設置 - 伺服器配置已更新</spw_updateserverconfig>
-	<spw_disableserverconfig>禁用了設置同步 - 現在優先使用本地配置</spw_disableserverconfig>
-	<spw_hydrophonemonitoring>水聽器監控</spw_hydrophonemonitoring>
-	<spw_listening>正在監聽...</spw_listening>
+	<spw_categorytrack>特定音軌</spw_categorytrack>
+	<spw_waterambienceinvolume>室內水聲音量</spw_waterambienceinvolume>
+	<spw_waterambienceinvolumetooltip>在室內播放的水環境音軌音量。\n\n注意：此音軌會繼續在室外音軌之上以較低音量播放。</spw_waterambienceinvolumetooltip>
+	<spw_waterambienceoutvolume>室外水聲音量</spw_waterambienceoutvolume>
+	<spw_waterambienceoutvolumetooltip>在室外播放的水環境音軌音量。</spw_waterambienceoutvolumetooltip>
+	<spw_waterambiencemovingvolume>移動水聲音量</spw_waterambiencemovingvolume>
+	<spw_waterambiencemovingvolumetooltip>當潛艇或玩家在水中移動時播放的水環境音軌音量。</spw_waterambiencemovingvolumetooltip>
+
+	<spw_categoryenvironment>特定環境</spw_categoryenvironment>
+	<spw_unsubmergedsuitwaterambiencevolume>非水下水聲音量（穿潛水衣）</spw_unsubmergedsuitwaterambiencevolume>
+	<spw_unsubmergedsuitwaterambiencevolumetooltip>當聽者未在水下且穿著潛水衣時，水環境音軌的音量。</spw_unsubmergedsuitwaterambiencevolumetooltip>
+	<spw_unsubmergednosuitwaterambiencevolume>非水下水聲音量（未穿潛水衣）</spw_unsubmergednosuitwaterambiencevolume>
+	<spw_unsubmergednosuitwaterambiencevolumetooltip>當聽者未在水下且未穿著潛水衣時，水環境音軌的音量。</spw_unsubmergednosuitwaterambiencevolumetooltip>
+	<spw_submergedsuitwaterambiencevolume>水下水聲音量（穿潛水衣）</spw_submergedsuitwaterambiencevolume>
+	<spw_submergedsuitwaterambiencevolumetooltip>當聽者在水下且穿著潛水衣時，水環境音軌的音量。</spw_submergedsuitwaterambiencevolumetooltip>
+	<spw_submergednosuitwaterambiencevolume>水下水聲音量（未穿潛水衣）</spw_submergednosuitwaterambiencevolume>
+	<spw_submergednosuitwaterambiencevolumetooltip>當聽者在水下且未穿著潛水衣時，水環境音軌的音量。</spw_submergednosuitwaterambiencevolumetooltip>
+	<spw_waterambiencetransitionspeed>水環境音過渡速度</spw_waterambiencetransitionspeed>
+	<spw_waterambiencetransitionspeedtooltip>水環境音在不同音量等級之間過渡的速度。</spw_waterambiencetransitionspeedtooltip>
+
+
+	<!-- Pitch -->
+	<spw_pitchtab>音高</spw_pitchtab>
+	<spw_pitchenabled>啟用音高</spw_pitchenabled>
+	<spw_pitchenabledtooltip>全域切換所有音高效果。\n\n注意：對於與其他模組聲音產生不尋常的音高互動時，可能作為快速修復的幫助。</spw_pitchenabledtooltip>
+	<spw_pitchstatuseffectsounds>狀態效果音效音高</spw_pitchstatuseffectsounds>
+	<spw_pitchstatuseffectsoundstooltip>切換由 XML 狀態效果播放的音效的音高調整。</spw_pitchstatuseffectsoundstooltip>
+	<spw_pitchwithdistance>隨距離調整音高</spw_pitchwithdistance>
+	<spw_pitchwithdistancetooltip>根據距離動態降低被消音聲音的音高。\n\n注意：不適用於循環音效或近距離聊天。\n\n注意：與其他音高乘數以加法疊加。</spw_pitchwithdistancetooltip>
+	
+	<spw_divingsuitpitch>潛水衣音高</spw_divingsuitpitch>
+	<spw_divingsuitpitchtooltip>穿著潛水衣時的聲音音高。\n\n注意：與其他音高乘數以加法疊加。</spw_divingsuitpitchtooltip>
+	<spw_submergedpitch>水下音高</spw_submergedpitch>
+	<spw_submergedpitchtooltip>當聽者在水下時的聲音音高。\n\n注意：與其他音高乘數以加法疊加。</spw_submergedpitchtooltip>
+	
+	<spw_muffledsoundpitch>消音後音效音高</spw_muffledsoundpitch>
+	<spw_muffledsoundpitchtooltip>消音後非循環音效的音高。根據消音強度與「未消音音效音高」混合。\n\n注意：與其他音高乘數以加法疊加。</spw_muffledsoundpitchtooltip>
+	<spw_unmuffledsoundpitch>未消音音效音高</spw_unmuffledsoundpitch>
+	<spw_unmuffledsoundpitchtooltip>未消音非循環音效的音高。根據消音強度與「消音後音效音高」混合。\n\n注意：與其他音高乘數以加法疊加。</spw_unmuffledsoundpitchtooltip>
+	
+	<spw_muffledloopingpitch>消音後循環音效音高</spw_muffledloopingpitch>
+	<spw_muffledloopingpitchtooltip>消音後循環音效的音高。根據消音強度與「未消音循環音效音高」混合。\n\n注意：與其他音高乘數以加法疊加。</spw_muffledloopingpitchtooltip>
+	<spw_unmuffledloopingpitch>未消音循環音效音高</spw_unmuffledloopingpitch>
+	<spw_unmuffledloopingpitchtooltip>未消音循環音效的音高。根據消音強度與「消音後循環音效音高」混合。\n\n注意：與其他音高乘數以加法疊加。</spw_unmuffledloopingpitchtooltip>
+	
+	<spw_muffledvoicepitch>消音後語音音高</spw_muffledvoicepitch>
+	<spw_muffledvoicepitchtooltip>消音後近距離聊天的音高。根據消音強度與「未消音語音音高」混合。\n\n注意：與其他音高乘數以加法疊加。\n\n注意：純屬好玩 :)</spw_muffledvoicepitchtooltip>
+	<spw_unmuffledvoicepitch>未消音語音音高</spw_unmuffledvoicepitch>
+	<spw_unmuffledvoicepitchtooltip>未消音近距離聊天的音高。根據消音強度與「消音後語音音高」混合。\n\n注意：與其他音高乘數以加法疊加。\n\n注意：純屬好玩 :)</spw_unmuffledvoicepitchtooltip>
+
+
+	<!-- Advanced -->
+	<spw_advancedtab>進階</spw_advancedtab>
+
+	<spw_debugperformance>顯示效能</spw_debugperformance>
+	<spw_debugperformancetooltip>顯示 Soundproof Walls 的詳細效能資訊。\n\n注意：使用「同步設定」（一般分頁）時，此設定不會與其他玩家同步。</spw_debugperformancetooltip>
+
+	<spw_debugplayingsounds>顯示播放中音效</spw_debugplayingsounds>
+	<spw_debugplayingsoundstooltip>顯示所有由 Soundproof Walls 註冊並正在播放的音效。\n\n注意：使用「同步設定」（一般分頁）時，此設定不會與其他玩家同步。</spw_debugplayingsoundstooltip>
+
+	<spw_debugchannelinfo>顯示頻道資訊</spw_debugchannelinfo>
+	<spw_debugchannelinfotooltip>擴展「顯示播放中音效」設定，同時顯示所有正在播放音效的增益、音高、範圍、距離、消音和阻礙。\n\n注意：若「顯示播放中音效」被停用，此資訊將記錄在《Barotrauma》控制台中。\n\n注意：使用「同步設定」（一般分頁）時，此設定不會與其他玩家同步。</spw_debugchannelinfotooltip>
+
+	<spw_hidesettings>隱藏選單按鈕</spw_hidesettings>
+	<spw_hidesettingstooltip>從暫停選單中移除「Soundproof Walls」按鈕。仍可透過在控制台中輸入「spw」來存取 Soundproof Walls 設定選單。\n\n注意：使用「同步設定」（一般分頁）時，此設定不會與其他玩家同步。</spw_hidesettingstooltip>
+
+	<spw_remembermenutabandscroll>記住選單位置</spw_remembermenutabandscroll>
+	<spw_remembermenutabandscrolltooltip>在上次訪問的捲動位置和分頁開啟選單。\n\n注意：使用「同步設定」（一般分頁）時，此設定不會與其他玩家同步。</spw_remembermenutabandscrolltooltip>
+
+	<spw_maxsourcecount>最大播放音效數</spw_maxsourcecount>
+	<spw_maxsourcecounttooltip>可以同時播放的音效數量。較高的值可防止音效被跳過，但可能影響效能。</spw_maxsourcecounttooltip>
+	
+	<spw_maxsimultaneousinstances>最大同時實例數</spw_maxsimultaneousinstances>
+	<spw_maxsimultaneousinstancestooltip>同一音效可以同時播放的實例數量。較高的值可防止音效被跳過，但可能影響效能。</spw_maxsimultaneousinstancestooltip>
+
+	<spw_categoryintervals>更新間隔</spw_categoryintervals>
+	<spw_updatenonloopingsounds>更新非循環音效</spw_updatenonloopingsounds>
+	<spw_updatenonloopingsoundstooltip>允許在非循環音效播放時對其進行修改，為先前無法中斷的音效提供中斷的可能性。\n\n注意：可能輕微影響效能。</spw_updatenonloopingsoundstooltip>
+	
+	<spw_nonloopingsoundmuffleupdateinterval>非循環音效更新間隔</spw_nonloopingsoundmuffleupdateinterval>
+	<spw_nonloopingsoundmuffleupdateintervaltooltip>非循環音效每次阻礙更新之間的時間量。\n\n注意：需要啟用「更新非循環音效」。\n\n注意：增加此值可能改善效能。</spw_nonloopingsoundmuffleupdateintervaltooltip>
+	<spw_openaleffectsupdateinterval>OpenAL 效果更新間隔</spw_openaleffectsupdateinterval>
+	<spw_openaleffectsupdateintervaltooltip>動態模式中效果的每次效果參數更新之間的時間量。\n\n注意：增加此值可能改善效能。</spw_openaleffectsupdateintervaltooltip>
+	<spw_voicemuffleupdateinterval>語音更新間隔</spw_voicemuffleupdateinterval>
+	<spw_voicemuffleupdateintervaltooltip>玩家語音每次阻礙更新之間的時間量。\n\n注意：增加此值可能改善效能。</spw_voicemuffleupdateintervaltooltip>
+	<spw_componentmuffleupdateinterval>組件音效更新間隔</spw_componentmuffleupdateinterval>
+	<spw_componentmuffleupdateintervaltooltip>循環組件音效（例如，通風口、反應爐、引擎）每次阻礙更新之間的時間量。\n\n注意：增加此值可能改善效能。</spw_componentmuffleupdateintervaltooltip>
+	<spw_statuseffectmuffleupdateinterval>狀態效果音效更新間隔</spw_statuseffectmuffleupdateinterval>
+	<spw_statuseffectmuffleupdateintervaltooltip>循環狀態效果音效（例如，來自病症的聲音）每次阻礙更新之間的時間量。\n\n注意：增加此值可能改善效能。</spw_statuseffectmuffleupdateintervaltooltip>
+	
+	<spw_categorytransitions>過渡</spw_categorytransitions>
+	<spw_disablevanillafadeout>停用原版淡出</spw_disablevanillafadeout>
+	<spw_disablevanillafadeouttooltip>停用原版的「FadeOutAndDispose」方法。僅在音效卡在循環播放時啟用此選項。\n\n注意：會導致音訊中斷不夠平滑。</spw_disablevanillafadeouttooltip>
+	<spw_gaintransitionfactor>增益過渡速度</spw_gaintransitionfactor>
+	<spw_gaintransitionfactortooltip>音效音量每秒可變化的量。值為零則停用此功能，實現即時過渡。</spw_gaintransitionfactortooltip>
+	<spw_pitchtransitionfactor>音高過渡速度</spw_pitchtransitionfactor>
+	<spw_pitchtransitionfactortooltip>音效音高每秒可變化的量。值為零則停用此功能，實現即時過渡。</spw_pitchtransitionfactortooltip>
+	<spw_airreverbgaintransitionfactor>室內殘響過渡速度</spw_airreverbgaintransitionfactor>
+	<spw_airreverbgaintransitionfactortooltip>室內殘響效果的增益每秒可變化的量。值為零則停用此功能，實現即時過渡。</spw_airreverbgaintransitionfactortooltip>
+	<spw_hydrophonereverbgaintransitionfactor>水下麥克風殘響過渡速度</spw_hydrophonereverbgaintransitionfactor>
+	<spw_hydrophonereverbgaintransitionfactortooltip>水下麥克風殘響效果的增益每秒可變化的量。值為零則停用此功能，實現即時過渡。</spw_hydrophonereverbgaintransitionfactortooltip>
+	<spw_dynamicmuffletransitionfactor>消音過渡速度</spw_dynamicmuffletransitionfactor>
+	<spw_dynamicmuffletransitionfactortooltip>動態模式的消音效果每秒可變化的量。值為零則停用此功能，實現即時過渡。\n\n注意：啟用此功能時可能會產生可聽見的爆音，推測是《Barotrauma》的 OpenAL Soft 版本的問題。</spw_dynamicmuffletransitionfactortooltip>
+	<spw_dynamicmuffletransitionfactorflowfire>水流與火焰消音過渡速度</spw_dynamicmuffletransitionfactorflowfire>
+	<spw_dynamicmuffletransitionfactorflowfiretooltip>水流和火焰聲的動態模式消音效果每秒可變化的量。值為零則停用此功能，實現即時過渡。\n\n注意：啟用此功能時可能會產生可聽見的爆音，推測是《Barotrauma》的 OpenAL Soft 版本的問題。</spw_dynamicmuffletransitionfactorflowfiretooltip>
+
+	<spw_categorypathfinding>聲音尋路</spw_categorypathfinding>
+	<spw_traversewaterducts>穿過水管</spw_traversewaterducts>
+	<spw_traversewaterductstooltip>允許聲音無阻礙地穿過開啟的水管。</spw_traversewaterductstooltip>
+	<spw_flowsoundstraversewaterducts>水流聲穿過水管</spw_flowsoundstraversewaterducts>
+	<spw_flowsoundstraversewaterductstooltip>允許估算水流聲的路徑無阻礙地穿過開啟的水管。\n\n注意：需要啟用「消音水流與火焰路徑」（消音分頁）。</spw_flowsoundstraversewaterductstooltip>
+	<spw_opendoorthreshold>開門閾值</spw_opendoorthreshold>
+	<spw_opendoorthresholdtooltip>門、艙口或管道必須開啟到何種程度，聲音才能無阻礙地通過。值為零則允許聲音無阻礙地通過完全關閉的門。</spw_opendoorthresholdtooltip>
+	<spw_openwallthreshold>開牆閾值</spw_openwallthreshold>
+	<spw_openwallthresholdtooltip>牆壁上的縫隙必須開啟到何種程度，聲音才能無阻礙地通過。</spw_openwallthresholdtooltip>
+	<spw_soundpropagationrange>聲音傳播範圍</spw_soundpropagationrange>
+	<spw_soundpropagationrangetooltip>「牆壁傳播音效」列表（進階分頁）中的聲音可以搜索附近船體以傳播進去的最遠距離。</spw_soundpropagationrangetooltip>
+
+	<spw_categoryai>角色 AI</spw_categoryai>
+	<spw_aitargetsoundrange>AI 聲音範圍</spw_aitargetsoundrange>
+	<spw_aitargetsoundrangetooltip>角色 AI 可以聽到物品和角色的距離。\n\n注意：僅限單人遊戲。</spw_aitargetsoundrangetooltip>
+	<spw_aitargetsightrange>AI 視線範圍</spw_aitargetsightrange>
+	<spw_aitargetsightrangetooltip>角色 AI 可以看到物品和角色的距離。\n\n注意：僅限單人遊戲。</spw_aitargetsightrangetooltip>
+
+	<spw_categoryrules>聲音規則</spw_categoryrules>
+	
+	<spw_customsounds>自訂音效</spw_customsounds>
+	<spw_customsoundstooltip>對特定音效應用自訂數值和效果。\n\n「關鍵字」(Keyword)：目標音效檔案名稱的一部分。不分大小寫。\n\n「增益乘數」(GainMult)：音量乘數。與其他音量乘數以加法疊加。\n\n「範圍乘數」(RangeMult)：範圍乘數。與其他範圍乘數以乘法疊加。\n\n「側鏈乘數」(SidechainMult)：當此音效播放時，其他音效被降低的音量。\n\n「側鏈釋放」(SidechainRelease)：音量降低效果的持續時間。\n\n「失真」(Distortion)：切換此音效的失真效果。僅限動態模式。\n\n「音高乘數」(PitchMult)：音高乘數。透過拉伸音效長度來作用。範圍介於 0.25-4.0 之間。\n\n「消音影響」(MuffleInfluence)：消音效果的有效性。較低的值表示受影響較小。\n\n「關鍵字排除」(KeywordExclusions)：包含所提供關鍵字但應被排除的音效。不分大小寫。</spw_customsoundstooltip>
+	<spw_moddedcustomsoundstooltip>來自 [modname] 的自訂音效數值。優先於標準的「自訂音效」列表。\n\n此列表不會與其他玩家同步，任何變更將不會在當前遊戲結束後保留。\n\nSoundproof Walls 不對此列表的內容負責。</spw_moddedcustomsoundstooltip>
+	
+	<spw_ignoredsounds>忽略音效</spw_ignoredsounds>
+	<spw_ignoredsoundstooltip>此列表中的聲音將被所有處理忽略。</spw_ignoredsoundstooltip>
+	
+	<spw_surfaceignoredsounds>水面忽略音效</spw_surfaceignoredsounds>
+	<spw_surfaceignoredsoundstooltip>此列表中的聲音會無阻礙地穿過空氣-水屏障。</spw_surfaceignoredsoundstooltip>
+	
+	<spw_submersionignoredsounds>水體忽略音效</spw_submersionignoredsounds>
+	<spw_submersionignoredsoundstooltip>此列表中的聲音會無阻礙地在水中傳播。\n\n注意：不影響聲音與水面的互動方式。</spw_submersionignoredsoundstooltip>
+	
+	<spw_wallpropagatingsounds>牆壁傳播音效</spw_wallpropagatingsounds>
+	<spw_wallpropagatingsoundstooltip>此列表中的聲音能夠跳入附近的船體以更好地到達玩家，受到「薄牆」阻礙而非「厚牆」。</spw_wallpropagatingsoundstooltip>
+	
+	<spw_pitchignoredsounds>音高忽略音效</spw_pitchignoredsounds>
+	<spw_pitchignoredsoundstooltip>此列表中的聲音音高將被強制設為 1.0。\n\n注意：「自訂音效」列表（進階分頁）中的特定音效音高乘數會覆蓋此列表。</spw_pitchignoredsoundstooltip>
+
+	<spw_reverbforcedsounds>強制殘響音效</spw_reverbforcedsounds>
+	<spw_reverbforcedsoundstooltip>此列表中的聲音如果可能，將總是會受到殘響效果。\n\n注意：僅限於「動態」和「靜態」效果模式。</spw_reverbforcedsoundstooltip>
+
+	<spw_airreverbignoredsounds>室內殘響忽略音效</spw_airreverbignoredsounds>
+	<spw_airreverbignoredsoundstooltip>此列表中的聲音永遠不會受到室內殘響效果。\n\n注意：僅限於「動態」和「靜態」效果模式。</spw_airreverbignoredsoundstooltip>
+	
+	<spw_waterreverbignoredsounds>室外殘響忽略音效</spw_waterreverbignoredsounds>
+	<spw_waterreverbignoredsoundstooltip>此列表中的聲音永遠不會受到室外殘響效果。\n\n注意：僅限於「動態」效果模式。</spw_waterreverbignoredsoundstooltip>
+	
+	<spw_barrierignoredsounds>屏障忽略音效</spw_barrierignoredsounds>
+	<spw_barrierignoredsoundstooltip>此列表中的聲音不會被遮蔽、牆壁、門或水面消音。</spw_barrierignoredsoundstooltip>
+	
+	<spw_xmlignoredsounds>XML 忽略音效</spw_xmlignoredsounds>
+	<spw_xmlignoredsoundstooltip>此列表適用於內部標記為「dontmuffle」標籤或類似屬性的聲音。此列表中的聲音將總是會被評估是否消音。</spw_xmlignoredsoundstooltip>
+	
+	<spw_lowpassignoredsounds>低通忽略音效</spw_lowpassignoredsounds>
+	<spw_lowpassignoredsoundstooltip>此列表中的聲音永遠不會受到消音效果。</spw_lowpassignoredsoundstooltip>
+	
+	<spw_containerignoredsounds>容器忽略音效</spw_containerignoredsounds>
+	<spw_containerignoredsoundstooltip>此列表中的聲音會無阻礙地穿過它們所在的任何容器。</spw_containerignoredsoundstooltip>
+	
+	<spw_bubbleignorednames>溺水豁免玩家</spw_bubbleignorednames>
+	<spw_bubbleignorednamestooltip>在此列表中插入玩家名稱，以使他們免受在水下無氧氣供應說話時產生的溺水氣泡效果。</spw_bubbleignorednamestooltip>
+
+	<!-- Extra -->
+	<spw_updateserverconfig>修改了設定 - 伺服器設定檔已更新</spw_updateserverconfig>
+	<spw_disableserverconfig>已停用設定同步 - 本地設定檔現在優先</spw_disableserverconfig>
+	<spw_hydrophonemonitoring>監聽水下麥克風</spw_hydrophonemonitoring>
+	<spw_serverdiffheader>當前伺服器設定檔與您的本地設定檔有 [count] 處不同：</spw_serverdiffheader>
+	<spw_listening>竊聽中...</spw_listening>
+	<spw_loading>正在載入音訊緩衝區...</spw_loading>
 	<spw_invalidinput>無效輸入</spw_invalidinput>
-	<spw_default>（默認）</spw_default>
-	<spw_vanilla>（原版）</spw_vanilla>
-	<spw_custom>（自定義）</spw_custom>
-	<spw_reset>重置</spw_reset>
-	<spw_resetall>全部重置</spw_resetall>
+	<spw_enabled>已啟用</spw_enabled>
+	<spw_disabled>已停用</spw_disabled>
+	<spw_default>預設</spw_default>
+	<spw_vanilla>原版</spw_vanilla>
+	<spw_custom>自訂</spw_custom>
+	<spw_linear>線性</spw_linear>
+	<spw_instant>即時</spw_instant>
+	<spw_pertick>每幀</spw_pertick>
+	<spw_concave>凹</spw_concave>
+	<spw_convex>凸</spw_convex>
+	<spw_seconds>秒</spw_seconds>
+	<spw_reset>重設</spw_reset>
+	<spw_resetall>全部重設</spw_resetall>
+
+
+	<!-- 2.0 Popup message -->
+	<spw_popupheader>歡迎來到 Soundproof Walls 2.0</spw_popupheader>
+	<spw_popupheadersubtext>Soundproof Walls 2.0 是原模組的完全重寫與擴展版本，為《Barotrauma》帶來了全面的音訊系統革新。</spw_popupheadersubtext>
+
+	<spw_popupbodyheader>主要變更</spw_popupbodyheader>
+	
+	<spw_popupbodysubheading1>• 環境模擬殘響</spw_popupbodysubheading1>
+	<spw_popupbodysubtext1>音效和玩家語音會根據房間的大小和音量產生逼真的回音。在潛艇外，巨大的聲響會因聲波在木衛二的冰凍牆壁上反彈而傳播數英里之遠。</spw_popupbodysubtext1>
+
+	<spw_popupbodysubheading2>• 側鏈壓縮系統</spw_popupbodysubheading2>
+	<spw_popupbodysubtext2>槍聲和爆炸聲更具衝擊力，會蓋過較安靜的聲音，從而獲得更寬廣、更強大的動態範圍。</spw_popupbodysubtext2>
+
+	<spw_popupbodysubheading3>• 動態低通頻率</spw_popupbodysubheading3>
+	<spw_popupbodysubtext3>聲音不再局限於單一固定強度的消音，現在會根據情況和阻礙物的數量動態調整。</spw_popupbodysubtext3>
+
+	<spw_popupbodysubheading4>• 聲音遮蔽</spw_popupbodysubheading4>
+	<spw_popupbodysubtext4>聲音在傳播至玩家耳朵的路徑上，會因周圍關卡幾何形狀的遮擋而被消音。</spw_popupbodysubtext4>
+
+	<spw_popupbodysubheading5>• 強力失真</spw_popupbodysubheading5>
+	<spw_popupbodysubtext5>槍聲、爆炸聲和其他巨大聲響在空氣中會劇烈失真，在水中則會產生深沉的脈動。</spw_popupbodysubtext5>
+
+	<spw_popupbodysubheading6>• 更佳的語音聊天</spw_popupbodysubheading6>
+	<spw_popupbodysubtext6>您可以將無線電從清晰無比微調至完全損壞，並試用全新的本地近距離聊天系統，該系統會根據您喊叫的音量動態調整語音的傳播距離。</spw_popupbodysubtext6>
+	
+	<spw_popupbodysubheading7>• 全面翻新的系統</spw_popupbodysubheading7>
+	<spw_popupbodysubtext7>竊聽和水下麥克風系統已全面翻新，加入了新的視覺和音效。原版系統也得到了改進——在激烈戰鬥中不再有聲音被跳過，水流聲現在會被牆壁正確地消音。</spw_popupbodysubtext7>
+	
+	<spw_popupbodysubheading8>• 絕對控制</spw_popupbodysubheading8>
+	<spw_popupbodysubtext8>擁有超過 230 個新的設定選項和重新設計的設定選單，您可以完全控制每一個聲音，並有無限的方式來自訂它們。</spw_popupbodysubtext8>
+	
+	<spw_popupbodyconclusion>希望您喜歡這些變更！若有任何問題或疑問，請告訴我。 :) - Plag</spw_popupbodyconclusion>
+
+	<spw_footertext1>這只是冰山一角</spw_footertext1>
+	<spw_footertext2>支持我</spw_footertext2>
+	<spw_footertext3>查看程式碼</spw_footertext3>
+	<spw_footerlink1>在 Steam 上查看完整更新日誌！</spw_footerlink1>
+	<spw_footerlink2>在 Ko-fi 上請我喝杯咖啡！</spw_footerlink2>
+	<spw_footerlink3>在 GitHub 上給這個專案一個星星！</spw_footerlink3>
+
+	<spw_popupbutton>設定</spw_popupbutton>
+
+	<!-- Stats log -->
+	<spw_statsheader>Soundproof Walls 統計資料：</spw_statsheader>
+	<spw_stats>您已初始化 Soundproof Walls [initcount] 次。\n並在啟用此模組的情況下游玩了 [playtime]。\n您有 [percenteavesdrop]% 的時間在竊聽。\n並有 [percenthydrophone]% 的時間在監聽水下麥克風。\n總共有 [soundcount] 個聲音被 Soundproof Walls 處理過。</spw_stats>
 </infotexts>

@@ -55,7 +55,7 @@ namespace SoundproofWalls
                 // Update non-looping sounds.
                 if (ConfigManager.Config.UpdateNonLoopingSounds && !info.Channel.Looping && !info.AudioIsVoice && info.Channel.IsPlaying)
                 {
-                    info.Update();  
+                    info.Update();
                 }
             }
 
@@ -131,25 +131,6 @@ namespace SoundproofWalls
             if (channel == null) { return false; }
             uint sourceId = channel.Sound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
             return channelInfoMap.TryGetValue(sourceId, out channelInfo);
-        }
-
-        public static ChannelInfo EnsureGetVoiceInfo(SoundChannel channel, Client speakingClient)
-        {
-            if (channel == null ||
-                channel.Sound == null ||
-                speakingClient == null)
-            {
-                return null;
-            }
-
-            uint sourceId = channel.Sound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
-            if (!channelInfoMap.TryGetValue(sourceId, out ChannelInfo? info))
-            {
-                info = new ChannelInfo(channel, speakingClient.Character?.CurrentHull, null, null, speakingClient, Util.GetMessageType(speakingClient), false);
-                channelInfoMap[sourceId] = info;
-            }
-
-            return info;
         }
 
         public static void ResetAllPitchedChannels()

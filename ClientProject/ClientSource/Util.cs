@@ -27,12 +27,12 @@ namespace SoundproofWalls
             return character.AnimController.GetLimb(LimbType.Head) ?? character.AnimController.MainLimb;
         }
 
-        public static Vector2 LocalizePosition(Vector2 worldPos, Hull? posHull)
+        public static Vector2 LocalizePosition(Vector2 worldPos, Submarine? sub)
         {
             Vector2 localPos = worldPos;
-            if (posHull?.Submarine != null)
+            if (sub != null)
             {
-                localPos += -posHull.Submarine.WorldPosition + posHull.Submarine.HiddenSubPosition;
+                localPos += -sub.WorldPosition + sub.HiddenSubPosition;
             }
             else
             {
@@ -40,12 +40,12 @@ namespace SoundproofWalls
                 if (closestSub == null) { return localPos; }
 
                 float shortestDistToSub = Vector2.Distance(Listener.WorldPos, closestSub.WorldPosition);
-                foreach (Submarine sub in Submarine.MainSubs)
+                foreach (Submarine s in Submarine.MainSubs)
                 {
-                    if (sub != null && 
-                        sub != closestSub && 
-                        Vector2.Distance(Listener.WorldPos, sub.WorldPosition) < shortestDistToSub)
-                    { closestSub = sub; }
+                    if (s != null && 
+                        s != closestSub && 
+                        Vector2.Distance(Listener.WorldPos, s.WorldPosition) < shortestDistToSub)
+                    { closestSub = s; }
                 }
 
                 localPos += -closestSub.WorldPosition + closestSub.HiddenSubPosition;
@@ -54,16 +54,33 @@ namespace SoundproofWalls
             return localPos;
         }
 
-        public static Vector2 GetRelativeDirection(Vector2 listenerPosition, Vector2 sourcePosition)
+        public static Vector2 WorldizePosition(Vector2 localPos, Submarine? sub)
         {
-            Vector2 delta = sourcePosition - listenerPosition;
-
-            if (delta == Vector2.Zero)
+            Vector2 worldPos = localPos;
+            if (sub != null)
             {
-                return Vector2.Zero;
+                worldPos += sub.WorldPosition - sub.HiddenSubPosition;
+            }
+            else
+            {
+                Submarine closestSub = Submarine.MainSub;
+                if (closestSub == null) { return worldPos; }
+
+                float shortestDistToSub = Vector2.Distance(Listener.WorldPos, closestSub.WorldPosition);
+                foreach (Submarine s in Submarine.MainSubs)
+                {
+                    if (s != null &&
+                        s != closestSub &&
+                        Vector2.Distance(Listener.WorldPos, s.WorldPosition) < shortestDistToSub)
+                    {
+                        closestSub = s;
+                    }
+                }
+
+                worldPos += closestSub.WorldPosition - closestSub.HiddenSubPosition;
             }
 
-            return Vector2.Normalize(delta);
+            return worldPos;
         }
 
         public static double GetCompensatedBiquadFrequency(double muffleStrength, double minFrequency, double sampleRate = 48000.0)
