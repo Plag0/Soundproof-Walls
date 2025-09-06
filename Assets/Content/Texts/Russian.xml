@@ -625,7 +625,7 @@
 	<!-- Extra -->
 	<spw_updateserverconfig>настройки изменены - конфигурация сервера обновлена</spw_updateserverconfig>
 	<spw_disableserverconfig>синхронизация настроек отключена - теперь приоритет у локальных конфигураций</spw_disableserverconfig>
-	<spw_hydrophonemonitoring>Мониторинг гидрофонов</spw_hydrophonemonitoring>
+	<spw_hydrophonemonitoring>Анализ гидрофонов</spw_hydrophonemonitoring>
 	<spw_serverdiffheader>Активная конфигурация сервера имеет [count] отличий от вашей локальной конфигурации:</spw_serverdiffheader>
 	<spw_listening>Подслушиваю...</spw_listening>
 	<spw_loading>Загрузка аудио-буферов...</spw_loading>

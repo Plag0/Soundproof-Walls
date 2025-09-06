@@ -1060,74 +1060,82 @@ namespace SoundproofWalls
 
         private void UpdatePitch()
         {
-            if (SoundInfo.IsChargeSound)
+            try
             {
-                return;
-            }
-
-            if (ignorePitch || !config.PitchEnabled)
-            {
-                Pitch = 1;
-                return;
-            };
-
-            // Flow/fire sounds are handled differently.
-            if (AudioIsFlow || AudioIsFire)
-            {
-                UpdateFlowFirePitch();
-                return;
-            }
-
-            float mult = 1;
-            float currentPitch = startPitch;
-
-            mult += SoundInfo.PitchMult - 1;
-
-            // Voice.
-            if (AudioIsVoice)
-            {
-                mult += MathHelper.Lerp(config.UnmuffledVoicePitchMultiplier, config.MuffledVoicePitchMultiplier, MuffleStrength) - 1;
-            }
-            // Either a component or status effect sound.
-            else if (Channel.Looping)
-            {
-                mult += MathHelper.Lerp(config.UnmuffledLoopingPitchMultiplier, config.MuffledLoopingPitchMultiplier, MuffleStrength) - 1;
-
-                if (Eavesdropped) mult += config.EavesdroppingPitchMultiplier - 1;
-                else if (Hydrophoned) mult += config.HydrophonePitchMultiplier - 1;
-
-                if (Listener.IsSubmerged) mult += config.SubmergedPitchMultiplier - 1;
-                if (Listener.IsWearingDivingSuit) mult += config.DivingSuitPitchMultiplier - 1; 
-            }
-            // Single (non-looping sound).
-            else
-            {
-                mult += MathHelper.Lerp(config.UnmuffledSoundPitchMultiplier, config.MuffledSoundPitchMultiplier, MuffleStrength) - 1;
-
-                if (config.PitchWithDistance) // Additional pitching based on distance and muffle strength.
+                if (SoundInfo.IsChargeSound)
                 {
-                    float distanceRatio = Math.Clamp(1 - Distance / Channel.Far, 0, 1);
-                    mult += MathHelper.Lerp(1, distanceRatio, MuffleStrength) - 1;
+                    return;
                 }
 
-                if (Eavesdropped) mult += config.EavesdroppingPitchMultiplier - 1;
-                else if (Hydrophoned) mult += config.HydrophonePitchMultiplier - 1;
+                if (ignorePitch || !config.PitchEnabled)
+                {
+                    Pitch = 1;
+                    return;
+                }
+                ;
 
-                if (Listener.IsSubmerged) mult += config.SubmergedPitchMultiplier - 1;
-                if (Listener.IsWearingDivingSuit) mult += config.DivingSuitPitchMultiplier - 1;
+                // Flow/fire sounds are handled differently.
+                if (AudioIsFlow || AudioIsFire)
+                {
+                    UpdateFlowFirePitch();
+                    return;
+                }
+
+                float mult = 1;
+                float currentPitch = startPitch;
+
+                mult += SoundInfo.PitchMult - 1;
+
+                // Voice.
+                if (AudioIsVoice)
+                {
+                    mult += MathHelper.Lerp(config.UnmuffledVoicePitchMultiplier, config.MuffledVoicePitchMultiplier, MuffleStrength) - 1;
+                }
+                // Either a component or status effect sound.
+                else if (Channel.Looping)
+                {
+                    mult += MathHelper.Lerp(config.UnmuffledLoopingPitchMultiplier, config.MuffledLoopingPitchMultiplier, MuffleStrength) - 1;
+
+                    if (Eavesdropped) mult += config.EavesdroppingPitchMultiplier - 1;
+                    else if (Hydrophoned) mult += config.HydrophonePitchMultiplier - 1;
+
+                    if (Listener.IsSubmerged) mult += config.SubmergedPitchMultiplier - 1;
+                    if (Listener.IsWearingDivingSuit) mult += config.DivingSuitPitchMultiplier - 1;
+                }
+                // Single (non-looping sound).
+                else
+                {
+                    mult += MathHelper.Lerp(config.UnmuffledSoundPitchMultiplier, config.MuffledSoundPitchMultiplier, MuffleStrength) - 1;
+
+                    if (config.PitchWithDistance) // Additional pitching based on distance and muffle strength.
+                    {
+                        float distanceRatio = Math.Clamp(1 - Distance / Channel.Far, 0, 1);
+                        mult += MathHelper.Lerp(1, distanceRatio, MuffleStrength) - 1;
+                    }
+
+                    if (Eavesdropped) mult += config.EavesdroppingPitchMultiplier - 1;
+                    else if (Hydrophoned) mult += config.HydrophonePitchMultiplier - 1;
+
+                    if (Listener.IsSubmerged) mult += config.SubmergedPitchMultiplier - 1;
+                    if (Listener.IsWearingDivingSuit) mult += config.DivingSuitPitchMultiplier - 1;
+                }
+
+                float targetPitch = currentPitch * mult;
+
+                float transitionFactor = config.PitchTransitionFactor;
+                if (transitionFactor > 0 && IsInUpdateLoop && !IsFirstIteration)
+                {
+                    float maxStep = (float)(transitionFactor * Timing.Step);
+                    Pitch = Util.SmoothStep(Pitch, targetPitch, maxStep);
+                }
+                else
+                {
+                    Pitch = targetPitch;
+                }
             }
-
-            float targetPitch = currentPitch * mult;
-
-            float transitionFactor = config.PitchTransitionFactor;
-            if (transitionFactor > 0 && IsInUpdateLoop && !IsFirstIteration)
+            catch (Exception ex)
             {
-                float maxStep = (float)(transitionFactor * Timing.Step);
-                Pitch = Util.SmoothStep(Pitch, targetPitch, maxStep);
-            }
-            else
-            {
-                Pitch = targetPitch;
+                LuaCsLogger.LogError($"[SoundproofWalls] Pitch update has thrown exception: {ex.Message}.");
             }
         }
 

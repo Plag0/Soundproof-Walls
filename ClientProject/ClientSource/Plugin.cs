@@ -59,22 +59,22 @@ namespace SoundproofWalls
         public static string ModPath = Util.GetModDirectory();
         public static readonly Dictionary<SoundPath, string> CustomSoundPaths = new Dictionary<SoundPath, string>
         {
-            { SoundPath.EavesdroppingActivation, Path.Combine(ModPath, "Content/Sounds/SPW_EavesdroppingActivation.ogg") },
-            { SoundPath.EavesdroppingAmbienceDry, Path.Combine(ModPath, "Content/Sounds/SPW_EavesdroppingAmbienceDryRoom.ogg") },
-            { SoundPath.EavesdroppingAmbienceWet, Path.Combine(ModPath, "Content/Sounds/SPW_EavesdroppingAmbienceWetRoom.ogg") },
+            { SoundPath.EavesdroppingActivation, Path.Combine(ModPath, "Content", "Sounds", "SPW_EavesdroppingActivation.ogg") },
+            { SoundPath.EavesdroppingAmbienceDry, Path.Combine(ModPath, "Content", "Sounds", "SPW_EavesdroppingAmbienceDryRoom.ogg") },
+            { SoundPath.EavesdroppingAmbienceWet, Path.Combine(ModPath, "Content", "Sounds", "SPW_EavesdroppingAmbienceWetRoom.ogg") },
 
-            { SoundPath.HydrophoneAmbienceColdCaverns, Path.Combine(ModPath, "Content/Sounds/SPW_HydrophoneAmbienceColdCaverns.ogg") },
-            { SoundPath.HydrophoneAmbienceEuropanRidge, Path.Combine(ModPath, "Content/Sounds/SPW_HydrophoneAmbienceEuropanRidge.ogg") },
-            { SoundPath.HydrophoneAmbienceAphoticPlateau, Path.Combine(ModPath, "Content/Sounds/SPW_HydrophoneAmbienceAphoticPlateau.ogg") },
-            { SoundPath.HydrophoneAmbienceGreatSea, Path.Combine(ModPath, "Content/Sounds/SPW_HydrophoneAmbienceGreatSea.ogg") },
-            { SoundPath.HydrophoneAmbienceHydrothermalWastes, Path.Combine(ModPath, "Content/Sounds/SPW_HydrophoneAmbienceHydrothermalWastes.ogg") },
+            { SoundPath.HydrophoneAmbienceColdCaverns, Path.Combine(ModPath, "Content", "Sounds", "SPW_HydrophoneAmbienceColdCaverns.ogg") },
+            { SoundPath.HydrophoneAmbienceEuropanRidge, Path.Combine(ModPath, "Content", "Sounds", "SPW_HydrophoneAmbienceEuropanRidge.ogg") },
+            { SoundPath.HydrophoneAmbienceAphoticPlateau, Path.Combine(ModPath, "Content", "Sounds", "SPW_HydrophoneAmbienceAphoticPlateau.ogg") },
+            { SoundPath.HydrophoneAmbienceGreatSea, Path.Combine(ModPath, "Content", "Sounds", "SPW_HydrophoneAmbienceGreatSea.ogg") },
+            { SoundPath.HydrophoneAmbienceHydrothermalWastes, Path.Combine(ModPath, "Content", "Sounds", "SPW_HydrophoneAmbienceHydrothermalWastes.ogg") },
 
-            { SoundPath.HydrophoneMovementSmall, Path.Combine(ModPath, "Content/Sounds/SPW_HydrophoneMovementSmall.ogg") },
-            { SoundPath.HydrophoneMovementMedium, Path.Combine(ModPath, "Content/Sounds/SPW_HydrophoneMovementMedium.ogg") },
-            { SoundPath.HydrophoneMovementLarge, Path.Combine(ModPath, "Content/Sounds/SPW_HydrophoneMovementLarge.ogg") },
+            { SoundPath.HydrophoneMovementSmall, Path.Combine(ModPath, "Content", "Sounds", "SPW_HydrophoneMovementSmall.ogg") },
+            { SoundPath.HydrophoneMovementMedium, Path.Combine(ModPath, "Content", "Sounds", "SPW_HydrophoneMovementMedium.ogg") },
+            { SoundPath.HydrophoneMovementLarge, Path.Combine(ModPath, "Content", "Sounds", "SPW_HydrophoneMovementLarge.ogg") },
 
-            { SoundPath.BubbleLocal, Path.Combine(ModPath, "Content/Sounds/SPW_BubblesLoopMono.ogg") },
-            { SoundPath.BubbleRadio, Path.Combine(ModPath, "Content/Sounds/SPW_RadioBubblesLoopStereo.ogg") },
+            { SoundPath.BubbleLocal, Path.Combine(ModPath, "Content", "Sounds", "SPW_BubblesLoopMono.ogg") },
+            { SoundPath.BubbleRadio, Path.Combine(ModPath, "Content", "Sounds", "SPW_RadioBubblesLoopStereo.ogg") },
         };
 
         public void InitClient()
