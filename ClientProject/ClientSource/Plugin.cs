@@ -688,6 +688,7 @@ namespace SoundproofWalls
             
             VoipClient instance = __instance;
             byte queueId = msg.ReadByte();
+            float distanceFactor = msg.ReadRangedSingle(0.0f, 1.0f, 8);
             VoipQueue queue = instance.queues.Find(q => q.QueueID == queueId);
 
             if (queue == null)
@@ -771,7 +772,7 @@ namespace SoundproofWalls
                 targetFar = senderRadio.Range * impedimentMult * config.VoiceRadioRangeMultiplier;
                 targetNear = targetFar * config.VoiceNearMultiplier;
                 client.VoipSound.SetRange(targetNear, targetFar);
-                float distanceFactor = Vector2.Distance(clientHead.WorldPosition, Character.Controlled?.WorldPosition ?? Listener.WorldPos) / targetFar;
+                distanceFactor = Vector2.Distance(clientHead.WorldPosition, Character.Controlled?.WorldPosition ?? Listener.WorldPos) / targetFar;
                 if (distanceFactor > config.VoiceNearMultiplier) // Note: I removed the spectating check here, so spectators can hear radio noise too.
                 {
                     // Noise starts increasing exponentially after near range.
