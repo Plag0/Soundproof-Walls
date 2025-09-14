@@ -252,32 +252,43 @@ namespace SoundproofWalls
             uint effectId = reverbEffectId;
             uint slotId = reverbSlotId;
 
-            int alError;
-            Al.GetError();
+            Al.GetError(); // Clear previous errors.
 
             if (flushReverb)
             {
                 AlEffects.AuxiliaryEffectSloti(slotId, AlEffects.AL_EFFECTSLOT_EFFECT, AlEffects.AL_EFFECTSLOT_NULL);
-                if ((alError = Al.GetError()) != Al.NoError) { DebugConsole.AddWarning($"[SoundproofWalls] Failed to detach reverb effect ID {effectId} to slot ID: {slotId} while flushing, {Al.GetErrorString(alError)}"); }
+                if (HandleManagerError(Al.GetError(), "flushing reverb slot")) { return; }
             }
 
             AlEffects.Effectf(effectId, AlEffects.AL_REVERB_DENSITY, Math.Clamp(config.Density, 0.0f, 1.0f));
+            if (HandleManagerError(Al.GetError(), "setting reverb density")) { return; }
             AlEffects.Effectf(effectId, AlEffects.AL_REVERB_DIFFUSION, Math.Clamp(config.Diffusion, 0.0f, 1.0f));
+            if (HandleManagerError(Al.GetError(), "setting reverb diffusion")) { return; }
             AlEffects.Effectf(effectId, AlEffects.AL_REVERB_GAIN, Math.Clamp(config.Gain, 0.0f, 1.0f));
+            if (HandleManagerError(Al.GetError(), "setting reverb gain")) { return; }
             AlEffects.Effectf(effectId, AlEffects.AL_REVERB_GAINHF, Math.Clamp(config.GainHf, 0.0f, 1.0f));
+            if (HandleManagerError(Al.GetError(), "setting reverb gain HF")) { return; }
             AlEffects.Effectf(effectId, AlEffects.AL_REVERB_DECAY_TIME, Math.Clamp(config.DecayTime, 0.1f, 20.0f));
+            if (HandleManagerError(Al.GetError(), "setting reverb decay time")) { return; }
             AlEffects.Effectf(effectId, AlEffects.AL_REVERB_DECAY_HFRATIO, Math.Clamp(config.DecayHfRatio, 0.1f, 2.0f));
+            if (HandleManagerError(Al.GetError(), "setting reverb HF ratio")) { return; }
             AlEffects.Effectf(effectId, AlEffects.AL_REVERB_REFLECTIONS_GAIN, Math.Clamp(config.ReflectionsGain, 0.0f, 3.16f));
+            if (HandleManagerError(Al.GetError(), "setting reverb reflections gain")) { return; }
             AlEffects.Effectf(effectId, AlEffects.AL_REVERB_REFLECTIONS_DELAY, Math.Clamp(config.ReflectionsDelay, 0.0f, 0.3f));
+            if (HandleManagerError(Al.GetError(), "setting reverb reflections delay")) { return; }
             AlEffects.Effectf(effectId, AlEffects.AL_REVERB_LATE_REVERB_GAIN, Math.Clamp(config.LateReverbGain, 0.0f, 10.0f));
+            if (HandleManagerError(Al.GetError(), "setting reverb late reverb gain")) { return; }
             AlEffects.Effectf(effectId, AlEffects.AL_REVERB_LATE_REVERB_DELAY, Math.Clamp(config.LateReverbDelay, 0.0f, 0.1f));
+            if (HandleManagerError(Al.GetError(), "setting reverb late reverb delay")) { return; }
             AlEffects.Effectf(effectId, AlEffects.AL_REVERB_AIR_ABSORPTION_GAINHF, Math.Clamp(config.AirAbsorptionGainHf, 0.892f, 1.0f));
+            if (HandleManagerError(Al.GetError(), "setting reverb air absorption gain HF")) { return; }
             AlEffects.Effectf(effectId, AlEffects.AL_REVERB_ROOM_ROLLOFF_FACTOR, Math.Clamp(config.RoomRolloffFactor, 0.0f, 10.0f));
+            if (HandleManagerError(Al.GetError(), "setting reverb room rolloff factor")) { return; }
             AlEffects.Effecti(effectId, AlEffects.AL_REVERB_DECAY_HFLIMIT, Math.Clamp(config.DecayHfLimit, Al.False, Al.True));
-            if ((alError = Al.GetError()) != Al.NoError) { DebugConsole.AddWarning($"[SoundproofWalls] Error applying reverb params for effect ID: {effectId}, {Al.GetErrorString(alError)}"); }
+            if (HandleManagerError(Al.GetError(), "setting reverb decay HF limit")) { return; }
 
             AlEffects.AuxiliaryEffectSloti(slotId, AlEffects.AL_EFFECTSLOT_EFFECT, effectId);
-            if ((alError = Al.GetError()) != Al.NoError) { DebugConsole.AddWarning($"[SoundproofWalls] Failed to attach reverb effect ID {effectId} to slot ID: {slotId}, {Al.GetErrorString(alError)}"); }
+            if (HandleManagerError(Al.GetError(), "attaching reverb effect to slot")) { return; }
         }
 
         private void ApplyDistortionConfiguration(DistortionConfiguration config)
@@ -285,18 +296,21 @@ namespace SoundproofWalls
             uint effectId = distortionEffectId;
             uint slotId = distortionSlotId;
 
-            int alError;
-            Al.GetError();
+            Al.GetError(); // Clear previous errors.
 
             AlEffects.Effectf(effectId, AlEffects.AL_DISTORTION_EDGE, Math.Clamp(config.Edge, 0.0f, 1.0f));
+            if (HandleManagerError(Al.GetError(), "setting distortion edge")) { return; }
             AlEffects.Effectf(effectId, AlEffects.AL_DISTORTION_GAIN, Math.Clamp(config.Gain, 0.01f, 1.0f));
+            if (HandleManagerError(Al.GetError(), "setting distortion gain")) { return; }
             AlEffects.Effectf(effectId, AlEffects.AL_DISTORTION_LOWPASS_CUTOFF, Math.Clamp(config.LowpassCutoff, 80.0f, 24_000.0f));
+            if (HandleManagerError(Al.GetError(), "setting distortion lowpass cutoff")) { return; }
             AlEffects.Effectf(effectId, AlEffects.AL_DISTORTION_EQCENTER, Math.Clamp(config.EqCenter, 80.0f, 24_000.0f));
+            if (HandleManagerError(Al.GetError(), "setting distortion EQ center")) { return; }
             AlEffects.Effectf(effectId, AlEffects.AL_DISTORTION_EQBANDWIDTH, Math.Clamp(config.EqBandwidth, 80.0f, 24_000.0f));
-            if ((alError = Al.GetError()) != Al.NoError) { DebugConsole.AddWarning($"[SoundproofWalls] Error applying distortion params for effect ID: {effectId}, {Al.GetErrorString(alError)}"); }
-            
+            if (HandleManagerError(Al.GetError(), "setting distortion EQ bandwidth")) { return; }
+
             AlEffects.AuxiliaryEffectSloti(slotId, AlEffects.AL_EFFECTSLOT_EFFECT, effectId);
-            if ((alError = Al.GetError()) != Al.NoError) { DebugConsole.AddWarning($"[SoundproofWalls] Failed to attach distortion effect ID {effectId} to slot ID: {slotId}, {Al.GetErrorString(alError)}"); }
+            if (HandleManagerError(Al.GetError(), "attaching distortion effect to slot")) { return; }
         }
 
         private ReverbConfiguration CalculateInsideReverbConfiguration()
@@ -644,21 +658,38 @@ namespace SoundproofWalls
 
             _reverbRoutedSources.TryRemove(sourceId, out bool _);
 
-            // Disconnect auxiliary sends 0 and 1
+            // Disconnect auxiliary send 0
             Al.Source3i(sourceId, AlEffects.AL_AUXILIARY_SEND_FILTER, AlEffects.AL_EFFECTSLOT_NULL, 0, AlEffects.AL_FILTER_NULL);
-            if ((alError = Al.GetError()) != Al.NoError) DebugConsole.AddWarning($"[SoundproofWalls] Failed to disconnect send 0 for source ID: {sourceId}, {Al.GetErrorString(alError)}");
+            alError = Al.GetError();
+            if (alError != Al.NoError && alError != Al.InvalidName && alError != Al.InvalidValue)
+            {
+                DebugConsole.AddWarning($"[SoundproofWalls] Error disconnecting send 0 for source ID: {sourceId}, {Al.GetErrorString(alError)}");
+            }
+            // Disconnect auxiliary send 1
             Al.Source3i(sourceId, AlEffects.AL_AUXILIARY_SEND_FILTER, AlEffects.AL_EFFECTSLOT_NULL, 1, AlEffects.AL_FILTER_NULL);
-            if ((alError = Al.GetError()) != Al.NoError) DebugConsole.AddWarning($"[SoundproofWalls] Failed to disconnect send 1 for source ID: {sourceId}, {Al.GetErrorString(alError)}");
+            alError = Al.GetError();
+            if (alError != Al.NoError && alError != Al.InvalidName && alError != Al.InvalidValue)
+            {
+                DebugConsole.AddWarning($"[SoundproofWalls] Error disconnecting send 1 for source ID: {sourceId}, {Al.GetErrorString(alError)}");
+            }
 
             // Detach direct filter
             Al.Sourcei(sourceId, AlEffects.AL_DIRECT_FILTER, AlEffects.AL_FILTER_NULL);
-            if ((alError = Al.GetError()) != Al.NoError) DebugConsole.AddWarning($"[SoundproofWalls] Failed to detach direct filter from source ID: {sourceId}, {Al.GetErrorString(alError)}");
+            alError = Al.GetError();
+            if (alError != Al.NoError && alError != Al.InvalidName && alError != Al.InvalidValue)
+            {
+                DebugConsole.AddWarning($"[SoundproofWalls] Error detaching direct filter from source ID: {sourceId}, {Al.GetErrorString(alError)}");
+            }
 
             // Delete the filter
             if (filterId != INVALID_ID)
             {
                 AlEffects.DeleteFilters(1, new[] { filterId });
-                if ((alError = Al.GetError()) != Al.NoError) DebugConsole.AddWarning($"[SoundproofWalls] Failed to delete filter ID: {filterId}, {Al.GetErrorString(alError)}");
+                alError = Al.GetError();
+                if (alError != Al.NoError && alError != Al.InvalidName)
+                {
+                    DebugConsole.AddWarning($"[SoundproofWalls] Error deleting filter ID: {filterId}, {Al.GetErrorString(alError)}");
+                }
             }
 
             _sourceFilters.TryRemove(sourceId, out uint _);
@@ -666,6 +697,10 @@ namespace SoundproofWalls
 
         public void UpdateSource(ChannelInfo channelInfo, float gainHf, float gainLf = 1)
         {
+            if (channelInfo.Channel == null || !channelInfo.Channel.IsPlaying || channelInfo.Channel.FadingOutAndDisposing)
+            {
+                return;
+            }
 
             PerformanceProfiler.Instance.StartTimingEvent(ProfileEvents.EffectsManagerUpdate); 
 
@@ -692,28 +727,21 @@ namespace SoundproofWalls
             Al.GetError();
            
             bool useBandpass = channelInfo.Hydrophoned && ConfigManager.Config.HydrophoneBandpassFilterEnabled;
-            if (useBandpass)
-            {
-                AlEffects.Filteri(filterId, AlEffects.AL_FILTER_TYPE, AlEffects.AL_FILTER_BANDPASS);
-            }
-            else
-            {
-                AlEffects.Filteri(filterId, AlEffects.AL_FILTER_TYPE, AlEffects.AL_FILTER_LOWPASS);
-            }
-            if ((alError = Al.GetError()) != Al.NoError)
-            {
-                DebugConsole.AddWarning($"[SoundproofWalls] Failed to set filter ID {filterId}'s type for source ID: {sourceId}, {Al.GetErrorString(alError)}");
-                return;
-            }
+            int filterType = useBandpass ? AlEffects.AL_FILTER_BANDPASS : AlEffects.AL_FILTER_LOWPASS;
+
+            AlEffects.Filteri(filterId, AlEffects.AL_FILTER_TYPE, filterType);
+            if (HandleSourceError(Al.GetError(), sourceId, "setting filter type")) { return; }
 
             if (useBandpass)
             {
                 gainHf = ConfigManager.Config.HydrophoneBandpassFilterHfGain;
                 gainLf = ConfigManager.Config.HydrophoneBandpassFilterLfGain;
+
                 AlEffects.Filterf(filterId, AlEffects.AL_BANDPASS_GAINHF, gainHf);
-                if ((alError = Al.GetError()) != Al.NoError) DebugConsole.AddWarning($"[SoundproofWalls] Failed to update filter {filterId} param AL_BANDPASS_GAINHF for source {sourceId}, {Al.GetErrorString(alError)}");
+                if (HandleSourceError(Al.GetError(), sourceId, "setting bandpass gain HF")) { return; }
+
                 AlEffects.Filterf(filterId, AlEffects.AL_BANDPASS_GAINLF, gainLf);
-                if ((alError = Al.GetError()) != Al.NoError) DebugConsole.AddWarning($"[SoundproofWalls] Failed to update filter {filterId} param AL_BANDPASS_GAINLF for source {sourceId}, {Al.GetErrorString(alError)}");
+                if (HandleSourceError(Al.GetError(), sourceId, "setting bandpass gain LF")) { return; }
             }
             else
             {
@@ -725,14 +753,15 @@ namespace SoundproofWalls
                 }
 
                 AlEffects.Filterf(filterId, AlEffects.AL_LOWPASS_GAIN, gainLf);
-                if ((alError = Al.GetError()) != Al.NoError) DebugConsole.AddWarning($"[SoundproofWalls] Failed to update filter {filterId} param AL_LOWPASS_GAIN for source {sourceId}, {Al.GetErrorString(alError)}");
+                if (HandleSourceError(Al.GetError(), sourceId, "setting lowpass gain")) { return; }
+
                 AlEffects.Filterf(filterId, AlEffects.AL_LOWPASS_GAINHF, gainHf);
-                if ((alError = Al.GetError()) != Al.NoError) DebugConsole.AddWarning($"[SoundproofWalls] Failed to update filter {filterId} param AL_LOWPASS_GAINHF for source {sourceId}, {Al.GetErrorString(alError)}");
+                if (HandleSourceError(Al.GetError(), sourceId, "setting lowpass gain HF")) { return; }
             }
 
             // Re-attach filter.
             Al.Sourcei(sourceId, AlEffects.AL_DIRECT_FILTER, (int)filterId);
-            if ((alError = Al.GetError()) != Al.NoError) DebugConsole.AddWarning($"[SoundproofWalls] Failed to re-attach filter {filterId} to source {sourceId}, {Al.GetErrorString(alError)}");
+            if (HandleSourceError(Al.GetError(), sourceId, "re-attaching direct filter")) { return; }
         }
 
         private uint DetermineReverbEffectSlot(ChannelInfo channelInfo)
@@ -798,17 +827,49 @@ namespace SoundproofWalls
             if (!IsInitialized || send > AlEffects.MaxAuxiliarySends) return;
 
             Al.GetError();
-            int alError;
 
             // Disable auto gain when a source is sending to a reverb effect slot.
             bool sourceHasReverb = _reverbRoutedSources.ContainsKey(sourceId) || targetSlot == reverbSlotId;
+            
             Al.Sourcei(sourceId, AlEffects.AL_AUXILIARY_SEND_FILTER_GAIN_AUTO, sourceHasReverb ? Al.False : Al.True);
-            if ((alError = Al.GetError()) != Al.NoError) DebugConsole.AddWarning($"[SoundproofWalls] Failed to set AL_AUXILIARY_SEND_FILTER_GAIN_AUTO for source ID: {sourceId}, {Al.GetErrorString(alError)}");
+            if (HandleSourceError(Al.GetError(), sourceId, "setting aux send gain auto")) { return; }
+            
             if (sourceHasReverb) { _reverbRoutedSources.TryAdd(sourceId, true); }
 
             // Send source to the specified effect slot via the specified send.
             Al.Source3i(sourceId, AlEffects.AL_AUXILIARY_SEND_FILTER, (int)targetSlot, (int)send, (int)filterId);
-            if ((alError = Al.GetError()) != Al.NoError) DebugConsole.AddWarning($"[SoundproofWalls] Failed to route source ID {sourceId} to target slot ID {targetSlot} via send {send}, {Al.GetErrorString(alError)}");
+            if (HandleSourceError(Al.GetError(), sourceId, $"routing to effect slot via send {send}")) { return; }
+        }
+
+        private bool HandleSourceError(int alError, uint sourceId, string context)
+        {
+            if (alError == Al.NoError) { return false; }
+
+            // There is a race condition caused by the vanilla FadeOutAndDispose background thread disposing sources.
+            // This checks for this and unregisters the disposed source
+            if (alError == Al.InvalidName || alError == Al.InvalidValue)
+            {
+                DebugConsole.AddWarning($"[SoundproofWalls] Stale object detected while {context}. Unregistering source ID {sourceId}.");
+                UnregisterSource(sourceId);
+                return true; // Critical error: tell caller to stop.
+            }
+            else
+            {
+                // For any other error, log it and stop processing to prevent spam.
+                DebugConsole.AddWarning($"[SoundproofWalls] OpenAL error while {context} for source ID {sourceId}: {Al.GetErrorString(alError)}");
+                return true; // Critical error: tell caller to stop.
+            }
+        }
+
+        private bool HandleManagerError(int alError, string context)
+        {
+            if (alError == Al.NoError) { return false; }
+
+            // Any error here is critical cus it means the manager's core objects are gone.
+            DebugConsole.LogError($"[SoundproofWalls] EfxAudioManager became invalid while {context}: {Al.GetErrorString(alError)}. Re-initializing Dynamic Fx.");
+            Plugin.InitDynamicFx();
+
+            return true; // Critical error: tell caller to stop.
         }
 
         public void Dispose()
