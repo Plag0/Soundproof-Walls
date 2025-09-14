@@ -54,6 +54,8 @@
 	<spw_soundrangetooltip>所有非循環音效的全域範圍乘數。\n\n注意：與「進階」分頁中「自訂音效」列表指定的特定音效範圍乘數以乘法疊加。</spw_soundrangetooltip>
 	<spw_loopingsoundrange>循環音效範圍主控</spw_loopingsoundrange>
 	<spw_loopingsoundrangetooltip>所有循環音效的全域範圍乘數。\n\n注意：與「進階」分頁中「自訂音效」列表指定的特定音效範圍乘數以乘法疊加。</spw_loopingsoundrangetooltip>
+	<spw_outdoorsoundrange>室外音效範圍</spw_outdoorsoundrange>
+	<spw_outdoorsoundrangetooltip>潛艇外音效與語音的範圍乘數。\n\n注意：與「進階」分頁中「自訂音效」列表指定的特定音效範圍乘數以乘法疊加。</spw_outdoorsoundrangetooltip>
 
 
 	<!-- Dynamic -->
@@ -157,6 +159,10 @@
 
 	<spw_talkingragdolls>布娃娃說話</spw_talkingragdolls>
 	<spw_talkingragdollstooltip>當玩家處於布娃娃狀態但未被擊暈時，可以聽到他們說話。</spw_talkingragdollstooltip>
+	<spw_directionalradio>定向無線電</spw_directionalradio>
+	<spw_directionalradiotooltip>若啟用，無線電近距離聊天的音訊會根據說話者的方向進行聲道平移。這是原版遊戲的預設行為。</spw_directionalradiotooltip>
+	<spw_hearlocalvoiceonfocusedtarget>在砲塔上聽到語音</spw_hearlocalvoiceonfocusedtarget>
+	<spw_hearlocalvoiceonfocusedtargettooltip>從目前攝影機目標的視角聆聽時，可以聽到您角色周圍的本地近距離聊天。\n\n注意：需要啟用「聚焦目標音訊」（一般分頁）。</spw_hearlocalvoiceonfocusedtargettooltip>
 	
 	<spw_voicerange>本地範圍</spw_voicerange>
 	<spw_voicerangetooltip>本地近距離聊天的範圍。</spw_voicerangetooltip>
@@ -335,6 +341,8 @@
 	<spw_firesoundvolumetooltip>火焰的音量。</spw_firesoundvolumetooltip>
 	<spw_vanillaexosuitvolume>原版外骨骼裝甲音量</spw_vanillaexosuitvolume>
 	<spw_vanillaexosuitvolumetooltip>原版外骨骼裝甲移動聲的音量。有些玩家覺得這個聲音很刺耳。\n\n注意：不影響模組修改的外骨骼裝甲聲音。</spw_vanillaexosuitvolumetooltip>
+	<spw_voicenearmultiplier>語音距離衰減起始點</spw_voicenearmultiplier>
+	<spw_voicenearmultipliertooltip>近距離聊天音量開始衰減所需的距離。</spw_voicenearmultipliertooltip>
 	<spw_loopingcomponentsoundnearmultiplier>組件音效距離衰減起始點</spw_loopingcomponentsoundnearmultiplier>
 	<spw_loopingcomponentsoundnearmultipliertooltip>循環組件音效音量開始衰減所需的距離。</spw_loopingcomponentsoundnearmultipliertooltip>
 	<spw_mindistancefalloffvolume>最小距離衰減音量</spw_mindistancefalloffvolume>
@@ -470,6 +478,8 @@
 	<spw_submergedsuitwaterambiencevolumetooltip>當聽者在水下且穿著潛水衣時，水環境音軌的音量。</spw_submergedsuitwaterambiencevolumetooltip>
 	<spw_submergednosuitwaterambiencevolume>水下水聲音量（未穿潛水衣）</spw_submergednosuitwaterambiencevolume>
 	<spw_submergednosuitwaterambiencevolumetooltip>當聽者在水下且未穿著潛水衣時，水環境音軌的音量。</spw_submergednosuitwaterambiencevolumetooltip>
+	<spw_spectatingwaterambiencevolume>觀戰水聲音量</spw_spectatingwaterambiencevolume>
+	<spw_spectatingwaterambiencevolumetooltip>當聽者處於觀戰模式時，水環境音軌的音量。</spw_spectatingwaterambiencevolumetooltip>
 	<spw_waterambiencetransitionspeed>水環境音過渡速度</spw_waterambiencetransitionspeed>
 	<spw_waterambiencetransitionspeedtooltip>水環境音在不同音量等級之間過渡的速度。</spw_waterambiencetransitionspeedtooltip>
 
@@ -570,12 +580,6 @@
 	<spw_openwallthresholdtooltip>牆壁上的縫隙必須開啟到何種程度，聲音才能無阻礙地通過。</spw_openwallthresholdtooltip>
 	<spw_soundpropagationrange>聲音傳播範圍</spw_soundpropagationrange>
 	<spw_soundpropagationrangetooltip>「牆壁傳播音效」列表（進階分頁）中的聲音可以搜索附近船體以傳播進去的最遠距離。</spw_soundpropagationrangetooltip>
-
-	<spw_categoryai>角色 AI</spw_categoryai>
-	<spw_aitargetsoundrange>AI 聲音範圍</spw_aitargetsoundrange>
-	<spw_aitargetsoundrangetooltip>角色 AI 可以聽到物品和角色的距離。\n\n注意：僅限單人遊戲。</spw_aitargetsoundrangetooltip>
-	<spw_aitargetsightrange>AI 視線範圍</spw_aitargetsightrange>
-	<spw_aitargetsightrangetooltip>角色 AI 可以看到物品和角色的距離。\n\n注意：僅限單人遊戲。</spw_aitargetsightrangetooltip>
 
 	<spw_categoryrules>聲音規則</spw_categoryrules>
 	

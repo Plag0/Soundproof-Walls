@@ -740,7 +740,7 @@ namespace SoundproofWalls
             if (currentReverb == ReverbType.None) { return INVALID_ID; }
 
             bool sourceInHull = channelInfo.ChannelHull != null;
-            float amplitude = channelInfo.Channel.CurrentAmplitude * Math.Min(channelInfo.Gain, 1);
+            float amplitude = channelInfo.Channel.CurrentAmplitude;
             if (currentReverb == ReverbType.Inside)
             {
                 bool shouldReverbAir = sourceInHull &&

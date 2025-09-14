@@ -124,11 +124,6 @@ namespace SoundproofWalls
                 { 
                     SoundInfoManager.UpdateSoundInfoMap(); 
                 }
-
-                if (Util.ShouldUpdateAITarget(newConfig, oldConfig))
-                {
-                    Util.UpdateAITarget();
-                }
             }
 
             if (manualUpdate && configSenderId != 0)

@@ -9,7 +9,7 @@ namespace SoundproofWalls
 {
     public partial class Plugin : IAssemblyPlugin
     {
-        static bool HasNotReceivedConfigYet = true; // Has the server recieved any client config
+        static bool ReceivedConfig = false; // Has the server recieved any client config
         static float LastConfigRequestTime = 0;
         static string LastConfigString = DISABLED_CONFIG_VALUE;
         static byte LastConfigSenderID = 1;
@@ -23,7 +23,7 @@ namespace SoundproofWalls
                 string data = msg.ReadString();
                 string configString = DataAppender.RemoveData(data, out bool manualUpdate, out byte configSenderId);
 
-                bool isFirstConfig = HasNotReceivedConfigYet;
+                bool isFirstConfig = !ReceivedConfig;
 
                 // Prevent automatic updates (when another admin connects to the server) from overriding an existing config unless they manually change a setting.
                 if (manualUpdate || isFirstConfig) { LastConfigSenderID = configSenderId; }
@@ -31,22 +31,27 @@ namespace SoundproofWalls
                 // Return early if automatic update from different config sender.
                 if (!manualUpdate && LastConfigSenderID != configSenderId) { return; }
 
-                // Return early if the config recieved is identical.
-                if (LastConfigString == configString) { return; }
-
                 // Label the config as a manual update if it's the first config. Fixes "unknown" name bug in menu after first upload.
                 string newConfigData = DataAppender.AppendData(configString, manualUpdate || isFirstConfig, configSenderId);
 
                 // Update values.
+                if (isFirstConfig)
+                {
+                    ReceivedConfig = true;
+                }
+                else
+                {
+                    // Return early if the config recieved is identical.
+                    if (LastConfigString == configString) { return; }
+                }
                 LastConfigString = configString;
-                HasNotReceivedConfigYet = false;
 
                 // Send config to all clients.
                 IWriteMessage response = GameMain.LuaCs.Networking.Start(CLIENT_RECEIVE_CONFIG);
                 response.WriteString(newConfigData);
                 GameMain.LuaCs.Networking.Send(response);
 
-                if (isFirstConfig && !HasNotReceivedConfigYet)
+                if (isFirstConfig && ReceivedConfig)
                 {
                     string updaterName = Client.ClientList.FirstOrDefault(client => client.SessionId == configSenderId)?.Name ?? "unknown";
                     LuaCsLogger.Log($"[Soundproof Walls][Server] Sync server started with config from \"{updaterName}\"", Color.LimeGreen);
@@ -63,7 +68,7 @@ namespace SoundproofWalls
                 if (requesterClient == null) { return; }
 
                 // No config has been uploaded yet.
-                if (HasNotReceivedConfigYet)
+                if (!ReceivedConfig)
                 {
                     LuaCsLogger.Log($"[SoundproofWalls][Server] \"{requesterClient.Name}\" requested the server config before it was uploaded", color: Color.Yellow);
                     return;
@@ -80,7 +85,7 @@ namespace SoundproofWalls
             // Requests the host, or first admin to connect, for their config until it is recieved.
             GameMain.LuaCs.Hook.Add("think", "spw_serverupdate", (object[] args) =>
             {
-                if (HasNotReceivedConfigYet && Timing.TotalTime > LastConfigRequestTime + 10)
+                if (!ReceivedConfig && Timing.TotalTime > LastConfigRequestTime + 10)
                 {
                     LastConfigRequestTime = (float)Timing.TotalTime;
                     foreach (Client client in Client.ClientList)
@@ -88,7 +93,7 @@ namespace SoundproofWalls
                         if (client.Connection == GameMain.Server.OwnerConnection || client.HasPermission(ClientPermissions.Ban))
                         {
                             IWriteMessage message = GameMain.LuaCs.Networking.Start(CLIENT_SEND_CONFIG);
-                            GameMain.LuaCs.Networking.Send(message);
+                            GameMain.LuaCs.Networking.Send(message, client.Connection);
                             //LuaCsLogger.Log("Server: requesting config...");
                             break;
                         }

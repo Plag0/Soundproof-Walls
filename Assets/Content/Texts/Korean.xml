@@ -54,6 +54,8 @@
 	<spw_soundrangetooltip>모든 비반복 사운드에 대한 전역 범위 배율입니다.\n\n참고: '고급' 탭의 "사용자 지정 사운드" 목록에서 지정된 사운드별 범위 배율과 곱연산으로 중첩됩니다.</spw_soundrangetooltip>
 	<spw_loopingsoundrange>반복 사운드 범위 마스터</spw_loopingsoundrange>
 	<spw_loopingsoundrangetooltip>모든 반복 사운드에 대한 전역 범위 배율입니다.\n\n참고: '고급' 탭의 "사용자 지정 사운드" 목록에서 지정된 사운드별 범위 배율과 곱연산으로 중첩됩니다.</spw_loopingsoundrangetooltip>
+	<spw_outdoorsoundrange>실외 사운드 범위</spw_outdoorsoundrange>
+	<spw_outdoorsoundrangetooltip>잠수함 외부의 소리와 음성에 대한 범위 배율입니다.\n\n참고: '고급' 탭의 "사용자 지정 사운드" 목록에서 지정된 사운드별 범위 배율과 곱연산으로 중첩됩니다.</spw_outdoorsoundrangetooltip>
 
 
 	<!-- Dynamic -->
@@ -157,6 +159,10 @@
 
 	<spw_talkingragdolls>래그돌 상태에서 말하기</spw_talkingragdolls>
 	<spw_talkingragdollstooltip>기절하지 않은 플레이어가 래그돌 상태일 때 말하는 것을 듣습니다.</spw_talkingragdollstooltip>
+	<spw_directionalradio>방향성 무전기</spw_directionalradio>
+	<spw_directionalradiotooltip>활성화하면, 무전 채팅이 화자의 방향으로 패닝됩니다. 이것은 바닐라의 기본 동작입니다.</spw_directionalradiotooltip>
+	<spw_hearlocalvoiceonfocusedtarget>포탑에서 음성 듣기</spw_hearlocalvoiceonfocusedtarget>
+	<spw_hearlocalvoiceonfocusedtargettooltip>현재 카메라 대상의 시점에서 들으면서 캐릭터 주변의 근거리 채팅을 듣습니다.\n\n참고: '일반' 탭의 "대상 오디오 집중"이 활성화되어 있어야 합니다.</spw_hearlocalvoiceonfocusedtargettooltip>
 	
 	<spw_voicerange>근거리 범위</spw_voicerange>
 	<spw_voicerangetooltip>근거리 채팅의 범위입니다.</spw_voicerangetooltip>
@@ -335,6 +341,8 @@
 	<spw_firesoundvolumetooltip>화재 소리의 볼륨입니다.</spw_firesoundvolumetooltip>
 	<spw_vanillaexosuitvolume>바닐라 외골격 슈트 볼륨</spw_vanillaexosuitvolume>
 	<spw_vanillaexosuitvolumetooltip>바닐라 외골격 슈트 움직임 소리의 볼륨입니다. 일부 플레이어는 이 소리를 불쾌하게 느낍니다.\n\n참고: 모드로 추가된 외골격 슈트 소리에는 영향을 주지 않습니다.</spw_vanillaexosuitvolumetooltip>
+	<spw_voicenearmultiplier>음성 거리 감쇠 시작</spw_voicenearmultiplier>
+	<spw_voicenearmultipliertooltip>근거리 채팅 볼륨이 감소하기 시작하는 데 필요한 거리입니다.</spw_voicenearmultipliertooltip>
 	<spw_loopingcomponentsoundnearmultiplier>부품 사운드 거리 감쇠 시작</spw_loopingcomponentsoundnearmultiplier>
 	<spw_loopingcomponentsoundnearmultipliertooltip>반복되는 부품 사운드 볼륨이 감소하기 시작하는 데 필요한 거리입니다.</spw_loopingcomponentsoundnearmultipliertooltip>
 	<spw_mindistancefalloffvolume>최소 거리 감쇠 볼륨</spw_mindistancefalloffvolume>
@@ -470,6 +478,8 @@
 	<spw_submergedsuitwaterambiencevolumetooltip>청자가 잠수하고 잠수복을 착용했을 때 물 주변 소리 트랙의 볼륨입니다.</spw_submergedsuitwaterambiencevolumetooltip>
 	<spw_submergednosuitwaterambiencevolume>잠수 시 물소리 볼륨 (슈트 없음)</spw_submergednosuitwaterambiencevolume>
 	<spw_submergednosuitwaterambiencevolumetooltip>청자가 잠수하고 잠수복을 착용하지 않았을 때 물 주변 소리 트랙의 볼륨입니다.</spw_submergednosuitwaterambiencevolumetooltip>
+	<spw_spectatingwaterambiencevolume>관전 시 물소리 볼륨</spw_spectatingwaterambiencevolume>
+	<spw_spectatingwaterambiencevolumetooltip>청자가 관전 중일 때 물 주변 소리 트랙의 볼륨입니다.</spw_spectatingwaterambiencevolumetooltip>
 	<spw_waterambiencetransitionspeed>물소리 전환 속도</spw_waterambiencetransitionspeed>
 	<spw_waterambiencetransitionspeedtooltip>물 주변 소리가 볼륨 레벨 간에 전환되는 속도입니다.</spw_waterambiencetransitionspeedtooltip>
 
@@ -570,12 +580,6 @@
 	<spw_openwallthresholdtooltip>벽의 틈이 소리가 방해 없이 통과하기 위해 얼마나 열려 있어야 하는지를 나타냅니다.</spw_openwallthresholdtooltip>
 	<spw_soundpropagationrange>사운드 전파 범위</spw_soundpropagationrange>
 	<spw_soundpropagationrangetooltip>"벽 전파 사운드" 목록('고급' 탭)에 있는 소리가 전파될 근처 선체를 검색할 수 있는 최대 거리입니다.</spw_soundpropagationrangetooltip>
-
-	<spw_categoryai>캐릭터 AI</spw_categoryai>
-	<spw_aitargetsoundrange>AI 사운드 감지 범위</spw_aitargetsoundrange>
-	<spw_aitargetsoundrangetooltip>캐릭터 AI가 아이템과 캐릭터를 들을 수 있는 거리입니다.\n\n참고: 싱글플레이어 전용입니다.</spw_aitargetsoundrangetooltip>
-	<spw_aitargetsightrange>AI 시야 범위</spw_aitargetsightrange>
-	<spw_aitargetsightrangetooltip>캐릭터 AI가 아이템과 캐릭터를 볼 수 있는 거리입니다.\n\n참고: 싱글플레이어 전용입니다.</spw_aitargetsightrangetooltip>
 
 	<spw_categoryrules>사운드 규칙</spw_categoryrules>
 	

@@ -35,7 +35,7 @@ namespace SoundproofWalls
 
             Character character = Character.Controlled;
 
-            IsSpectating = character == null || character.IsDead || LightManager.ViewTarget == null;
+            IsSpectating = character == null || character.IsDead || character.Removed || LightManager.ViewTarget == null;
             
             if (IsSpectating)
             {

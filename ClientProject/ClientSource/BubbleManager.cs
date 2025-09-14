@@ -166,7 +166,7 @@ namespace SoundproofWalls
                 return;
             }
 
-            var messageType = Util.GetMessageType(client);
+            var messageType = Util.GetMessageType(client, out _);
             bool isPlaying = clientBubbleChannels.TryGetValue(client, out SoundChannel? currentBubbleChannel) && currentBubbleChannel != null;
             bool soundMatches = true;
             if (isPlaying)
@@ -188,14 +188,14 @@ namespace SoundproofWalls
             }
 
             float localVolume = 1.0f * voiceChannel.CurrentAmplitude * ConfigManager.Config.DrowningBubblesLocalVolumeMultiplier * ConfigManager.Config.VoiceLocalVolumeMultiplier;
-            float radioVolume = 1.0f * voiceChannel.CurrentAmplitude * ConfigManager.Config.DrowningBubblesRadioVolumeMultiplier * ConfigManager.Config.VoiceRadioVolumeMultiplier;
+            float radioVolume = 1.0f * voiceChannel.CurrentAmplitude * ConfigManager.Config.DrowningBubblesRadioVolumeMultiplier * ConfigManager.Config.VoiceRadioVolumeMultiplier * voiceChannel.Gain;
             float localRange = voiceChannel.Far * ConfigManager.Config.DrowningBubblesLocalRangeMultiplier;
 
             if (isPlaying) // Continue playing.
             {
                 if (state == PlayerBubbleSoundState.PlayRadioBubbles) // Continue radio
                 {
-                    currentBubbleChannel.Position = GameMain.SoundManager.ListenerPosition;
+                    currentBubbleChannel.Position = voiceChannel.Position;
                     currentBubbleChannel.Gain = radioVolume;
                     currentBubbleChannel.FrequencyMultiplier = MathHelper.Lerp(0.85f, 1.15f, MathUtils.InverseLerp(0, 2, player.CurrentSpeed));
                 }

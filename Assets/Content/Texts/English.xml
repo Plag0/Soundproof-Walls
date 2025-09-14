@@ -54,6 +54,8 @@
 	<spw_soundrangetooltip>Global range multiplier for all non-looping sounds.\n\nNote: Stacks multiplicatively with the sound-specific range multiplier assigned by the "Custom Sounds" list in the Advanced tab.</spw_soundrangetooltip>
 	<spw_loopingsoundrange>Looping Sound Range Master</spw_loopingsoundrange>
 	<spw_loopingsoundrangetooltip>Global range multiplier for all looping sounds.\n\nNote: Stacks multiplicatively with the sound-specific range multiplier assigned by the "Custom Sounds" list in the Advanced tab.</spw_loopingsoundrangetooltip>
+	<spw_outdoorsoundrange>Outdoor Sound Range</spw_outdoorsoundrange>
+	<spw_outdoorsoundrangetooltip>Range multiplier for sounds and voices outside the submarine.\n\nNote: Stacks multiplicatively with the sound-specific range multiplier assigned by the "Custom Sounds" list in the Advanced tab.</spw_outdoorsoundrangetooltip>
 
 
 	<!-- Dynamic -->
@@ -157,6 +159,10 @@
 
 	<spw_talkingragdolls>Talking Ragdolls</spw_talkingragdolls>
 	<spw_talkingragdollstooltip>Hear non-stunned players speak when they're ragdolled.</spw_talkingragdollstooltip>
+	<spw_directionalradio>Directional Radio</spw_directionalradio>
+	<spw_directionalradiotooltip>If enabled, radio proximity chat is panned in the direction of the speaker. This is the default behaviour in vanilla.</spw_directionalradiotooltip>
+	<spw_hearlocalvoiceonfocusedtarget>Hear Voices On Turrets</spw_hearlocalvoiceonfocusedtarget>
+	<spw_hearlocalvoiceonfocusedtargettooltip>Hear local proximity chat around your character while listening from the perspective of the current camera target.\n\nNote: Requires "Focus Target Audio" (General tab) to be enabled.</spw_hearlocalvoiceonfocusedtargettooltip>
 	
 	<spw_voicerange>Local Range</spw_voicerange>
 	<spw_voicerangetooltip>The range of local proximity chat.</spw_voicerangetooltip>
@@ -337,6 +343,8 @@
 	<spw_vanillaexosuitvolumetooltip>The volume of the vanilla exosuit movement sound. Some players find this sound unpleasant to hear.\n\nNote: Does not affect modded exosuit sounds.</spw_vanillaexosuitvolumetooltip>
 	<spw_loopingcomponentsoundnearmultiplier>Component Sound Distance Falloff Start</spw_loopingcomponentsoundnearmultiplier>
 	<spw_loopingcomponentsoundnearmultipliertooltip>The distance needed before looping component sound volume starts dropping off.</spw_loopingcomponentsoundnearmultipliertooltip>
+	<spw_voicenearmultiplier>Voice Distance Falloff Start</spw_voicenearmultiplier>
+	<spw_voicenearmultipliertooltip>The distance needed before proximity chat volume starts dropping off.</spw_voicenearmultipliertooltip>
 	<spw_mindistancefalloffvolume>Min Distance Falloff Volume</spw_mindistancefalloffvolume>
 	<spw_mindistancefalloffvolumetooltip>The minimum falloff volume a sound can reach using the "Realistic Sound Falloff" model (General tab)."</spw_mindistancefalloffvolumetooltip>
 
@@ -470,6 +478,8 @@
 	<spw_submergedsuitwaterambiencevolumetooltip>The volume of water ambience tracks when the listener is submerged and wearing a diving suit.</spw_submergedsuitwaterambiencevolumetooltip>
 	<spw_submergednosuitwaterambiencevolume>Submerged Water Volume (No Suit)</spw_submergednosuitwaterambiencevolume>
 	<spw_submergednosuitwaterambiencevolumetooltip>The volume of water ambience tracks when the listener is submerged and not wearing a diving suit.</spw_submergednosuitwaterambiencevolumetooltip>
+	<spw_spectatingwaterambiencevolume>Spectating Water Volume</spw_spectatingwaterambiencevolume>
+	<spw_spectatingwaterambiencevolumetooltip>The volume of water ambience tracks when the listener is spectating.</spw_spectatingwaterambiencevolumetooltip>
 	<spw_waterambiencetransitionspeed>Water Ambience Transition Speed</spw_waterambiencetransitionspeed>
 	<spw_waterambiencetransitionspeedtooltip>How fast the water ambience transitions between volume levels.</spw_waterambiencetransitionspeedtooltip>
 
@@ -570,12 +580,6 @@
 	<spw_openwallthresholdtooltip>How open a gap in a wall must be for sound to pass through unobstructed.</spw_openwallthresholdtooltip>
 	<spw_soundpropagationrange>Sound Propagation Range</spw_soundpropagationrange>
 	<spw_soundpropagationrangetooltip>The maximum distance that a sound in the "Wall Propagating Sounds" list (Advanced tab) can search for a nearby hull to propagate into.</spw_soundpropagationrangetooltip>
-
-	<spw_categoryai>Character AI</spw_categoryai>
-	<spw_aitargetsoundrange>AI Sound Range</spw_aitargetsoundrange>
-	<spw_aitargetsoundrangetooltip>The distance that character AI can hear items and characters.\n\nNote: Singleplayer only.</spw_aitargetsoundrangetooltip>
-	<spw_aitargetsightrange>AI Sight Range</spw_aitargetsightrange>
-	<spw_aitargetsightrangetooltip>The distance that character AI can see items and characters.\n\nNote: Singleplayer only.</spw_aitargetsightrangetooltip>
 
 	<spw_categoryrules>Sound Rules</spw_categoryrules>
 	

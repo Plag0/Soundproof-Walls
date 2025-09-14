@@ -4,7 +4,6 @@ using Barotrauma.Lights;
 using Barotrauma.Networking;
 using Barotrauma.Sounds;
 using FarseerPhysics.Dynamics;
-using Iced.Intel.EncoderInternal;
 using Microsoft.Xna.Framework;
 using Mono.Cecil;
 using OpenAL;
@@ -68,7 +67,7 @@ namespace SoundproofWalls
         private float? approximateDistance;
         public float Distance => approximateDistance ?? EuclideanDistance;
 
-        private bool StartedWithPos = false;
+        private bool StartedWithPos = false; // If a sound started with a position, it means it's not AL_SOURCE_RELATIVE
         public Vector2 WorldPos;
         public Vector2 LocalPos;
         public Vector2 SimPos;
@@ -86,6 +85,7 @@ namespace SoundproofWalls
         public bool MediumMuffle => muffleType == MuffleType.Medium;
 
         public SoundInfo.AudioType DynamicType;
+        private SoundInfo.AudioType LastAudioType;
         public bool AudioIsFromDoor => DynamicType == SoundInfo.AudioType.DoorSound;
         public bool AudioIsLocalVoice => DynamicType == SoundInfo.AudioType.LocalVoice;
         public bool AudioIsRadioVoice => DynamicType == SoundInfo.AudioType.RadioVoice;
@@ -223,6 +223,11 @@ namespace SoundproofWalls
             get { return Channel.frequencyMultiplier; }
             set
             {
+                if (float.IsNaN(value))
+                {
+                    return;
+                }
+
                 try
                 {
                     if (Channel.mutex != null) { Monitor.Enter(Channel.mutex); }
@@ -349,7 +354,7 @@ namespace SoundproofWalls
             SpeakingClient = speakingClient;
             MessageType = messageType;
 
-            if (speakingClient != null && messageType == null) { MessageType = Util.GetMessageType(speakingClient); }
+            if (speakingClient != null && messageType == null) { MessageType = Util.GetMessageType(speakingClient, out _); }
             else if (itemComp != null && Item == null) { Item = itemComp.Item; }
             else if (statusEffect != null && Item == null) { Item = statusEffect.soundEmitter as Item; }
 
@@ -370,6 +375,7 @@ namespace SoundproofWalls
             // We have to set some types here at the Channel level because some data is inaccessible on the Sound level.
             // We try to get these types every update because the data is not available from the first 1-2 updates.
             // TODO if more types are added, use !IsFirstIteration and a flag to only run the code once. Right now it doesn't matter
+            LastAudioType = DynamicType;
             DynamicType = SoundInfo.StaticType;
             if (SpeakingClient != null && MessageType != null)
             {
@@ -394,8 +400,8 @@ namespace SoundproofWalls
             if (AudioIsVoice)
             {
                 speakerCharacter = SpeakingClient?.Character;
-                speakerMouth = speakerCharacter?.AnimController?.GetLimb(LimbType.Head) ?? speakerCharacter?.AnimController?.GetLimb(LimbType.Torso);
-                bool speakerIsAlive = speakerCharacter != null && !speakerCharacter.IsDead;
+                bool speakerIsAlive = speakerCharacter != null && !speakerCharacter.IsDead && !speakerCharacter.Removed;
+                if (speakerIsAlive) { speakerMouth = Util.GetCharacterHead(speakerCharacter); }
 
                 if (AudioIsRadioVoice) { skipReverb = !config.VoiceRadioReverb; }
                 else if (AudioIsLocalVoice) { skipReverb = !config.VoiceLocalReverb; }
@@ -408,8 +414,18 @@ namespace SoundproofWalls
             // Note: all looping sounds are considered non-looping for their first update if their ChannelInfo instance was created early enough, e.g, from the SoundChannel ctor. That's why I have the default comparison.
             if (Channel.Looping || LocalPos == default || speakerCharacter != null)
             {
-                WorldPos = speakerMouth?.WorldPosition ?? Util.GetSoundChannelWorldPos(Channel);
-                ChannelHull = ChannelHull ?? Hull.FindHull(WorldPos, speakerCharacter?.CurrentHull ?? Listener.CurrentHull);
+                bool isHearingLocalVoiceFromTarget = speakerCharacter != null && config.FocusTargetAudio && config.HearLocalVoiceOnFocusedTarget && MessageType != ChatMessageType.Radio && !Listener.IsCharacter && !Listener.IsSpectating;
+                if (isHearingLocalVoiceFromTarget)
+                {
+                    WorldPos = Util.GetTargetOffsetVoicePosition(speakerCharacter);
+                    ChannelHull = Listener.FocusedHull;
+                }
+                else
+                {
+                    WorldPos = speakerMouth?.WorldPosition ?? Util.GetSoundChannelWorldPos(Channel);
+                    ChannelHull = ChannelHull ?? Hull.FindHull(WorldPos, speakerCharacter?.CurrentHull ?? Listener.CurrentHull);
+                }
+                
                 LocalPos = Util.LocalizePosition(WorldPos, ChannelHull?.Submarine);
                 SimPos = LocalPos / 100;
             }
@@ -851,11 +867,8 @@ namespace SoundproofWalls
             Hull? listenerHull = Listener.FocusedHull;
             HashSet<Hull> listenerConnectedHulls = Listener.ConnectedHulls;
 
-            if (!AudioIsFromDoor) // Check if there's a path to the sound.
-            {
-                noPath = !SoundInfo.IgnoreBarriers && listenerHull != soundHull && (listenerHull == null || soundHull == null || !listenerConnectedHulls.Contains(soundHull!));
-            }
-            else // Exception for door opening/closing sounds - must check hulls while ignorning the doorway gap.
+            // Exception for door opening/closing sounds - must check hulls while ignorning the doorway gap.
+            if (AudioIsFromDoor)
             {
                 float distance = GetApproximateDistance(Listener.LocalPos, LocalPos, listenerHull, soundHull, ignoredGap: ignoredGap);
                 noPath = distance >= float.MaxValue;
@@ -863,6 +876,10 @@ namespace SoundproofWalls
                 {
                     approximateDistance = distance;
                 }
+            }
+            else // Check if there's a path to the sound.
+            {
+                noPath = !SoundInfo.IgnoreBarriers && listenerHull != soundHull && (listenerHull == null || soundHull == null || !listenerConnectedHulls.Contains(soundHull!));
             }
 
             // Case for eavesdropping set to not muffle own hull.
@@ -932,14 +949,18 @@ namespace SoundproofWalls
             }
 
             float mult = 1;
-            float currentGain = ItemComp?.GetSoundVolume(ItemComp.loopingSound) ?? startGain;
+            float currentGain = Math.Clamp(ItemComp?.GetSoundVolume(ItemComp.loopingSound) ?? startGain, 0, 1);
 
             mult += SoundInfo.GainMult - 1;
 
-            // Radio can only be muffled when the sender is drowning.
             if (AudioIsRadioVoice)
             {
+                // Radio can only be muffled when the sender is drowning.
                 mult += MathHelper.Lerp(config.UnmuffledVoiceVolumeMultiplier, config.MuffledVoiceVolumeMultiplier, MuffleStrength) - 1;
+                if (SpeakingClient?.RadioNoise > 0)
+                {
+                    mult *= 1.0f - SpeakingClient.RadioNoise;
+                }
             }
             else if (AudioIsLocalVoice)
             {
@@ -970,7 +991,13 @@ namespace SoundproofWalls
                 else if (Hydrophoned) { mult += config.HydrophoneVolumeMultiplier - 1; mult *= HydrophoneManager.HydrophoneEfficiency; }
             }
 
+            // Clamp after stacking bonuses.
+            mult = Math.Clamp(mult, 0, 1);
+
             // Note that the following multipliers may also apply to radio channels.
+
+
+            // ----- Eavesdropping ------
 
             // Fade transition between two hull soundscapes when eavesdropping.
             float eavesdropEfficiency = EavesdropManager.Efficiency;
@@ -979,6 +1006,9 @@ namespace SoundproofWalls
                 if (!Eavesdropped) { mult *= Math.Clamp(1 - eavesdropEfficiency * (1 / config.EavesdroppingThreshold), config.EavesdroppingSelfVolumeMultiplier, 1); }
                 else if (Eavesdropped) { mult *= Math.Clamp(eavesdropEfficiency * (1 / config.EavesdroppingThreshold) - 1, config.EavesdroppingSelfVolumeMultiplier, 1); }
             }
+
+
+            // ----- Sidechaining ------
 
             float sidechainMult = 1;
             float thisSidechainRelease = SoundInfo.SidechainRelease + config.SidechainReleaseMaster;
@@ -1003,9 +1033,18 @@ namespace SoundproofWalls
 
             if (!AudioIsRadioVoice || config.SidechainRadio) { mult *= sidechainMult; }
 
+
+            // ----- Distance Falloff ------
+
             // Replace OpenAL's distance attenuation using the approximate distance gathered from traversing gaps.
             bool ignoreGainFade = false;
-            if (StartedWithPos && config.AttenuateWithApproximateDistance && approximateDistance != null)
+            bool keepVoiceRolloff = false;
+            bool alreadyAttenuated = false;
+
+            bool useApproxFalloff = (Channel.Position.HasValue || AudioIsLocalVoice) && config.AttenuateWithApproximateDistance && approximateDistance != null;
+            bool soundOutside = (AudioIsLocalVoice && SpeakingClient?.Character != null) ? Util.GetCharacterHead(SpeakingClient.Character).Hull == null : ChannelHull == null;
+            bool useWaterFalloff = Channel.Position.HasValue && soundOutside && Listener.CurrentHull == null && config.DynamicFx && Plugin.EffectsManager != null && config.DynamicReverbEnabled && !AudioIsRadioVoice;
+            if (useApproxFalloff) // Custom distance attenuation when inside structures.
             {
                 rolloffFactor = 0; // Disable OpenAL distance attenuation.
                 rolloffFactorModified = true;
@@ -1021,6 +1060,7 @@ namespace SoundproofWalls
 
                 float distance = newModel == DistanceModel.Euclidean ? EuclideanDistance : Distance;
                 float distMult = CalculateLinearDistanceClampedMult(MathF.Round(distance), Channel.Near, Channel.Far);
+                alreadyAttenuated = true;
 
                 if (shouldUseEuclideanDistance) // Fade to euclidean distance
                 {
@@ -1032,11 +1072,48 @@ namespace SoundproofWalls
 
                 mult *= distMult;
             }
+            else if (useWaterFalloff) // Custom distance attenuation when outside. Increase range but also OpenAL rolloff factor - allowing only reverb beyond where the sound is rolled off to.
+            {
+                float targetRolloff = Math.Max(config.OutdoorSoundRangeMultiplier * 0.8f, 1);
+                rolloffFactor = targetRolloff;
+                rolloffFactorModified = targetRolloff != 1;
+                distanceModel = DistanceModel.OpenAL;
+                keepVoiceRolloff = true;
+
+                if (targetRolloff > 1)
+                {
+                    mult *= CalculateLinearDistanceClampedMult(MathF.Round(Distance), Channel.Near, Channel.Far);
+                    alreadyAttenuated = true;
+                }
+            } // Reset back to default rolloff.
             else if (rolloffFactorModified || distanceModel == DistanceModel.OpenAL && rolloffFactor != 1)
             {
                 rolloffFactor = 1;
                 distanceModel = DistanceModel.OpenAL;
             }
+
+            // Attenuate voice chat based on distance.
+            if (AudioIsVoice)
+            {
+                if (!alreadyAttenuated)
+                {
+                    if (!keepVoiceRolloff)
+                    {
+                        rolloffFactor = 0;
+                        distanceModel = DistanceModel.Euclidean;
+                    }
+                    float distance = AudioIsRadioVoice && Character.Controlled != null ? 
+                        Vector2.Distance(Util.GetCharacterHead(Character.Controlled).WorldPosition, WorldPos) : EuclideanDistance;
+                    mult *= CalculateLinearDistanceClampedMult(MathF.Round(distance), Channel.Near, Channel.Far);
+                }
+
+                if (LastAudioType != DynamicType)
+                {
+                    ignoreGainFade = true;
+                }
+            }
+
+            // ----- Final Target Gain ------
 
             float targetGain = currentGain * mult;
 
@@ -1104,7 +1181,7 @@ namespace SoundproofWalls
             {
                 mult += MathHelper.Lerp(config.UnmuffledSoundPitchMultiplier, config.MuffledSoundPitchMultiplier, MuffleStrength) - 1;
 
-                if (config.PitchWithDistance) // Additional pitching based on distance and muffle strength.
+                if (config.PitchWithDistance && Channel.Far > 0) // Additional pitching based on distance and muffle strength.
                 {
                     float distanceRatio = Math.Clamp(1 - Distance / Channel.Far, 0, 1);
                     mult += MathHelper.Lerp(1, distanceRatio, MuffleStrength) - 1;

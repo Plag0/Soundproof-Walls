@@ -54,6 +54,8 @@
 	<spw_soundrangetooltip>Multiplicateur de portée global pour tous les sons non répétitifs.\n\nNote : Se cumule de manière multiplicative avec le multiplicateur de portée spécifique au son assigné par la liste "Sons personnalisés" dans l'onglet Avancé.</spw_soundrangetooltip>
 	<spw_loopingsoundrange>Portée principale des sons en boucle</spw_loopingsoundrange>
 	<spw_loopingsoundrangetooltip>Multiplicateur de portée global pour tous les sons en boucle.\n\nNote : Se cumule de manière multiplicative avec le multiplicateur de portée spécifique au son assigné par la liste "Sons personnalisés" dans l'onglet Avancé.</spw_loopingsoundrangetooltip>
+	<spw_outdoorsoundrange>Portée sonore extérieure</spw_outdoorsoundrange>
+	<spw_outdoorsoundrangetooltip>Multiplicateur de portée pour les sons et les voix à l'extérieur du sous-marin.\n\nNote : Se cumule de manière multiplicative avec le multiplicateur de portée spécifique au son assigné par la liste "Sons personnalisés" dans l'onglet Avancé.</spw_outdoorsoundrangetooltip>
 
 
 	<!-- Dynamic -->
@@ -157,6 +159,10 @@
 
 	<spw_talkingragdolls>Ragdolls parlants</spw_talkingragdolls>
 	<spw_talkingragdollstooltip>Entendez les joueurs non étourdis parler lorsqu'ils sont en état de ragdoll.</spw_talkingragdollstooltip>
+	<spw_directionalradio>Radio directionnelle</spw_directionalradio>
+	<spw_directionalradiotooltip>Si activé, le chat de proximité radio est panoramisé dans la direction de l'interlocuteur. C'est le comportement par défaut dans le jeu vanilla.</spw_directionalradiotooltip>
+	<spw_hearlocalvoiceonfocusedtarget>Entendre les voix sur les tourelles</spw_hearlocalvoiceonfocusedtarget>
+	<spw_hearlocalvoiceonfocusedtargettooltip>Entendez le chat de proximité local autour de votre personnage tout en écoutant depuis la perspective de la cible actuelle de la caméra.\n\nNote : Nécessite que "Focaliser l'audio sur la cible" (onglet Général) soit activé.</spw_hearlocalvoiceonfocusedtargettooltip>
 	
 	<spw_voicerange>Portée locale</spw_voicerange>
 	<spw_voicerangetooltip>La portée du chat de proximité local.</spw_voicerangetooltip>
@@ -335,6 +341,8 @@
 	<spw_firesoundvolumetooltip>Le volume des feux.</spw_firesoundvolumetooltip>
 	<spw_vanillaexosuitvolume>Volume de l'exosquelette vanilla</spw_vanillaexosuitvolume>
 	<spw_vanillaexosuitvolumetooltip>Le volume du son de mouvement de l'exosquelette vanilla. Certains joueurs trouvent ce son désagréable à entendre.\n\nNote : N'affecte pas les sons d'exosquelettes moddés.</spw_vanillaexosuitvolumetooltip>
+	<spw_voicenearmultiplier>Début de l'atténuation de la voix</spw_voicenearmultiplier>
+	<spw_voicenearmultipliertooltip>La distance nécessaire avant que le volume du chat de proximité ne commence à diminuer.</spw_voicenearmultipliertooltip>
 	<spw_loopingcomponentsoundnearmultiplier>Début de l'atténuation des sons de composants</spw_loopingcomponentsoundnearmultiplier>
 	<spw_loopingcomponentsoundnearmultipliertooltip>La distance nécessaire avant que le volume des sons de composants en boucle ne commence à diminuer.</spw_loopingcomponentsoundnearmultipliertooltip>
 	<spw_mindistancefalloffvolume>Volume d'atténuation min</spw_mindistancefalloffvolume>
@@ -470,6 +478,8 @@
 	<spw_submergedsuitwaterambiencevolumetooltip>Le volume des pistes d'ambiance aquatique lorsque l'auditeur est immergé et porte un scaphandre.</spw_submergedsuitwaterambiencevolumetooltip>
 	<spw_submergednosuitwaterambiencevolume>Volume de l'eau immergé (sans scaphandre)</spw_submergednosuitwaterambiencevolume>
 	<spw_submergednosuitwaterambiencevolumetooltip>Le volume des pistes d'ambiance aquatique lorsque l'auditeur est immergé et ne porte pas de scaphandre.</spw_submergednosuitwaterambiencevolumetooltip>
+	<spw_spectatingwaterambiencevolume>Volume de l'eau (spectateur)</spw_spectatingwaterambiencevolume>
+	<spw_spectatingwaterambiencevolumetooltip>Le volume des pistes d'ambiance aquatique lorsque l'auditeur est en mode spectateur.</spw_spectatingwaterambiencevolumetooltip>
 	<spw_waterambiencetransitionspeed>Vitesse de transition de l'ambiance aquatique</spw_waterambiencetransitionspeed>
 	<spw_waterambiencetransitionspeedtooltip>La vitesse à laquelle l'ambiance aquatique transitionne entre les niveaux de volume.</spw_waterambiencetransitionspeedtooltip>
 
@@ -570,12 +580,6 @@
 	<spw_openwallthresholdtooltip>Le degré d'ouverture d'une brèche dans un mur pour que le son passe sans obstruction.</spw_openwallthresholdtooltip>
 	<spw_soundpropagationrange>Portée de propagation du son</spw_soundpropagationrange>
 	<spw_soundpropagationrangetooltip>La distance maximale à laquelle un son de la liste "Sons se propageant dans les murs" (onglet Avancé) peut chercher une coque proche pour s'y propager.</spw_soundpropagationrangetooltip>
-
-	<spw_categoryai>IA des personnages</spw_categoryai>
-	<spw_aitargetsoundrange>Portée sonore de l'IA</spw_aitargetsoundrange>
-	<spw_aitargetsoundrangetooltip>La distance à laquelle l'IA des personnages peut entendre les objets et les personnages.\n\nNote : Solo uniquement.</spw_aitargetsoundrangetooltip>
-	<spw_aitargetsightrange>Portée visuelle de l'IA</spw_aitargetsightrange>
-	<spw_aitargetsightrangetooltip>La distance à laquelle l'IA des personnages peut voir les objets et les personnages.\n\nNote : Solo uniquement.</spw_aitargetsightrangetooltip>
 
 	<spw_categoryrules>Règles sonores</spw_categoryrules>
 	

@@ -56,6 +56,7 @@ namespace SoundproofWalls
         public bool AttenuateWithApproximateDistance { get; set; } = true;
         public float SoundRangeMultiplierMaster { get; set; } = 1.6f;
         public float LoopingSoundRangeMultiplierMaster { get; set; } = 0.9f;
+        public float OutdoorSoundRangeMultiplier { get; set; } = 3.0f;
 
         // DynamicFx
         public bool OccludeSounds { get; set; } = true; // Enable muffle strength from wall occlusion. Is still disabled for classicFx
@@ -107,6 +108,9 @@ namespace SoundproofWalls
         // Voice
             // General
         public bool TalkingRagdolls { get; set; } = true;
+        public bool DirectionalRadio { get; set; } = false;
+        public bool HearLocalVoiceOnFocusedTarget { get; set; } = true;
+        public float VoiceNearMultiplier { get; set; } = 0.2f;
         public int VoiceHeavyLowpassFrequency { get; set; } = 150;
         public int VoiceMediumLowpassFrequency { get; set; } = 600;
         public int VoiceLightLowpassFrequency { get; set; } = 1600;
@@ -212,7 +216,7 @@ namespace SoundproofWalls
         public int EavesdroppingMaxDistance { get; set; } = 50; // Max distance in cm from gap.
         public float EavesdroppingTransitionDuration { get; set; } = 1.6f;
         public float EavesdroppingThreshold { get; set; } = 0.28f; // How high Efficiency needs to be before your listening hull swaps.
-        public float EavesdroppingZoomMultiplier { get; set; } = 1.15f;
+        public float EavesdroppingZoomMultiplier { get; set; } = 1.0f;
         public float EavesdroppingVignetteOpacityMultiplier { get; set; } = 0.55f;
 
         // Hydrophone monitoring
@@ -266,6 +270,7 @@ namespace SoundproofWalls
         public float UnsubmergedSuitWaterAmbienceVolumeMultiplier { get; set; } = 0.05f;
         public float SubmergedNoSuitWaterAmbienceVolumeMultiplier { get; set; } = 0.75f;
         public float SubmergedSuitWaterAmbienceVolumeMultiplier { get; set; } = 0.25f;
+        public float SpectatingWaterAmbienceVolumeMultiplier { get; set; } = 0.50f;
         public float WaterAmbienceTransitionSpeedMultiplier { get; set; } = 3.5f;
 
         // Pitch settings
@@ -312,11 +317,7 @@ namespace SoundproofWalls
         public bool FlowSoundsTraverseWaterDucts { get; set; } = true;
         public float OpenDoorThreshold { get; set; } = 0.1f; // How open a door/hatch/duct must be for sound to pass through unobstructed.
         public float OpenWallThreshold { get; set; } = 0.35f; // How open a gap in a wall must be for sound to pass through unobstructed.
-        public int SoundPropagationRange { get; set; } = 275; // Distance that a sound in WallPropagatingSounds can search for a hull to propagate to.
-
-            // Character AI
-        public float AITargetSoundRangeMultiplierMaster { get; set; } = 1.0f;
-        public float AITargetSightRangeMultiplierMaster { get; set; } = 1.0f;
+        public int SoundPropagationRange { get; set; } = 280; // Distance that a sound in WallPropagatingSounds can search for a hull to propagate to.
 
         // Sound Rules
         // A general rule is to keep the most vague names at the bottom so when searching for a match the more specific ones can be found first.

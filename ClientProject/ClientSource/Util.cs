@@ -4,7 +4,6 @@ using Barotrauma.Networking;
 using Barotrauma.Sounds;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using System.Reflection;
 
 namespace SoundproofWalls
@@ -146,12 +145,11 @@ namespace SoundproofWalls
         }
 
         // Get a client's messageType (same implementation seen in VoipClient_Read method).
-        public static ChatMessageType GetMessageType(Client client)
+        public static ChatMessageType GetMessageType(Client client, out WifiComponent? senderRadio)
         {
-            bool spectating = Character.Controlled == null;
-            WifiComponent senderRadio = null;
+            senderRadio = null;
             var messageType = ChatMessageType.Default;
-            if (!spectating)
+            if (Character.Controlled != null)
             {
                 messageType =
                     !client.VoipQueue.ForceLocal &&
@@ -274,11 +272,21 @@ namespace SoundproofWalls
         }
 
         // Returns true if the given localised position is in water (not accurate when using WorldPositions).
-        public static bool SoundInWater(Vector2 soundPos, Hull? soundHull)
+        public static bool SoundInWater(Vector2 soundPos, Hull soundHull)
         {
             float epsilon = 1.0f;
             if (soundHull?.WaterPercentage <= 0) { return false; }
             return soundHull == null || soundHull.WaterPercentage >= 100 || soundHull.WaterVolume > 0 && soundPos.Y < soundHull.Surface - epsilon;
+        }
+
+        // Should be used if Listener.WorldPos is a position other than the listener's character and HearLocalVoiceOnFocusedTarget is enabled.
+        // Assumes the character passed in and the player character are not null.
+        public static Vector2 GetTargetOffsetVoicePosition(Character speakingCharacter)
+        {
+            Vector2 voiceWorldPos = GetCharacterHead(speakingCharacter).WorldPosition;
+            Vector2 listenerCharacterWorldPos = GetCharacterHead(Character.Controlled).WorldPosition;
+            Vector2 offset = voiceWorldPos - listenerCharacterWorldPos;
+            return Listener.WorldPos + offset;
         }
 
         public static string GetModDirectory()
@@ -361,70 +369,6 @@ namespace SoundproofWalls
                             GameMain.SoundManager.playingChannels[i][j].Dispose();
                             GameMain.SoundManager.playingChannels[i][j] = null;
                         }
-                    }
-                }
-            }
-        }
-
-        public static bool ShouldUpdateAITarget(Config newConfig, Config oldConfig)
-        {
-            float oldSightMult = oldConfig.Enabled ? oldConfig.AITargetSightRangeMultiplierMaster : 1;
-            float oldSoundMult = oldConfig.Enabled ? oldConfig.AITargetSoundRangeMultiplierMaster : 1;
-
-            float newSightMult = newConfig.Enabled ? newConfig.AITargetSightRangeMultiplierMaster : 1;
-            float newSoundMult = newConfig.Enabled ? newConfig.AITargetSoundRangeMultiplierMaster : 1;
-
-            return !GameMain.IsMultiplayer && (newSightMult != oldSightMult || newSoundMult != oldSoundMult);
-        }
-
-        public static void UpdateAITarget()
-        {
-            // Uses local config because this setting is only updated in singleplayer.
-            float soundMult = ConfigManager.LocalConfig.AITargetSoundRangeMultiplierMaster;
-            float sightMult = ConfigManager.LocalConfig.AITargetSightRangeMultiplierMaster;
-
-            foreach (Item item in Item.ItemList)
-            {
-                foreach (var subElement in item.Prefab.originalElement.Elements())
-                {
-                    if (subElement.Name.ToString().ToLowerInvariant() == "aitarget")
-                    {
-                        float baseSoundRange = subElement.GetAttributeFloat("soundrange", 0f);
-                        float baseMaxSoundRange = subElement.GetAttributeFloat("maxsoundrange", baseSoundRange);
-                        float baseSightRange = subElement.GetAttributeFloat("sightrange", 0f);
-                        float baseMaxSightRange = subElement.GetAttributeFloat("maxsoundrange", baseSoundRange);
-
-                        AITarget newAITarget = new AITarget(item, subElement);
-                        newAITarget.MaxSoundRange = item.AiTarget.MaxSoundRange > 0 ? baseMaxSoundRange * soundMult : 0;
-                        newAITarget.SoundRange = item.AiTarget.SoundRange > 0 ? baseSoundRange * soundMult : 0;
-                        newAITarget.MaxSightRange = item.AiTarget.MaxSightRange > 0 ? baseMaxSightRange * sightMult : 0;
-                        newAITarget.SightRange = item.AiTarget.SightRange > 0 ? baseSightRange * sightMult : 0;
-                        item.aiTarget = newAITarget;
-
-                        break; // Go to next item.
-                    }
-                }
-            }
-
-            foreach (var character in Character.CharacterList)
-            {
-                foreach (var subElement in character.Prefab.originalElement.Elements())
-                {
-                    if (subElement.Name.ToString().ToLowerInvariant() == "aitarget")
-                    {
-                        float baseSoundRange = subElement.GetAttributeFloat("soundrange", 0f);
-                        float baseMaxSoundRange = subElement.GetAttributeFloat("maxsoundrange", baseSoundRange);
-                        float baseSightRange = subElement.GetAttributeFloat("sightrange", 0f);
-                        float baseMaxSightRange = subElement.GetAttributeFloat("maxsoundrange", baseSoundRange);
-
-                        AITarget newAITarget = new AITarget(character, subElement);
-                        newAITarget.MaxSoundRange = character.AiTarget.MaxSoundRange > 0 ? baseMaxSoundRange * soundMult : 0;
-                        newAITarget.SoundRange = character.AiTarget.SoundRange > 0 ? baseSoundRange * soundMult : 0;
-                        newAITarget.MaxSightRange = character.AiTarget.MaxSightRange > 0 ? baseMaxSightRange * sightMult : 0;
-                        newAITarget.SightRange = character.AiTarget.SightRange > 0 ? baseSightRange * sightMult : 0;
-                        character.aiTarget = newAITarget;
-
-                        break; // Go to next character.
                     }
                 }
             }

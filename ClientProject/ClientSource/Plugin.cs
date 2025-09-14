@@ -649,7 +649,7 @@ namespace SoundproofWalls
 
         public static void SPW_MoveCamera(Camera __instance, float deltaTime, bool allowMove = true, bool allowZoom = true, bool allowInput = true, bool? followSub = null)
         {
-            if (!config.Enabled || !config.EavesdroppingEnabled || !allowZoom) { return; }
+            if (!config.Enabled || !config.EavesdroppingEnabled || !allowZoom || config.EavesdroppingZoomMultiplier == 1) { return; }
 
             // Sync with the text for simplicity.
             float activationMult = EavesdropManager.EavesdroppingTextAlpha / 255;
@@ -688,7 +688,6 @@ namespace SoundproofWalls
             
             VoipClient instance = __instance;
             byte queueId = msg.ReadByte();
-            float distanceFactor = msg.ReadRangedSingle(0.0f, 1.0f, 8);
             VoipQueue queue = instance.queues.Find(q => q.QueueID == queueId);
 
             if (queue == null)
@@ -703,12 +702,8 @@ namespace SoundproofWalls
             bool clientAlive = client.Character != null && !client.Character.IsDead && !client.Character.Removed;
             bool clientCantSpeak = client.Muted || client.MutedLocally || (clientAlive && client.Character.SpeechImpediment >= 100.0f);
 
-            if (!queue.Read(msg, discardData: client.Muted || client.MutedLocally))
-            {
-                return false;
-            }
-
-            if (clientCantSpeak)
+            bool discard = client.Muted || client.MutedLocally || clientCantSpeak;
+            if (!queue.Read(msg, discardData: discard))
             {
                 return false;
             }
@@ -718,8 +713,6 @@ namespace SoundproofWalls
                 DebugConsole.Log("Recreating voipsound " + queueId);
                 client.VoipSound = new VoipSound(client, GameMain.SoundManager, client.VoipQueue);
             }
-
-            client.RadioNoise = 0.0f;
 
             // Attenuate other sounds when players speak.
             if ((client.VoipSound.CurrentAmplitude * client.VoipSound.Gain * GameMain.SoundManager.GetCategoryGainMultiplier("voip")) > 0.1f)
@@ -740,6 +733,8 @@ namespace SoundproofWalls
                 }
             }
 
+            client.RadioNoise = 0.0f;
+
             if (!clientAlive) // Stop here if the speaker is spectating or in lobby.
             {
                 ChannelInfoManager.EnsureUpdateVoiceInfo(client.VoipSound.soundChannel,
@@ -757,50 +752,42 @@ namespace SoundproofWalls
                 return false;
             }
 
-            // ------ The speaker is alive from this point ------
+            // ------ The speaker is alive from this point, meaning client.Character is not null ------
 
-            bool listenerSpectating = Character.Controlled == null;
-            WifiComponent senderRadio = null;
-            var messageType = ChatMessageType.Default;
-            if (!listenerSpectating)
-            {
-                messageType =
-                    !client.VoipQueue.ForceLocal &&
-                    ChatMessage.CanUseRadio(client.Character, out senderRadio) &&
-                    ChatMessage.CanUseRadio(Character.Controlled, out var recipientRadio) &&
-                    senderRadio.CanReceive(recipientRadio) ?
-                        ChatMessageType.Radio : ChatMessageType.Default;
-            }
-            else
-            {
-                messageType =
-                    !client.VoipQueue.ForceLocal &&
-                    ChatMessage.CanUseRadio(client.Character, out senderRadio) ?
-                        ChatMessageType.Radio : ChatMessageType.Default;
-            }
+            ChatMessageType messageType = Util.GetMessageType(client, out WifiComponent? senderRadio);
+
+            // Get the target range the voice should transmit.
+            Limb clientHead = Util.GetCharacterHead(client.Character);
+            float impedimentMult = 1.0f - client.Character.SpeechImpediment / 100.0f;
+
             client.VoipSound.UseRadioFilter = messageType == ChatMessageType.Radio && !GameSettings.CurrentConfig.Audio.DisableVoiceChatFilters;
 
-            // Range.
-            float speechImpedimentMultiplier = 1.0f - client.Character.SpeechImpediment / 100.0f;
-            if (messageType == ChatMessageType.Radio)
+            // Update radio flag, set range, and update raido noise.
+            float targetFar;
+            float targetNear;
+            if (messageType == ChatMessageType.Radio && senderRadio != null)
             {
                 client.VoipSound.UsingRadio = true;
-                float radioRange = senderRadio.Range * speechImpedimentMultiplier * config.VoiceRadioRangeMultiplier;
-                client.VoipSound.SetRange(near: radioRange * VoipClient.RangeNear, far: radioRange);
-                if (distanceFactor > VoipClient.RangeNear && !listenerSpectating)
+                targetFar = senderRadio.Range * impedimentMult * config.VoiceRadioRangeMultiplier;
+                targetNear = targetFar * config.VoiceNearMultiplier;
+                client.VoipSound.SetRange(targetNear, targetFar);
+                float distanceFactor = Vector2.Distance(clientHead.WorldPosition, Character.Controlled?.WorldPosition ?? Listener.WorldPos) / targetFar;
+                if (distanceFactor > config.VoiceNearMultiplier) // Note: I removed the spectating check here, so spectators can hear radio noise too.
                 {
-                    //noise starts increasing exponentially after 40% range
-                    client.RadioNoise = MathF.Pow(MathUtils.InverseLerp(VoipClient.RangeNear, 1.0f, distanceFactor), 2);
+                    // Noise starts increasing exponentially after near range.
+                    client.RadioNoise = MathF.Pow(MathUtils.InverseLerp(config.VoiceNearMultiplier, 1.0f, distanceFactor), 2);
                 }
             }
             else
             {
                 client.VoipSound.UsingRadio = false;
+
                 float rangeMult = config.VoiceLocalRangeMultiplier;
-                float baseRange = ChatMessage.SpeakRangeVOIP;
+                if (clientHead.Hull == null && Listener.FocusedHull == null) { rangeMult *= config.OutdoorSoundRangeMultiplier; }
+
                 float hydrophoneAddedRange = Listener.IsUsingHydrophones ? config.HydrophoneSoundRange : 0;
-                float targetFar = (baseRange + hydrophoneAddedRange) * speechImpedimentMultiplier * rangeMult;
-                float targetNear = targetFar * VoipClient.RangeNear;
+                targetFar = (ChatMessage.SpeakRangeVOIP + hydrophoneAddedRange) * impedimentMult * rangeMult;
+                targetNear = targetFar * config.VoiceNearMultiplier;
 
                 if (config.ScreamMode)
                 {
@@ -812,12 +799,11 @@ namespace SoundproofWalls
                         ChannelInfoManager.ScreamModeTrailingRangeFar = targetFar;
                     }
 
-                    targetFar = (ChannelInfoManager.ScreamModeTrailingRangeFar + hydrophoneAddedRange) * speechImpedimentMultiplier;
-                    targetNear = ChannelInfoManager.ScreamModeTrailingRangeFar * VoipClient.RangeNear;
+                    targetFar = (ChannelInfoManager.ScreamModeTrailingRangeFar + hydrophoneAddedRange) * impedimentMult;
+                    targetNear = ChannelInfoManager.ScreamModeTrailingRangeFar * config.VoiceNearMultiplier;
                 }
-                client.VoipSound.SetRange(targetNear, targetFar);
 
-                //LuaCsLogger.Log($"CurrentAmplitude {client.VoipSound.CurrentAmplitude} localRangeMultiplier {localRangeMultiplier} targetNear: {targetNear} targetFar: {targetFar} channelFar {client.VoipSound.soundChannel.Far}");
+                client.VoipSound.SetRange(targetNear, targetFar);
             }
 
             // Update channelInfo.
@@ -856,41 +842,31 @@ namespace SoundproofWalls
 
             float rangeFar = instance.VoipSound.Far;
             float rangeNear = instance.VoipSound.Near;
-            float maxAudibleRange = ChatMessage.SpeakRangeVOIP * config.VoiceLocalRangeMultiplier;
-            if (Listener.IsUsingHydrophones)
-            {
-                maxAudibleRange += config.HydrophoneSoundRange;
-            }
 
-            float gain = 1.0f;
             float noiseGain = 0.0f;
             Vector3? position = null;
             if (instance.character != null && !instance.character.IsDead)
             {
-                if (GameSettings.CurrentConfig.Audio.UseDirectionalVoiceChat)
+                Vector2 voicePosition;
+                bool isHearingLocalVoiceFromTarget = config.FocusTargetAudio && config.HearLocalVoiceOnFocusedTarget && !instance.VoipSound.UsingRadio && !Listener.IsCharacter && Character.Controlled != null;
+                if (isHearingLocalVoiceFromTarget)
                 {
-                    position = new Vector3(instance.character.WorldPosition.X, instance.character.WorldPosition.Y, 0.0f);
+                    voicePosition = Util.GetTargetOffsetVoicePosition(instance.character);
                 }
                 else
                 {
-                    float dist = Vector3.Distance(new Vector3(instance.character.WorldPosition, 0.0f), GameMain.SoundManager.ListenerPosition);
-                    gain = 1.0f - MathUtils.InverseLerp(rangeNear, rangeFar, dist);
+                    voicePosition = Util.GetCharacterHead(instance.character).WorldPosition;
                 }
-                if (!instance.VoipSound.UsingRadio)
-                {
-                    //emulate the "garbling" of the text chat
-                    //this in a sense means the volume diminishes exponentially when close to the maximum range of the sound
-                    //(diminished by both the garbling and the distance attenuation)
 
-                    //which is good, because we want the voice chat to become unintelligible close to the max range,
-                    //and we need to heavily reduce the volume to do that (otherwise it's just quiet, but still intelligible)
-                    float garbleAmount = ChatMessage.GetGarbleAmount(Character.Controlled, instance.character, maxAudibleRange);
-                    gain *= 1.0f - garbleAmount;
+                if (GameSettings.CurrentConfig.Audio.UseDirectionalVoiceChat && (!instance.VoipSound.UsingRadio || config.DirectionalRadio))
+                {
+                    position = new Vector3(voicePosition, 0.0f);
                 }
+
                 if (instance.RadioNoise > 0.0f)
                 {
-                    noiseGain = gain * instance.RadioNoise;
-                    gain *= 1.0f - instance.RadioNoise;
+                    noiseGain = instance.RadioNoise * instance.VoipSound.soundChannel?.Gain ?? 1;
+                    // Moved the following vanilla line "gain *= 1.0f - instance.RadioNoise;" to ChannelInfo UpdateGain
                 }
             }
             instance.VoipSound.SetPosition(position);
@@ -1111,7 +1087,11 @@ namespace SoundproofWalls
             float rangeMult = config.SoundRangeMultiplierMaster * SoundInfoManager.EnsureGetSoundInfo(sound).RangeMult;
             range *= rangeMult;
 
-            if (Listener.IsUsingHydrophones)
+            if (Listener.CurrentHull == null && Hull.FindHull(position, hullGuess, true) == null)
+            {
+                range *= config.OutdoorSoundRangeMultiplier;
+            }
+            else if (Listener.IsUsingHydrophones)
             {
                 Hull targetHull = Hull.FindHull(position, hullGuess, true);
                 if (targetHull == null || targetHull.Submarine != Character.Controlled?.Submarine)
@@ -1134,9 +1114,13 @@ namespace SoundproofWalls
             float rangeMult = config.LoopingSoundRangeMultiplierMaster * individualRangeMult;
             range *= rangeMult;
 
-            if (Listener.IsUsingHydrophones)
+            if (Listener.CurrentHull == null && Hull.FindHull(position, __instance.item.CurrentHull, true) == null)
             {
-                Hull soundHull = Hull.FindHull(position, Character.Controlled?.CurrentHull, true);
+                range *= config.OutdoorSoundRangeMultiplier;
+            }
+            else if (Listener.IsUsingHydrophones)
+            {
+                Hull soundHull = Hull.FindHull(position, __instance.item.CurrentHull, true);
                 if (soundHull == null || soundHull.Submarine != Character.Controlled?.Submarine)
                 {
                     range += config.HydrophoneSoundRange;
@@ -1212,7 +1196,11 @@ namespace SoundproofWalls
                 float rangeMult = config.LoopingSoundRangeMultiplierMaster * individualRangeMult;
                 range *= rangeMult;
 
-                if (Listener.IsUsingHydrophones)
+                if (Listener.CurrentHull == null && Hull.FindHull(__instance.item.WorldPosition, __instance.item.CurrentHull, true) == null)
+                {
+                    range *= config.OutdoorSoundRangeMultiplier;
+                }
+                else if (Listener.IsUsingHydrophones)
                 {
                     Hull soundHull = Hull.FindHull(__instance.item.WorldPosition, __instance.item.CurrentHull, true);
                     if (soundHull == null || soundHull.Submarine != Character.Controlled?.Submarine)
@@ -1795,7 +1783,7 @@ namespace SoundproofWalls
             if (sound is VoipSound voipSound)
             {
                 speakingClient = voipSound.client;
-                messageType = Util.GetMessageType(speakingClient);
+                messageType = Util.GetMessageType(speakingClient, out _);
                 soundHull = speakingClient.Character?.CurrentHull;
             }
 
@@ -2236,9 +2224,13 @@ namespace SoundproofWalls
 
         public static bool SPW_UpdateWaterAmbience(ref float ambienceVolume, ref float deltaTime)
         {
-            if (!config.Enabled || !Util.RoundStarted || Character.Controlled == null) { return true; }
+            if (!config.Enabled || !Util.RoundStarted) { return true; }
 
-            if (Listener.IsSubmerged)
+            if (Listener.IsSpectating)
+            {
+                ambienceVolume *= config.SpectatingWaterAmbienceVolumeMultiplier;
+            }
+            else if (Listener.IsSubmerged)
             {
                 ambienceVolume *= Listener.IsWearingDivingSuit || !Listener.IsCharacter ? config.SubmergedSuitWaterAmbienceVolumeMultiplier : config.SubmergedNoSuitWaterAmbienceVolumeMultiplier;
             }
@@ -2344,18 +2336,21 @@ namespace SoundproofWalls
                         chn.FadeOutAndDispose();
                         SoundPlayer.waterAmbienceChannels.Remove(chn);
                     }
-                    if (Character.Controlled != null && Character.Controlled.PressureTimer > 0.0f && !Character.Controlled.IsDead)
-                    {
-                        //make the sound decrease in pitch when under pressure
-                        chn.FrequencyMultiplier = MathHelper.Clamp(Character.Controlled.PressureTimer / 200.0f, 0.75f, 1.0f);
-                    }
-                    else if (Listener.IsUsingHydrophones && HydrophoneManager.HydrophoneEfficiency < 1)
-                    {
-                        chn.FrequencyMultiplier = MathHelper.Lerp(0.25f, 1f, HydrophoneManager.HydrophoneEfficiency);
-                    }
                     else
                     {
-                        chn.FrequencyMultiplier = Math.Min(chn.frequencyMultiplier + dt, 1.0f);
+                        if (Character.Controlled != null && Character.Controlled.PressureTimer > 0.0f && !Character.Controlled.IsDead)
+                        {
+                            //make the sound decrease in pitch when under pressure
+                            chn.FrequencyMultiplier = MathHelper.Clamp(Character.Controlled.PressureTimer / 200.0f, 0.75f, 1.0f);
+                        }
+                        else if (Listener.IsUsingHydrophones && HydrophoneManager.HydrophoneEfficiency < 1)
+                        {
+                            chn.FrequencyMultiplier = MathHelper.Lerp(0.25f, 1f, HydrophoneManager.HydrophoneEfficiency);
+                        }
+                        else
+                        {
+                            chn.FrequencyMultiplier = Math.Min(chn.frequencyMultiplier + dt, 1.0f);
+                        }
                     }
                 }
             }

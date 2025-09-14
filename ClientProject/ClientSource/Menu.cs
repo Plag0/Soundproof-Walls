@@ -716,6 +716,20 @@ namespace SoundproofWalls
             if (CultureInfo.CurrentUICulture == CultureInfo.InvariantCulture) { str = str.Replace(" %", "%"); }
             return str;
         }
+        private string PercentageOneDisabled(float v)
+        {
+            string str;
+            if (v == 1)
+            {
+                str = TextManager.Get("spw_disabled").Value;
+            }
+            else
+            {
+                str = $"{MathF.Round(v, 2).ToString("P0", CultureInfo.CurrentUICulture)}";
+                if (CultureInfo.CurrentUICulture == CultureInfo.InvariantCulture) { str = str.Replace(" %", "%"); }
+            }
+            return str;
+        }
         private string Hertz(float v) => $"{MathF.Round(v).ToString("N0", CultureInfo.CurrentUICulture)} Hz";
         private string Seconds(float v) => $"{MathF.Round(v, 2)} {TextManager.Get("spw_seconds")}"; // Custom localization for seconds, e.g., English is 15s but Russian is 15с.
         private string SecondsOneTick(float v) => $"{( v > Timing.Step ? $"{MathF.Round(v, 2)} {TextManager.Get("spw_seconds")}" : $"{TextManager.Get("spw_pertick")}")}";
@@ -1343,6 +1357,21 @@ namespace SoundproofWalls
                 currentValue: unsavedConfig.LoopingSoundRangeMultiplierMaster,
                 setter: v => unsavedConfig.LoopingSoundRangeMultiplierMaster = v,
                 TextManager.Get("spw_loopingsoundrangetooltip")
+            );
+
+            Label(settingsFrame, TextManager.Get("spw_outdoorsoundrange"));
+            Slider(settingsFrame, (0, 4), 0.01f,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.OutdoorSoundRangeMultiplier ?? default,
+                    formatter: Percentage),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.OutdoorSoundRangeMultiplier,
+                    vanillaValue: 1.0f),
+                currentValue: unsavedConfig.OutdoorSoundRangeMultiplier,
+                setter: v => unsavedConfig.OutdoorSoundRangeMultiplier = v,
+                TextManager.Get("spw_outdoorsoundrangetooltip")
             );
         }
 
@@ -1979,6 +2008,24 @@ namespace SoundproofWalls
                 tooltip: TextManager.Get("spw_talkingragdollstooltip"),
                 currentValue: unsavedConfig.TalkingRagdolls,
                 setter: v => unsavedConfig.TalkingRagdolls = v);
+
+            Tickbox(settingsFrame, FormatTextBoxLabel(
+                label: TextManager.Get("spw_directionalradio"),
+                localValue: unsavedConfig.DirectionalRadio,
+                serverValue: ConfigManager.ServerConfig?.DirectionalRadio ?? default,
+                formatter: BoolFormatter),
+                tooltip: TextManager.Get("spw_directionalradiotooltip"),
+                currentValue: unsavedConfig.DirectionalRadio,
+                setter: v => unsavedConfig.DirectionalRadio = v);
+
+            Tickbox(settingsFrame, FormatTextBoxLabel(
+                label: TextManager.Get("spw_hearlocalvoiceonfocusedtarget"),
+                localValue: unsavedConfig.HearLocalVoiceOnFocusedTarget,
+                serverValue: ConfigManager.ServerConfig?.HearLocalVoiceOnFocusedTarget ?? default,
+                formatter: BoolFormatter),
+                tooltip: TextManager.Get("spw_hearlocalvoiceonfocusedtargettooltip"),
+                currentValue: unsavedConfig.HearLocalVoiceOnFocusedTarget,
+                setter: v => unsavedConfig.HearLocalVoiceOnFocusedTarget = v);
 
             Spacer(settingsFrame);
 
@@ -3066,8 +3113,23 @@ namespace SoundproofWalls
                 TextManager.Get("spw_mindistancefalloffvolumetooltip")
             );
 
+            Label(settingsFrame, TextManager.Get("spw_voicenearmultiplier"));
+            Slider(settingsFrame, (0, 0.99f), 0.01f,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.VoiceNearMultiplier ?? default,
+                    formatter: Percentage),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.VoiceNearMultiplier,
+                    vanillaValue: 0.4f), // source const RangeNear in VoipClient: https://github.com/FakeFishGames/Barotrauma/blob/d13836ce878b3f319dc044b9ed8f5204c926262c/Barotrauma/BarotraumaClient/ClientSource/Networking/Voip/VoipClient.cs#L15
+                currentValue: unsavedConfig.VoiceNearMultiplier,
+                setter: v => unsavedConfig.VoiceNearMultiplier = v,
+                TextManager.Get("spw_voicenearmultipliertooltip")
+            );
+
             Label(settingsFrame, TextManager.Get("spw_loopingcomponentsoundnearmultiplier"));
-            Slider(settingsFrame, (0, 1), 0.01f,
+            Slider(settingsFrame, (0, 0.99f), 0.01f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.LoopingComponentSoundNearMultiplier ?? default,
@@ -3346,11 +3408,11 @@ namespace SoundproofWalls
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.EavesdroppingZoomMultiplier ?? default,
-                    formatter: Percentage),
+                    formatter: PercentageOneDisabled),
                 colorFunc: (localSliderValue, componentStyle) =>
                 GetSettingColor(localSliderValue, componentStyle,
                     defaultValue: Menu.defaultConfig.EavesdroppingZoomMultiplier,
-                    vanillaValue: null),
+                    vanillaValue: null),    
                 currentValue: unsavedConfig.EavesdroppingZoomMultiplier,
                 setter: v => unsavedConfig.EavesdroppingZoomMultiplier = v,
                 TextManager.Get("spw_eavesdroppingzoomtooltip")
@@ -3824,6 +3886,21 @@ namespace SoundproofWalls
                 TextManager.Get("spw_submergedsuitwaterambiencevolumetooltip")
             );
 
+            Label(settingsFrame, TextManager.Get("spw_spectatingwaterambiencevolume"));
+            Slider(settingsFrame, (0, 3), 0.01f,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.SpectatingWaterAmbienceVolumeMultiplier ?? default,
+                    formatter: Percentage),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.SpectatingWaterAmbienceVolumeMultiplier,
+                    vanillaValue: 1.0f),
+                currentValue: unsavedConfig.SpectatingWaterAmbienceVolumeMultiplier,
+                setter: v => unsavedConfig.SpectatingWaterAmbienceVolumeMultiplier = v,
+                TextManager.Get("spw_spectatingwaterambiencevolumetooltip")
+            );
+
             Label(settingsFrame, TextManager.Get("spw_waterambiencetransitionspeed"));
             Slider(settingsFrame, (0, 5), 0.01f,
                 labelFunc: localSliderValue =>
@@ -4060,7 +4137,7 @@ namespace SoundproofWalls
             Spacer(settingsFrame);
 
             Label(settingsFrame, TextManager.Get("spw_maxsourcecount"));
-            Slider(settingsFrame, (1, 256), 1,
+            Slider(settingsFrame, (1, 240), 1,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.MaxSourceCount ?? default,
@@ -4075,7 +4152,7 @@ namespace SoundproofWalls
             );
 
             Label(settingsFrame, TextManager.Get("spw_maxsimultaneousinstances"));
-            Slider(settingsFrame, (1, 128), 1,
+            Slider(settingsFrame, (1, 120), 1,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.MaxSimultaneousInstances ?? default,
@@ -4345,38 +4422,6 @@ namespace SoundproofWalls
                 currentValue: unsavedConfig.SoundPropagationRange,
                 setter: v => unsavedConfig.SoundPropagationRange = (int)v,
                 TextManager.Get("spw_soundpropagationrangetooltip")
-            );
-
-            SpacerLabel(settingsFrame, TextManager.Get("spw_categoryai"));
-
-            Label(settingsFrame, TextManager.Get("spw_aitargetsoundrange"));
-            Slider(settingsFrame, (0, 4), 0.01f,
-                labelFunc: localSliderValue =>
-                FormatSettingText(localSliderValue,
-                    serverValue: ConfigManager.ServerConfig?.AITargetSoundRangeMultiplierMaster ?? default,
-                    formatter: Percentage),
-                colorFunc: (localSliderValue, componentStyle) =>
-                GetSettingColor(localSliderValue, componentStyle,
-                    defaultValue: Menu.defaultConfig.AITargetSoundRangeMultiplierMaster,
-                    vanillaValue: 1.0f),
-                currentValue: unsavedConfig.AITargetSoundRangeMultiplierMaster,
-                setter: v => unsavedConfig.AITargetSoundRangeMultiplierMaster = v,
-                TextManager.Get("spw_aitargetsoundrangetooltip")
-            );
-
-            Label(settingsFrame, TextManager.Get("spw_aitargetsightrange"));
-            Slider(settingsFrame, (0, 4), 0.01f,
-                labelFunc: localSliderValue =>
-                FormatSettingText(localSliderValue,
-                    serverValue: ConfigManager.ServerConfig?.AITargetSightRangeMultiplierMaster ?? default,
-                    formatter: Percentage),
-                colorFunc: (localSliderValue, componentStyle) =>
-                GetSettingColor(localSliderValue, componentStyle,
-                    defaultValue: Menu.defaultConfig.AITargetSightRangeMultiplierMaster,
-                    vanillaValue: 1.0f),
-                currentValue: unsavedConfig.AITargetSightRangeMultiplierMaster,
-                setter: v => unsavedConfig.AITargetSightRangeMultiplierMaster = v,
-                TextManager.Get("spw_aitargetsightrangetooltip")
             );
 
             SpacerLabel(settingsFrame, TextManager.Get("spw_categoryrules"));
