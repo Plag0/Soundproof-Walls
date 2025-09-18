@@ -109,7 +109,9 @@ namespace SoundproofWalls
 
         public static bool RemoveBubbleSound(SoundChannel channel)
         {
-            foreach(var kvp in clientBubbleChannels)
+            if (channel == null || channel.Sound == null) { return false; }
+
+            foreach (var kvp in clientBubbleChannels)
             {
                 if (kvp.Value == channel)
                 { 

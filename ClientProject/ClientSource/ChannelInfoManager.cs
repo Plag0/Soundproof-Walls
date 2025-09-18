@@ -2,6 +2,7 @@
 using Barotrauma.Items.Components;
 using Barotrauma.Networking;
 using Barotrauma.Sounds;
+using OpenAL;
 using System.Collections.Concurrent;
 
 namespace SoundproofWalls
@@ -163,9 +164,15 @@ namespace SoundproofWalls
 
         public static bool RemovePitchedChannel(SoundChannel channel)
         {
-            if (channel == null) { return false; }
+            if (channel == null || channel.Sound == null) { return false; }
 
-            if (channel.FrequencyMultiplier != 1)
+            uint alSource = 0;
+            if (channel.ALSourceIndex >= 0 && channel.Sound?.Owner != null)
+            {
+                alSource = channel.Sound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
+            }
+
+            if (alSource != 0 && Al.IsSource(alSource) && channel.FrequencyMultiplier != 1)
             {
                 channel.FrequencyMultiplier = 1;
             }

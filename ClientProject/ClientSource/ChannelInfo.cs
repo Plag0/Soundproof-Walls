@@ -489,13 +489,6 @@ namespace SoundproofWalls
 
             UpdateObstructions();
 
-            // Finish debug log.
-            if (ConfigManager.LocalConfig.ShowChannelInfo)
-            {
-                if (DebugObstructionsCount <= 0 || DebugObstructionsList.IsNullOrEmpty()) { DebugObstructionsList += "          None\n"; }
-                if (!ConfigManager.LocalConfig.ShowPlayingSounds) { LuaCsLogger.Log($"Gain: {MathF.Round(Gain, 2)}    Pitch: {MathF.Round(Pitch, 2)}    Range: {MathF.Round(Channel.Far)}    Distance: {MathF.Round(Distance)}    Muffle: {MathF.Round(MuffleStrength, 3)}    Obstructions:\n{DebugObstructionsList}"); }
-            }
-            
             // Calculate muffle strength based on obstructions.
             float gainMultHf = 1;
             float gainMultLf = 1;
@@ -538,7 +531,8 @@ namespace SoundproofWalls
                 type = MuffleType.Heavy;
                 shouldMuffle = true;
             }
-            else if (config.DynamicFx && MuffleStrength > 0 && AudioIsVoice)
+            // Apply the muffled buffer to sounds only on the first tick. This gives OpenAL time to register the source and apply its own muffle effect.
+            else if (config.DynamicFx && MuffleStrength > 0 && (AudioIsVoice || IsFirstIteration))
             {
                 shouldMuffle = true;
             }
@@ -555,6 +549,13 @@ namespace SoundproofWalls
             StaticShouldUseReverbBuffer = shouldUseReverbBuffer;
             muffleType = type;
             Muffled = shouldMuffle;
+
+            // Finish debug log.
+            if (ConfigManager.LocalConfig.ShowChannelInfo)
+            {
+                if (DebugObstructionsCount <= 0 || DebugObstructionsList.IsNullOrEmpty()) { DebugObstructionsList += "          None\n"; }
+                if (!ConfigManager.LocalConfig.ShowPlayingSounds) { LuaCsLogger.Log($"Gain: {MathF.Round(Gain, 2)}    Pitch: {MathF.Round(Pitch, 2)}    Range: {MathF.Round(Channel.Far)}    Distance: {MathF.Round(Distance)}    Muffle: {MathF.Round(MuffleStrength, 3)}    Obstructions:\n{DebugObstructionsList}"); }
+            }
         }
 
         private void UpdateDynamicFx()

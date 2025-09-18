@@ -128,15 +128,19 @@ namespace SoundproofWalls
             // Needed to adjust the maximum source count.
             harmony.Patch(
                 original: typeof(SoundManager).GetConstructor(Type.EmptyTypes),
-                transpiler: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SoundManager_Constructor_Transpiler), BindingFlags.Static | BindingFlags.Public))
-            );
+                transpiler: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(TranspileSourceCount), BindingFlags.Static | BindingFlags.Public)));
+
+            // SoundManager_InitializeAlcDevice transpiler.
+            // Needed to reflect changes to the maximum source count.
+            harmony.Patch(
+                original: typeof(SoundManager).GetMethod(nameof(SoundManager.InitializeAlcDevice)),
+                transpiler: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(TranspileSourceCount))));
 
             // SoundPlayer_UpdateMusic transpiler.
             // Needed to reflect changes to the maximum source count.
             harmony.Patch(
                 original: typeof(SoundPlayer).GetMethod(nameof(SoundPlayer.UpdateMusic), BindingFlags.Static | BindingFlags.NonPublic),
-                transpiler: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SoundManager_Constructor_Transpiler), BindingFlags.Static | BindingFlags.Public))
-            );
+                transpiler: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(TranspileSourceCount), BindingFlags.Static | BindingFlags.Public)));
 
             // StartRound postfix patch.
             // Needed to set up the first hydrophone switches after terminals have loaded in.
@@ -146,11 +150,16 @@ namespace SoundproofWalls
                 new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_StartRound))));
 
             // SoundManager_ReleaseResources postfix.
-            // For releasing and clearing the pool of ExtendedOggSound buffers.
+            // For disposing EfxAudioManager safely with context and releasing and clearing the pool of ExtendedOggSound buffers.
             harmony.Patch(
-                typeof(SoundManager).GetMethod(nameof(SoundManager.ReleaseResources), BindingFlags.NonPublic | BindingFlags.Instance),
-                null,
-                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_SoundManager_ReleaseResources_Postfix))));
+                original: typeof(SoundManager).GetMethod(nameof(SoundManager.ReleaseResources), BindingFlags.NonPublic | BindingFlags.Instance),
+                postfix: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_SoundManager_ReleaseResources_Postfix))));
+
+            // SoundManager_InitializeAlcDevice postfix.
+            // For recreating EfxAudioManager safely with context.
+            harmony.Patch(
+                original: typeof(SoundManager).GetMethod(nameof(SoundManager.InitializeAlcDevice)),
+                postfix: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_InitializeAlcDevice_Postfix))));
 
             // LoadSounds 1 prefix REPLACEMENT.
             // Replaces OggSound with ExtendedOggSound.
@@ -288,10 +297,10 @@ namespace SoundproofWalls
                 new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_SoundPlayer_UpdateFireSounds))));
 
             // Dispose prefix.
-            // Auto remove entries in SourceInfoMap, as the keys in this dict are SoundChannels.
+            // Clean up SPW related stuff from sources.
             harmony.Patch(
-                typeof(SoundChannel).GetMethod(nameof(SoundChannel.Dispose)),
-                new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_SoundChannel_Dispose))));
+                original: typeof(SoundChannel).GetMethod(nameof(SoundChannel.Dispose)),
+                prefix: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_SoundChannel_Dispose_Prefix))));
 
             // MoveCamera postfix.
             // Zooms in slightly when eavesdropping.
@@ -485,10 +494,23 @@ namespace SoundproofWalls
             HydrophoneManager.SetupHydrophoneSwitches(firstStartup: true);
         }
 
-        // This patch might not exist when the base method is called, but it's here in principal to prevent memory leaks.
         public static void SPW_SoundManager_ReleaseResources_Postfix()
         {
+            if (EffectsManager != null)
+            {
+                EffectsManager.Dispose();
+                EffectsManager = null;
+            }
+
             ExtendedSoundBuffers.ClearPool();
+        }
+
+        public static void SPW_InitializeAlcDevice_Postfix(bool __result)
+        {
+            if (__result && config.Enabled && config.DynamicFx)
+            {
+                InitDynamicFx();
+            }
         }
 
         // This patch implements a fix missing in vanilla that can cause a crash otherwise.
@@ -526,7 +548,7 @@ namespace SoundproofWalls
             }
         }
 
-        public static IEnumerable<CodeInstruction> SoundManager_Constructor_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+        public static IEnumerable<CodeInstruction> TranspileSourceCount(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
 
             FieldInfo dynamicCountField = typeof(ChannelInfoManager).GetField(nameof(ChannelInfoManager.SourceCount), BindingFlags.Public | BindingFlags.Static);
@@ -1050,33 +1072,50 @@ namespace SoundproofWalls
         }
 
         // Runs at the start of the SoundChannel disposing method.
-        public static void SPW_SoundChannel_Dispose(SoundChannel __instance)
+        public static bool SPW_SoundChannel_Dispose_Prefix(SoundChannel __instance)
         {
-            if (!config.Enabled) { return; };
-
-            SoundChannel channel = __instance;
+            if (!config.Enabled) { return true; }
 
             try
             {
-                if (channel.mutex != null) { Monitor.Enter(channel.mutex); }
+                if (__instance.mutex != null) { Monitor.Enter(__instance.mutex); }
 
-                if (channel.Sound != null)
+                if (__instance.ALSourceIndex < 0 || __instance.Sound?.Owner == null)
                 {
-                    uint sourceId = channel.Sound.Owner.GetSourceFromIndex(channel.Sound.SourcePoolIndex, channel.ALSourceIndex);
-                    EffectsManager?.UnregisterSource(sourceId);
+                    return true; // Already disposed, let original method run.
+                }
+
+                uint alSource = __instance.Sound.Owner.GetSourceFromIndex(__instance.Sound.SourcePoolIndex, __instance.ALSourceIndex);
+
+                // Zombie check
+                if (alSource == 0 || !Al.IsSource(alSource))
+                {
+                    // Non-OpenAL cleanup for your mod's systems.
+                    ChannelInfoManager.RemoveChannelInfo(__instance);
+                    BubbleManager.RemoveBubbleSound(__instance);
+
+                    __instance.ALSourceIndex = -1;
+
+                    // Cancel the vanilla Dispose() method.
+                    return false;
                 }
                 else
                 {
-                    LuaCsLogger.LogError($"[SoundproofWalls] Warning: \"{channel.debugName}\" was missing a Sound object and may not have been disposed correctly.");
-                }
+                    // OpenAL-related cleanup.
+                    EffectsManager?.UnregisterSource(alSource);
+                    ChannelInfoManager.RemovePitchedChannel(__instance); // Now it's safe to call.
 
-                ChannelInfoManager.RemoveChannelInfo(channel);
-                ChannelInfoManager.RemovePitchedChannel(channel);
-                BubbleManager.RemoveBubbleSound(channel);
+                    // Non-OpenAL cleanup.
+                    ChannelInfoManager.RemoveChannelInfo(__instance);
+                    BubbleManager.RemoveBubbleSound(__instance);
+
+                    // Allow the vanilla Dispose() method to run its full cleanup.
+                    return true;
+                }
             }
             finally
             {
-                if (channel.mutex != null) { Monitor.Exit(channel.mutex); }
+                if (__instance.mutex != null) { Monitor.Exit(__instance.mutex); }
             }
         }
 

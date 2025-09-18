@@ -882,39 +882,35 @@ namespace SoundproofWalls
             Al.GetError();
             int alError;
 
-            // Cleanup filters and disconnect sources from sends.
-            var sourceIdsToClean = new List<uint>(_sourceFilters.Keys);
-            foreach (uint sourceId in sourceIdsToClean) { UnregisterSource(sourceId); }
-            _sourceFilters.Clear();
-            _reverbRoutedSources.Clear();
-
-            // Cleanup reverb slots and effects.
-            // Detach effects from slots
+            // Detach effects from slots first.
             if (reverbSlotId != INVALID_ID) AlEffects.AuxiliaryEffectSloti(reverbSlotId, AlEffects.AL_EFFECTSLOT_EFFECT, AlEffects.AL_EFFECT_NULL);
-            if ((alError = Al.GetError()) != Al.NoError) DebugConsole.LogError($"[SoundproofWalls] Failed to detach reverb effect from slot ID: {reverbSlotId}, {Al.GetErrorString(alError)}");
-
             if (distortionSlotId != INVALID_ID) AlEffects.AuxiliaryEffectSloti(distortionSlotId, AlEffects.AL_EFFECTSLOT_EFFECT, AlEffects.AL_EFFECT_NULL);
-            if ((alError = Al.GetError()) != Al.NoError) DebugConsole.LogError($"[SoundproofWalls] Failed to detach distortion effect from slot ID: {distortionSlotId}, {Al.GetErrorString(alError)}");
+            // We don't need to log errors here, as an invalid name is expected if the context is already gone.
+            Al.GetError();
 
-            // Delete Slots
-            if (reverbSlotId != INVALID_ID) AlEffects.DeleteAuxiliaryEffectSlots(1, new[] { reverbSlotId });
-            if ((alError = Al.GetError()) != Al.NoError) DebugConsole.LogError($"[SoundproofWalls] Failed to delete reverb slot ID: {reverbSlotId}, {Al.GetErrorString(alError)}");
-
-            if (distortionSlotId != INVALID_ID) AlEffects.DeleteAuxiliaryEffectSlots(1, new[] { distortionSlotId });
-            if ((alError = Al.GetError()) != Al.NoError) DebugConsole.LogError($"[SoundproofWalls] Failed to delete distortion slot ID: {distortionSlotId}, {Al.GetErrorString(alError)}");
-
-            // Delete Effects
+            // Delete the effects themselves.
             if (reverbEffectId != INVALID_ID) AlEffects.DeleteEffects(1, new[] { reverbEffectId });
             if ((alError = Al.GetError()) != Al.NoError) DebugConsole.LogError($"[SoundproofWalls] Failed to delete reverb effect ID: {reverbEffectId}, {Al.GetErrorString(alError)}");
 
             if (distortionEffectId != INVALID_ID) AlEffects.DeleteEffects(1, new[] { distortionEffectId });
             if ((alError = Al.GetError()) != Al.NoError) DebugConsole.LogError($"[SoundproofWalls] Failed to delete distortion effect ID: {distortionEffectId}, {Al.GetErrorString(alError)}");
 
+            // Disconnect all sources that might be pointing to the slots.
+            var sourceIdsToClean = new List<uint>(_sourceFilters.Keys);
+            foreach (uint sourceId in sourceIdsToClean) { UnregisterSource(sourceId); }
+            _sourceFilters.Clear();
+            _reverbRoutedSources.Clear();
+
+            // Delete the slots. They should now be empty and unused.
+            if (reverbSlotId != INVALID_ID) AlEffects.DeleteAuxiliaryEffectSlots(1, new[] { reverbSlotId });
+            if ((alError = Al.GetError()) != Al.NoError) DebugConsole.LogError($"[SoundproofWalls] Failed to delete reverb slot ID: {reverbSlotId}, {Al.GetErrorString(alError)}");
+
+            if (distortionSlotId != INVALID_ID) AlEffects.DeleteAuxiliaryEffectSlots(1, new[] { distortionSlotId });
+            if ((alError = Al.GetError()) != Al.NoError) DebugConsole.LogError($"[SoundproofWalls] Failed to delete distortion slot ID: {distortionSlotId}, {Al.GetErrorString(alError)}");
 
             // Reset IDs
             reverbSlotId = INVALID_ID;
             reverbEffectId = INVALID_ID;
-            
             distortionSlotId = INVALID_ID;
             distortionEffectId = INVALID_ID;
 
