@@ -1200,6 +1200,10 @@ namespace SoundproofWalls
                         __instance.loopingSoundChannel.Near = range * config.LoopingComponentSoundNearMultiplier;
                         __instance.loopingSoundChannel.Far = range;
                     }
+                    if (__instance.loopingSound.RoundSound.Stream)
+                    {
+                        __instance.loopingSoundChannel.StreamSeekPos = __instance.loopingSound.RoundSound.LastStreamSeekPos;
+                    }
                 }
             }
             else
@@ -2025,7 +2029,6 @@ namespace SoundproofWalls
                 SoundPlayer.fireVolumeRight[i] = 0.0f;
             }
 
-            // Get the listener's position.
             Vector2 listenerPos = new Vector2(GameMain.SoundManager.ListenerPosition.X, GameMain.SoundManager.ListenerPosition.Y);
 
             // Accumulate volume from all active fire sources.
@@ -2055,8 +2058,6 @@ namespace SoundproofWalls
                 }
                 else // Otherwise, play the sound with updated properties.
                 {
-                    // The sound system uses the difference between right and left volumes to pan the sound.
-                    // A positive difference pans right, a negative difference pans left.
                     Vector2 soundPos = new Vector2(GameMain.SoundManager.ListenerPosition.X + (SoundPlayer.fireVolumeRight[i] - SoundPlayer.fireVolumeLeft[i]) * 100, GameMain.SoundManager.ListenerPosition.Y);
 
                     if (SoundPlayer.fireSoundChannels[i] == null || !SoundPlayer.fireSoundChannels[i].IsPlaying)
@@ -2065,10 +2066,7 @@ namespace SoundproofWalls
                         if (SoundPlayer.fireSoundChannels[i] == null) { continue; }
                         SoundPlayer.fireSoundChannels[i].Looping = true;
                     }
-
-                    // The gain is the loudest of the two channels.
                     SoundPlayer.fireSoundChannels[i].Gain = Math.Max(SoundPlayer.fireVolumeRight[i], SoundPlayer.fireVolumeLeft[i]);
-                    // The position is updated to handle panning.
                     SoundPlayer.fireSoundChannels[i].Position = new Vector3(soundPos, 0.0f);
                 }
             }
@@ -2078,19 +2076,18 @@ namespace SoundproofWalls
                 // Sometimes fire sizes can be negative values? Thank you baro devs
                 if (fs.Size.X < 0 || fs.Size.Y < 0) { return; }
 
-                // 1. Find the closest horizontal point on the fire's surface to the listener.
-                // Clamp the listener's X position to the fire's horizontal bounds.
+                // Find the closest horizontal point on the fire's surface to the listener.
                 float fireLeftEdgeX = fs.WorldPosition.X;
                 float fireRightEdgeX = fs.WorldPosition.X + fs.Size.X;
                 float closestX = Math.Clamp(listenerPos.X, fireLeftEdgeX, fireRightEdgeX);
 
-                // 2. The sound's origin for distance calculation is this closest point at the fire's vertical center.
+                // The sound's origin for distance calculation is the closest point at the fire's vertical center.
                 Vector2 soundSourcePos = new Vector2(closestX, fs.WorldPosition.Y + fs.Size.Y / 2.0f);
 
-                // 3. Calculate the actual distance to this correct point.
+                // Calculate the actual distance to this correct point.
                 float dist = Vector2.Distance(listenerPos, soundSourcePos);
 
-                // 4. Calculate volume falloff based on the correct distance.
+                // Calculate volume falloff based on the correct distance.
                 float distFalloff = dist / SoundPlayer.FireSoundRange;
 
                 // If the sound is out of range, it contributes no volume.
@@ -2098,10 +2095,7 @@ namespace SoundproofWalls
 
                 float baseVolume = (1.0f - distFalloff);
 
-                // 5. Determine panning. We need to calculate left/right volumes that the
-                // sound system can use to create a positional effect.
-                // Note: The original system uses 'fireVolumeLeft' for sounds on the right, and 'fireVolumeRight' for sounds on the left?
-
+                // Determine panning. Note: The original system uses 'fireVolumeLeft' for sounds on the right, and 'fireVolumeRight' for sounds on the left?
                 float fireCenterX = fs.WorldPosition.X + fs.Size.X / 2.0f;
                 float halfWidth = fs.Size.X / 2.0f;
 
@@ -2113,7 +2107,6 @@ namespace SoundproofWalls
                 float leftChannelVolume = 0.0f;
 
                 // Distribute the baseVolume into the two channels based on the pan value.
-                // This creates a smooth panning effect across the surface of the fire.
                 if (pan < 0) // Listener is on the left half of the fire
                 {
                     leftChannelVolume = baseVolume;
@@ -2125,8 +2118,7 @@ namespace SoundproofWalls
                     leftChannelVolume = baseVolume * (1.0f - pan); // Volume on the left channel fades out as pan approaches 1
                 }
 
-                // 6. Add the calculated volumes to the correct global accumulators.
-                // Remember: fireVolumeLeft is for right-panned sounds, fireVolumeRight is for left-panned sounds.
+                // Add the volumes to the correct accumulators.
                 SoundPlayer.fireVolumeLeft[0] += rightChannelVolume;
                 SoundPlayer.fireVolumeRight[0] += leftChannelVolume;
 

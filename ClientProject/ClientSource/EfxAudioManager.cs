@@ -342,14 +342,15 @@ namespace SoundproofWalls
                     // Linearly increase reverb gain when loud non-looping sounds play.
                     else if (!isLooping && info.IsLoud)
                     {
-                        loudSoundGain += 0.028f; // Arbitrary magic number
+                        // += Arbitrary magic number that feels good.
+                        loudSoundGain += 0.028f * (1 - info.MuffleStrength);
                     }
 
                     // Dramatically hike the reverb gain if a loud sound is triggered in a small area.
                     if (ConfigManager.Config.DynamicReverbBloom && !isLooping && roomSizeFactor <= 1 && info.IsLoud && !info.ReverbBounceTriggered && 
                         info.PlaybackPosition / (info.SoundInfo.Sound.DurationSeconds * info.SoundInfo.Sound.SampleRate) < 0.05f)
                     {
-                        loudSoundGain = (1 - roomSizeFactor) * 2;
+                        loudSoundGain = (1 - roomSizeFactor) * 2 * (1 - info.MuffleStrength);
                         AirReverbGainBounceActive = true;
                         AirReverbGainBounceGainSet = false;
                         AirReverbGainBounceFinishValue = trailingAirReverbGain;
@@ -697,7 +698,7 @@ namespace SoundproofWalls
 
         public void UpdateSource(ChannelInfo channelInfo, float gainHf, float gainLf = 1)
         {
-            if (channelInfo.Channel == null || !channelInfo.Channel.IsPlaying || channelInfo.Channel.FadingOutAndDisposing)
+            if (channelInfo.Channel == null || channelInfo.Channel.FadingOutAndDisposing)
             {
                 return;
             }

@@ -531,8 +531,8 @@ namespace SoundproofWalls
                 type = MuffleType.Heavy;
                 shouldMuffle = true;
             }
-            // Apply the muffled buffer to sounds only on the first tick. This gives OpenAL time to register the source and apply its own muffle effect.
-            else if (config.DynamicFx && MuffleStrength > 0 && (AudioIsVoice || IsFirstIteration))
+            // Enable muffling for voices since they are streamed through the biquad lowpass filters.
+            else if (config.DynamicFx && AudioIsVoice && MuffleStrength > 0)
             {
                 shouldMuffle = true;
             }
@@ -1413,13 +1413,13 @@ namespace SoundproofWalls
             else if (StatusEffect != null)
             {
                 muffleUpdateInterval = config.StatusEffectMuffleUpdateInterval;
-                if (currentTime < StatusEffect.LastMuffleCheckTime + muffleUpdateInterval)
+                if (currentTime < lastMuffleCheckTime + muffleUpdateInterval) // Don't use StatusEffect.LastMuffleCheckTime because it is static.
                 {
                     shouldSkip = true;
                 }
                 else
                 {
-                    StatusEffect.LastMuffleCheckTime = currentTime;
+                    lastMuffleCheckTime = currentTime;
                 }
             }
             else if (!Channel.Looping && config.UpdateNonLoopingSounds)

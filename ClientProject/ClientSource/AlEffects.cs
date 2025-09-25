@@ -10,7 +10,7 @@ namespace SoundproofWalls
         public const int AL_EFFECTSLOT_EFFECT = 0x0001;
         public const int AL_EFFECTSLOT_GAIN = 0x0002;
         public const int AL_EFFECTSLOT_AUXILIARY_SEND_AUTO = 0x0003;
-        public const int AL_EFFECTSLOT_NULL = 0x0000; // Used to detach effects/sends
+        public const int AL_EFFECTSLOT_NULL = 0x0000;
 
         // Effect Types
         public const int AL_EFFECT_NULL = 0x0000;
@@ -44,7 +44,7 @@ namespace SoundproofWalls
         public const int AL_REVERB_LATE_REVERB_DELAY = 0x000A;
         public const int AL_REVERB_AIR_ABSORPTION_GAINHF = 0x000B;
         public const int AL_REVERB_ROOM_ROLLOFF_FACTOR = 0x000C;
-        public const int AL_REVERB_DECAY_HFLIMIT = 0x000D; // Boolean (True/False mapped to 1/0)
+        public const int AL_REVERB_DECAY_HFLIMIT = 0x000D;
 
         // Distortion Effect Parameters (AL_EFFECT_DISTORTION)
         public const int AL_DISTORTION_EDGE = 0x0001;
@@ -52,19 +52,6 @@ namespace SoundproofWalls
         public const int AL_DISTORTION_LOWPASS_CUTOFF = 0x0003;
         public const int AL_DISTORTION_EQCENTER = 0x0004;
         public const int AL_DISTORTION_EQBANDWIDTH = 0x0005;
-
-        // Equalizer Parameters (for AL_EFFECT_EQUALIZER)
-        public const int AL_EQUALIZER_LOW_GAIN = 0x0001; // float, 0.126 to 7.943 (~-18dB to +18dB), def 1.0
-        public const int AL_EQUALIZER_LOW_CUTOFF = 0x0002; // float, 50.0 to 800.0 Hz, def 200.0
-        public const int AL_EQUALIZER_MID1_GAIN = 0x0003; // float, 0.126 to 7.943, def 1.0
-        public const int AL_EQUALIZER_MID1_CENTER = 0x0004; // float, 200.0 to 3000.0 Hz, def 500.0
-        public const int AL_EQUALIZER_MID1_WIDTH = 0x0005; // float, 0.01 to 1.0 (Q factor related), def 1.0
-        public const int AL_EQUALIZER_MID2_GAIN = 0x0006; // float, 0.126 to 7.943, def 1.0
-        public const int AL_EQUALIZER_MID2_CENTER = 0x0007; // float, 1000.0 to 8000.0 Hz, def 3000.0
-        public const int AL_EQUALIZER_MID2_WIDTH = 0x0008; // float, 0.01 to 1.0, def 1.0
-        public const int AL_EQUALIZER_HIGH_GAIN = 0x0009; // float, 0.126 to 7.943, def 1.0
-        public const int AL_EQUALIZER_HIGH_CUTOFF = 0x000A; // float, 4000.0 to 16000.0 Hz, def 6000.0
-
 
         // Filter Types
         public const int AL_FILTER_NULL = 0x0000;
@@ -99,7 +86,7 @@ namespace SoundproofWalls
         public const int ALC_EFX_MINOR_VERSION = 0x20002;
         public const int ALC_MAX_AUXILIARY_SENDS = 0x20003;
 
-        // --- Delegate Definitions ---
+        // Delegate Definitions
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate void AlGenAuxiliaryEffectSlots(int n, uint[] slots);
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -110,7 +97,6 @@ namespace SoundproofWalls
         private delegate void AlAuxiliaryEffectSloti(uint slot, int param, int value);
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate void AlAuxiliaryEffectSlotf(uint slot, int param, float value);
-
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate void AlGenEffects(int n, uint[] effects);
@@ -142,26 +128,12 @@ namespace SoundproofWalls
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate void AlFilterfv(uint filter, int param, float[] values);
 
-        // For AL_AUXILIARY_SEND_FILTER - parameters are uint effectSlotId, int sendIndex, uint filterId
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate void AlSource3i_SendFilter(uint source, int param, uint value1, int value2, uint value3);
-        // For AL_DIRECT_FILTER - parameter is uint filterId
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate void AlSourcei_Filter(uint source, int param, uint value);
-        // For Source EFX floats (AL_AIR_ABSORPTION_FACTOR etc.)
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate void AlSourcef_efx(uint source, int param, float value);
-        // For Source EFX booleans (xxx_AUTO)
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate void AlSourcei_efx_bool(uint source, int param, int value); // Use int 0/1 for bool
-
-
-        // --- Loaded Function Pointers ---
+        // Loaded Function Pointers
         private static AlGenAuxiliaryEffectSlots? _alGenAuxiliaryEffectSlots;
         private static AlDeleteAuxiliaryEffectSlots? _alDeleteAuxiliaryEffectSlots;
         private static AlIsAuxiliaryEffectSlot? _alIsAuxiliaryEffectSlot;
         private static AlAuxiliaryEffectSloti? _alAuxiliaryEffectSloti;
-        private static AlAuxiliaryEffectSlotf? _alAuxiliaryEffectSlotf; // For setting floats
+        private static AlAuxiliaryEffectSlotf? _alAuxiliaryEffectSlotf;
 
         private static AlGenEffects? _alGenEffects;
         private static AlDeleteEffects? _alDeleteEffects;
@@ -179,8 +151,6 @@ namespace SoundproofWalls
         private static AlFilterf? _alFilterf;
         private static AlFilterfv? _alFilterfv;
 
-
-        // --- Public Accessor Methods ---
         public static void GenAuxiliaryEffectSlots(int n, uint[] slots) => _alGenAuxiliaryEffectSlots?.Invoke(n, slots);
         public static void DeleteAuxiliaryEffectSlots(int n, uint[] slots) => _alDeleteAuxiliaryEffectSlots?.Invoke(n, slots);
         public static bool IsAuxiliaryEffectSlot(uint slot) => _alIsAuxiliaryEffectSlot?.Invoke(slot) ?? false;
@@ -212,7 +182,7 @@ namespace SoundproofWalls
         public static void Filterf(uint filter, int param, float value) => _alFilterf?.Invoke(filter, param, value);
         public static void Filterfv(uint filter, int param, float[] values) => _alFilterfv?.Invoke(filter, param, values);
 
-        // --- Initialization ---
+        // Initialization
         private static bool _efxInitialized = false;
         public static bool IsInitialized => _efxInitialized;
         public static int MaxAuxiliarySends { get; private set; } = 0;
@@ -224,7 +194,6 @@ namespace SoundproofWalls
             if (ptr == IntPtr.Zero)
             {
                 DebugConsole.NewMessage($"[SoundproofWalls][AlEffects] Failed to load EFX function pointer: {name}");
-                // Consider throwing an exception or handling the error appropriately depending on function importance
                 return null;
             }
             try
@@ -255,12 +224,9 @@ namespace SoundproofWalls
             if (Alc.GetError(device) != Alc.NoError)
             {
                 DebugConsole.NewMessage("[SoundproofWalls][AlEffects] Could not query ALC_MAX_AUXILIARY_SENDS.");
-                // Proceeding, but MaxAuxiliarySends might be incorrect (0).
                 maxSends = 0; // Default to 0 if query fails
             }
             MaxAuxiliarySends = maxSends;
-
-            // Load function pointers using Alc.GetProcAddress
 
             _alGenAuxiliaryEffectSlots = LoadDelegate<AlGenAuxiliaryEffectSlots>(device, "alGenAuxiliaryEffectSlots");
             _alDeleteAuxiliaryEffectSlots = LoadDelegate<AlDeleteAuxiliaryEffectSlots>(device, "alDeleteAuxiliaryEffectSlots");

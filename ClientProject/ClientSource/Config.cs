@@ -744,7 +744,8 @@ namespace SoundproofWalls
             "barotrauma/content/sounds/fire",
             "barotrauma/content/characters",
             "monster_farlayer",
-            "sonardecoy"
+            "sonardecoy",
+            "artifactholderloop"
         };
 
         public HashSet<string> LowpassIgnoredSounds { get; set; } = new HashSet<string>
