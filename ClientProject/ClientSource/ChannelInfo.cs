@@ -1024,7 +1024,7 @@ namespace SoundproofWalls
             }
 
             // Start sidechain release for loud sounds.
-            if (IsLoud && (Channel.Looping || AudioIsVoice || !Channel.Looping && !sidechainTriggered))
+            if (IsLoud && currentGain * mult > 0 && (Channel.Looping || AudioIsVoice || !Channel.Looping && !sidechainTriggered))
             {
                 // The strength of the sidechaining slightly decreases the more muffled the loud sound is.
                 Plugin.Sidechain.StartRelease(thisSidechainStartingStrength, thisSidechainRelease, SoundInfo.CustomSound);
