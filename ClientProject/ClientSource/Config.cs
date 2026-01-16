@@ -54,6 +54,7 @@ namespace SoundproofWalls
         public uint EffectProcessingMode { get; set; } = 2;
         public bool FocusTargetAudio { get; set; } = true;
         public bool AttenuateWithApproximateDistance { get; set; } = true;
+        public bool ProjectileSounds { get; set; } = true;
         public float SoundRangeMultiplierMaster { get; set; } = 1.6f;
         public float LoopingSoundRangeMultiplierMaster { get; set; } = 0.9f;
         public float OutdoorSoundRangeMultiplier { get; set; } = 3.0f;
@@ -65,9 +66,11 @@ namespace SoundproofWalls
         public float DynamicMuffleStrengthMultiplier { get; set; } = 1.0f;
         public float OverMuffleStrengthMultiplier { get; set; } = 0.33f;
         public bool DynamicReverbEnabled { get; set; } = true;
+        public bool DynamicReverbRaycastArea { get; set; } = true;
         public bool DynamicReverbBloom { get; set; } = true;
         public bool DynamicReverbWaterSubtractsArea { get; set; } = true;
         public int DynamicReverbMinArea { get; set; } = 0;
+        public int DynamicReverbMaxArea { get; set; } = 1_700_000; // Caps the connected area. This limits the scaling of indoor reverb - but for outdoor reverb, it represents the point at which the predefined maximum effect is active. Not included in the menu because it's confusing.
         public float DynamicReverbAreaSizeMultiplier { get; set; } = 1.0f;
         public float DynamicReverbWetRoomAreaSizeMultiplier { get; set; } = 1.5f;
         public float DynamicReverbAirTargetGain { get; set; } = 0.30f;
@@ -275,8 +278,10 @@ namespace SoundproofWalls
 
         // Pitch settings
         public bool PitchEnabled { get; set; } = true; // Global pitch toggle. Affects Custom Sound pitches too.
+        public bool DopplerEffect { get; set; } = true;
         public bool PitchStatusEffectSounds { get; set; } = false;
         public bool PitchWithDistance { get; set; } = true;
+        public float DopplerEffectStrengthMultiplier { get; set; } = 1f;
         public float DivingSuitPitchMultiplier { get; set; } = 1f;
         public float SubmergedPitchMultiplier { get; set; } = 0.70f;
         public float MuffledSoundPitchMultiplier { get; set; } = 1f; // Strength of the distance-based pitch effect on muffled non-looping sounds.
@@ -290,6 +295,7 @@ namespace SoundproofWalls
         public bool ShowPerformance { get; set; } = false;
         public bool ShowPlayingSounds { get; set; } = false; // See all playing sounds and their filenames.
         public bool ShowChannelInfo { get; set; } = false; // See what is obstructing all audio with console output.
+        public bool ShowReverbArea { get; set; } = false; // See the ray casted area used for reverb size.
         public bool HideSettingsButton { get; set; } = false;
         public bool RememberMenuTabAndScroll { get; set; } = true;
         public int MaxSourceCount { get; set; } = 128; // How many sounds can be playing at once. Vanilla is 32 (cite SoundManager.cs)
@@ -302,11 +308,13 @@ namespace SoundproofWalls
         public float OpenALEffectsUpdateInterval { get; set; } = 0.01f; // Recommend lowering if having trouble with reverb amplitude gates
         public float ComponentMuffleUpdateInterval { get; set; } = 0.01f;
         public float StatusEffectMuffleUpdateInterval { get; set; } = 0.01f;
+        public float ReverbAreaUpdateInterval { get; set; } = 0.2f;
 
-            // Transitions
+        // Transitions
         public bool DisableVanillaFadeOutAndDispose { get; set; } = false; // Disables the vanilla "FadeOutAndDispose" function that has the potential to cause issues with permanently looping sounds.
         public float GainTransitionFactor { get; set; } = 2.5f;
         public float PitchTransitionFactor { get; set; } = 0f;
+        public float ReverbAreaTransitionFactor { get; set; } = 650_000;
         public float AirReverbGainTransitionFactor { get; set; } = 0.6f;
         public float HydrophoneReverbGainTransitionFactor { get; set; } = 0.5f;
         public float DynamicMuffleTransitionFactor { get; set; } = 0f; // The max change of high frequency gain over the span of a second. Transitions the muffle effect on and off.
@@ -449,7 +457,7 @@ namespace SoundproofWalls
             sidechainMultiplier: 1.3f,
             release: 1.5f,
             distortion: true,
-            pitchMultiplier: 1.0f,
+            pitchMultiplier: 1.1f,
             muffleInfluence: 0.85f),
         new CustomSound("flakgun",
             gainMultiplier: 2.5f,
@@ -465,7 +473,7 @@ namespace SoundproofWalls
             sidechainMultiplier: 1.5f,
             release: 3.2f,
             distortion: true,
-            pitchMultiplier: 1.0f,
+            pitchMultiplier: 1.3f,
             muffleInfluence: 0.85f,
             exclusions: ["railgunstart", "railgunloop", "railgunstop"]),
         new CustomSound("railgun", // For the turret movement sound (uses the same name as the railgun weapon).
@@ -632,6 +640,15 @@ namespace SoundproofWalls
             pitchMultiplier: 0.4f),
 
         // Soundproof Walls sounds.
+        new CustomSound("sounds/spw_heavyprojectilecavitation",
+            gainMultiplier: 1.0f,
+            rangeMultiplier: 1.0f,
+            sidechainMultiplier: 0.5f,
+            release: 1.0f,
+            distortion: false,
+            pitchMultiplier: 1.0f,
+            muffleInfluence: 0.92f),
+
         new CustomSound("sounds/spw_",
             gainMultiplier: 1.0f,
             muffleInfluence: 0.0f,
@@ -665,8 +682,8 @@ namespace SoundproofWalls
         new CustomSound("tinnitus",
             gainMultiplier: 0.6f,
             rangeMultiplier: 1.0f,
-            sidechainMultiplier: 0.6f,
-            release: 10.0f,
+            sidechainMultiplier: 0.0f,
+            release: 0f,
             distortion: false),
         };
 

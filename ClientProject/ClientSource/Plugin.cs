@@ -55,6 +55,10 @@ namespace SoundproofWalls
 
             BubbleLocal,
             BubbleRadio,
+
+            HeavyProjectileCavitation,
+            MediumProjectileCavitation,
+            LightProjectileCavitation,
         }
         public static string ModPath = Util.GetModDirectory();
         public static readonly Dictionary<SoundPath, string> CustomSoundPaths = new Dictionary<SoundPath, string>
@@ -75,6 +79,10 @@ namespace SoundproofWalls
 
             { SoundPath.BubbleLocal, Path.Combine(ModPath, "Content/Sounds/SPW_BubblesLoopMono.ogg") },
             { SoundPath.BubbleRadio, Path.Combine(ModPath, "Content/Sounds/SPW_RadioBubblesLoopStereo.ogg") },
+
+            { SoundPath.HeavyProjectileCavitation, Path.Combine(ModPath, "Content/Sounds/SPW_HeavyProjectileCavitation.ogg") },
+            { SoundPath.MediumProjectileCavitation, Path.Combine(ModPath, "Content/Sounds/SPW_MediumProjectileCavitation.ogg") },
+            { SoundPath.LightProjectileCavitation, Path.Combine(ModPath, "Content/Sounds/SPW_LightProjectileCavitation.ogg") },
         };
 
         public void InitClient()
@@ -264,6 +272,12 @@ namespace SoundproofWalls
                 typeof(Turret).GetMethod(nameof(Turret.UpdateProjSpecific), BindingFlags.Instance | BindingFlags.NonPublic),
                 postfix: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_Turret_UpdateProjSpecific))));
 
+            // Turret Launch postfix.
+            // Attaches the heavy projectile sound to the railgun shells mid-flight.
+            harmony.Patch(
+                typeof(Turret).GetMethod(nameof(Turret.Launch), BindingFlags.Instance | BindingFlags.NonPublic),
+                postfix: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_Turret_Launch))));
+
             // StatusEffect UpdateAllProjSpecific prefix REPLACEMENT.
             // Updates muffle and other attributes of StatusEffect sounds.
             harmony.Patch(
@@ -397,6 +411,7 @@ namespace SoundproofWalls
             HydrophoneManager.Setup();
             EavesdropManager.Setup();
             BubbleManager.Setup();
+            ProjectileManager.Setup();
 
             // Ensure all sounds have been loaded with the correct muffle buffer.
             if (config.Enabled)
@@ -476,6 +491,7 @@ namespace SoundproofWalls
             HydrophoneManager.Dispose();
             EavesdropManager.Dispose();
             BubbleManager.Dispose();
+            ProjectileManager.Dispose();
 
             DisposeDynamicFx();
 
@@ -532,6 +548,7 @@ namespace SoundproofWalls
                 HydrophoneManager.Update();
                 EavesdropManager.Update();
                 BubbleManager.Update();
+                ProjectileManager.Update();
                 ChannelInfoManager.Update();
                 Sidechain.Update();
                 EffectsManager?.Update();
@@ -684,6 +701,7 @@ namespace SoundproofWalls
         public static bool SPW_Draw_Prefix(ref Camera cam, ref SpriteBatch spriteBatch)
         {
             EavesdropManager.Draw(spriteBatch, cam);
+            Listener.DebugDraw(spriteBatch, cam);
             return true;
         }
 
@@ -2203,6 +2221,14 @@ namespace SoundproofWalls
             {
                 __instance.chargeSoundChannel.Position = new Vector3(__instance.Item.WorldPosition, 0);
                 ChannelInfoManager.EnsureUpdateChannelInfo(__instance.chargeSoundChannel, soundHull: __instance.Item.CurrentHull);
+            }
+        }
+
+        public static void SPW_Turret_Launch(Turret __instance, Item projectile, Character user, float? launchRotation, float tinkeringStrength)
+        {
+            if (config.ProjectileSounds)
+            {
+                ProjectileManager.AddProjectile(projectile);
             }
         }
 

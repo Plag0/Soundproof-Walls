@@ -82,6 +82,27 @@ namespace SoundproofWalls
             return worldPos;
         }
 
+        /// <summary>
+        /// Warning: returns 0 if collection is empty.
+        /// </summary>
+        public static float GetMedian<T>(IEnumerable<T> values) where T : IComparable<T>
+        {
+            var copy = values.ToList();
+
+            int count = copy.Count;
+            if (count == 0) return 0;
+
+            copy.Sort();
+
+            int mid = count / 2;
+            if (count % 2 != 0)
+            {
+                return Convert.ToSingle(copy[mid]);
+            }
+
+            return (Convert.ToSingle(copy[mid - 1]) + Convert.ToSingle(copy[mid])) * 0.5f;
+        }
+
         public static double GetCompensatedBiquadFrequency(double muffleStrength, double minFrequency, double sampleRate = 48000.0)
         {
             double onePoleFrequency = GetEffectiveLowpassFrequency(muffleStrength, sampleRate);

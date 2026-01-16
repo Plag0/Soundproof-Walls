@@ -218,6 +218,7 @@ namespace SoundproofWalls
                 }
             }
         }
+
         public float Pitch
         {
             get { return Channel.frequencyMultiplier; }
@@ -248,6 +249,36 @@ namespace SoundproofWalls
                             ChannelInfoManager.AddPitchedChannel(Channel);
                         }
                     }
+                }
+                finally
+                {
+                    if (Channel.mutex != null) { Monitor.Exit(Channel.mutex); }
+                }
+            }
+        }
+
+        private bool _velocityEnabled = false;
+        public Vector2 Velocity
+        {
+            get 
+            {
+                uint sourceId = Channel.Sound.Owner.GetSourceFromIndex(Channel.Sound.SourcePoolIndex, Channel.ALSourceIndex);
+                Al.GetError();
+                Al.GetSource3f(sourceId, Al.Velocity, out float x, out float y, out float _);
+                int alError;
+                if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to get velocity for source ID: {sourceId}, {Al.GetErrorString(alError)}");
+                return new Vector2(x, y); 
+            }
+            set
+            {
+                try
+                {
+                    if (Channel.mutex != null) { Monitor.Enter(Channel.mutex); }
+                    uint sourceId = Channel.Sound.Owner.GetSourceFromIndex(Channel.Sound.SourcePoolIndex, Channel.ALSourceIndex);
+                    Al.GetError();
+                    Al.Source3f(sourceId, Al.Velocity, value.X, value.Y, 0);
+                    int alError;
+                    if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to set velocity for source ID: {sourceId}, {Al.GetErrorString(alError)}");
                 }
                 finally
                 {
@@ -419,6 +450,7 @@ namespace SoundproofWalls
                 {
                     WorldPos = Util.GetTargetOffsetVoicePosition(speakerCharacter);
                     ChannelHull = Listener.FocusedHull;
+                    skipReverb = true;
                 }
                 else
                 {
@@ -448,12 +480,34 @@ namespace SoundproofWalls
             }
 
             // Set position for loose sounds in the submarine so they don't drift away if the sub is moving.
+            
             if (isLooseSound && ChannelHull != null)
             {
                 Channel.Position = new Vector3(Util.WorldizePosition(LocalPos, ChannelHull?.Submarine), 0);
                 WorldPos = Util.GetSoundChannelWorldPos(Channel);
+
             }
-            
+
+            Vector2 sourceVelocity = Vector2.Zero;
+            if (config.DopplerEffect && config.PitchEnabled)
+            {
+                _velocityEnabled = true;
+                if (isLooseSound && ChannelHull != null)
+                {
+                    sourceVelocity = ChannelHull!.Submarine.Velocity;
+                }
+                else
+                {
+                    if (Item != null) sourceVelocity = Item.body?.LinearVelocity ?? Vector2.Zero;
+                    else if (ChannelCharacter != null) sourceVelocity = Util.GetCharacterHead(ChannelCharacter).body?.LinearVelocity ?? Vector2.Zero;
+                }
+            }
+            if (_velocityEnabled) 
+            {
+                Velocity = sourceVelocity;
+                if (!config.DopplerEffect) _velocityEnabled = false;
+            };
+
             inWater = Util.SoundInWater(LocalPos, ChannelHull);
             inContainer = Item != null && !SoundInfo.IgnoreContainer && IsContainedWithinContainer(Item);
             EuclideanDistance = Vector2.Distance(Listener.WorldPos, WorldPos); // euclidean distance
@@ -541,7 +595,7 @@ namespace SoundproofWalls
 
             // Enable reverb buffers for extended sounds. Is not relevant to the DynamicFx reverb.
             if (config.StaticFx && config.StaticReverbEnabled && !shouldMuffle && !isLooping && !IgnoreAirReverb &&
-               (Listener.ConnectedArea >= config.StaticReverbMinArea || IsLoud && config.StaticReverbAlwaysOnLoudSounds || SoundInfo.ForceReverb))
+               (Listener.TrailingConnectedReverbArea >= config.StaticReverbMinArea || IsLoud && config.StaticReverbAlwaysOnLoudSounds || SoundInfo.ForceReverb))
             {
                 shouldUseReverbBuffer = true;
             }
@@ -735,7 +789,10 @@ namespace SoundproofWalls
             if (config.OccludeSounds && !SoundInfo.IgnoreBarriers)
             {
                 bool bothOutside = ChannelHull == null && Listener.FocusedHull == null;
-                IEnumerable<Body> bodies = Submarine.PickBodies(Listener.SimPos, SimPos, collisionCategory: Physics.CollisionWall | Physics.CollisionLevel);
+                Vector2 startPos = bothOutside ? Listener.WorldPos / 100 : Listener.SimPos;
+                Vector2 endPos = bothOutside ? WorldPos / 100 : SimPos;
+                IEnumerable<Body> bodies = Submarine.PickBodies(startPos, endPos, collisionCategory: Physics.CollisionWall | Physics.CollisionLevel);
+                
                 // Only count collisions for unique wall orientations.
                 List<float> yWalls = new List<float>();
                 List<float> xWalls = new List<float>();
@@ -754,7 +811,7 @@ namespace SoundproofWalls
                             numWallObstructions++;
                         }
                     }
-                    else if (bothOutside) // TODO for some reason level bodies are never discovered?
+                    else if (bothOutside)
                     {
                         numWallObstructions++;
                     }
@@ -765,7 +822,7 @@ namespace SoundproofWalls
                     numWallObstructions = Math.Min(numWallObstructions, config.MaxOcclusions);
                 }
 
-                if (bothOutside)
+                if (ChannelHull == null)
                 {
                     numWallObstructions = Math.Min(numWallObstructions, 1);
                 }
@@ -950,7 +1007,12 @@ namespace SoundproofWalls
             }
 
             float mult = 1;
-            float currentGain = Math.Clamp(ItemComp?.GetSoundVolume(ItemComp.loopingSound) ?? startGain, 0, 1);
+            float currentGain = startGain;
+            if (ItemComp?.loopingSound != null)
+            {
+                currentGain = ItemComp.GetSoundVolume(ItemComp.loopingSound);
+            }
+            Math.Clamp(currentGain, 0, 1);
 
             mult += SoundInfo.GainMult - 1;
 
@@ -1513,7 +1575,7 @@ namespace SoundproofWalls
             {
                 ChannelCharacter = speakingClient.Character;
             }
-            else if (ShortName.Contains("footstep"))
+            else if (ShortName.Contains("footstep") || LongName.Contains("characters"))
             {
                 Character? closestCharacter = null;
                 float closestDist = float.PositiveInfinity;

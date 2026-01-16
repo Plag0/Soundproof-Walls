@@ -20,6 +20,7 @@ namespace SoundproofWalls
         public const string SidechainUpdate = "Sidechain";
         public const string EffectsManagerUpdate = "DynamicEffectsManager";
         public const string RadioFilterUpdate = "RadioEffects";
+        public const string ProjectileUpdate = "Projectile";
     }
 
     /// <summary>

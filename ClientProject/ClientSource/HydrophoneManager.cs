@@ -428,12 +428,10 @@ namespace SoundproofWalls
             {
                 if (sector.CharactersInSector.Count > 0 && ConfigManager.Config.HydrophoneMovementSounds)
                 {
-                    // This sector has creatures, so we need to play or update its sound.
                     UpdateActiveSector(sector);
                 }
                 else
                 {
-                    // This sector is empty, so stop any sound it might be playing.
                     StopSectorSound(sector);
                 }
             }
@@ -444,7 +442,7 @@ namespace SoundproofWalls
             // Position.
             var xPositions = sector.CharactersInSector.Select(c => c.WorldPosition.X).ToList();
             var yPositions = sector.CharactersInSector.Select(c => c.WorldPosition.Y).ToList();
-            Vector2 medianPosition = new Vector2(GetMedian(xPositions), GetMedian(yPositions));
+            Vector2 medianPosition = new Vector2(Util.GetMedian(xPositions), Util.GetMedian(yPositions));
 
             // Gain. Base range + hydrophone range.
             float range = 500 + ConfigManager.Config.HydrophoneSoundRange;
@@ -457,7 +455,7 @@ namespace SoundproofWalls
 
             // Pitch.
             var speeds = sector.CharactersInSector.Select(c => c.CurrentSpeed).ToList();
-            float medianSpeed = GetMedian(speeds);
+            float medianSpeed = Util.GetMedian(speeds);
             float minSpeed = 0f;
             float maxSpeed = 12f;
             float clampedSpeed = Math.Clamp(medianSpeed, minSpeed, maxSpeed);
@@ -469,16 +467,16 @@ namespace SoundproofWalls
             if (sector.CharactersInSector.Count < 2) { targetSize = Size.Small; }
             else if (sector.CharactersInSector.Count < 3) { targetSize = Size.Medium; }
 
+            // If channel exists but not playing for some reason.
             if (sector.ActiveSoundChannel != null && (!sector.ActiveSoundChannel.IsPlaying || currentSize != targetSize))
             {
-                // If channel exists but stopped for some reason, null it out so we can create a new one.
                 StopSectorSound(sector);
             }
+            // No active sound - start one.
             else if (sector.ActiveSoundChannel == null)
             {
                 if (HydrophoneSounds.TryGetValue(targetSize, out var soundList) && soundList.Count > 0)
                 {
-                    // No active sound, so let's start one.
                     int randomIndex = Random.Next(soundList.Count);
                     Sound soundToPlay = soundList[randomIndex];
 
@@ -490,9 +488,9 @@ namespace SoundproofWalls
                     }
                 }
             }
+            // Sound is already playing
             else
             {
-                // Sound is already playing, just update its properties.
                 float transitionFactor = 1;
                 float maxStep = (float)(transitionFactor * Timing.Step);
 
@@ -527,7 +525,6 @@ namespace SoundproofWalls
             {
                 ChannelInfoManager.RemovePitchedChannel(sector.ActiveSoundChannel); // TODO do I need this?
 
-                //sector.ActiveSoundChannel.FadeOutAndDispose();
                 sector.ActiveSoundChannel.Looping = false;
                 sector.ActiveSoundChannel.Gain = 0;
                 sector.ActiveSoundChannel.Dispose();
@@ -540,29 +537,6 @@ namespace SoundproofWalls
             foreach (var sector in Sectors)
             {
                 StopSectorSound(sector);
-            }
-        }
-
-        private static float GetMedian(List<float> values)
-        {
-            if (values == null || values.Count == 0)
-            {
-                return 0;
-            }
-
-            values.Sort();
-
-            int midIndex = values.Count / 2;
-
-            if (values.Count % 2 == 0)
-            {
-                // Even number of elements, return the average of the two middle ones
-                return (values[midIndex - 1] + values[midIndex]) / 2.0f;
-            }
-            else
-            {
-                // Odd number of elements, return the middle one
-                return values[midIndex];
             }
         }
 

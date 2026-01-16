@@ -709,6 +709,7 @@ namespace SoundproofWalls
         private string RawValue(float v) => $"{MathF.Round(v, 2)}";
         private string RawValueZeroInfinity(float v) => $"{(v <= 0 ? "∞" : MathF.Round(v, 2))}";
         private string RawValueZeroInstant(float v) => $"{(v <= 0 ? TextManager.Get("spw_instant") : MathF.Round(v, 2))}";
+        private string RawValueZeroInstantCmSq(float v) => $"{(v <= 0 ? TextManager.Get("spw_instant") : MathF.Round(v, 2).ToString("N0", CultureInfo.CurrentUICulture) + " cm²")}";
         private string RawValuePrecise(float v) => $"{MathF.Round(v, 3)}";
         private string Percentage(float v)
         {
@@ -1297,6 +1298,15 @@ namespace SoundproofWalls
                 currentValue: unsavedConfig.AttenuateWithApproximateDistance,
                 setter: v => unsavedConfig.AttenuateWithApproximateDistance = v);
 
+            Tickbox(settingsFrame, FormatTextBoxLabel(
+                label: TextManager.Get("spw_projectilesounds"),
+                localValue: unsavedConfig.ProjectileSounds,
+                serverValue: ConfigManager.ServerConfig?.ProjectileSounds ?? default,
+                formatter: BoolFormatter),
+                tooltip: TextManager.Get("spw_projectilesoundstooltip"),
+                currentValue: unsavedConfig.ProjectileSounds,
+                setter: v => unsavedConfig.ProjectileSounds = v);
+
             Spacer(settingsFrame);
 
             Label(settingsFrame, TextManager.Get("spw_effectprocessingmode"));
@@ -1462,6 +1472,15 @@ namespace SoundproofWalls
                 setter: v => unsavedConfig.DynamicReverbEnabled = v);
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
+                label: TextManager.Get("spw_dynamicreverbraycastarea"),
+                localValue: unsavedConfig.DynamicReverbRaycastArea,
+                serverValue: ConfigManager.ServerConfig?.DynamicReverbRaycastArea ?? default,
+                formatter: BoolFormatter),
+                tooltip: TextManager.Get("spw_dynamicreverbraycastareatooltip"),
+                currentValue: unsavedConfig.DynamicReverbRaycastArea,
+                setter: v => unsavedConfig.DynamicReverbRaycastArea = v);
+
+            Tickbox(settingsFrame, FormatTextBoxLabel(
                 label: TextManager.Get("spw_dynamicreverbbloom"),
                 localValue: unsavedConfig.DynamicReverbBloom,
                 serverValue: ConfigManager.ServerConfig?.DynamicReverbBloom ?? default,
@@ -1559,7 +1578,7 @@ namespace SoundproofWalls
             );
 
             Label(settingsFrame, TextManager.Get("spw_dynamicreverbairgainhf"));
-            Slider(settingsFrame, (0, 1), 0.01f,
+            Slider(settingsFrame, (0.01f, 1), 0.01f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.DynamicReverbAirGainHf ?? default,
@@ -1636,7 +1655,7 @@ namespace SoundproofWalls
             );
 
             Label(settingsFrame, TextManager.Get("spw_dynamicreverbwatergainhf"));
-            Slider(settingsFrame, (0, 1), 0.01f,
+            Slider(settingsFrame, (0.01f, 1), 0.01f,
                 labelFunc: localSliderValue =>
                 FormatSettingText(localSliderValue,
                     serverValue: ConfigManager.ServerConfig?.DynamicReverbWaterGainHf ?? default,
@@ -3934,6 +3953,15 @@ namespace SoundproofWalls
                 setter: v => unsavedConfig.PitchEnabled = v);
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
+                label: TextManager.Get("spw_dopplereffect"),
+                localValue: unsavedConfig.DopplerEffect,
+                serverValue: ConfigManager.ServerConfig?.DopplerEffect ?? default,
+                formatter: BoolFormatter),
+                tooltip: TextManager.Get("spw_dopplereffecttooltip"),
+                currentValue: unsavedConfig.DopplerEffect,
+                setter: v => unsavedConfig.DopplerEffect = v);
+
+            Tickbox(settingsFrame, FormatTextBoxLabel(
                 label: TextManager.Get("spw_pitchwithdistance"),
                 localValue: unsavedConfig.PitchWithDistance, 
                 serverValue: ConfigManager.ServerConfig?.PitchWithDistance ?? default,
@@ -3953,6 +3981,21 @@ namespace SoundproofWalls
 
 
             Spacer(settingsFrame);
+
+            Label(settingsFrame, TextManager.Get("dopplereffectstrengthmultiplier"));
+            Slider(settingsFrame, (0, 10), 0.1f,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.DopplerEffectStrengthMultiplier ?? default,
+                    formatter: Percentage),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.DopplerEffectStrengthMultiplier,
+                    vanillaValue: null),
+                currentValue: unsavedConfig.DopplerEffectStrengthMultiplier,
+                setter: v => unsavedConfig.DopplerEffectStrengthMultiplier = v,
+                TextManager.Get("dopplereffectstrengthmultipliertooltip")
+            );
 
             Label(settingsFrame, TextManager.Get("spw_divingsuitpitch"));
             Slider(settingsFrame, (0.25f, 4), 0.01f,
@@ -4117,6 +4160,15 @@ namespace SoundproofWalls
                 setter: v => unsavedConfig.ShowChannelInfo = v);
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
+                label: TextManager.Get("spw_debugreverbarea"),
+                localValue: unsavedConfig.ShowReverbArea,
+                serverValue: ConfigManager.ServerConfig?.ShowReverbArea ?? default,
+                formatter: BoolFormatter),
+                tooltip: TextManager.Get("spw_debugreverbareatooltip"),
+                currentValue: unsavedConfig.ShowReverbArea,
+                setter: v => unsavedConfig.ShowReverbArea = v);
+
+            Tickbox(settingsFrame, FormatTextBoxLabel(
                 label: TextManager.Get("spw_hidesettings"),
                 localValue: unsavedConfig.HideSettingsButton, 
                 serverValue: ConfigManager.ServerConfig?.HideSettingsButton ?? default,
@@ -4254,6 +4306,21 @@ namespace SoundproofWalls
                 TextManager.Get("spw_statuseffectmuffleupdateintervaltooltip")
             );
 
+            Label(settingsFrame, TextManager.Get("spw_reverbareaupdateinterval"));
+            Slider(settingsFrame, (0.01f, 1), 0.01f,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.ReverbAreaUpdateInterval ?? default,
+                    formatter: SecondsOneTick),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.ReverbAreaUpdateInterval,
+                    vanillaValue: null),
+                currentValue: unsavedConfig.ReverbAreaUpdateInterval,
+                setter: v => unsavedConfig.ReverbAreaUpdateInterval = v,
+                TextManager.Get("spw_reverbareaupdateintervaltooltip")
+            );
+
             SpacerLabel(settingsFrame, TextManager.Get("spw_categorytransitions"));
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
@@ -4295,6 +4362,21 @@ namespace SoundproofWalls
                 currentValue: unsavedConfig.PitchTransitionFactor,
                 setter: v => unsavedConfig.PitchTransitionFactor = v,
                 TextManager.Get("spw_pitchtransitionfactortooltip")
+            );
+
+            Label(settingsFrame, TextManager.Get("spw_reverbareatransitionfactor"));
+            Slider(settingsFrame, (0, 1_000_000), 10_000,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.ReverbAreaTransitionFactor ?? default,
+                    formatter: RawValueZeroInstantCmSq),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.ReverbAreaTransitionFactor,
+                    vanillaValue: null),
+                currentValue: unsavedConfig.ReverbAreaTransitionFactor,
+                setter: v => unsavedConfig.ReverbAreaTransitionFactor = v,
+                TextManager.Get("spw_reverbareatransitionfactortooltip")
             );
 
             Label(settingsFrame, TextManager.Get("spw_airreverbgaintransitionfactor"));

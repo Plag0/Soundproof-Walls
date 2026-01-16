@@ -266,7 +266,7 @@ namespace SoundproofWalls
             if (HandleManagerError(Al.GetError(), "setting reverb diffusion")) { return; }
             AlEffects.Effectf(effectId, AlEffects.AL_REVERB_GAIN, Math.Clamp(config.Gain, 0.0f, 1.0f));
             if (HandleManagerError(Al.GetError(), "setting reverb gain")) { return; }
-            AlEffects.Effectf(effectId, AlEffects.AL_REVERB_GAINHF, Math.Clamp(config.GainHf, 0.0f, 1.0f));
+            AlEffects.Effectf(effectId, AlEffects.AL_REVERB_GAINHF, Math.Clamp(config.GainHf, 0.01f, 1.0f));
             if (HandleManagerError(Al.GetError(), "setting reverb gain HF")) { return; }
             AlEffects.Effectf(effectId, AlEffects.AL_REVERB_DECAY_TIME, Math.Clamp(config.DecayTime, 0.1f, 20.0f));
             if (HandleManagerError(Al.GetError(), "setting reverb decay time")) { return; }
@@ -320,7 +320,7 @@ namespace SoundproofWalls
 
             // For reference: roomSizeFactor == 2 inside the Orca main floor.
 
-            float roomSizeFactor = (Listener.ConnectedArea * ConfigManager.Config.DynamicReverbAreaSizeMultiplier) / 200_000; // Arbitrary magic number that seems to work well.
+            float roomSizeFactor = (Listener.TrailingConnectedReverbArea * ConfigManager.Config.DynamicReverbAreaSizeMultiplier) / 200_000; // Arbitrary magic number that seems to work well.
             float totalAudioAmplitude = 0;
             float loudSoundGain = 0;
             for (int i = 0; i < playingChannels.Length; i++)
@@ -359,7 +359,7 @@ namespace SoundproofWalls
             }
             float loudRoomPenalty = 1f - MathUtils.InverseLerp(0.0f, 1.4f, totalAudioAmplitude);
             float submersionBonus = Listener.IsSubmerged ? 1.4f : 1.0f;
-            float smallRoomPenalty = Math.Min(Listener.ConnectedArea * ConfigManager.Config.DynamicReverbAreaSizeMultiplier / 180_000, 1.0f);
+            float smallRoomPenalty = Math.Min(Listener.TrailingConnectedReverbArea * ConfigManager.Config.DynamicReverbAreaSizeMultiplier / 180_000, 1.0f);
             float targetReverbGain = loudSoundGain + (loudRoomPenalty * smallRoomPenalty * submersionBonus * ConfigManager.Config.DynamicReverbAirTargetGain);
             targetReverbGain = Math.Clamp(targetReverbGain, 0.0f, 1.0f);
 
@@ -426,25 +426,33 @@ namespace SoundproofWalls
 
         private ReverbConfiguration CalculateOutsideReverbConfiguration()
         {
-            float targetReverbGain = ConfigManager.Config.DynamicReverbWaterTargetGain;
+            float caveSizeFactor = 1;
+            if (Config.DynamicReverbRaycastArea) 
+            {
+                caveSizeFactor = Math.Min(1, (Listener.TrailingConnectedReverbArea * ConfigManager.Config.DynamicReverbAreaSizeMultiplier) / Config.DynamicReverbMaxArea);
+            }
+
+            float targetReverbGain = ConfigManager.Config.DynamicReverbWaterTargetGain * (2 - caveSizeFactor);
 
             // Must be strong enough to support the very long decay time.
-            float lateReverbGain = targetReverbGain * 1.5f;
+            float lateReverbGain = targetReverbGain * 1.5f * (2 - caveSizeFactor);
 
+            float gainHf = Config.DynamicReverbWaterGainHf / caveSizeFactor;
             float durationMult = ConfigManager.Config.DynamicReverbWaterDurationMultiplier;
-            float decayTime = 18.0f * durationMult;
-            float reflectionsDelay = 0.3f * durationMult;
-            float lateReverbDelay = 0.1f * durationMult;
+            float decayTime = 18.0f * durationMult * caveSizeFactor;
+            float reflectionsGain = 0.42f * (2 - caveSizeFactor);
+            float reflectionsDelay = 0.3f * durationMult * caveSizeFactor;
+            float lateReverbDelay = 0.1f * durationMult * caveSizeFactor;
 
             return new ReverbConfiguration()
             {
                 Density = 1.0f,
                 Diffusion = Config.DynamicReverbWaterDiffusion,
                 Gain = targetReverbGain,
-                GainHf = Config.DynamicReverbWaterGainHf,
+                GainHf = gainHf,
                 DecayTime = decayTime,
                 DecayHfRatio = 0.1f,
-                ReflectionsGain = 0.42f,
+                ReflectionsGain = reflectionsGain,
                 ReflectionsDelay = reflectionsDelay,
                 LateReverbGain = lateReverbGain,
                 LateReverbDelay = lateReverbDelay,
@@ -775,7 +783,7 @@ namespace SoundproofWalls
             {
                 bool shouldReverbAir = sourceInHull &&
                                        !channelInfo.IgnoreAirReverb &&
-                                       (channelInfo.IsLoud || channelInfo.SoundInfo.ForceReverb || amplitude >= ConfigManager.Config.DyanmicReverbAirAmplitudeThreshold && Listener.ConnectedArea >= ConfigManager.Config.DynamicReverbMinArea);
+                                       (channelInfo.IsLoud || channelInfo.SoundInfo.ForceReverb || amplitude >= ConfigManager.Config.DyanmicReverbAirAmplitudeThreshold && Listener.TrailingConnectedReverbArea >= ConfigManager.Config.DynamicReverbMinArea);
                 return shouldReverbAir ? reverbSlotId : INVALID_ID;
             }
             else if (currentReverb == ReverbType.Outside)

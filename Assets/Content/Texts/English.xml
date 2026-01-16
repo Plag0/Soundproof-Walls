@@ -50,6 +50,8 @@
 	<spw_focustargetaudiotooltip>Simulate audio from the perspective of the current camera target (i.e., you hear what the turret hears).</spw_focustargetaudiotooltip>
 	<spw_attenuatewithapproximatedistance>Realistic Sound Falloff</spw_attenuatewithapproximatedistance>
 	<spw_attenuatewithapproximatedistancetooltip>Calculates volume falloff using the sound's path to the listener. If disabled, simple straight-line (Euclidean) distance is used instead.</spw_attenuatewithapproximatedistancetooltip>
+	<spw_projectilesounds>Projectile Sounds</spw_projectilesounds>
+	<spw_projectilesoundstooltip>Adds unique sounds to projectiles fired from turrets, allowing the target to hear when a bullet whizzes by them.\n\nNote: This setting is intended to be used alongside the "Doppler Effect" option (Pitch tab).</spw_projectilesoundstooltip>
 	<spw_soundrange>Sound Range Master</spw_soundrange>
 	<spw_soundrangetooltip>Global range multiplier for all non-looping sounds.\n\nNote: Stacks multiplicatively with the sound-specific range multiplier assigned by the "Custom Sounds" list in the Advanced tab.</spw_soundrangetooltip>
 	<spw_loopingsoundrange>Looping Sound Range Master</spw_loopingsoundrange>
@@ -79,8 +81,10 @@
 	<spw_dynamicreverbtooltip>Toggles the indoor and outdoor reverb effects. If enabled, sounds dynamically reverberate based on the size and combined audio amplitude of their environment (i.e., echos are stronger in larger and quieter spaces).</spw_dynamicreverbtooltip>
 	<spw_dynamicreverbbloom>Reverb Bloom</spw_dynamicreverbbloom>
 	<spw_dynamicreverbbloomtooltip>Makes the reverb effect swell dramatically in response to loud sounds in confined areas.</spw_dynamicreverbbloomtooltip>
-	<spw_dynamicreverbwatersubtractsarea>Dynamic Reverb Area</spw_dynamicreverbwatersubtractsarea>
-	<spw_dynamicreverbwatersubtractsareatooltip>Calculates reverb using air area when above water, or water area when submerged. If disabled, uses the area of both.</spw_dynamicreverbwatersubtractsareatooltip>
+	<spw_dynamicreverbraycastarea>Raycast Reverb Area</spw_dynamicreverbraycastarea>
+	<spw_dynamicreverbraycastareatooltip>Calculates reverb area with raycasting for the most realistic and accurate echo sound.\n\nNote: May slightly impact performance.</spw_dynamicreverbraycastareatooltip>
+	<spw_dynamicreverbwatersubtractsarea>Contextual Reverb Area</spw_dynamicreverbwatersubtractsarea>
+	<spw_dynamicreverbwatersubtractsareatooltip>Calculates reverb using air area when above water, or water area when submerged. If disabled, uses the area of both.\n\nNote: Requires "Raycast Reverb Area" (Dynamic tab) to be disabled.</spw_dynamicreverbwatersubtractsareatooltip>
 	<spw_dynamicreverbminarea>Minimum Reverb Area</spw_dynamicreverbminarea>
 	<spw_dynamicreverbminareatooltip>The minimum combined area of connected rooms around the listener required for reverberation to be applied.</spw_dynamicreverbminareatooltip>
 	<spw_dynamicreverbareasizemultiplier>Reverb Area Scale</spw_dynamicreverbareasizemultiplier>
@@ -488,11 +492,14 @@
 	<spw_pitchtab>Pitch</spw_pitchtab>
 	<spw_pitchenabled>Enable Pitch</spw_pitchenabled>
 	<spw_pitchenabledtooltip>Globally toggles all pitch effects.\n\nNote: May be helpful as a quick fix for unusual pitch interactions with sounds from other mods.</spw_pitchenabledtooltip>
+	<spw_dopplereffect>Doppler Effect</spw_dopplereffect>
+	<spw_dopplereffecttooltip>Toggles the doppler effect. If enabled, the velocity of sound sources relative to the listener are used in combination with the speed of sound in the current medium to create a pitching effect based on velocity towards or away from the listener.</spw_dopplereffecttooltip>
 	<spw_pitchstatuseffectsounds>Pitch Status Effect Sounds</spw_pitchstatuseffectsounds>
 	<spw_pitchstatuseffectsoundstooltip>Toggle pitching for sounds played by XML status effects.</spw_pitchstatuseffectsoundstooltip>
 	<spw_pitchwithdistance>Pitch With Distance</spw_pitchwithdistance>
 	<spw_pitchwithdistancetooltip>Dynamically lower the pitch of muffled sounds based on their distance.\n\nNote: Does not apply to looping sounds or proximity chat.\n\nNote: Stacks additively with other pitch multipliers.</spw_pitchwithdistancetooltip>
-	
+	<dopplereffectstrengthmultiplier>Doppler Effect Strength</dopplereffectstrengthmultiplier>
+	<dopplereffectstrengthmultipliertooltip>The strength of the doppler effect.</dopplereffectstrengthmultipliertooltip>
 	<spw_divingsuitpitch>Diving Suit Pitch</spw_divingsuitpitch>
 	<spw_divingsuitpitchtooltip>The pitch of sounds when wearing a diving suit.\n\nNote: Stacks additively with other pitch multipliers.</spw_divingsuitpitchtooltip>
 	<spw_submergedpitch>Submerged Pitch</spw_submergedpitch>
@@ -526,6 +533,9 @@
 	<spw_debugchannelinfo>Show Channel Info</spw_debugchannelinfo>
 	<spw_debugchannelinfotooltip>Extend the "Show Playing Sounds" setting to also display the gain, pitch, range, distance, muffle, and obstructions for all actively playing sounds.\n\nNote: If "Show Playing Sounds" is disabled, this information is logged in the Barotrauma console.\n\nNote: This setting is not synced with other players when using "Sync Settings" (General tab).</spw_debugchannelinfotooltip>
 
+	<spw_debugreverbarea>Show Reverb Area</spw_debugreverbarea>
+	<spw_debugreverbareatooltip>Displays a visual representation of the current reverb area.\n\nNote: Requires "Raycast Reverb Area" (Dynamic tab) to be enabled.\n\nNote: This setting requires cheats to be enabled because otherwise it can be used to navigate dark areas.\n\nNote: This setting is not synced with other players when using "Sync Settings" (General tab).</spw_debugreverbareatooltip>
+	
 	<spw_hidesettings>Hide Menu Button</spw_hidesettings>
 	<spw_hidesettingstooltip>Remove the "Soundproof Walls" button from the pause menu. The Soundproof Walls settings menu can still be accessed by typing "spw" in the console.\n\nNote: This setting is not synced with other players when using "Sync Settings" (General tab).</spw_hidesettingstooltip>
 
@@ -552,6 +562,8 @@
 	<spw_componentmuffleupdateintervaltooltip>The amount of time between each obstruction update for looping component sounds (e.g., vents, reactor, engine).\n\nNote: Increasing this value may improve performance.</spw_componentmuffleupdateintervaltooltip>
 	<spw_statuseffectmuffleupdateinterval>Status Effect Sound Update Interval</spw_statuseffectmuffleupdateinterval>
 	<spw_statuseffectmuffleupdateintervaltooltip>The amount of time between each obstruction update for looping status effect sounds (e.g., sounds from afflictions).\n\nNote: Increasing this value may improve performance.</spw_statuseffectmuffleupdateintervaltooltip>
+	<spw_reverbareaupdateinterval>Reverb Area Update Interval</spw_reverbareaupdateinterval>
+	<spw_reverbareaupdateintervaltooltip>The amount of time between area updates for reverb effects.\n\nNote: Increasing this value may improve performance.</spw_reverbareaupdateintervaltooltip>
 	
 	<spw_categorytransitions>Transitions</spw_categorytransitions>
 	<spw_disablevanillafadeout>Disable Vanilla Fade Out</spw_disablevanillafadeout>
@@ -560,6 +572,8 @@
 	<spw_gaintransitionfactortooltip>How much a sound's volume can change per second. A value of zero disables this feature for instant transitions.</spw_gaintransitionfactortooltip>
 	<spw_pitchtransitionfactor>Pitch Transition Speed</spw_pitchtransitionfactor>
 	<spw_pitchtransitionfactortooltip>How much a sound's pitch can change per second. A value of zero disables this feature for instant transitions.</spw_pitchtransitionfactortooltip>
+	<spw_reverbareatransitionfactor>Reverb Area Transition Speed</spw_reverbareatransitionfactor>
+	<spw_reverbareatransitionfactortooltip>How much the connected area used for reverb effects can change per second. A value of zero disables this feature for instant transitions.</spw_reverbareatransitionfactortooltip>
 	<spw_airreverbgaintransitionfactor>Indoor Reverb Transition Speed</spw_airreverbgaintransitionfactor>
 	<spw_airreverbgaintransitionfactortooltip>How much the indoor reverb effect's gain can change per second. A value of zero disables this feature for instant transitions.</spw_airreverbgaintransitionfactortooltip>
 	<spw_hydrophonereverbgaintransitionfactor>Hydrophone Reverb Transition Speed</spw_hydrophonereverbgaintransitionfactor>
