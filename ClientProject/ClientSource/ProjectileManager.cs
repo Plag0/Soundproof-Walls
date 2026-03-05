@@ -15,6 +15,7 @@ namespace SoundproofWalls
             public float ChanceToPlay;
             public SoundChannel? Channel;
             public double SpawnTime;
+            public double DelayTime;
             public bool Activated;
             public bool PlayIncomingEffects;
 
@@ -27,17 +28,18 @@ namespace SoundproofWalls
                 Activated = activated; // Once a sound is activated (by coming into activation range), outgoing effects will apply.
                 PlayIncomingEffects = playIncomingEffects; // Incoming effects don't require the sound to be "activated", like outgoing effects do.
                 SpawnTime = Timing.TotalTime;
+                DelayTime = 0.0f;
             }
         }
 
         private const uint HeavyProjectileSoundActivationRange = 1000;
-        private const uint MediumProjectileSoundActivationRange = 300;
-        private const uint LightProjectileSoundActivationRange = 210;
+        private const uint MediumProjectileSoundActivationRange = 320;
+        private const uint LightProjectileSoundActivationRange = 300;
         private const uint OutgoingRangeMultiplier = 8;
-        private const uint IncomingRangeMultiplier = 7;
+        private const uint IncomingRangeMultiplier = 6;
         private const float HeavyProjectileSoundChance = 1.0f;
         private const float MediumProjectileSoundChance = 0.45f;
-        private const float LightProjectileSoundChance = 0.3f;
+        private const float LightProjectileSoundChance = 0.35f;
         private const float HighestPitch = 2.0f;
         private const float LowestPitch = 0.6f;
 
@@ -59,7 +61,7 @@ namespace SoundproofWalls
                 ProjectileSound projectileSound = kvp.Value;
                 SoundChannel? channel = projectileSound.Channel;
 
-                bool projectileActive = projectile.body != null && projectile.body.isEnabled;
+                bool projectileActive = projectile.body != null && projectile.body.isEnabled && projectile.Speed > 0.1f;
                 if (!projectileActive)
                 {
                     channel?.Dispose();
@@ -104,7 +106,7 @@ namespace SoundproofWalls
                     }
                 }
 
-                bool shouldPlay = Timing.TotalTime > projectileSound.SpawnTime + 0.15f && 
+                bool shouldPlay = Timing.TotalTime >= projectileSound.SpawnTime + projectileSound.DelayTime && 
                     Vector2.Distance(projectile.WorldPosition, Listener.WorldPos) < range;
                 bool channelExists = channel != null && channel.IsPlaying;
 
@@ -123,7 +125,7 @@ namespace SoundproofWalls
                         channel.Position = new Vector3(projectile.WorldPosition, 0);
                         ChannelInfoManager.EnsureUpdateChannelInfo(channel, itemComp: projectile.components[0]);
                         channel.FrequencyMultiplier *= pitchMult;
-                        channel.Gain *= Math.Clamp((float)(Timing.TotalTime - projectileSound.SpawnTime) / 2, 0.0f, 1.0f);
+                        //channel.Gain *= Math.Clamp((float)(Timing.TotalTime - projectileSound.SpawnTime) / 2, 0.0f, 1.0f);
                     }
                     else
                     {

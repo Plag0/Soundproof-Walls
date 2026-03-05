@@ -79,7 +79,9 @@
 	<spw_dynamicreverbtooltip>Schaltet die Hall-Effekte für Innen- und Außenbereiche ein oder aus. Wenn aktiviert, hallen Geräusche dynamisch basierend auf der Größe und der kombinierten Audioamplitude ihrer Umgebung (d. h. Echos sind in größeren und leiseren Räumen stärker).</spw_dynamicreverbtooltip>
 	<spw_dynamicreverbbloom>Hall-Bloom</spw_dynamicreverbbloom>
 	<spw_dynamicreverbbloomtooltip>Lässt den Hall-Effekt als Reaktion auf laute Geräusche in engen Räumen dramatisch anschwellen.</spw_dynamicreverbbloomtooltip>
-	<spw_dynamicreverbwatersubtractsarea>Dynamische Hallfläche</spw_dynamicreverbwatersubtractsarea>
+	<spw_dynamicreverbraycastarea>Raycast-Hallfläche</spw_dynamicreverbraycastarea>
+	<spw_dynamicreverbraycastareatooltip>Verwendet Raycasting zur Berechnung der Raumfläche für den realistischsten und genauesten Echoklang. Wenn deaktiviert, wird stattdessen die kombinierte Fläche aller verbundenen Hüllen verwendet.\n\nHinweis: Kann die Leistung geringfügig beeinträchtigen.</spw_dynamicreverbraycastareatooltip>
+	<spw_dynamicreverbwatersubtractsarea>Kontextbezogene Hallfläche</spw_dynamicreverbwatersubtractsarea>
 	<spw_dynamicreverbwatersubtractsareatooltip>Berechnet den Hall anhand der Luftfläche über Wasser oder der Wasserfläche unter Wasser. Wenn deaktiviert, wird die Fläche von beidem verwendet.</spw_dynamicreverbwatersubtractsareatooltip>
 	<spw_dynamicreverbminarea>Minimale Hallfläche</spw_dynamicreverbminarea>
 	<spw_dynamicreverbminareatooltip>Die minimale kombinierte Fläche verbundener Räume um den Hörer, die für die Anwendung von Hall erforderlich ist.</spw_dynamicreverbminareatooltip>
@@ -488,10 +490,15 @@
 	<spw_pitchtab>Tonhöhe</spw_pitchtab>
 	<spw_pitchenabled>Tonhöhe aktivieren</spw_pitchenabled>
 	<spw_pitchenabledtooltip>Schaltet alle Tonhöheneffekte global ein oder aus.\n\nHinweis: Kann als schnelle Lösung für ungewöhnliche Tonhöheninteraktionen mit Geräuschen aus anderen Mods hilfreich sein.</spw_pitchenabledtooltip>
+	<spw_dopplereffect>Doppler-Effekt</spw_dopplereffect>
+	<spw_dopplereffecttooltip>Schaltet den Doppler-Effekt ein oder aus. Wenn aktiviert, wird die Tonhöhe basierend auf der relativen Geschwindigkeit von Schallquelle und Hörer angepasst.\n\nHinweis: Die Schallgeschwindigkeit in Wasser unterscheidet sich von der Schallgeschwindigkeit in Luft.</spw_dopplereffecttooltip>
 	<spw_pitchstatuseffectsounds>Tonhöhe für Statuseffekt-Geräusche</spw_pitchstatuseffectsounds>
 	<spw_pitchstatuseffectsoundstooltip>Schaltet die Tonhöhenänderung für Geräusche ein oder aus, die durch XML-Statuseffekte abgespielt werden.</spw_pitchstatuseffectsoundstooltip>
 	<spw_pitchwithdistance>Tonhöhe mit Entfernung</spw_pitchwithdistance>
 	<spw_pitchwithdistancetooltip>Senkt die Tonhöhe gedämpfter Geräusche dynamisch basierend auf ihrer Entfernung.\n\nHinweis: Gilt nicht für loopende Geräusche oder den Näherungs-Chat.\n\nHinweis: Wird additiv mit anderen Tonhöhenmultiplikatoren verrechnet.</spw_pitchwithdistancetooltip>
+
+	<dopplereffectstrengthmultiplier>Stärke des Doppler-Effekts</dopplereffectstrengthmultiplier>
+	<dopplereffectstrengthmultipliertooltip>Die Stärke des Doppler-Effekts. Höhere Werte erzeugen eine übertriebenere Tonhöhenverschiebung.</dopplereffectstrengthmultipliertooltip>
 	
 	<spw_divingsuitpitch>Tonhöhe im Taucheranzug</spw_divingsuitpitch>
 	<spw_divingsuitpitchtooltip>Die Tonhöhe von Geräuschen, wenn ein Taucheranzug getragen wird.\n\nHinweis: Wird additiv mit anderen Tonhöhenmultiplikatoren verrechnet.</spw_divingsuitpitchtooltip>
@@ -517,6 +524,9 @@
 	<!-- Advanced -->
 	<spw_advancedtab>Erweitert</spw_advancedtab>
 
+	<spw_projectilesounds>Projektilgeräusche</spw_projectilesounds>
+	<spw_projectilesoundstooltip>Fügt Projektilen, die von Geschütztürmen abgefeuert werden, einzigartige Geräusche hinzu.\n\nHinweis: Diese Einstellung ist experimentell und wurde hauptsächlich zum Testen der Option "Doppler-Effekt" (Reiter "Tonhöhe") verwendet.</spw_projectilesoundstooltip>
+
 	<spw_debugperformance>Leistung anzeigen</spw_debugperformance>
 	<spw_debugperformancetooltip>Zeigt detaillierte Leistungsinformationen für Soundproof Walls an.\n\nHinweis: Diese Einstellung wird nicht mit anderen Spielern synchronisiert, wenn "Einstellungen synchronisieren" (Reiter "Allgemein") verwendet wird.</spw_debugperformancetooltip>
 
@@ -525,6 +535,9 @@
 
 	<spw_debugchannelinfo>Kanal-Info anzeigen</spw_debugchannelinfo>
 	<spw_debugchannelinfotooltip>Erweitert die Einstellung "Abspielende Geräusche anzeigen", um auch Verstärkung, Tonhöhe, Reichweite, Entfernung, Dämpfung und Hindernisse für alle aktiv abspielenden Geräusche anzuzeigen.\n\nHinweis: Wenn "Abspielende Geräusche anzeigen" deaktiviert ist, werden diese Informationen in der Barotrauma-Konsole protokolliert.\n\nHinweis: Diese Einstellung wird nicht mit anderen Spielern synchronisiert, wenn "Einstellungen synchronisieren" (Reiter "Allgemein") verwendet wird.</spw_debugchannelinfotooltip>
+
+	<spw_debugreverbarea>Hallfläche anzeigen</spw_debugreverbarea>
+	<spw_debugreverbareatooltip>Zeigt eine visuelle Darstellung der aktuellen Hallfläche an.\n\nHinweis: Erfordert, dass "Raycast-Hallfläche" (Reiter "Dynamisch") aktiviert ist.\n\nHinweis: Diese Einstellung erfordert, dass Cheats aktiviert sind, da sie sonst zur Navigation in dunklen Bereichen verwendet werden kann.\n\nHinweis: Diese Einstellung wird nicht mit anderen Spielern synchronisiert, wenn "Einstellungen synchronisieren" (Reiter "Allgemein") verwendet wird.</spw_debugreverbareatooltip>
 
 	<spw_hidesettings>Menü-Button ausblenden</spw_hidesettings>
 	<spw_hidesettingstooltip>Entfernt den "Soundproof Walls"-Button aus dem Pausenmenü. Das Einstellungsmenü von Soundproof Walls kann weiterhin durch Eingabe von "spw" in der Konsole aufgerufen werden.\n\nHinweis: Diese Einstellung wird nicht mit anderen Spielern synchronisiert, wenn "Einstellungen synchronisieren" (Reiter "Allgemein") verwendet wird.</spw_hidesettingstooltip>
@@ -552,6 +565,8 @@
 	<spw_componentmuffleupdateintervaltooltip>Die Zeit zwischen jeder Hindernis-Aktualisierung für loopende Komponentengeräusche (z. B. Lüftung, Reaktor, Motor).\n\nHinweis: Eine Erhöhung dieses Wertes kann die Leistung verbessern.</spw_componentmuffleupdateintervaltooltip>
 	<spw_statuseffectmuffleupdateinterval>Update-Intervall für Statuseffekt-Geräusche</spw_statuseffectmuffleupdateinterval>
 	<spw_statuseffectmuffleupdateintervaltooltip>Die Zeit zwischen jeder Hindernis-Aktualisierung für loopende Statuseffekt-Geräusche (z. B. Geräusche von Gebrechen).\n\nHinweis: Eine Erhöhung dieses Wertes kann die Leistung verbessern.</spw_statuseffectmuffleupdateintervaltooltip>
+	<spw_reverbareaupdateinterval>Update-Intervall für Hallflächen</spw_reverbareaupdateinterval>
+	<spw_reverbareaupdateintervaltooltip>Die Zeit zwischen Flächen-Aktualisierungen für Hall-Effekte.\n\nHinweis: Eine Erhöhung dieses Wertes kann die Leistung verbessern.</spw_reverbareaupdateintervaltooltip>
 	
 	<spw_categorytransitions>Übergänge</spw_categorytransitions>
 	<spw_disablevanillafadeout>Vanilla-Fade-Out deaktivieren</spw_disablevanillafadeout>
@@ -560,6 +575,8 @@
 	<spw_gaintransitionfactortooltip>Wie stark sich die Lautstärke eines Geräuschs pro Sekunde ändern kann. Ein Wert von Null deaktiviert diese Funktion für sofortige Übergänge.</spw_gaintransitionfactortooltip>
 	<spw_pitchtransitionfactor>Geschwindigkeit des Tonhöhen-Übergangs</spw_pitchtransitionfactor>
 	<spw_pitchtransitionfactortooltip>Wie stark sich die Tonhöhe eines Geräuschs pro Sekunde ändern kann. Ein Wert von Null deaktiviert diese Funktion für sofortige Übergänge.</spw_pitchtransitionfactortooltip>
+	<spw_reverbareatransitionfactor>Übergangsgeschwindigkeit für Hallflächen</spw_reverbareatransitionfactor>
+	<spw_reverbareatransitionfactortooltip>Wie stark sich die für Hall-Effekte verwendete Fläche pro Sekunde ändern kann. Ein Wert von Null deaktiviert diese Funktion für sofortige Übergänge.</spw_reverbareatransitionfactortooltip>
 	<spw_airreverbgaintransitionfactor>Übergangsgeschwindigkeit für Innen-Hall</spw_airreverbgaintransitionfactor>
 	<spw_airreverbgaintransitionfactortooltip>Wie stark sich die Verstärkung des Innen-Hall-Effekts pro Sekunde ändern kann. Ein Wert von Null deaktiviert diese Funktion für sofortige Übergänge.</spw_airreverbgaintransitionfactortooltip>
 	<spw_hydrophonereverbgaintransitionfactor>Übergangsgeschwindigkeit für Hydrophon-Hall</spw_hydrophonereverbgaintransitionfactor>

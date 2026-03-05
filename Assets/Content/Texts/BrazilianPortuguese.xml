@@ -79,7 +79,9 @@
 	<spw_dynamicreverbtooltip>Ativa ou desativa os efeitos de reverberação internos e externos. Se ativado, os sons reverberam dinamicamente com base no tamanho e na amplitude de áudio combinada de seu ambiente (ou seja, os ecos são mais fortes em espaços maiores e mais silenciosos).</spw_dynamicreverbtooltip>
 	<spw_dynamicreverbbloom>Florescimento da Reverberação</spw_dynamicreverbbloom>
 	<spw_dynamicreverbbloomtooltip>Faz o efeito de reverberação aumentar drasticamente em resposta a sons altos em áreas confinadas.</spw_dynamicreverbbloomtooltip>
-	<spw_dynamicreverbwatersubtractsarea>Área de Reverberação Dinâmica</spw_dynamicreverbwatersubtractsarea>
+	<spw_dynamicreverbraycastarea>Área de Reverberação por Raycast</spw_dynamicreverbraycastarea>
+	<spw_dynamicreverbraycastareatooltip>Usa raycasting para calcular a área do espaço e obter o som de eco mais realista e preciso possível. Se desativado, a área combinada de todos os cascos conectados será usada em vez disso.\n\nNota: Pode impactar levemente o desempenho.</spw_dynamicreverbraycastareatooltip>
+	<spw_dynamicreverbwatersubtractsarea>Área de Reverberação Contextual</spw_dynamicreverbwatersubtractsarea>
 	<spw_dynamicreverbwatersubtractsareatooltip>Calcula a reverberação usando a área de ar quando fora da água, ou a área de água quando submerso. Se desativado, usa a área de ambos.</spw_dynamicreverbwatersubtractsareatooltip>
 	<spw_dynamicreverbminarea>Área Mínima de Reverberação</spw_dynamicreverbminarea>
 	<spw_dynamicreverbminareatooltip>A área combinada mínima de salas conectadas ao redor do ouvinte necessária para que a reverberação seja aplicada.</spw_dynamicreverbminareatooltip>
@@ -488,10 +490,15 @@
 	<spw_pitchtab>Tom</spw_pitchtab>
 	<spw_pitchenabled>Ativar Tom</spw_pitchenabled>
 	<spw_pitchenabledtooltip>Ativa ou desativa globalmente todos os efeitos de tom.\n\nNota: Pode ser útil como uma correção rápida para interações de tom incomuns com sons de outros mods.</spw_pitchenabledtooltip>
+	<spw_dopplereffect>Efeito Doppler</spw_dopplereffect>
+	<spw_dopplereffecttooltip>Ativa ou desativa o efeito Doppler. Se ativado, o tom do som é ajustado com base na velocidade relativa da fonte sonora e do ouvinte.\n\nNota: A velocidade do som na água é diferente da velocidade do som no ar.</spw_dopplereffecttooltip>
 	<spw_pitchstatuseffectsounds>Tom dos Sons de Efeito de Status</spw_pitchstatuseffectsounds>
 	<spw_pitchstatuseffectsoundstooltip>Ativa ou desativa a alteração de tom para sons reproduzidos por efeitos de status XML.</spw_pitchstatuseffectsoundstooltip>
 	<spw_pitchwithdistance>Tom com Distância</spw_pitchwithdistance>
 	<spw_pitchwithdistancetooltip>Diminui dinamicamente o tom de sons abafados com base em sua distância.\n\nNota: Não se aplica a sons contínuos ou chat de proximidade.\n\nNota: Acumula-se aditivamente com outros multiplicadores de tom.</spw_pitchwithdistancetooltip>
+
+	<dopplereffectstrengthmultiplier>Força do Efeito Doppler</dopplereffectstrengthmultiplier>
+	<dopplereffectstrengthmultipliertooltip>A força do efeito Doppler. Valores mais altos criam uma alteração de tom mais exagerada.</dopplereffectstrengthmultipliertooltip>
 	
 	<spw_divingsuitpitch>Tom do Traje de Mergulho</spw_divingsuitpitch>
 	<spw_divingsuitpitchtooltip>O tom dos sons ao usar um traje de mergulho.\n\nNota: Acumula-se aditivamente com outros multiplicadores de tom.</spw_divingsuitpitchtooltip>
@@ -517,6 +524,9 @@
 	<!-- Advanced -->
 	<spw_advancedtab>Avançado</spw_advancedtab>
 
+	<spw_projectilesounds>Sons de Projéteis</spw_projectilesounds>
+	<spw_projectilesoundstooltip>Adiciona sons únicos aos projéteis disparados por torretas.\n\nNota: Esta configuração é experimental e foi usada principalmente para testar a opção "Efeito Doppler" (aba Tom).</spw_projectilesoundstooltip>
+
 	<spw_debugperformance>Mostrar Desempenho</spw_debugperformance>
 	<spw_debugperformancetooltip>Exibe informações detalhadas de desempenho para o Soundproof Walls.\n\nNota: Esta configuração não é sincronizada com outros jogadores ao usar "Sincronizar Configurações" (aba Geral).</spw_debugperformancetooltip>
 
@@ -526,6 +536,9 @@
 	<spw_debugchannelinfo>Mostrar Informações do Canal</spw_debugchannelinfo>
 	<spw_debugchannelinfotooltip>Expande a configuração "Mostrar Sons em Reprodução" para também exibir o ganho, tom, alcance, distância, abafamento e obstruções para todos os sons ativamente em reprodução.\n\nNota: Se "Mostrar Sons em Reprodução" estiver desativado, esta informação é registrada no console do Barotrauma.\n\nNota: Esta configuração não é sincronizada com outros jogadores ao usar "Sincronizar Configurações" (aba Geral).</spw_debugchannelinfotooltip>
 
+	<spw_debugreverbarea>Mostrar Área de Reverberação</spw_debugreverbarea>
+	<spw_debugreverbareatooltip>Exibe uma representação visual da área atual de reverberação.\n\nNota: Requer que "Área de Reverberação por Raycast" (aba Dinâmico) esteja ativada.\n\nNota: Esta configuração requer que os cheats (trapaças) estejam ativados, pois, caso contrário, poderia ser usada para navegar por áreas escuras.\n\nNota: Esta configuração não é sincronizada com outros jogadores ao usar "Sincronizar Configurações" (aba Geral).</spw_debugreverbareatooltip>
+	
 	<spw_hidesettings>Ocultar Botão do Menu</spw_hidesettings>
 	<spw_hidesettingstooltip>Remove o botão "Soundproof Walls" do menu de pausa. O menu de configurações do Soundproof Walls ainda pode ser acessado digitando "spw" no console.\n\nNota: Esta configuração não é sincronizada com outros jogadores ao usar "Sincronizar Configurações" (aba Geral).</spw_hidesettingstooltip>
 
@@ -552,6 +565,8 @@
 	<spw_componentmuffleupdateintervaltooltip>A quantidade de tempo entre cada atualização de obstrução para sons contínuos de componentes (ex: ventilação, reator, motor).\n\nNota: Aumentar este valor pode melhorar o desempenho.</spw_componentmuffleupdateintervaltooltip>
 	<spw_statuseffectmuffleupdateinterval>Intervalo de Atualização de Som de Efeito de Status</spw_statuseffectmuffleupdateinterval>
 	<spw_statuseffectmuffleupdateintervaltooltip>A quantidade de tempo entre cada atualização de obstrução para sons contínuos de efeitos de status (ex: sons de aflições).\n\nNota: Aumentar este valor pode melhorar o desempenho.</spw_statuseffectmuffleupdateintervaltooltip>
+	<spw_reverbareaupdateinterval>Intervalo de Atualização da Área de Reverberação</spw_reverbareaupdateinterval>
+	<spw_reverbareaupdateintervaltooltip>A quantidade de tempo entre as atualizações de área para os efeitos de reverberação.\n\nNota: Aumentar este valor pode melhorar o desempenho.</spw_reverbareaupdateintervaltooltip>
 	
 	<spw_categorytransitions>Transições</spw_categorytransitions>
 	<spw_disablevanillafadeout>Desativar Fade Out Vanilla</spw_disablevanillafadeout>
@@ -560,6 +575,8 @@
 	<spw_gaintransitionfactortooltip>O quanto o volume de um som pode mudar por segundo. Um valor de zero desativa este recurso para transições instantâneas.</spw_gaintransitionfactortooltip>
 	<spw_pitchtransitionfactor>Velocidade de Transição de Tom</spw_pitchtransitionfactor>
 	<spw_pitchtransitionfactortooltip>O quanto o tom de um som pode mudar por segundo. Um valor de zero desativa este recurso para transições instantâneas.</spw_pitchtransitionfactortooltip>
+	<spw_reverbareatransitionfactor>Velocidade de Transição da Área de Reverberação</spw_reverbareatransitionfactor>
+	<spw_reverbareatransitionfactortooltip>O quanto a área usada para os efeitos de reverberação pode mudar por segundo. Um valor de zero desativa este recurso para transições instantâneas.</spw_reverbareatransitionfactortooltip>
 	<spw_airreverbgaintransitionfactor>Velocidade de Transição de Reverb Interno</spw_airreverbgaintransitionfactor>
 	<spw_airreverbgaintransitionfactortooltip>O quanto o ganho do efeito de reverberação interna pode mudar por segundo. Um valor de zero desativa este recurso para transições instantâneas.</spw_airreverbgaintransitionfactortooltip>
 	<spw_hydrophonereverbgaintransitionfactor>Velocidade de Transição de Reverb do Hidrofone</spw_hydrophonereverbgaintransitionfactor>

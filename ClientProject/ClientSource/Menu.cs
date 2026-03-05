@@ -1298,15 +1298,6 @@ namespace SoundproofWalls
                 currentValue: unsavedConfig.AttenuateWithApproximateDistance,
                 setter: v => unsavedConfig.AttenuateWithApproximateDistance = v);
 
-            Tickbox(settingsFrame, FormatTextBoxLabel(
-                label: TextManager.Get("spw_projectilesounds"),
-                localValue: unsavedConfig.ProjectileSounds,
-                serverValue: ConfigManager.ServerConfig?.ProjectileSounds ?? default,
-                formatter: BoolFormatter),
-                tooltip: TextManager.Get("spw_projectilesoundstooltip"),
-                currentValue: unsavedConfig.ProjectileSounds,
-                setter: v => unsavedConfig.ProjectileSounds = v);
-
             Spacer(settingsFrame);
 
             Label(settingsFrame, TextManager.Get("spw_effectprocessingmode"));
@@ -4131,6 +4122,15 @@ namespace SoundproofWalls
             var content = GetTabContentFrame(Tab.Advanced);
             GUIListBox settingsList = NewList(content);
             GUIFrame settingsFrame = settingsList.Content;
+
+            Tickbox(settingsFrame, FormatTextBoxLabel(
+                label: TextManager.Get("spw_projectilesounds"),
+                localValue: unsavedConfig.ProjectileSounds,
+                serverValue: ConfigManager.ServerConfig?.ProjectileSounds ?? default,
+                formatter: BoolFormatter),
+                tooltip: TextManager.Get("spw_projectilesoundstooltip"),
+                currentValue: unsavedConfig.ProjectileSounds,
+                setter: v => unsavedConfig.ProjectileSounds = v);
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
                 label: TextManager.Get("spw_debugperformance"),

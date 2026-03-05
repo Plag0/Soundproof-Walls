@@ -79,7 +79,9 @@
 	<spw_dynamicreverbtooltip>Active ou désactive les effets de réverbération intérieurs et extérieurs. Si activé, les sons se réverbèrent dynamiquement en fonction de la taille et de l'amplitude audio combinée de leur environnement (ex: les échos sont plus forts dans les espaces plus grands et plus calmes).</spw_dynamicreverbtooltip>
 	<spw_dynamicreverbbloom>Amplification de la réverbération</spw_dynamicreverbbloom>
 	<spw_dynamicreverbbloomtooltip>Fait enfler l'effet de réverbération de manière spectaculaire en réponse à des sons forts dans des zones confinées.</spw_dynamicreverbbloomtooltip>
-	<spw_dynamicreverbwatersubtractsarea>Zone de réverbération dynamique</spw_dynamicreverbwatersubtractsarea>
+	<spw_dynamicreverbraycastarea>Zone de réverbération par raycast</spw_dynamicreverbraycastarea>
+	<spw_dynamicreverbraycastareatooltip>Utilise le raycasting pour calculer la surface de l'espace afin d'obtenir un écho plus réaliste et précis. Si désactivé, la surface combinée de toutes les coques connectées est utilisée à la place.\n\nNote : Peut légèrement impacter les performances.</spw_dynamicreverbraycastareatooltip>
+	<spw_dynamicreverbwatersubtractsarea>Zone de réverbération contextuelle</spw_dynamicreverbwatersubtractsarea>
 	<spw_dynamicreverbwatersubtractsareatooltip>Calcule la réverbération en utilisant la zone d'air hors de l'eau, ou la zone d'eau en immersion. Si désactivé, utilise la zone des deux.</spw_dynamicreverbwatersubtractsareatooltip>
 	<spw_dynamicreverbminarea>Zone de réverbération minimale</spw_dynamicreverbminarea>
 	<spw_dynamicreverbminareatooltip>La zone combinée minimale des pièces connectées autour de l'auditeur requise pour que la réverbération soit appliquée.</spw_dynamicreverbminareatooltip>
@@ -488,10 +490,15 @@
 	<spw_pitchtab>Tonalité</spw_pitchtab>
 	<spw_pitchenabled>Activer la tonalité</spw_pitchenabled>
 	<spw_pitchenabledtooltip>Active ou désactive globalement tous les effets de tonalité.\n\nNote : Peut être utile comme solution rapide pour les interactions de tonalité inhabituelles avec les sons d'autres mods.</spw_pitchenabledtooltip>
+	<spw_dopplereffect>Effet Doppler</spw_dopplereffect>
+	<spw_dopplereffecttooltip>Active ou désactive l'effet Doppler. Si activé, la tonalité du son est ajustée en fonction de la vitesse relative entre la source sonore et l'auditeur.\n\nNote : La vitesse du son dans l'eau est différente de la vitesse du son dans l'air.</spw_dopplereffecttooltip>
 	<spw_pitchstatuseffectsounds>Tonalité des sons d'effets de statut</spw_pitchstatuseffectsounds>
 	<spw_pitchstatuseffectsoundstooltip>Active ou désactive la modification de la tonalité pour les sons joués par les effets de statut XML.</spw_pitchstatuseffectsoundstooltip>
 	<spw_pitchwithdistance>Tonalité avec la distance</spw_pitchwithdistance>
 	<spw_pitchwithdistancetooltip>Abaisse dynamiquement la tonalité des sons assourdis en fonction de leur distance.\n\nNote : Ne s'applique pas aux sons en boucle ou au chat de proximité.\n\nNote : Se cumule de manière additive avec d'autres multiplicateurs de tonalité.</spw_pitchwithdistancetooltip>
+
+	<dopplereffectstrengthmultiplier>Force de l'effet Doppler</dopplereffectstrengthmultiplier>
+	<dopplereffectstrengthmultipliertooltip>La force de l'effet Doppler. Des valeurs plus élevées créent une modification de la tonalité plus exagérée.</dopplereffectstrengthmultipliertooltip>
 	
 	<spw_divingsuitpitch>Tonalité du scaphandre</spw_divingsuitpitch>
 	<spw_divingsuitpitchtooltip>La tonalité des sons lorsque vous portez un scaphandre.\n\nNote : Se cumule de manière additive avec d'autres multiplicateurs de tonalité.</spw_divingsuitpitchtooltip>
@@ -517,6 +524,9 @@
 	<!-- Advanced -->
 	<spw_advancedtab>Avancé</spw_advancedtab>
 
+	<spw_projectilesounds>Sons des projectiles</spw_projectilesounds>
+	<spw_projectilesoundstooltip>Ajoute des sons uniques aux projectiles tirés depuis les tourelles.\n\nNote : Ce paramètre est expérimental et a été principalement utilisé pour tester l'option "Effet Doppler" (onglet Tonalité).</spw_projectilesoundstooltip>
+
 	<spw_debugperformance>Afficher les performances</spw_debugperformance>
 	<spw_debugperformancetooltip>Affiche des informations de performance détaillées pour Soundproof Walls.\n\nNote : Ce paramètre n'est pas synchronisé avec les autres joueurs lors de l'utilisation de "Synchroniser les paramètres" (onglet Général).</spw_debugperformancetooltip>
 
@@ -525,6 +535,9 @@
 
 	<spw_debugchannelinfo>Afficher les infos de canal</spw_debugchannelinfo>
 	<spw_debugchannelinfotooltip>Étend le paramètre "Afficher les sons en cours" pour afficher également le gain, la tonalité, la portée, la distance, l'assourdissement et les obstructions pour tous les sons activement joués.\n\nNote : Si "Afficher les sons en cours" est désactivé, ces informations sont enregistrées dans la console de Barotrauma.\n\nNote : Ce paramètre n'est pas synchronisé avec les autres joueurs lors de l'utilisation de "Synchroniser les paramètres" (onglet Général).</spw_debugchannelinfotooltip>
+
+	<spw_debugreverbarea>Afficher la zone de réverbération</spw_debugreverbarea>
+	<spw_debugreverbareatooltip>Affiche une représentation visuelle de la zone de réverbération actuelle.\n\nNote : Nécessite que "Zone de réverbération par raycast" (onglet Dynamique) soit activé.\n\nNote : Ce paramètre nécessite que les codes de triche (cheats) soient activés, car il pourrait sinon être utilisé pour s'orienter dans l'obscurité.\n\nNote : Ce paramètre n'est pas synchronisé avec les autres joueurs lors de l'utilisation de "Synchroniser les paramètres" (onglet Général).</spw_debugreverbareatooltip>
 
 	<spw_hidesettings>Masquer le bouton du menu</spw_hidesettings>
 	<spw_hidesettingstooltip>Retire le bouton "Soundproof Walls" du menu pause. Le menu des paramètres de Soundproof Walls reste accessible en tapant "spw" dans la console.\n\nNote : Ce paramètre n'est pas synchronisé avec les autres joueurs lors de l'utilisation de "Synchroniser les paramètres" (onglet Général).</spw_hidesettingstooltip>
@@ -552,6 +565,8 @@
 	<spw_componentmuffleupdateintervaltooltip>Le temps entre chaque mise à jour d'obstruction pour les sons de composants en boucle (ex: aérations, réacteur, moteur).\n\nNote : Augmenter cette valeur peut améliorer les performances.</spw_componentmuffleupdateintervaltooltip>
 	<spw_statuseffectmuffleupdateinterval>Intervalle de MàJ des sons d'effets de statut</spw_statuseffectmuffleupdateinterval>
 	<spw_statuseffectmuffleupdateintervaltooltip>Le temps entre chaque mise à jour d'obstruction pour les sons d'effets de statut en boucle (ex: sons des afflictions).\n\nNote : Augmenter cette valeur peut améliorer les performances.</spw_statuseffectmuffleupdateintervaltooltip>
+	<spw_reverbareaupdateinterval>Intervalle de MàJ de la zone de réverbération</spw_reverbareaupdateinterval>
+	<spw_reverbareaupdateintervaltooltip>Le temps entre chaque mise à jour de la zone pour les effets de réverbération.\n\nNote : Augmenter cette valeur peut améliorer les performances.</spw_reverbareaupdateintervaltooltip>
 	
 	<spw_categorytransitions>Transitions</spw_categorytransitions>
 	<spw_disablevanillafadeout>Désactiver le fondu vanilla</spw_disablevanillafadeout>
@@ -560,6 +575,8 @@
 	<spw_gaintransitionfactortooltip>La quantité de changement de volume d'un son par seconde. Une valeur de zéro désactive cette fonctionnalité pour des transitions instantanées.</spw_gaintransitionfactortooltip>
 	<spw_pitchtransitionfactor>Vitesse de transition de la tonalité</spw_pitchtransitionfactor>
 	<spw_pitchtransitionfactortooltip>La quantité de changement de tonalité d'un son par seconde. Une valeur de zéro désactive cette fonctionnalité pour des transitions instantanées.</spw_pitchtransitionfactortooltip>
+	<spw_reverbareatransitionfactor>Vitesse de transition de la zone de réverbération</spw_reverbareatransitionfactor>
+	<spw_reverbareatransitionfactortooltip>À quel point la zone utilisée pour les effets de réverbération peut changer par seconde. Une valeur de zéro désactive cette fonctionnalité pour des transitions instantanées.</spw_reverbareatransitionfactortooltip>
 	<spw_airreverbgaintransitionfactor>Vitesse de transition de la réverb. intérieure</spw_airreverbgaintransitionfactor>
 	<spw_airreverbgaintransitionfactortooltip>La quantité de changement de gain de l'effet de réverbération intérieure par seconde. Une valeur de zéro désactive cette fonctionnalité pour des transitions instantanées.</spw_airreverbgaintransitionfactortooltip>
 	<spw_hydrophonereverbgaintransitionfactor>Vitesse de transition de la réverb. hydrophone</spw_hydrophonereverbgaintransitionfactor>

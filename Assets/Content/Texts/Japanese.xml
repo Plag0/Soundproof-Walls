@@ -79,7 +79,9 @@
 	<spw_dynamicreverbtooltip>屋内および屋外のリバーブ効果を切り替えます。有効にすると、環境のサイズと合成された音の振幅に基づいて音が動的に反響します（例：より広く静かな空間ではエコーが強くなる）。</spw_dynamicreverbtooltip>
 	<spw_dynamicreverbbloom>リバーブブルーム</spw_dynamicreverbbloom>
 	<spw_dynamicreverbbloomtooltip>狭いエリアでの大きな音に反応して、リバーブ効果が劇的に膨らむようにします。</spw_dynamicreverbbloomtooltip>
-	<spw_dynamicreverbwatersubtractsarea>ダイナミックリバーブエリア</spw_dynamicreverbwatersubtractsarea>
+	<spw_dynamicreverbraycastarea>レイキャストリバーブエリア</spw_dynamicreverbraycastarea>
+	<spw_dynamicreverbraycastareatooltip>最もリアルで正確なエコー音を得るために、レイキャストを使用して空間の面積を計算します。無効にすると、代わりに接続されたすべての船殻の合計面積が使用されます。\n\n注意：パフォーマンスにわずかに影響を与える可能性があります。</spw_dynamicreverbraycastareatooltip>
+	<spw_dynamicreverbwatersubtractsarea>状況に応じたリバーブエリア</spw_dynamicreverbwatersubtractsarea>
 	<spw_dynamicreverbwatersubtractsareatooltip>水上にいるときは空気エリアを、水中にいるときは水エリアを使用してリバーブを計算します。無効にすると、両方のエリアを使用します。</spw_dynamicreverbwatersubtractsareatooltip>
 	<spw_dynamicreverbminarea>最小リバーブエリア</spw_dynamicreverbminarea>
 	<spw_dynamicreverbminareatooltip>反響が適用されるために必要な、リスナーの周りの接続された部屋の最小合計面積。</spw_dynamicreverbminareatooltip>
@@ -488,10 +490,15 @@
 	<spw_pitchtab>ピッチ</spw_pitchtab>
 	<spw_pitchenabled>ピッチを有効化</spw_pitchenabled>
 	<spw_pitchenabledtooltip>すべてのピッチ効果をグローバルに切り替えます。\n\n注意：他のModのサウンドとの異常なピッチの相互作用に対する簡単な修正として役立つ場合があります。</spw_pitchenabledtooltip>
+	<spw_dopplereffect>ドップラー効果</spw_dopplereffect>
+	<spw_dopplereffecttooltip>ドップラー効果を切り替えます。有効にすると、音源とリスナーの相対速度に基づいて音のピッチが調整されます。\n\n注意：水中での音速は空気中の音速とは異なります。</spw_dopplereffecttooltip>
 	<spw_pitchstatuseffectsounds>ステータス効果音のピッチ</spw_pitchstatuseffectsounds>
 	<spw_pitchstatuseffectsoundstooltip>XMLステータス効果によって再生されるサウンドのピッチングを切り替えます。</spw_pitchstatuseffectsoundstooltip>
 	<spw_pitchwithdistance>距離に応じたピッチ</spw_pitchwithdistance>
 	<spw_pitchwithdistancetooltip>マッフルされたサウンドのピッチを距離に基づいて動的に下げます。\n\n注意：ループサウンドや近接チャットには適用されません。\n\n注意：他のピッチ乗数と加算で累積します。</spw_pitchwithdistancetooltip>
+
+	<dopplereffectstrengthmultiplier>ドップラー効果の強度</dopplereffectstrengthmultiplier>
+	<dopplereffectstrengthmultipliertooltip>ドップラー効果の強さ。値を高くすると、ピッチの変化がより誇張されます。</dopplereffectstrengthmultipliertooltip>
 	
 	<spw_divingsuitpitch>潜水服ピッチ</spw_divingsuitpitch>
 	<spw_divingsuitpitchtooltip>潜水服を着用しているときのサウンドのピッチ。\n\n注意：他のピッチ乗数と加算で累積します。</spw_divingsuitpitchtooltip>
@@ -517,6 +524,9 @@
 	<!-- Advanced -->
 	<spw_advancedtab>詳細設定</spw_advancedtab>
 
+	<spw_projectilesounds>発射体のサウンド</spw_projectilesounds>
+	<spw_projectilesoundstooltip>タレットから発射される発射体に独自のサウンドを追加します。\n\n注意：この設定は実験的なものであり、主に「ドップラー効果」オプション（ピッチタブ）をテストするために使用されました。</spw_projectilesoundstooltip>
+
 	<spw_debugperformance>パフォーマンスを表示</spw_debugperformance>
 	<spw_debugperformancetooltip>Soundproof Wallsの詳細なパフォーマンス情報を表示します。\n\n注意：この設定は、「設定を同期」（全般タブ）を使用しても他のプレイヤーと同期されません。</spw_debugperformancetooltip>
 
@@ -525,6 +535,9 @@
 
 	<spw_debugchannelinfo>チャンネル情報を表示</spw_debugchannelinfo>
 	<spw_debugchannelinfotooltip>「再生中のサウンドを表示」設定を拡張し、現在再生中のすべてのサウンドのゲイン、ピッチ、範囲、距離、マッフル、および障害物も表示します。\n\n注意：「再生中のサウンドを表示」が無効の場合、この情報はBarotraumaコンソールに記録されます。\n\n注意：この設定は、「設定を同期」（全般タブ）を使用しても他のプレイヤーと同期されません。</spw_debugchannelinfotooltip>
+
+	<spw_debugreverbarea>リバーブエリアを表示</spw_debugreverbarea>
+	<spw_debugreverbareatooltip>現在のリバーブエリアを視覚的に表示します。\n\n注意：「レイキャストリバーブエリア」（ダイナミックタブ）が有効である必要があります。\n\n注意：これを利用して暗いエリアをナビゲートできてしまうため、この設定を使用するにはチートを有効にする必要があります。\n\n注意：この設定は、「設定を同期」（全般タブ）を使用しても他のプレイヤーと同期されません。</spw_debugreverbareatooltip>
 
 	<spw_hidesettings>メニューボタンを非表示</spw_hidesettings>
 	<spw_hidesettingstooltip>一時停止メニューから「Soundproof Walls」ボタンを削除します。Soundproof Wallsの設定メニューは、コンソールで「spw」と入力することで引き続きアクセスできます。\n\n注意：この設定は、「設定を同期」（全般タブ）を使用しても他のプレイヤーと同期されません。</spw_hidesettingstooltip>
@@ -552,6 +565,8 @@
 	<spw_componentmuffleupdateintervaltooltip>ループするコンポーネントサウンド（例：通気口、リアクター、エンジン）の各障害物更新間の時間。\n\n注意：この値を増やすとパフォーマンスが向上する可能性があります。</spw_componentmuffleupdateintervaltooltip>
 	<spw_statuseffectmuffleupdateinterval>ステータス効果音更新間隔</spw_statuseffectmuffleupdateinterval>
 	<spw_statuseffectmuffleupdateintervaltooltip>ループするステータス効果音（例：状態異常からの音）の各障害物更新間の時間。\n\n注意：この値を増やすとパフォーマンスが向上する可能性があります。</spw_statuseffectmuffleupdateintervaltooltip>
+	<spw_reverbareaupdateinterval>リバーブエリア更新間隔</spw_reverbareaupdateinterval>
+	<spw_reverbareaupdateintervaltooltip>リバーブ効果のエリア更新間の時間。\n\n注意：この値を増やすとパフォーマンスが向上する可能性があります。</spw_reverbareaupdateintervaltooltip>
 	
 	<spw_categorytransitions>トランジション</spw_categorytransitions>
 	<spw_disablevanillafadeout>バニラのフェードアウトを無効化</spw_disablevanillafadeout>
@@ -560,6 +575,8 @@
 	<spw_gaintransitionfactortooltip>サウンドの音量が1秒あたりに変化できる量。値がゼロの場合、この機能は無効になり、即座にトランジションします。</spw_gaintransitionfactortooltip>
 	<spw_pitchtransitionfactor>ピッチトランジション速度</spw_pitchtransitionfactor>
 	<spw_pitchtransitionfactortooltip>サウンドのピッチが1秒あたりに変化できる量。値がゼロの場合、この機能は無効になり、即座にトランジションします。</spw_pitchtransitionfactortooltip>
+	<spw_reverbareatransitionfactor>リバーブエリアトランジション速度</spw_reverbareatransitionfactor>
+	<spw_reverbareatransitionfactortooltip>リバーブ効果に使用されるエリアが1秒あたりに変化できる量。値がゼロの場合、この機能は無効になり、即座にトランジションします。</spw_reverbareatransitionfactortooltip>
 	<spw_airreverbgaintransitionfactor>屋内リバーブトランジション速度</spw_airreverbgaintransitionfactor>
 	<spw_airreverbgaintransitionfactortooltip>屋内リバーブ効果のゲインが1秒あたりに変化できる量。値がゼロの場合、この機能は無効になり、即座にトランジションします。</spw_airreverbgaintransitionfactortooltip>
 	<spw_hydrophonereverbgaintransitionfactor>ハイドロフォンリバーブトランジション速度</spw_hydrophonereverbgaintransitionfactor>

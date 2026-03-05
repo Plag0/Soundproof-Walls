@@ -79,7 +79,9 @@
 	<spw_dynamicreverbtooltip>切换室内和室外混响效果。如果启用，声音会根据其环境的大小和组合音频振幅动态地产生混响（即，在更大、更安静的空间中回声更强）。</spw_dynamicreverbtooltip>
 	<spw_dynamicreverbbloom>混响增强</spw_dynamicreverbbloom>
 	<spw_dynamicreverbbloomtooltip>使混响效果在密闭区域内对响亮声音的响应急剧增强。</spw_dynamicreverbbloomtooltip>
-	<spw_dynamicreverbwatersubtractsarea>动态混响区域</spw_dynamicreverbwatersubtractsarea>
+	<spw_dynamicreverbraycastarea>射线投射混响区域</spw_dynamicreverbraycastarea>
+	<spw_dynamicreverbraycastareatooltip>使用射线投射来计算空间面积，以获得最真实、最准确的回声效果。如果禁用，则改用所有相连船体的总面积。\n\n注意：可能会轻微影响性能。</spw_dynamicreverbraycastareatooltip>
+	<spw_dynamicreverbwatersubtractsarea>情景混响区域</spw_dynamicreverbwatersubtractsarea>
 	<spw_dynamicreverbwatersubtractsareatooltip>在水上时使用空气区域计算混响，在水下时使用水域区域计算。如果禁用，则使用两者的总面积。</spw_dynamicreverbwatersubtractsareatooltip>
 	<spw_dynamicreverbminarea>最小混响区域</spw_dynamicreverbminarea>
 	<spw_dynamicreverbminareatooltip>应用混响所需的听者周围相连房间的最小组合面积。</spw_dynamicreverbminareatooltip>
@@ -488,10 +490,15 @@
 	<spw_pitchtab>音高</spw_pitchtab>
 	<spw_pitchenabled>启用音高</spw_pitchenabled>
 	<spw_pitchenabledtooltip>全局切换所有音高效果。\n\n注意：对于与其他 Mod 声音的异常音高交互，这可能是一个快速修复方法。</spw_pitchenabledtooltip>
+	<spw_dopplereffect>多普勒效应</spw_dopplereffect>
+	<spw_dopplereffecttooltip>切换多普勒效应。如果启用，声音的音高会根据声源和听者的相对速度进行调整。\n\n注意：声音在水中的传播速度与在空气中不同。</spw_dopplereffecttooltip>
 	<spw_pitchstatuseffectsounds>状态效果声音音高</spw_pitchstatuseffectsounds>
 	<spw_pitchstatuseffectsoundstooltip>切换由 XML 状态效果播放的声音的音高调整。</spw_pitchstatuseffectsoundstooltip>
 	<spw_pitchwithdistance>随距离调整音高</spw_pitchwithdistance>
 	<spw_pitchwithdistancetooltip>根据闷音声音的距离动态降低其音高。\n\n注意：不适用于循环声音或近距离聊天。\n\n注意：与其他音高乘数以加法叠加。</spw_pitchwithdistancetooltip>
+
+	<dopplereffectstrengthmultiplier>多普勒效应强度</dopplereffectstrengthmultiplier>
+	<dopplereffectstrengthmultipliertooltip>多普勒效应的强度。值越高，产生的音高变化越夸张。</dopplereffectstrengthmultipliertooltip>
 	
 	<spw_divingsuitpitch>潜水服音高</spw_divingsuitpitch>
 	<spw_divingsuitpitchtooltip>穿着潜水服时声音的音高。\n\n注意：与其他音高乘数以加法叠加。</spw_divingsuitpitchtooltip>
@@ -517,6 +524,9 @@
 	<!-- Advanced -->
 	<spw_advancedtab>高级</spw_advancedtab>
 
+	<spw_projectilesounds>抛射物声音</spw_projectilesounds>
+	<spw_projectilesoundstooltip>为从炮塔发射的抛射物添加独特的声音。\n\n注意：此设置为实验性功能，主要用于测试“多普勒效应”选项（音高选项卡）。</spw_projectilesoundstooltip>
+
 	<spw_debugperformance>显示性能</spw_debugperformance>
 	<spw_debugperformancetooltip>显示 Soundproof Walls 的详细性能信息。\n\n注意：当使用“同步设置”（通用选项卡）时，此设置不会与其他玩家同步。</spw_debugperformancetooltip>
 
@@ -525,6 +535,10 @@
 
 	<spw_debugchannelinfo>显示声道信息</spw_debugchannelinfo>
 	<spw_debugchannelinfotooltip>扩展“显示播放中的声音”设置，以显示所有正在播放声音的增益、音高、范围、距离、闷音和障碍物。\n\n注意：如果“显示播放中的声音”被禁用，此信息将记录在《潜渊症》控制台中。\n\n注意：当使用“同步设置”（通用选项卡）时，此设置不会与其他玩家同步。</spw_debugchannelinfotooltip>
+
+	<spw_debugreverbarea>显示混响区域</spw_debugreverbarea>
+	<spw_debugreverbareatooltip>显示当前混响区域的可视化表示。\n\n注意：需要启用“射线投射混响区域”（动态选项卡）。\n\n注意：此设置需要启用作弊，否则可用于在黑暗区域导航。\n\n注意：当使用“同步设置”（通用选项卡）时，此设置不会与其他玩家同步。</spw_debugreverbareatooltip>
+
 
 	<spw_hidesettings>隐藏菜单按钮</spw_hidesettings>
 	<spw_hidesettingstooltip>从暂停菜单中移除“Soundproof Walls”按钮。仍然可以通过在控制台中输入“spw”来访问 Soundproof Walls 设置菜单。\n\n注意：当使用“同步设置”（通用选项卡）时，此设置不会与其他玩家同步。</spw_hidesettingstooltip>
@@ -552,6 +566,8 @@
 	<spw_componentmuffleupdateintervaltooltip>循环组件声音（例如，通风口、反应堆、引擎）每次障碍物更新之间的时间量。\n\n注意：增加此值可能会提高性能。</spw_componentmuffleupdateintervaltooltip>
 	<spw_statuseffectmuffleupdateinterval>状态效果声音更新间隔</spw_statuseffectmuffleupdateinterval>
 	<spw_statuseffectmuffleupdateintervaltooltip>循环状态效果声音（例如，来自病痛的声音）每次障碍物更新之间的时间量。\n\n注意：增加此值可能会提高性能。</spw_statuseffectmuffleupdateintervaltooltip>
+	<spw_reverbareaupdateinterval>混响区域更新间隔</spw_reverbareaupdateinterval>
+	<spw_reverbareaupdateintervaltooltip>混响效果的区域更新之间的时间量。\n\n注意：增加此值可能会提高性能。</spw_reverbareaupdateintervaltooltip>
 	
 	<spw_categorytransitions>过渡</spw_categorytransitions>
 	<spw_disablevanillafadeout>禁用原版淡出</spw_disablevanillafadeout>
@@ -560,6 +576,8 @@
 	<spw_gaintransitionfactortooltip>声音的音量每秒可以改变多少。值为零会禁用此功能，实现即时过渡。</spw_gaintransitionfactortooltip>
 	<spw_pitchtransitionfactor>音高过渡速度</spw_pitchtransitionfactor>
 	<spw_pitchtransitionfactortooltip>声音的音高每秒可以改变多少。值为零会禁用此功能，实现即时过渡。</spw_pitchtransitionfactortooltip>
+	<spw_reverbareatransitionfactor>混响区域过渡速度</spw_reverbareatransitionfactor>
+	<spw_reverbareatransitionfactortooltip>用于混响效果的区域每秒可以改变多少。值为零会禁用此功能，实现即时过渡。</spw_reverbareatransitionfactortooltip>
 	<spw_airreverbgaintransitionfactor>室内混响过渡速度</spw_airreverbgaintransitionfactor>
 	<spw_airreverbgaintransitionfactortooltip>室内混响效果的增益每秒可以改变多少。值为零会禁用此功能，实现即时过渡。</spw_airreverbgaintransitionfactortooltip>
 	<spw_hydrophonereverbgaintransitionfactor>水听器混响过渡速度</spw_hydrophonereverbgaintransitionfactor>

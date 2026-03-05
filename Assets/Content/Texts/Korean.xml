@@ -79,7 +79,9 @@
 	<spw_dynamicreverbtooltip>실내 및 실외 잔향 효과를 켜고 끕니다. 활성화하면, 소리는 환경의 크기와 결합된 오디오 진폭에 따라 동적으로 울립니다 (예: 더 크고 조용한 공간에서 메아리가 더 강해집니다).</spw_dynamicreverbtooltip>
 	<spw_dynamicreverbbloom>잔향 블룸</spw_dynamicreverbbloom>
 	<spw_dynamicreverbbloomtooltip>제한된 공간에서 큰 소리에 반응하여 잔향 효과가 극적으로 부풀어 오르게 합니다.</spw_dynamicreverbbloomtooltip>
-	<spw_dynamicreverbwatersubtractsarea>동적 잔향 공간</spw_dynamicreverbwatersubtractsarea>
+	<spw_dynamicreverbraycastarea>레이캐스트 잔향 공간</spw_dynamicreverbraycastarea>
+	<spw_dynamicreverbraycastareatooltip>가장 현실적이고 정확한 메아리 소리를 위해 레이캐스팅을 사용하여 공간의 면적을 계산합니다. 비활성화하면, 연결된 모든 선체의 결합된 면적이 대신 사용됩니다.\n\n참고: 성능에 약간의 영향을 줄 수 있습니다.</spw_dynamicreverbraycastareatooltip>
+	<spw_dynamicreverbwatersubtractsarea>상황별 잔향 공간</spw_dynamicreverbwatersubtractsarea>
 	<spw_dynamicreverbwatersubtractsareatooltip>물 위에 있을 때는 공기 공간을, 물속에 있을 때는 물 공간을 사용하여 잔향을 계산합니다. 비활성화하면, 두 공간을 모두 사용합니다.</spw_dynamicreverbwatersubtractsareatooltip>
 	<spw_dynamicreverbminarea>최소 잔향 공간</spw_dynamicreverbminarea>
 	<spw_dynamicreverbminareatooltip>잔향이 적용되기 위해 필요한 청자 주변 연결된 방들의 최소 결합 면적입니다.</spw_dynamicreverbminareatooltip>
@@ -488,10 +490,15 @@
 	<spw_pitchtab>피치</spw_pitchtab>
 	<spw_pitchenabled>피치 활성화</spw_pitchenabled>
 	<spw_pitchenabledtooltip>모든 피치 효과를 전역적으로 켜고 끕니다.\n\n참고: 다른 모드의 소리와의 비정상적인 피치 상호작용에 대한 빠른 해결책으로 유용할 수 있습니다.</spw_pitchenabledtooltip>
+	<spw_dopplereffect>도플러 효과</spw_dopplereffect>
+	<spw_dopplereffecttooltip>도플러 효과를 켜고 끕니다. 활성화하면, 음원과 청자의 상대적인 속도에 따라 소리의 피치가 조절됩니다.\n\n참고: 물속에서의 음속은 공기 중에서의 음속과 다릅니다.</spw_dopplereffecttooltip>
 	<spw_pitchstatuseffectsounds>상태 이상 효과 사운드 피치</spw_pitchstatuseffectsounds>
 	<spw_pitchstatuseffectsoundstooltip>XML 상태 이상 효과로 재생되는 소리의 피치 조절을 켜고 끕니다.</spw_pitchstatuseffectsoundstooltip>
 	<spw_pitchwithdistance>거리에 따른 피치</spw_pitchwithdistance>
 	<spw_pitchwithdistancetooltip>약화된 소리의 거리에 따라 피치를 동적으로 낮춥니다.\n\n참고: 반복 사운드나 근거리 채팅에는 적용되지 않습니다.\n\n참고: 다른 피치 배율과 합연산으로 중첩됩니다.</spw_pitchwithdistancetooltip>
+
+	<dopplereffectstrengthmultiplier>도플러 효과 강도</dopplereffectstrengthmultiplier>
+	<dopplereffectstrengthmultipliertooltip>도플러 효과의 강도입니다. 값이 높을수록 피치 변화가 더 과장되게 나타납니다.</dopplereffectstrengthmultipliertooltip>
 	
 	<spw_divingsuitpitch>잠수복 피치</spw_divingsuitpitch>
 	<spw_divingsuitpitchtooltip>잠수복을 착용했을 때 소리의 피치입니다.\n\n참고: 다른 피치 배율과 합연산으로 중첩됩니다.</spw_divingsuitpitchtooltip>
@@ -517,6 +524,9 @@
 	<!-- Advanced -->
 	<spw_advancedtab>고급</spw_advancedtab>
 
+	<spw_projectilesounds>발사체 사운드</spw_projectilesounds>
+	<spw_projectilesoundstooltip>포탑에서 발사되는 발사체에 고유한 소리를 추가합니다.\n\n참고: 이 설정은 실험적 기능이며, 주로 "도플러 효과" 옵션('피치' 탭)을 테스트하기 위해 사용되었습니다.</spw_projectilesoundstooltip>
+
 	<spw_debugperformance>성능 표시</spw_debugperformance>
 	<spw_debugperformancetooltip>Soundproof Walls의 상세 성능 정보를 표시합니다.\n\n참고: 이 설정은 "설정 동기화"('일반' 탭) 사용 시 다른 플레이어와 동기화되지 않습니다.</spw_debugperformancetooltip>
 
@@ -525,6 +535,9 @@
 
 	<spw_debugchannelinfo>채널 정보 표시</spw_debugchannelinfo>
 	<spw_debugchannelinfotooltip>"재생 중인 사운드 표시" 설정을 확장하여 모든 활성 재생 사운드의 증폭, 피치, 범위, 거리, 약화, 장애물 정보를 표시합니다.\n\n참고: "재생 중인 사운드 표시"가 비활성화된 경우, 이 정보는 바닐라트라우마 콘솔에 기록됩니다.\n\n참고: 이 설정은 "설정 동기화"('일반' 탭) 사용 시 다른 플레이어와 동기화되지 않습니다.</spw_debugchannelinfotooltip>
+
+	<spw_debugreverbarea>잔향 공간 표시</spw_debugreverbarea>
+	<spw_debugreverbareatooltip>현재 잔향 공간을 시각적으로 표시합니다.\n\n참고: "레이캐스트 잔향 공간"('동적 모드' 탭)이 활성화되어 있어야 합니다.\n\n참고: 이 설정은 어두운 곳을 탐색하는 데 악용될 수 있으므로 치트가 활성화되어 있어야 사용할 수 있습니다.\n\n참고: 이 설정은 "설정 동기화"('일반' 탭) 사용 시 다른 플레이어와 동기화되지 않습니다.</spw_debugreverbareatooltip>
 
 	<spw_hidesettings>메뉴 버튼 숨기기</spw_hidesettings>
 	<spw_hidesettingstooltip>일시 정지 메뉴에서 "Soundproof Walls" 버튼을 제거합니다. Soundproof Walls 설정 메뉴는 콘솔에 "spw"를 입력하여 여전히 접근할 수 있습니다.\n\n참고: 이 설정은 "설정 동기화"('일반' 탭) 사용 시 다른 플레이어와 동기화되지 않습니다.</spw_hidesettingstooltip>
@@ -552,6 +565,8 @@
 	<spw_componentmuffleupdateintervaltooltip>반복되는 부품 사운드(예: 환풍구, 원자로, 엔진)의 각 장애물 업데이트 사이의 시간입니다.\n\n참고: 이 값을 높이면 성능이 향상될 수 있습니다.</spw_componentmuffleupdateintervaltooltip>
 	<spw_statuseffectmuffleupdateinterval>상태 이상 효과 사운드 업데이트 간격</spw_statuseffectmuffleupdateinterval>
 	<spw_statuseffectmuffleupdateintervaltooltip>반복되는 상태 이상 효과 사운드(예: 질병으로 인한 소리)의 각 장애물 업데이트 사이의 시간입니다.\n\n참고: 이 값을 높이면 성능이 향상될 수 있습니다.</spw_statuseffectmuffleupdateintervaltooltip>
+	<spw_reverbareaupdateinterval>잔향 공간 업데이트 간격</spw_reverbareaupdateinterval>
+	<spw_reverbareaupdateintervaltooltip>잔향 효과에 대한 공간 업데이트 사이의 시간입니다.\n\n참고: 이 값을 높이면 성능이 향상될 수 있습니다.</spw_reverbareaupdateintervaltooltip>
 	
 	<spw_categorytransitions>전환 효과</spw_categorytransitions>
 	<spw_disablevanillafadeout>바닐라 페이드 아웃 비활성화</spw_disablevanillafadeout>
@@ -560,6 +575,8 @@
 	<spw_gaintransitionfactortooltip>사운드의 볼륨이 초당 얼마나 변할 수 있는지를 나타냅니다. 값이 0이면 이 기능이 비활성화되어 즉시 전환됩니다.</spw_gaintransitionfactortooltip>
 	<spw_pitchtransitionfactor>피치 전환 속도</spw_pitchtransitionfactor>
 	<spw_pitchtransitionfactortooltip>사운드의 피치가 초당 얼마나 변할 수 있는지를 나타냅니다. 값이 0이면 이 기능이 비활성화되어 즉시 전환됩니다.</spw_pitchtransitionfactortooltip>
+	<spw_reverbareatransitionfactor>잔향 공간 전환 속도</spw_reverbareatransitionfactor>
+	<spw_reverbareatransitionfactortooltip>잔향 효과에 사용되는 공간의 크기가 초당 얼마나 변할 수 있는지를 나타냅니다. 값이 0이면 이 기능이 비활성화되어 즉시 전환됩니다.</spw_reverbareatransitionfactortooltip>
 	<spw_airreverbgaintransitionfactor>실내 잔향 전환 속도</spw_airreverbgaintransitionfactor>
 	<spw_airreverbgaintransitionfactortooltip>실내 잔향 효과의 증폭이 초당 얼마나 변할 수 있는지를 나타냅니다. 값이 0이면 이 기능이 비활성화되어 즉시 전환됩니다.</spw_airreverbgaintransitionfactortooltip>
 	<spw_hydrophonereverbgaintransitionfactor>수중 청음기 잔향 전환 속도</spw_hydrophonereverbgaintransitionfactor>

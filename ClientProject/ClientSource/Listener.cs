@@ -5,7 +5,6 @@ using Microsoft.Xna.Framework;
 using FarseerPhysics;
 using Microsoft.Xna.Framework.Graphics;
 using OpenAL;
-using System.Security.Cryptography.X509Certificates;
 
 namespace SoundproofWalls
 {
@@ -264,7 +263,7 @@ namespace SoundproofWalls
 
                 float stepAngle = MathHelper.TwoPi / rayCount;
 
-                // Over time, rotate the start angle to create a more accurate smoothed area.
+                // Over time, rotate the start angle to create a more averaged area.
                 float angleOffset = (float)Timing.TotalTime * 0.5f;
 
                 bool inside = FocusedHull != null;
@@ -384,7 +383,7 @@ namespace SoundproofWalls
                 !ConfigManager.LocalConfig.EavesdroppingKeyOrMouse.IsDown() ||
                 character == null ||
                 character.CurrentHull == null ||
-                character.CurrentSpeed > 0.05 ||
+                character.CurrentSpeed > 0.05f ||
                 character.IsUnconscious ||
                 character.IsDead)
             {

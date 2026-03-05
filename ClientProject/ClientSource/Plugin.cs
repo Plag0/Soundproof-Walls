@@ -1143,6 +1143,16 @@ namespace SoundproofWalls
 
             range = range ?? sound.BaseFar;
             float rangeMult = config.SoundRangeMultiplierMaster * SoundInfoManager.EnsureGetSoundInfo(sound).RangeMult;
+
+            // Make piezo crystal explosions smaller so you don't hear them constantly. Unfortunately they use the generic explosionmedium sound, so I have to do this.
+            string? biomeID = GameMain.GameSession?.LevelData?.Biome.Identifier.ToString();
+            if (range * rangeMult >= 16_000 &&
+                biomeID != null && biomeID == "thegreatsea" && 
+                sound.Filename.ToLower().Contains("explosionmedium"))
+            {
+                rangeMult = 1;
+            }
+
             range *= rangeMult;
 
             if (Listener.CurrentHull == null && Hull.FindHull(position, hullGuess, true) == null)

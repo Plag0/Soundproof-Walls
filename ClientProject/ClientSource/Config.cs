@@ -54,7 +54,6 @@ namespace SoundproofWalls
         public uint EffectProcessingMode { get; set; } = 2;
         public bool FocusTargetAudio { get; set; } = true;
         public bool AttenuateWithApproximateDistance { get; set; } = true;
-        public bool ProjectileSounds { get; set; } = true;
         public float SoundRangeMultiplierMaster { get; set; } = 1.6f;
         public float LoopingSoundRangeMultiplierMaster { get; set; } = 0.9f;
         public float OutdoorSoundRangeMultiplier { get; set; } = 3.0f;
@@ -292,6 +291,7 @@ namespace SoundproofWalls
         public float UnmuffledVoicePitchMultiplier { get; set; } = 1f;
 
         // Advanced settings
+        public bool ProjectileSounds { get; set; } = false;
         public bool ShowPerformance { get; set; } = false;
         public bool ShowPlayingSounds { get; set; } = false; // See all playing sounds and their filenames.
         public bool ShowChannelInfo { get; set; } = false; // See what is obstructing all audio with console output.
@@ -525,7 +525,7 @@ namespace SoundproofWalls
             distortion: true),
         new CustomSound("explosionlarge", // Reactor explosion.
             gainMultiplier: 3.0f,
-            rangeMultiplier: 1.8f,
+            rangeMultiplier: 1.5f,
             sidechainMultiplier: 5.0f,
             release: 10.0f,
             distortion: true,
@@ -533,7 +533,7 @@ namespace SoundproofWalls
             muffleInfluence: 0.55f),
         new CustomSound("explosion",
             gainMultiplier: 2.0f,
-            rangeMultiplier: 1.5f,
+            rangeMultiplier: 1.0f,
             sidechainMultiplier: 2.5f,
             release: 6.0f,
             distortion: true,
@@ -542,7 +542,7 @@ namespace SoundproofWalls
             exclusions: ["explosiondebris"]),
         new CustomSound("explosiondebris",
             gainMultiplier: 1.0f,
-            rangeMultiplier: 1.2f,
+            rangeMultiplier: 1.0f,
             sidechainMultiplier: 0.9f,
             release: 3.0f,
             distortion: true,
@@ -674,6 +674,14 @@ namespace SoundproofWalls
             gainMultiplier: 0.6f,
             rangeMultiplier: 1.0f,
             sidechainMultiplier: 0.55f,
+            release: 3.0f,
+            distortion: false),
+
+        // DynamicEuropa sounds.
+        new CustomSound("piezo_reallyclose",
+            gainMultiplier: 1.0f,
+            rangeMultiplier: 0.2f,
+            sidechainMultiplier: 0.6f,
             release: 3.0f,
             distortion: false),
         

@@ -79,7 +79,9 @@
 	<spw_dynamicreverbtooltip>İç ve dış mekan yankı efektlerini açar/kapatır. Etkinleştirilirse, sesler ortamlarının boyutuna ve birleşik ses genliğine göre dinamik olarak yankılanır (yani, yankılar daha büyük ve daha sessiz alanlarda daha güçlüdür).</spw_dynamicreverbtooltip>
 	<spw_dynamicreverbbloom>Yankı Patlaması</spw_dynamicreverbbloom>
 	<spw_dynamicreverbbloomtooltip>Yankı efektinin, kapalı alanlardaki yüksek seslere tepki olarak dramatik bir şekilde kabarmasını sağlar.</spw_dynamicreverbbloomtooltip>
-	<spw_dynamicreverbwatersubtractsarea>Dinamik Yankı Alanı</spw_dynamicreverbwatersubtractsarea>
+	<spw_dynamicreverbraycastarea>Işın İzleme Yankı Alanı</spw_dynamicreverbraycastarea>
+	<spw_dynamicreverbraycastareatooltip>En gerçekçi ve doğru yankı sesi için mekanın alanını hesaplamak üzere ışın izleme (raycasting) kullanır. Devre dışı bırakılırsa, bunun yerine birbirine bağlı tüm gövdelerin birleşik alanı kullanılır.\n\nNot: Performansı biraz etkileyebilir.</spw_dynamicreverbraycastareatooltip>
+	<spw_dynamicreverbwatersubtractsarea>Bağlamsal Yankı Alanı</spw_dynamicreverbwatersubtractsarea>
 	<spw_dynamicreverbwatersubtractsareatooltip>Su üzerindeyken hava alanını, su altındayken su alanını kullanarak yankıyı hesaplar. Devre dışı bırakılırsa, her ikisinin alanını kullanır.</spw_dynamicreverbwatersubtractsareatooltip>
 	<spw_dynamicreverbminarea>Minimum Yankı Alanı</spw_dynamicreverbminarea>
 	<spw_dynamicreverbminareatooltip>Yankının uygulanması için dinleyicinin etrafındaki bağlı odaların gereken minimum birleşik alanı.</spw_dynamicreverbminareatooltip>
@@ -488,10 +490,15 @@
 	<spw_pitchtab>Perde</spw_pitchtab>
 	<spw_pitchenabled>Perdeyi Etkinleştir</spw_pitchenabled>
 	<spw_pitchenabledtooltip>Tüm perde efektlerini genel olarak açar/kapatır.\n\nNot: Diğer modlardan gelen seslerle olan alışılmadık perde etkileşimleri için hızlı bir çözüm olarak yardımcı olabilir.</spw_pitchenabledtooltip>
+	<spw_dopplereffect>Doppler Efekti</spw_dopplereffect>
+	<spw_dopplereffecttooltip>Doppler efektini açar/kapatır. Etkinleştirilirse, ses perdesi ses kaynağının ve dinleyicinin bağıl hızına göre ayarlanır.\n\nNot: Sudaki ses hızı ile havadaki ses hızı birbirinden farklıdır.</spw_dopplereffecttooltip>
 	<spw_pitchstatuseffectsounds>Durum Efekti Seslerini Perdele</spw_pitchstatuseffectsounds>
 	<spw_pitchstatuseffectsoundstooltip>XML durum efektleri tarafından çalınan sesler için perdelemeyi aç/kapat.</spw_pitchstatuseffectsoundstooltip>
 	<spw_pitchwithdistance>Mesafeyle Perdele</spw_pitchwithdistance>
 	<spw_pitchwithdistancetooltip>Boğuklaştırılmış seslerin perdesini mesafelerine göre dinamik olarak düşürün.\n\nNot: Döngüsel seslere veya yakınlık sohbetine uygulanmaz.\n\nNot: Diğer perde çarpanlarıyla toplamsal olarak birikir.</spw_pitchwithdistancetooltip>
+
+	<dopplereffectstrengthmultiplier>Doppler Efekti Gücü</dopplereffectstrengthmultiplier>
+	<dopplereffectstrengthmultipliertooltip>Doppler efektinin gücü. Daha yüksek değerler daha abartılı bir perde kayması yaratır.</dopplereffectstrengthmultipliertooltip>
 	
 	<spw_divingsuitpitch>Dalgıç Kıyafeti Perdesi</spw_divingsuitpitch>
 	<spw_divingsuitpitchtooltip>Dalgıç kıyafeti giyerken seslerin perdesi.\n\nNot: Diğer perde çarpanlarıyla toplamsal olarak birikir.</spw_divingsuitpitchtooltip>
@@ -517,6 +524,9 @@
 	<!-- Advanced -->
 	<spw_advancedtab>Gelişmiş</spw_advancedtab>
 
+	<spw_projectilesounds>Mermi Sesleri</spw_projectilesounds>
+	<spw_projectilesoundstooltip>Taretlerden ateşlenen mermilere benzersiz sesler ekler.\n\nNot: Bu ayar deneyseldir ve öncelikle "Doppler Efekti" seçeneğini (Perde sekmesi) test etmek için kullanılmıştır.</spw_projectilesoundstooltip>
+
 	<spw_debugperformance>Performansı Göster</spw_debugperformance>
 	<spw_debugperformancetooltip>Soundproof Walls için ayrıntılı performans bilgilerini görüntüleyin.\n\nNot: Bu ayar, "Ayarları Senkronize Et" (Genel sekmesi) kullanılırken diğer oyuncularla senkronize edilmez.</spw_debugperformancetooltip>
 
@@ -525,6 +535,9 @@
 
 	<spw_debugchannelinfo>Kanal Bilgisini Göster</spw_debugchannelinfo>
 	<spw_debugchannelinfotooltip>"Çalan Sesleri Göster" ayarını, tüm aktif olarak çalan sesler için kazanç, perde, menzil, mesafe, boğuklaştırma ve engelleri de gösterecek şekilde genişletin.\n\nNot: "Çalan Sesleri Göster" devre dışıysa, bu bilgiler Barotrauma konsoluna kaydedilir.\n\nNot: Bu ayar, "Ayarları Senkronize Et" (Genel sekmesi) kullanılırken diğer oyuncularla senkronize edilmez.</spw_debugchannelinfotooltip>
+
+	<spw_debugreverbarea>Yankı Alanını Göster</spw_debugreverbarea>
+	<spw_debugreverbareatooltip>Mevcut yankı alanının görsel bir temsilini görüntüler.\n\nNot: "Işın İzleme Yankı Alanı" (Dinamik sekmesi) seçeneğinin etkin olmasını gerektirir.\n\nNot: Bu ayar, aksi takdirde karanlık alanlarda gezinmek için kullanılabileceğinden hilelerin etkinleştirilmesini gerektirir.\n\nNot: Bu ayar, "Ayarları Senkronize Et" (Genel sekmesi) kullanılırken diğer oyuncularla senkronize edilmez.</spw_debugreverbareatooltip>
 
 	<spw_hidesettings>Menü Düğmesini Gizle</spw_hidesettings>
 	<spw_hidesettingstooltip>Duraklatma menüsünden "Soundproof Walls" düğmesini kaldırın. Soundproof Walls ayarlar menüsüne hala konsola "spw" yazarak erişilebilir.\n\nNot: Bu ayar, "Ayarları Senkronize Et" (Genel sekmesi) kullanılırken diğer oyuncularla senkronize edilmez.</spw_hidesettingstooltip>
@@ -552,6 +565,8 @@
 	<spw_componentmuffleupdateintervaltooltip>Döngüsel bileşen sesleri (ör. havalandırmalar, reaktör, motor) için her engel güncellemesi arasındaki süre.\n\nNot: Bu değeri artırmak performansı artırabilir.</spw_componentmuffleupdateintervaltooltip>
 	<spw_statuseffectmuffleupdateinterval>Durum Efekti Sesi Güncelleme Aralığı</spw_statuseffectmuffleupdateinterval>
 	<spw_statuseffectmuffleupdateintervaltooltip>Döngüsel durum efekti sesleri (ör. rahatsızlıklardan gelen sesler) için her engel güncellemesi arasındaki süre.\n\nNot: Bu değeri artırmak performansı artırabilir.</spw_statuseffectmuffleupdateintervaltooltip>
+	<spw_reverbareaupdateinterval>Yankı Alanı Güncelleme Aralığı</spw_reverbareaupdateinterval>
+	<spw_reverbareaupdateintervaltooltip>Yankı efektleri için alan güncellemeleri arasındaki süre.\n\nNot: Bu değeri artırmak performansı artırabilir.</spw_reverbareaupdateintervaltooltip>
 	
 	<spw_categorytransitions>Geçişler</spw_categorytransitions>
 	<spw_disablevanillafadeout>Vanilla Sönmesini Devre Dışı Bırak</spw_disablevanillafadeout>
@@ -560,6 +575,8 @@
 	<spw_gaintransitionfactortooltip>Bir sesin ses seviyesinin saniyede ne kadar değişebileceği. Sıfır değeri, anlık geçişler için bu özelliği devre dışı bırakır.</spw_gaintransitionfactortooltip>
 	<spw_pitchtransitionfactor>Perde Geçiş Hızı</spw_pitchtransitionfactor>
 	<spw_pitchtransitionfactortooltip>Bir sesin perdesinin saniyede ne kadar değişebileceği. Sıfır değeri, anlık geçişler için bu özelliği devre dışı bırakır.</spw_pitchtransitionfactortooltip>
+	<spw_reverbareatransitionfactor>Yankı Alanı Geçiş Hızı</spw_reverbareatransitionfactor>
+	<spw_reverbareatransitionfactortooltip>Yankı efektleri için kullanılan alanın saniyede ne kadar değişebileceği. Sıfır değeri, anlık geçişler için bu özelliği devre dışı bırakır.</spw_reverbareatransitionfactortooltip>
 	<spw_airreverbgaintransitionfactor>İç Mekan Yankı Geçiş Hızı</spw_airreverbgaintransitionfactor>
 	<spw_airreverbgaintransitionfactortooltip>İç mekan yankı efektinin kazancının saniyede ne kadar değişebileceği. Sıfır değeri, anlık geçişler için bu özelliği devre dışı bırakır.</spw_airreverbgaintransitionfactortooltip>
 	<spw_hydrophonereverbgaintransitionfactor>Hidrofon Yankı Geçiş Hızı</spw_hydrophonereverbgaintransitionfactor>

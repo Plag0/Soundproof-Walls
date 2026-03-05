@@ -79,7 +79,9 @@
 	<spw_dynamicreverbtooltip>Włącza/wyłącza efekty pogłosu wewnątrz i na zewnątrz. Jeśli włączone, dźwięki dynamicznie odbijają się w zależności od wielkości i łącznej amplitudy dźwiękowej otoczenia (tzn. echa są silniejsze w większych i cichszych przestrzeniach).</spw_dynamicreverbtooltip>
 	<spw_dynamicreverbbloom>Rozkwit pogłosu</spw_dynamicreverbbloom>
 	<spw_dynamicreverbbloomtooltip>Sprawia, że efekt pogłosu dramatycznie narasta w odpowiedzi na głośne dźwięki w zamkniętych przestrzeniach.</spw_dynamicreverbbloomtooltip>
-	<spw_dynamicreverbwatersubtractsarea>Dynamiczny obszar pogłosu</spw_dynamicreverbwatersubtractsarea>
+	<spw_dynamicreverbraycastarea>Obszar pogłosu z raycastingiem</spw_dynamicreverbraycastarea>
+	<spw_dynamicreverbraycastareatooltip>Używa raycastingu do obliczenia powierzchni przestrzeni, aby uzyskać najbardziej realistyczny i dokładny dźwięk echa. Jeśli wyłączone, zamiast tego używana jest łączna powierzchnia wszystkich połączonych kadłubów.\n\nUwaga: Może nieznacznie wpływać na wydajność.</spw_dynamicreverbraycastareatooltip>
+	<spw_dynamicreverbwatersubtractsarea>Kontekstowy obszar pogłosu</spw_dynamicreverbwatersubtractsarea>
 	<spw_dynamicreverbwatersubtractsareatooltip>Oblicza pogłos na podstawie obszaru powietrza nad wodą lub obszaru wody pod wodą. Jeśli wyłączone, używa obu obszarów.</spw_dynamicreverbwatersubtractsareatooltip>
 	<spw_dynamicreverbminarea>Minimalny obszar pogłosu</spw_dynamicreverbminarea>
 	<spw_dynamicreverbminareatooltip>Minimalny łączny obszar połączonych pomieszczeń wokół słuchacza wymagany do zastosowania pogłosu.</spw_dynamicreverbminareatooltip>
@@ -488,10 +490,15 @@
 	<spw_pitchtab>Tonacja</spw_pitchtab>
 	<spw_pitchenabled>Włącz tonację</spw_pitchenabled>
 	<spw_pitchenabledtooltip>Globalnie włącza/wyłącza wszystkie efekty tonacji.\n\nUwaga: Może być pomocne jako szybka naprawa nietypowych interakcji tonacji z dźwiękami z innych modów.</spw_pitchenabledtooltip>
+	<spw_dopplereffect>Efekt Dopplera</spw_dopplereffect>
+	<spw_dopplereffecttooltip>Włącza/wyłącza efekt Dopplera. Jeśli włączone, tonacja dźwięku jest dostosowywana na podstawie względnej prędkości źródła dźwięku i słuchacza.\n\nUwaga: Prędkość dźwięku w wodzie różni się od prędkości dźwięku w powietrzu.</spw_dopplereffecttooltip>
 	<spw_pitchstatuseffectsounds>Tonacja dźwięków efektów statusu</spw_pitchstatuseffectsounds>
 	<spw_pitchstatuseffectsoundstooltip>Włącza/wyłącza zmianę tonacji dla dźwięków odtwarzanych przez efekty statusu XML.</spw_pitchstatuseffectsoundstooltip>
 	<spw_pitchwithdistance>Tonacja z odległością</spw_pitchwithdistance>
 	<spw_pitchwithdistancetooltip>Dynamicznie obniża tonację stłumionych dźwięków w zależności od ich odległości.\n\nUwaga: Nie dotyczy dźwięków w pętli ani czatu zbliżeniowego.\n\nUwaga: Dodaje się do innych mnożników tonacji.</spw_pitchwithdistancetooltip>
+
+	<dopplereffectstrengthmultiplier>Siła efektu Dopplera</dopplereffectstrengthmultiplier>
+	<dopplereffectstrengthmultipliertooltip>Siła efektu Dopplera. Wyższe wartości powodują bardziej wyraźną zmianę tonacji.</dopplereffectstrengthmultipliertooltip>
 	
 	<spw_divingsuitpitch>Tonacja skafandra nurkowego</spw_divingsuitpitch>
 	<spw_divingsuitpitchtooltip>Tonacja dźwięków podczas noszenia skafandra nurkowego.\n\nUwaga: Dodaje się do innych mnożników tonacji.</spw_divingsuitpitchtooltip>
@@ -517,6 +524,9 @@
 	<!-- Advanced -->
 	<spw_advancedtab>Zaawansowane</spw_advancedtab>
 
+	<spw_projectilesounds>Dźwięki pocisków</spw_projectilesounds>
+	<spw_projectilesoundstooltip>Dodaje unikalne dźwięki do pocisków wystrzeliwanych z wieżyczek.\n\nUwaga: To ustawienie jest eksperymentalne i było używane głównie do testowania opcji "Efekt Dopplera" (zakładka Tonacja).</spw_projectilesoundstooltip>
+
 	<spw_debugperformance>Pokaż wydajność</spw_debugperformance>
 	<spw_debugperformancetooltip>Wyświetla szczegółowe informacje o wydajności Soundproof Walls.\n\nUwaga: To ustawienie nie jest synchronizowane z innymi graczami podczas korzystania z "Synchronizuj ustawienia" (zakładka Ogólne).</spw_debugperformancetooltip>
 
@@ -525,6 +535,10 @@
 
 	<spw_debugchannelinfo>Pokaż informacje o kanale</spw_debugchannelinfo>
 	<spw_debugchannelinfotooltip>Rozszerza ustawienie "Pokaż odtwarzane dźwięki", aby wyświetlać również wzmocnienie, tonację, zasięg, odległość, tłumienie i przeszkody dla wszystkich aktywnie odtwarzanych dźwięków.\n\nUwaga: Jeśli "Pokaż odtwarzane dźwięki" jest wyłączone, te informacje są logowane w konsoli Barotraumy.\n\nUwaga: To ustawienie nie jest synchronizowane z innymi graczami podczas korzystania z "Synchronizuj ustawienia" (zakładka Ogólne).</spw_debugchannelinfotooltip>
+
+	<spw_debugreverbarea>Pokaż obszar pogłosu</spw_debugreverbarea>
+	<spw_debugreverbareatooltip>Wyświetla wizualną reprezentację bieżącego obszaru pogłosu.\n\nUwaga: Wymaga włączenia opcji "Obszar pogłosu z raycastingiem" (zakładka Tryb dynamiczny).\n\nUwaga: To ustawienie wymaga włączenia kodów (cheats), w przeciwnym razie mogłoby zostać użyte do nawigacji w ciemnych obszarach.\n\nUwaga: To ustawienie nie jest synchronizowane z innymi graczami podczas korzystania z "Synchronizuj ustawienia" (zakładka Ogólne).</spw_debugreverbareatooltip>
+
 
 	<spw_hidesettings>Ukryj przycisk menu</spw_hidesettings>
 	<spw_hidesettingstooltip>Usuwa przycisk "Soundproof Walls" z menu pauzy. Menu ustawień Soundproof Walls można nadal otworzyć, wpisując "spw" w konsoli.\n\nUwaga: To ustawienie nie jest synchronizowane z innymi graczami podczas korzystania z "Synchronizuj ustawienia" (zakładka Ogólne).</spw_hidesettingstooltip>
@@ -552,6 +566,8 @@
 	<spw_componentmuffleupdateintervaltooltip>Czas między każdą aktualizacją przeszkód dla zapętlonych dźwięków komponentów (np. wentylacji, reaktora, silnika).\n\nUwaga: Zwiększenie tej wartości może poprawić wydajność.</spw_componentmuffleupdateintervaltooltip>
 	<spw_statuseffectmuffleupdateinterval>Interwał aktualizacji dźwięków efektów statusu</spw_statuseffectmuffleupdateinterval>
 	<spw_statuseffectmuffleupdateintervaltooltip>Czas między każdą aktualizacją przeszkód dla zapętlonych dźwięków efektów statusu (np. dźwięków z dolegliwości).\n\nUwaga: Zwiększenie tej wartości może poprawić wydajność.</spw_statuseffectmuffleupdateintervaltooltip>
+	<spw_reverbareaupdateinterval>Interwał aktualizacji obszaru pogłosu</spw_reverbareaupdateinterval>
+	<spw_reverbareaupdateintervaltooltip>Czas między każdą aktualizacją obszaru dla efektów pogłosu.\n\nUwaga: Zwiększenie tej wartości może poprawić wydajność.</spw_reverbareaupdateintervaltooltip>
 	
 	<spw_categorytransitions>Przejścia</spw_categorytransitions>
 	<spw_disablevanillafadeout>Wyłącz waniliowe wyciszanie</spw_disablevanillafadeout>
@@ -560,6 +576,8 @@
 	<spw_gaintransitionfactortooltip>Jak bardzo głośność dźwięku może się zmieniać na sekundę. Wartość zero wyłącza tę funkcję, powodując natychmiastowe przejścia.</spw_gaintransitionfactortooltip>
 	<spw_pitchtransitionfactor>Szybkość przejścia tonacji</spw_pitchtransitionfactor>
 	<spw_pitchtransitionfactortooltip>Jak bardzo tonacja dźwięku może się zmieniać na sekundę. Wartość zero wyłącza tę funkcję, powodując natychmiastowe przejścia.</spw_pitchtransitionfactortooltip>
+	<spw_reverbareatransitionfactor>Szybkość przejścia obszaru pogłosu</spw_reverbareatransitionfactor>
+	<spw_reverbareatransitionfactortooltip>Jak bardzo obszar używany do efektów pogłosu może się zmieniać na sekundę. Wartość zero wyłącza tę funkcję, powodując natychmiastowe przejścia.</spw_reverbareatransitionfactortooltip>
 	<spw_airreverbgaintransitionfactor>Szybkość przejścia pogłosu wewnątrz</spw_airreverbgaintransitionfactor>
 	<spw_airreverbgaintransitionfactortooltip>Jak bardzo wzmocnienie efektu pogłosu wewnątrz może się zmieniać na sekundę. Wartość zero wyłącza tę funkcję, powodując natychmiastowe przejścia.</spw_airreverbgaintransitionfactortooltip>
 	<spw_hydrophonereverbgaintransitionfactor>Szybkość przejścia pogłosu hydrofonu</spw_hydrophonereverbgaintransitionfactor>

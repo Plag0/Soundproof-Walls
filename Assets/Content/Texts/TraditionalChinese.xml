@@ -79,7 +79,9 @@
 	<spw_dynamicreverbtooltip>切換室內和室外殘響效果。若啟用，聲音會根據環境的大小和綜合音訊振幅動態產生殘響（即，在更大、更安靜的空間中回音更強）。</spw_dynamicreverbtooltip>
 	<spw_dynamicreverbbloom>殘響綻放</spw_dynamicreverbbloom>
 	<spw_dynamicreverbbloomtooltip>使殘響效果在密閉區域對大聲響應時急劇增強。</spw_dynamicreverbbloomtooltip>
-	<spw_dynamicreverbwatersubtractsarea>動態殘響區域</spw_dynamicreverbwatersubtractsarea>
+	<spw_dynamicreverbraycastarea>射線投射殘響區域</spw_dynamicreverbraycastarea>
+	<spw_dynamicreverbraycastareatooltip>使用射線投射來計算空間面積，以獲得最逼真且準確的回音效果。若停用，則改為使用所有相連船體的總面積。\n\n注意：可能輕微影響效能。</spw_dynamicreverbraycastareatooltip>
+	<spw_dynamicreverbwatersubtractsarea>情境殘響區域</spw_dynamicreverbwatersubtractsarea>
 	<spw_dynamicreverbwatersubtractsareatooltip>在水面上時使用空氣區域計算殘響，在水下時使用水域面積計算。若停用，則同時使用兩者的面積。</spw_dynamicreverbwatersubtractsareatooltip>
 	<spw_dynamicreverbminarea>最小殘響區域</spw_dynamicreverbminarea>
 	<spw_dynamicreverbminareatooltip>聽者周圍相連房間所需的最小總面積，以應用殘響效果。</spw_dynamicreverbminareatooltip>
@@ -488,10 +490,15 @@
 	<spw_pitchtab>音高</spw_pitchtab>
 	<spw_pitchenabled>啟用音高</spw_pitchenabled>
 	<spw_pitchenabledtooltip>全域切換所有音高效果。\n\n注意：對於與其他模組聲音產生不尋常的音高互動時，可能作為快速修復的幫助。</spw_pitchenabledtooltip>
+	<spw_dopplereffect>都卜勒效應</spw_dopplereffect>
+	<spw_dopplereffecttooltip>切換都卜勒效應。若啟用，將根據音源與聽者的相對速度來調整聲音音高。\n\n注意：聲音在水中的傳播速度與在空氣中不同。</spw_dopplereffecttooltip>
 	<spw_pitchstatuseffectsounds>狀態效果音效音高</spw_pitchstatuseffectsounds>
 	<spw_pitchstatuseffectsoundstooltip>切換由 XML 狀態效果播放的音效的音高調整。</spw_pitchstatuseffectsoundstooltip>
 	<spw_pitchwithdistance>隨距離調整音高</spw_pitchwithdistance>
 	<spw_pitchwithdistancetooltip>根據距離動態降低被消音聲音的音高。\n\n注意：不適用於循環音效或近距離聊天。\n\n注意：與其他音高乘數以加法疊加。</spw_pitchwithdistancetooltip>
+
+	<dopplereffectstrengthmultiplier>都卜勒效應強度</dopplereffectstrengthmultiplier>
+	<dopplereffectstrengthmultipliertooltip>都卜勒效應的強度。較高的值會產生更誇張的音高偏移。</dopplereffectstrengthmultipliertooltip>
 	
 	<spw_divingsuitpitch>潛水衣音高</spw_divingsuitpitch>
 	<spw_divingsuitpitchtooltip>穿著潛水衣時的聲音音高。\n\n注意：與其他音高乘數以加法疊加。</spw_divingsuitpitchtooltip>
@@ -517,6 +524,9 @@
 	<!-- Advanced -->
 	<spw_advancedtab>進階</spw_advancedtab>
 
+	<spw_projectilesounds>砲彈音效</spw_projectilesounds>
+	<spw_projectilesoundstooltip>為砲塔發射的砲彈添加獨特的聲音。\n\n注意：此設定為實驗性功能，主要用於測試「都卜勒效應」選項（音高分頁）。</spw_projectilesoundstooltip>
+
 	<spw_debugperformance>顯示效能</spw_debugperformance>
 	<spw_debugperformancetooltip>顯示 Soundproof Walls 的詳細效能資訊。\n\n注意：使用「同步設定」（一般分頁）時，此設定不會與其他玩家同步。</spw_debugperformancetooltip>
 
@@ -525,6 +535,9 @@
 
 	<spw_debugchannelinfo>顯示頻道資訊</spw_debugchannelinfo>
 	<spw_debugchannelinfotooltip>擴展「顯示播放中音效」設定，同時顯示所有正在播放音效的增益、音高、範圍、距離、消音和阻礙。\n\n注意：若「顯示播放中音效」被停用，此資訊將記錄在《Barotrauma》控制台中。\n\n注意：使用「同步設定」（一般分頁）時，此設定不會與其他玩家同步。</spw_debugchannelinfotooltip>
+
+	<spw_debugreverbarea>顯示殘響區域</spw_debugreverbarea>
+	<spw_debugreverbareatooltip>以視覺化方式顯示當前的殘響區域。\n\n注意：需要啟用「射線投射殘響區域」（動態分頁）。\n\n注意：此設定需要啟用作弊模式，否則可能被用來在黑暗區域中導航。\n\n注意：使用「同步設定」（一般分頁）時，此設定不會與其他玩家同步。</spw_debugreverbareatooltip>
 
 	<spw_hidesettings>隱藏選單按鈕</spw_hidesettings>
 	<spw_hidesettingstooltip>從暫停選單中移除「Soundproof Walls」按鈕。仍可透過在控制台中輸入「spw」來存取 Soundproof Walls 設定選單。\n\n注意：使用「同步設定」（一般分頁）時，此設定不會與其他玩家同步。</spw_hidesettingstooltip>
@@ -552,6 +565,8 @@
 	<spw_componentmuffleupdateintervaltooltip>循環組件音效（例如，通風口、反應爐、引擎）每次阻礙更新之間的時間量。\n\n注意：增加此值可能改善效能。</spw_componentmuffleupdateintervaltooltip>
 	<spw_statuseffectmuffleupdateinterval>狀態效果音效更新間隔</spw_statuseffectmuffleupdateinterval>
 	<spw_statuseffectmuffleupdateintervaltooltip>循環狀態效果音效（例如，來自病症的聲音）每次阻礙更新之間的時間量。\n\n注意：增加此值可能改善效能。</spw_statuseffectmuffleupdateintervaltooltip>
+	<spw_reverbareaupdateinterval>殘響區域更新間隔</spw_reverbareaupdateinterval>
+	<spw_reverbareaupdateintervaltooltip>殘響效果的區域更新之間的時間量。\n\n注意：增加此值可能改善效能。</spw_reverbareaupdateintervaltooltip>
 	
 	<spw_categorytransitions>過渡</spw_categorytransitions>
 	<spw_disablevanillafadeout>停用原版淡出</spw_disablevanillafadeout>
@@ -560,6 +575,8 @@
 	<spw_gaintransitionfactortooltip>音效音量每秒可變化的量。值為零則停用此功能，實現即時過渡。</spw_gaintransitionfactortooltip>
 	<spw_pitchtransitionfactor>音高過渡速度</spw_pitchtransitionfactor>
 	<spw_pitchtransitionfactortooltip>音效音高每秒可變化的量。值為零則停用此功能，實現即時過渡。</spw_pitchtransitionfactortooltip>
+	<spw_reverbareatransitionfactor>殘響區域過渡速度</spw_reverbareatransitionfactor>
+	<spw_reverbareatransitionfactortooltip>殘響效果使用的區域每秒可變化的量。值為零則停用此功能，實現即時過渡。</spw_reverbareatransitionfactortooltip>
 	<spw_airreverbgaintransitionfactor>室內殘響過渡速度</spw_airreverbgaintransitionfactor>
 	<spw_airreverbgaintransitionfactortooltip>室內殘響效果的增益每秒可變化的量。值為零則停用此功能，實現即時過渡。</spw_airreverbgaintransitionfactortooltip>
 	<spw_hydrophonereverbgaintransitionfactor>水下麥克風殘響過渡速度</spw_hydrophonereverbgaintransitionfactor>

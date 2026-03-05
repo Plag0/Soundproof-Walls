@@ -79,7 +79,9 @@
 	<spw_dynamicreverbtooltip>Включает эффекты реверберации в помещении и на открытом пространстве. Если включено, звуки динамически реверберируют в зависимости от размера и общей звуковой амплитуды их окружения (т.е. эхо сильнее в больших и тихих пространствах).</spw_dynamicreverbtooltip>
 	<spw_dynamicreverbbloom>Нарастание реверберации</spw_dynamicreverbbloom>
 	<spw_dynamicreverbbloomtooltip>Заставляет эффект реверберации резко нарастать в ответ на громкие звуки в замкнутых пространствах.</spw_dynamicreverbbloomtooltip>
-	<spw_dynamicreverbwatersubtractsarea>Динамическая область реверберации</spw_dynamicreverbwatersubtractsarea>
+	<spw_dynamicreverbraycastarea>Трассировка области реверберации</spw_dynamicreverbraycastarea>
+	<spw_dynamicreverbraycastareatooltip>Использует трассировку лучей (raycasting) для вычисления площади пространства ради наиболее реалистичного и точного звучания эха. Если отключено, вместо этого используется общая площадь всех соединённых корпусов.\n\nПримечание: Может незначительно повлиять на производительность.</spw_dynamicreverbraycastareatooltip>
+	<spw_dynamicreverbwatersubtractsarea>Контекстная область реверберации</spw_dynamicreverbwatersubtractsarea>
 	<spw_dynamicreverbwatersubtractsareatooltip>Рассчитывает реверберацию, используя площадь воздуха над водой или площадь воды при погружении. Если отключено, используется площадь и того, и другого.</spw_dynamicreverbwatersubtractsareatooltip>
 	<spw_dynamicreverbminarea>Минимальная площадь реверберации</spw_dynamicreverbminarea>
 	<spw_dynamicreverbminareatooltip>Минимальная общая площадь соединённых комнат вокруг слушателя, необходимая для применения реверберации.</spw_dynamicreverbminareatooltip>
@@ -488,10 +490,15 @@
 	<spw_pitchtab>Тон</spw_pitchtab>
 	<spw_pitchenabled>Включить изменение тона</spw_pitchenabled>
 	<spw_pitchenabledtooltip>Полностью включает или отключает все эффекты изменения тона.\n\nПримечание: Может быть полезно для быстрого исправления необычных взаимодействий с тоном звуков из других модов.</spw_pitchenabledtooltip>
+	<spw_dopplereffect>Эффект Доплера</spw_dopplereffect>
+	<spw_dopplereffecttooltip>Включает или отключает эффект Доплера. Если включено, тон звука корректируется в зависимости от относительной скорости источника звука и слушателя.\n\nПримечание: Скорость звука в воде отличается от скорости звука в воздухе.</spw_dopplereffecttooltip>
 	<spw_pitchstatuseffectsounds>Изменять тон звуков статус-эффектов</spw_pitchstatuseffectsounds>
 	<spw_pitchstatuseffectsoundstooltip>Включает изменение тона для звуков, воспроизводимых XML статус-эффектами.</spw_pitchstatuseffectsoundstooltip>
 	<spw_pitchwithdistance>Изменять тон с расстоянием</spw_pitchwithdistance>
 	<spw_pitchwithdistancetooltip>Динамически понижает тон заглушённых звуков в зависимости от их расстояния.\n\nПримечание: Не применяется к зацикленным звукам или голосовому чату.\n\nПримечание: Складывается аддитивно с другими множителями тона.</spw_pitchwithdistancetooltip>
+
+	<dopplereffectstrengthmultiplier>Сила эффекта Доплера</dopplereffectstrengthmultiplier>
+	<dopplereffectstrengthmultipliertooltip>Сила эффекта Доплера. Более высокие значения создают более выраженное смещение тона.</dopplereffectstrengthmultipliertooltip>
 	
 	<spw_divingsuitpitch>Тон в скафандре</spw_divingsuitpitch>
 	<spw_divingsuitpitchtooltip>Тон звуков при ношении скафандра.\n\nПримечание: Складывается аддитивно с другими множителями тона.</spw_divingsuitpitchtooltip>
@@ -517,6 +524,9 @@
 	<!-- Advanced -->
 	<spw_advancedtab>Дополнительно</spw_advancedtab>
 
+	<spw_projectilesounds>Звуки снарядов</spw_projectilesounds>
+	<spw_projectilesoundstooltip>Добавляет уникальные звуки снарядам, выпущенным из турелей.\n\nПримечание: Эта настройка является экспериментальной и в первую очередь использовалась для тестирования опции "Эффект Доплера" (вкладка "Тон").</spw_projectilesoundstooltip>
+
 	<spw_debugperformance>Показывать производительность</spw_debugperformance>
 	<spw_debugperformancetooltip>Отображает подробную информацию о производительности Soundproof Walls.\n\nПримечание: Эта настройка не синхронизируется с другими игроками при использовании "Синхронизировать настройки" (вкладка "Общие").</spw_debugperformancetooltip>
 
@@ -526,6 +536,9 @@
 	<spw_debugchannelinfo>Показывать информацию о канале</spw_debugchannelinfo>
 	<spw_debugchannelinfotooltip>Расширяет настройку "Показывать играющие звуки", также отображая усиление, тон, дальность, расстояние, заглушение и препятствия для всех активно играющих звуков.\n\nПримечание: Если "Показывать играющие звуки" отключено, эта информация выводится в консоль Barotrauma.\n\nПримечание: Эта настройка не синхронизируется с другими игроками при использовании "Синхронизировать настройки" (вкладка "Общие").</spw_debugchannelinfotooltip>
 
+	<spw_debugreverbarea>Показывать область реверберации</spw_debugreverbarea>
+	<spw_debugreverbareatooltip>Отображает визуальное представление текущей области реверберации.\n\nПримечание: Требует включения "Трассировка области реверберации" (вкладка "Динамический").\n\nПримечание: Эта настройка требует включения читов, так как в противном случае её можно использовать для навигации в тёмных участках.\n\nПримечание: Эта настройка не синхронизируется с другими игроками при использовании "Синхронизировать настройки" (вкладка "Общие").</spw_debugreverbareatooltip>
+	
 	<spw_hidesettings>Скрыть кнопку меню</spw_hidesettings>
 	<spw_hidesettingstooltip>Убирает кнопку "Soundproof Walls" из меню паузы. Меню настроек Soundproof Walls всё ещё можно открыть, введя "spw" в консоли.\n\nПримечание: Эта настройка не синхронизируется с другими игроками при использовании "Синхронизировать настройки" (вкладка "Общие").</spw_hidesettingstooltip>
 
@@ -552,6 +565,8 @@
 	<spw_componentmuffleupdateintervaltooltip>Время между каждым обновлением препятствий для зацикленных звуков компонентов (например, вентиляция, реактор, двигатель).\n\nПримечание: Увеличение этого значения может улучшить производительность.</spw_componentmuffleupdateintervaltooltip>
 	<spw_statuseffectmuffleupdateinterval>Интервал обновления звуков статус-эффектов</spw_statuseffectmuffleupdateinterval>
 	<spw_statuseffectmuffleupdateintervaltooltip>Время между каждым обновлением препятствий для зацикленных звуков статус-эффектов (например, звуки от недугов).\n\nПримечание: Увеличение этого значения может улучшить производительность.</spw_statuseffectmuffleupdateintervaltooltip>
+	<spw_reverbareaupdateinterval>Интервал обновления области реверберации</spw_reverbareaupdateinterval>
+	<spw_reverbareaupdateintervaltooltip>Время между обновлениями области для эффектов реверберации.\n\nПримечание: Увеличение этого значения может улучшить производительность.</spw_reverbareaupdateintervaltooltip>
 	
 	<spw_categorytransitions>Переходы</spw_categorytransitions>
 	<spw_disablevanillafadeout>Отключить ванильное затухание</spw_disablevanillafadeout>
@@ -560,6 +575,8 @@
 	<spw_gaintransitionfactortooltip>Насколько громкость звука может изменяться в секунду. Значение ноль отключает эту функцию для мгновенных переходов.</spw_gaintransitionfactortooltip>
 	<spw_pitchtransitionfactor>Скорость перехода тона</spw_pitchtransitionfactor>
 	<spw_pitchtransitionfactortooltip>Насколько тон звука может изменяться в секунду. Значение ноль отключает эту функцию для мгновенных переходов.</spw_pitchtransitionfactortooltip>
+	<spw_reverbareatransitionfactor>Скорость перехода области реверберации</spw_reverbareatransitionfactor>
+	<spw_reverbareatransitionfactortooltip>Насколько площадь, используемая для эффектов реверберации, может изменяться в секунду. Значение ноль отключает эту функцию для мгновенных переходов.</spw_reverbareatransitionfactortooltip>
 	<spw_airreverbgaintransitionfactor>Скорость перехода реверберации в помещении</spw_airreverbgaintransitionfactor>
 	<spw_airreverbgaintransitionfactortooltip>Насколько усиление эффекта реверберации в помещении может изменяться в секунду. Значение ноль отключает эту функцию для мгновенных переходов.</spw_airreverbgaintransitionfactortooltip>
 	<spw_hydrophonereverbgaintransitionfactor>Скорость перехода реверберации гидрофонов</spw_hydrophonereverbgaintransitionfactor>

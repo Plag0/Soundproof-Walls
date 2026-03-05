@@ -79,7 +79,9 @@
 	<spw_dynamicreverbtooltip>Activa los efectos de reverberación en interiores y exteriores. Si está activado, los sonidos reverberan dinámicamente según el tamaño y la amplitud de audio combinada de su entorno (es decir, los ecos son más fuertes en espacios más grandes y silenciosos).</spw_dynamicreverbtooltip>
 	<spw_dynamicreverbbloom>Expansión de Reverberación</spw_dynamicreverbbloom>
 	<spw_dynamicreverbbloomtooltip>Hace que el efecto de reverberación se expanda dramáticamente en respuesta a sonidos fuertes en áreas confinadas.</spw_dynamicreverbbloomtooltip>
-	<spw_dynamicreverbwatersubtractsarea>Área de Reverberación Dinámica</spw_dynamicreverbwatersubtractsarea>
+	<spw_dynamicreverbraycastarea>Área de Reverb por Trazado de Rayos</spw_dynamicreverbraycastarea>
+	<spw_dynamicreverbraycastareatooltip>Usa el trazado de rayos para calcular el área del espacio y obtener el sonido de eco más realista y preciso. Si está desactivado, se utiliza en su lugar el área combinada de todos los cascos conectados.\n\nNota: Puede afectar ligeramente el rendimiento.</spw_dynamicreverbraycastareatooltip>
+	<spw_dynamicreverbwatersubtractsarea>Área de Reverberación Contextual</spw_dynamicreverbwatersubtractsarea>
 	<spw_dynamicreverbwatersubtractsareatooltip>Calcula la reverberación usando el área de aire cuando se está fuera del agua, o el área de agua cuando se está sumergido. Si está desactivado, usa el área de ambos.</spw_dynamicreverbwatersubtractsareatooltip>
 	<spw_dynamicreverbminarea>Área Mínima de Reverberación</spw_dynamicreverbminarea>
 	<spw_dynamicreverbminareatooltip>El área combinada mínima de las habitaciones conectadas alrededor del oyente necesaria para que se aplique la reverberación.</spw_dynamicreverbminareatooltip>
@@ -488,11 +490,16 @@
 	<spw_pitchtab>Tono</spw_pitchtab>
 	<spw_pitchenabled>Activar Tono</spw_pitchenabled>
 	<spw_pitchenabledtooltip>Activa o desactiva globalmente todos los efectos de tono.\n\nNota: Puede ser útil como una solución rápida para interacciones de tono inusuales con sonidos de otros mods.</spw_pitchenabledtooltip>
+	<spw_dopplereffect>Efecto Doppler</spw_dopplereffect>
+	<spw_dopplereffecttooltip>Activa o desactiva el efecto Doppler. Si está activado, el tono del sonido se ajusta según la velocidad relativa de la fuente de sonido y el oyente.\n\nNota: La velocidad del sonido en el agua es diferente a la velocidad del sonido en el aire.</spw_dopplereffecttooltip>
 	<spw_pitchstatuseffectsounds>Tono en Sonidos de Efectos de Estado</spw_pitchstatuseffectsounds>
 	<spw_pitchstatuseffectsoundstooltip>Activa el cambio de tono para los sonidos reproducidos por efectos de estado XML.</spw_pitchstatuseffectsoundstooltip>
 	<spw_pitchwithdistance>Tono con Distancia</spw_pitchwithdistance>
 	<spw_pitchwithdistancetooltip>Baja dinámicamente el tono de los sonidos amortiguados según su distancia.\n\nNota: No se aplica a sonidos continuos ni al chat de proximidad.\n\nNota: Se acumula aditivamente con otros multiplicadores de tono.</spw_pitchwithdistancetooltip>
-	
+
+	<dopplereffectstrengthmultiplier>Fuerza del Efecto Doppler</dopplereffectstrengthmultiplier>
+	<dopplereffectstrengthmultipliertooltip>La fuerza del efecto Doppler. Valores más altos crean un cambio de tono más exagerado.</dopplereffectstrengthmultipliertooltip>
+
 	<spw_divingsuitpitch>Tono con Traje de Buceo</spw_divingsuitpitch>
 	<spw_divingsuitpitchtooltip>El tono de los sonidos al usar un traje de buceo.\n\nNota: Se acumula aditivamente con otros multiplicadores de tono.</spw_divingsuitpitchtooltip>
 	<spw_submergedpitch>Tono Sumergido</spw_submergedpitch>
@@ -517,6 +524,9 @@
 	<!-- Advanced -->
 	<spw_advancedtab>Avanzado</spw_advancedtab>
 
+	<spw_projectilesounds>Sonidos de Proyectiles</spw_projectilesounds>
+	<spw_projectilesoundstooltip>Añade sonidos únicos a los proyectiles disparados desde las torretas.\n\nNota: Este ajuste es experimental y se usó principalmente para probar la opción "Efecto Doppler" (pestaña Tono).</spw_projectilesoundstooltip>
+
 	<spw_debugperformance>Mostrar Rendimiento</spw_debugperformance>
 	<spw_debugperformancetooltip>Muestra información detallada del rendimiento de Soundproof Walls.\n\nNota: Este ajuste no se sincroniza con otros jugadores al usar "Sincronizar Ajustes" (pestaña General).</spw_debugperformancetooltip>
 
@@ -525,6 +535,9 @@
 
 	<spw_debugchannelinfo>Mostrar Información del Canal</spw_debugchannelinfo>
 	<spw_debugchannelinfotooltip>Extiende el ajuste "Mostrar Sonidos en Reproducción" para mostrar también la ganancia, tono, alcance, distancia, amortiguación y obstrucciones de todos los sonidos en reproducción activa.\n\nNota: Si "Mostrar Sonidos en Reproducción" está desactivado, esta información se registra en la consola de Barotrauma.\n\nNota: Este ajuste no se sincroniza con otros jugadores al usar "Sincronizar Ajustes" (pestaña General).</spw_debugchannelinfotooltip>
+
+	<spw_debugreverbarea>Mostrar Área de Reverberación</spw_debugreverbarea>
+	<spw_debugreverbareatooltip>Muestra una representación visual del área de reverberación actual.\n\nNota: Requiere que "Área de Reverb por Trazado de Rayos" (pestaña Dinámico) esté activado.\n\nNota: Este ajuste requiere que los trucos estén activados, ya que de lo contrario se puede usar para navegar en áreas oscuras.\n\nNota: Este ajuste no se sincroniza con otros jugadores al usar "Sincronizar Ajustes" (pestaña General).</spw_debugreverbareatooltip>
 
 	<spw_hidesettings>Ocultar Botón del Menú</spw_hidesettings>
 	<spw_hidesettingstooltip>Elimina el botón "Soundproof Walls" del menú de pausa. Aún se puede acceder al menú de ajustes de Soundproof Walls escribiendo "spw" en la consola.\n\nNota: Este ajuste no se sincroniza con otros jugadores al usar "Sincronizar Ajustes" (pestaña General).</spw_hidesettingstooltip>
@@ -552,6 +565,8 @@
 	<spw_componentmuffleupdateintervaltooltip>La cantidad de tiempo entre cada actualización de obstrucción para los sonidos continuos de componentes (p. ej., ventilación, reactor, motor).\n\nNota: Aumentar este valor puede mejorar el rendimiento.</spw_componentmuffleupdateintervaltooltip>
 	<spw_statuseffectmuffleupdateinterval>Intervalo de Actualización de Sonido de Efecto de Estado</spw_statuseffectmuffleupdateinterval>
 	<spw_statuseffectmuffleupdateintervaltooltip>La cantidad de tiempo entre cada actualización de obstrucción para los sonidos continuos de efectos de estado (p. ej., sonidos de aflicciones).\n\nNota: Aumentar este valor puede mejorar el rendimiento.</spw_statuseffectmuffleupdateintervaltooltip>
+	<spw_reverbareaupdateinterval>Intervalo de Actualización del Área de Reverb</spw_reverbareaupdateinterval>
+	<spw_reverbareaupdateintervaltooltip>La cantidad de tiempo entre cada actualización del área para los efectos de reverberación.\n\nNota: Aumentar este valor puede mejorar el rendimiento.</spw_reverbareaupdateintervaltooltip>
 	
 	<spw_categorytransitions>Transiciones</spw_categorytransitions>
 	<spw_disablevanillafadeout>Desactivar Desvanecimiento Vanilla</spw_disablevanillafadeout>
@@ -560,6 +575,8 @@
 	<spw_gaintransitionfactortooltip>Cuánto puede cambiar el volumen de un sonido por segundo. Un valor de cero desactiva esta función para transiciones instantáneas.</spw_gaintransitionfactortooltip>
 	<spw_pitchtransitionfactor>Velocidad de Transición de Tono</spw_pitchtransitionfactor>
 	<spw_pitchtransitionfactortooltip>Cuánto puede cambiar el tono de un sonido por segundo. Un valor de cero desactiva esta función para transiciones instantáneas.</spw_pitchtransitionfactortooltip>
+	<spw_reverbareatransitionfactor>Velocidad de Transición del Área de Reverb</spw_reverbareatransitionfactor>
+	<spw_reverbareatransitionfactortooltip>Cuánto puede cambiar por segundo el área utilizada para los efectos de reverberación. Un valor de cero desactiva esta función para transiciones instantáneas.</spw_reverbareatransitionfactortooltip>
 	<spw_airreverbgaintransitionfactor>Velocidad de Transición de Reverb Interior</spw_airreverbgaintransitionfactor>
 	<spw_airreverbgaintransitionfactortooltip>Cuánto puede cambiar la ganancia del efecto de reverberación interior por segundo. Un valor de cero desactiva esta función para transiciones instantáneas.</spw_airreverbgaintransitionfactortooltip>
 	<spw_hydrophonereverbgaintransitionfactor>Velocidad de Transición de Reverb de Hidrófono</spw_hydrophonereverbgaintransitionfactor>
