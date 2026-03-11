@@ -1359,10 +1359,6 @@ namespace SoundproofWalls
             if (IsLoud) Plugin.Sidechain.StartRelease(thisSidechainStartingStrength, thisSidechainRelease, SoundInfo.CustomSound);
             else if (!IsLoud) mult *= 1 - Plugin.Sidechain.SidechainMultiplier;
 
-            // Master volume multiplier.
-            if (AudioIsFlow) mult *= config.FlowSoundVolumeMultiplier;
-            else if (AudioIsFire) mult *= config.FireSoundVolumeMultiplier;
-
             // Fade flow and fire sounds in. Attempts to prevent the channels spamming on and off.
             if (IsFirstIteration && config.GainTransitionFactor > 0)
             {
@@ -1382,12 +1378,14 @@ namespace SoundproofWalls
             if (transitionFactor > 0 && !IsFirstIteration && Plugin.Sidechain.SidechainMultiplier <= 0)
             {
                 float maxStep = (float)(transitionFactor * Timing.Step);
-                Gain = Util.SmoothStep(Gain, targetGain, maxStep);
+                targetGain = Util.SmoothStep(Gain, targetGain, maxStep);
             }
-            else
-            {
-                Gain = targetGain;
-            }
+
+            // Master volume multipliers, unaffected by transition factor.
+            if (AudioIsFlow) targetGain *= config.FlowSoundVolumeMultiplier;
+            else if (AudioIsFire) targetGain *= config.FireSoundVolumeMultiplier;
+
+            Gain = targetGain;
         }
 
         private void UpdateFlowFirePitch()

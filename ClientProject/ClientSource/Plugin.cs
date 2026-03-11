@@ -2438,7 +2438,7 @@ namespace SoundproofWalls
             for (int i = 0; i < SoundPlayer.flowSoundChannels.Count(); i++)
             {
                 SoundChannel channel = SoundPlayer.flowSoundChannels[i];
-                if (channel == null || GameMain.Instance.Paused) { continue; }
+                if (channel == null) { continue; }
                 ChannelInfoManager.EnsureUpdateChannelInfo(channel);
             }
         }
