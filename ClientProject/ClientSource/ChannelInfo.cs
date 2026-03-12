@@ -499,7 +499,11 @@ namespace SoundproofWalls
                 else
                 {
                     if (Item != null) sourceVelocity = Item.body?.LinearVelocity ?? Vector2.Zero;
-                    else if (ChannelCharacter != null) sourceVelocity = Util.GetCharacterHead(ChannelCharacter).body?.LinearVelocity ?? Vector2.Zero;
+                    else if (ChannelCharacter != null && 
+                        !ChannelCharacter.IsDead && 
+                        ChannelCharacter.Enabled && 
+                        !ChannelCharacter.Removed) // Important to check these things so we don't access null limb properties in GetCharacterHead.
+                        sourceVelocity = Util.GetCharacterHead(ChannelCharacter)?.body?.LinearVelocity ?? Vector2.Zero;
                 }
             }
             if (_velocityEnabled) 

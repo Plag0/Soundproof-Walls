@@ -22,8 +22,41 @@ namespace SoundproofWalls
 
         public static Limb GetCharacterHead(Character character)
         {
-            // It's weird defaulting to the body but who knows what people might mod into the game.
-            return character.AnimController.GetLimb(LimbType.Head) ?? character.AnimController.MainLimb;
+            Limb? limb;
+
+            /// Just in case, try-catch to ensure the crash reported in the following posts can't happen anymore:
+            /// https://steamcommunity.com/workshop/filedetails/discussion/3153737715/4204742223861924530/?tscn=1773285249#c803467726262715925
+            /// https://steamcommunity.com/workshop/filedetails/discussion/3153737715/4204742223861924530/?tscn=1773285249#c807971027746430907
+            /// This bug was fixed by ensuring the character passed into this function was not dead, disabled, or removed.
+            /// Otherwise, it's possible to get a NullReferenceException from accessing Limb properties.
+            try
+            {
+                // Default to MainLimb if head doesn't exist, cus who knows what people might mod into the game.
+                limb = character?.AnimController?.GetLimb(LimbType.Head) ?? character?.AnimController?.MainLimb;
+            }
+            catch (NullReferenceException exception)
+            {
+                limb = null;
+                DebugConsole.AddWarning($"[SoundproofWalls] NullReferenceException when getting limb for character: {character}, " +
+                    $"ensure the character is not dead, disabled, or removed. Please report this issue.\n{exception}");
+            }
+
+            /// If something goes really wrong, pick the first valid limb in the world to prevent a null return value and crash.
+            /// Disgusting, I know. But chances are this will never happen.
+            if (limb == null)
+            {
+                foreach (Character c in Character.CharacterList)
+                {
+                    if (c?.AnimController?.Limbs != null)
+                    {
+                        limb = c.AnimController.MainLimb;
+                        break;
+                    }
+                }
+                DebugConsole.AddWarning($"[SoundproofWalls] Failed to find correct limb for character: {character}, using random limb instead.");
+            }
+
+            return limb!;
         }
 
         public static Vector2 LocalizePosition(Vector2 worldPos, Submarine? sub)
