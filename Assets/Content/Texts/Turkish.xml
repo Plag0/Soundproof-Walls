@@ -545,6 +545,9 @@
 	<spw_remembermenutabandscroll>Menü Konumunu Hatırla</spw_remembermenutabandscroll>
 	<spw_remembermenutabandscrolltooltip>Menüyü en son ziyaret edilen kaydırma konumunda ve sekmede açın.\n\nNot: Bu ayar, "Ayarları Senkronize Et" (Genel sekmesi) kullanılırken diğer oyuncularla senkronize edilmez.</spw_remembermenutabandscrolltooltip>
 
+	<spw_autosimultaneousinstances>Otomatik Eşzamanlı Örnekler</spw_autosimultaneousinstances>
+	<spw_autosimultaneousinstancestooltip>Bir sesin aynı anda çalabilen örnek sayısını süresine bağlı olarak dinamik bir şekilde ayarlar. Daha uzun sesler, daha az sayıda eşzamanlı örnekle sınırlandırılır. Bu, dinleyiciye fark ettirmeden ses sayısını seçici olarak azaltmayı sağlayan bir optimizasyondur.\n\nNot: Bu ayarı etkinleştirmek performansı artırabilir.\n\nNot: Bu ayar, "Maksimum Eşzamanlı Örnek" (N) değerini üst sınır olarak kullanır:\nmax = min(N, N / süre).</spw_autosimultaneousinstancestooltip>
+
 	<spw_maxsourcecount>Maksimum Çalan Ses</spw_maxsourcecount>
 	<spw_maxsourcecounttooltip>Aynı anda kaç tane sesin çalabileceği. Daha yüksek değerler seslerin atlanmasını önler ancak performansı etkileyebilir.</spw_maxsourcecounttooltip>
 	
@@ -554,6 +557,9 @@
 	<spw_categoryintervals>Güncelleme Aralıkları</spw_categoryintervals>
 	<spw_updatenonloopingsounds>Döngüsel Olmayan Sesleri Güncelle</spw_updatenonloopingsounds>
 	<spw_updatenonloopingsoundstooltip>Döngüsel olmayan seslerin çalarken değiştirilmesine izin vererek, daha önce kesilemeyen seslere kesilme potansiyeli kazandırın.\n\nNot: Performansı biraz etkileyebilir.</spw_updatenonloopingsoundstooltip>
+
+	<spw_astarcacheupdateinterval>A* Önbellek Güncelleme Aralığı</spw_astarcacheupdateinterval>
+	<spw_astarcacheupdateintervaltooltip>Dinamik modda her bir A* yol bulma algoritması önbellek sıfırlaması arasındaki süre.\n\nBir ses dinleyiciye giden en uygun yolu bulduğunda sonuç bir önbelleğe kaydedilir, böylece o gövdedeki sonraki seslerin yeniden hesaplama yapmadan aynı sonucu kullanmasına olanak tanınır. Ortamdaki değişikliklerin (ör. duvarlardaki delikler) yeni yollara yansıtılabilmesi için bu önbelleğin sık sık temizlenmesi önemlidir.\n\nNot: Bu değeri artırmak performansı artırabilir.\n\nNot: Önbellek, bu aralıktan bağımsız olarak her kapı açıldığında veya kapandığında temizlenir.</spw_astarcacheupdateintervaltooltip>
 	
 	<spw_nonloopingsoundmuffleupdateinterval>Döngüsel Olmayan Ses Güncelleme Aralığı</spw_nonloopingsoundmuffleupdateinterval>
 	<spw_nonloopingsoundmuffleupdateintervaltooltip>Döngüsel olmayan sesler için her engel güncellemesi arasındaki süre.\n\nNot: "Döngüsel Olmayan Sesleri Güncelle"nin etkin olmasını gerektirir.\n\nNot: Bu değeri artırmak performansı artırabilir.</spw_nonloopingsoundmuffleupdateintervaltooltip>

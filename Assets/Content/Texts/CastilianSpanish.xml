@@ -545,6 +545,9 @@
 	<spw_remembermenutabandscroll>Recordar Posición del Menú</spw_remembermenutabandscroll>
 	<spw_remembermenutabandscrolltooltip>Abre el menú en la última posición de desplazamiento y pestaña visitada.\n\nNota: Este ajuste no se sincroniza con otros jugadores al usar "Sincronizar Ajustes" (pestaña General).</spw_remembermenutabandscrolltooltip>
 
+	<spw_autosimultaneousinstances>Instancias Simultáneas Automáticas</spw_autosimultaneousinstances>
+	<spw_autosimultaneousinstancestooltip>Ajusta dinámicamente cuántas instancias de un sonido pueden reproducirse al mismo tiempo, según la duración. Los sonidos más largos se limitan a un número menor de instancias simultáneas. Esta es una optimización para reducir selectivamente el recuento de sonidos sin que resulte evidente para el oyente.\n\nNota: Activar este ajuste puede mejorar el rendimiento.\n\nNota: Este ajuste usa "Máximo de Instancias Simultáneas" (N) como límite:\nmáx = mín(N, N / duración).</spw_autosimultaneousinstancestooltip>
+
 	<spw_maxsourcecount>Máximo de Sonidos en Reproducción</spw_maxsourcecount>
 	<spw_maxsourcecounttooltip>Cuántos sonidos pueden reproducirse al mismo tiempo. Valores más altos evitan que se omitan sonidos pero pueden afectar al rendimiento.</spw_maxsourcecounttooltip>
 	
@@ -554,6 +557,9 @@
 	<spw_categoryintervals>Intervalos de Actualización</spw_categoryintervals>
 	<spw_updatenonloopingsounds>Actualizar Sonidos no Cíclicos</spw_updatenonloopingsounds>
 	<spw_updatenonloopingsoundstooltip>Permite modificar los sonidos no cíclicos mientras se están reproduciendo, dando la posibilidad de cortar sonidos que antes no podían ser interrumpidos.\n\nNota: Puede afectar ligeramente al rendimiento.</spw_updatenonloopingsoundstooltip>
+
+	<spw_astarcacheupdateinterval>Intervalo de Actualización de Caché A*</spw_astarcacheupdateinterval>
+	<spw_astarcacheupdateintervaltooltip>La cantidad de tiempo entre cada restablecimiento de la caché del algoritmo de búsqueda de rutas A* en el modo Dinámico.\n\nCuando un sonido encuentra la ruta óptima hacia el oyente, el resultado se guarda en una caché, lo que permite que los sonidos posteriores en ese casco usen el mismo resultado sin tener que recalcularlo. Es importante limpiar esta caché con frecuencia para que los cambios en el entorno (p. ej., agujeros en las paredes) se reflejen en las nuevas rutas.\n\nNota: Aumentar este valor puede mejorar el rendimiento.\n\nNota: La caché se limpia cada vez que una puerta se abre o se cierra, independientemente de este intervalo.</spw_astarcacheupdateintervaltooltip>
 	
 	<spw_nonloopingsoundmuffleupdateinterval>Intervalo de Actualización de Sonidos no Cíclicos</spw_nonloopingsoundmuffleupdateinterval>
 	<spw_nonloopingsoundmuffleupdateintervaltooltip>La cantidad de tiempo entre cada actualización de obstrucción para los sonidos no cíclicos.\n\nNota: Requiere que "Actualizar Sonidos no Cíclicos" esté activado.\n\nNota: Aumentar este valor puede mejorar el rendimiento.</spw_nonloopingsoundmuffleupdateintervaltooltip>

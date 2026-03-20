@@ -298,11 +298,13 @@ namespace SoundproofWalls
         public bool ShowReverbArea { get; set; } = false; // See the ray casted area used for reverb size.
         public bool HideSettingsButton { get; set; } = false;
         public bool RememberMenuTabAndScroll { get; set; } = true;
+        public bool AutoSimultaneousInstances { get; set; } = false; // Dynamically selects the max instances for each sound based on its duration
         public int MaxSourceCount { get; set; } = 128; // How many sounds can be playing at once. Vanilla is 32 (cite SoundManager.cs)
         public int MaxSimultaneousInstances { get; set; } = 64; // How many instances of the same sound clip can be playing at the same time. Vanilla is 5 (cite Sound.cs)
 
-            // Update Intervals
+        // Update Intervals
         public bool UpdateNonLoopingSounds { get; set; } = true; // Updates the gain and pitch of non looping "single-shot" sounds every tick. Muffle is updated every NonLoopingSoundMuffleUpdateInterval.
+        public float AStarCacheUpdateInterval { get; set; } = 0.2f;
         public float VoiceMuffleUpdateInterval { get; set; } = 0.01f;
         public float NonLoopingSoundMuffleUpdateInterval { get; set; } = 0.01f; // Only applied if UpdateNonLoopingSounds is enabled.
         public float OpenALEffectsUpdateInterval { get; set; } = 0.01f; // Recommend lowering if having trouble with reverb amplitude gates

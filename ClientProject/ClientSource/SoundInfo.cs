@@ -54,10 +54,17 @@ namespace SoundproofWalls
             PerformanceProfiler.Instance.StartTimingEvent(ProfileEvents.SoundInfoCtor);
 
             Sound = sound;
-
             Config config = ConfigManager.Config;
-
             string filename = sound.Filename;
+
+            int maxInstances = config.MaxSimultaneousInstances;
+            if (config.AutoSimultaneousInstances) 
+            {
+                int soundDuration = Sound.DurationSeconds > 1 ? (int)Sound.DurationSeconds : 1;
+                maxInstances = Math.Min(maxInstances, Math.Max(maxInstances / soundDuration, 1));
+            }
+            Sound.MaxSimultaneousInstances = maxInstances;
+
             if (Util.StringHasKeyword(filename, config.IgnoredSounds))
             {
                 IgnoreAll = true;
@@ -77,8 +84,6 @@ namespace SoundproofWalls
                 PropagateWalls = !IgnoreAll && !IgnoreLowpass && Util.StringHasKeyword(filename, config.PropagatingSounds);
                 IgnoreHydrophoneMuffle = Util.StringHasKeyword(filename, config.HydrophoneMuffleIgnoredSounds);
                 IgnoreHydrophoneVisuals = Util.StringHasKeyword(filename, config.HydrophoneVisualIgnoredSounds);
-
-                Sound.MaxSimultaneousInstances = config.MaxSimultaneousInstances;
             }
 
             CustomSound = GetCustomSound(filename);

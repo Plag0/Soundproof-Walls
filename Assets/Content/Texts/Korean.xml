@@ -545,6 +545,9 @@
 	<spw_remembermenutabandscroll>메뉴 위치 기억</spw_remembermenutabandscroll>
 	<spw_remembermenutabandscrolltooltip>마지막으로 방문한 탭과 스크롤 위치에서 메뉴를 엽니다.\n\n참고: 이 설정은 "설정 동기화"('일반' 탭) 사용 시 다른 플레이어와 동기화되지 않습니다.</spw_remembermenutabandscrolltooltip>
 
+	<spw_autosimultaneousinstances>자동 동시 인스턴스</spw_autosimultaneousinstances>
+	<spw_autosimultaneousinstancestooltip>재생 시간에 따라 동시에 재생될 수 있는 사운드의 인스턴스 수를 동적으로 조절합니다. 재생 시간이 긴 사운드일수록 동시에 재생할 수 있는 인스턴스 수가 더 적게 제한됩니다. 이는 청자가 눈치채지 못하게 사운드 수를 선택적으로 줄이기 위한 최적화 기능입니다.\n\n참고: 이 설정을 활성화하면 성능이 향상될 수 있습니다.\n\n참고: 이 설정은 "최대 동시 인스턴스"(N)를 상한선으로 사용합니다:\nmax = min(N, N / duration).</spw_autosimultaneousinstancestooltip>
+
 	<spw_maxsourcecount>최대 동시 재생 사운드</spw_maxsourcecount>
 	<spw_maxsourcecounttooltip>동시에 재생할 수 있는 사운드의 수입니다. 값이 높을수록 사운드가 건너뛰는 것을 방지하지만 성능에 영향을 줄 수 있습니다.</spw_maxsourcecounttooltip>
 	
@@ -554,6 +557,9 @@
 	<spw_categoryintervals>업데이트 간격</spw_categoryintervals>
 	<spw_updatenonloopingsounds>비반복 사운드 업데이트</spw_updatenonloopingsounds>
 	<spw_updatenonloopingsoundstooltip>비반복 사운드가 재생 중에 수정될 수 있도록 하여, 이전에 중단될 수 없었던 사운드를 중단할 수 있게 합니다.\n\n참고: 성능에 약간의 영향을 줄 수 있습니다.</spw_updatenonloopingsoundstooltip>
+
+	<spw_astarcacheupdateinterval>A* 캐시 업데이트 간격</spw_astarcacheupdateinterval>
+	<spw_astarcacheupdateintervaltooltip>동적 모드에서 각 A* 경로 탐색 알고리즘 캐시가 초기화되는 사이의 시간입니다.\n\n사운드가 청자에게 도달하는 최적의 경로를 찾으면 그 결과가 캐시에 저장되어, 해당 선체 내의 후속 사운드들이 경로를 다시 계산하지 않고 동일한 결과를 사용할 수 있게 합니다. 환경의 변화(예: 벽에 난 구멍)가 새로운 경로에 반영될 수 있도록 이 캐시를 자주 지워주는 것이 중요합니다.\n\n참고: 이 값을 높이면 성능이 향상될 수 있습니다.\n\n참고: 이 간격과 관계없이 문이 열리거나 닫힐 때마다 캐시가 지워집니다.</spw_astarcacheupdateintervaltooltip>
 	
 	<spw_nonloopingsoundmuffleupdateinterval>비반복 사운드 업데이트 간격</spw_nonloopingsoundmuffleupdateinterval>
 	<spw_nonloopingsoundmuffleupdateintervaltooltip>비반복 사운드의 각 장애물 업데이트 사이의 시간입니다.\n\n참고: "비반복 사운드 업데이트"가 활성화되어 있어야 합니다.\n\n참고: 이 값을 높이면 성능이 향상될 수 있습니다.</spw_nonloopingsoundmuffleupdateintervaltooltip>

@@ -327,7 +327,6 @@ namespace SoundproofWalls
             LongName = channel.Sound.Filename.ToLower();
             ShortName = Path.GetFileName(LongName);
             lastMuffleType = MuffleType.None;
-            channel.Sound.MaxSimultaneousInstances = ConfigManager.Config.MaxSimultaneousInstances;
 
             ResolveChannelContext(channelHull, statusEffect, itemComp, speakingClient, messageType);
             SetChannelCharacter(speakingClient);
@@ -796,7 +795,7 @@ namespace SoundproofWalls
                 Vector2 startPos = bothOutside ? Listener.WorldPos / 100 : Listener.SimPos;
                 Vector2 endPos = bothOutside ? WorldPos / 100 : SimPos;
                 IEnumerable<Body> bodies = Submarine.PickBodies(startPos, endPos, collisionCategory: Physics.CollisionWall | Physics.CollisionLevel);
-                
+
                 // Only count collisions for unique wall orientations.
                 List<float> yWalls = new List<float>();
                 List<float> xWalls = new List<float>();
@@ -862,17 +861,17 @@ namespace SoundproofWalls
             }
 
             // 4. Get path obstructions.
-            List<SoundPathfinder.PathfindingResult> topResults = SoundPathfinder.FindShortestPaths(LocalPos, soundHull, Listener.LocalPos, listenerHull, listenerHull?.Submarine, maxRawDistance: Channel.Far * 3, ignoredGap: ignoredGap);
-            if (topResults.Count > 0)
+            var bestPath = SoundPathfinder.FindShortestPath(LocalPos, soundHull, Listener.LocalPos, listenerHull, maxRawDistance: Channel.Far * 3, ignoredGap: ignoredGap);
+            bool isPathValid = bestPath.RawDistance != float.MaxValue;
+            if (isPathValid)
             {
-                SoundPathfinder.PathfindingResult bestResult = topResults[0];
-                numDoorObstructions = bestResult.ClosedDoorCount;
+                numDoorObstructions = bestPath.ClosedDoorCount;
                 numWallObstructions += numDoorObstructions / 2; // Every 2 doors counts as an extra wall.
-                numWaterSurfaceObstructions = bestResult.WaterSurfaceCrossings;
+                numWaterSurfaceObstructions = bestPath.WaterCrossings;
                 // Assign approximate distance if there's an unobstructed path to the listener. Approximate distance is used for gain attenuation.
                 if (numDoorObstructions <= 0 && numWaterSurfaceObstructions <= 0)
                 {
-                    approximateDistance = bestResult.RawDistance;
+                    approximateDistance = bestPath.RawDistance;
                 }
             }
 
@@ -911,7 +910,7 @@ namespace SoundproofWalls
 
                 for (int i = 0; i < numWallObstructions; i++)
                 {
-                    if (!bothInWater && (noPath || Channel?.Far < approximateDistance || topResults.Count <= 0)) { AddObstruction(Obstruction.WallThick, "Occlusion - no path"); }
+                    if (!bothInWater && (noPath || Channel?.Far < approximateDistance || !isPathValid)) { AddObstruction(Obstruction.WallThick, "Occlusion - no path"); }
                     else { AddObstruction(Obstruction.WallThin, "Occlusion - with path"); } // Wall occlusion isn't as strong if there's a path to the listener or they are both in the same body of water.
                 }
             }

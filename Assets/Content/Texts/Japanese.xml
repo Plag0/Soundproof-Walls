@@ -545,6 +545,9 @@
 	<spw_remembermenutabandscroll>メニュー位置を記憶</spw_remembermenutabandscroll>
 	<spw_remembermenutabandscrolltooltip>最後に訪れたスクロール位置とタブでメニューを開きます。\n\n注意：この設定は、「設定を同期」（全般タブ）を使用しても他のプレイヤーと同期されません。</spw_remembermenutabandscrolltooltip>
 
+	<spw_autosimultaneousinstances>自動同時インスタンス数</spw_autosimultaneousinstances>
+	<spw_autosimultaneousinstancestooltip>再生時間に基づいて、同じサウンドのインスタンスが同時に再生できる数を動的に調整します。再生時間が長いサウンドほど、同時に再生できるインスタンス数が少なく制限されます。これは、リスナーに違和感を与えずにサウンド数を効果的に減らすための最適化です。\n\n注意：この設定を有効にすると、パフォーマンスが向上する可能性があります。\n\n注意：この設定は「最大同時インスタンス数」（N）を上限として使用します：\nmax = min(N, N / 再生時間)。</spw_autosimultaneousinstancestooltip>
+
 	<spw_maxsourcecount>最大再生サウンド数</spw_maxsourcecount>
 	<spw_maxsourcecounttooltip>同時に再生できるサウンドの数。値を高くするとサウンドがスキップされるのを防ぎますが、パフォーマンスに影響を与える可能性があります。</spw_maxsourcecounttooltip>
 	
@@ -554,6 +557,9 @@
 	<spw_categoryintervals>更新間隔</spw_categoryintervals>
 	<spw_updatenonloopingsounds>非ループサウンドを更新</spw_updatenonloopingsounds>
 	<spw_updatenonloopingsoundstooltip>非ループサウンドが再生中に変更されることを許可し、以前は中断できなかったサウンドにカットオフの可能性を与えます。\n\n注意：パフォーマンスにわずかに影響を与える可能性があります。</spw_updatenonloopingsoundstooltip>
+
+	<spw_astarcacheupdateinterval>A*キャッシュ更新間隔</spw_astarcacheupdateinterval>
+	<spw_astarcacheupdateintervaltooltip>ダイナミックモードにおける、A*経路探索アルゴリズムのキャッシュがリセットされるまでの時間。\n\nサウンドがリスナーへの最適な経路を見つけると、その結果はキャッシュに保存され、同じ船殻内の後続のサウンドが再計算せずに同じ結果を使用できるようになります。環境の変化（壁に開いた穴など）が新しい経路に反映されるように、このキャッシュを頻繁にクリアすることが重要です。\n\n注意：この値を増やすとパフォーマンスが向上する可能性があります。\n\n注意：この間隔に関係なく、ドアが開閉するたびにキャッシュはクリアされます。</spw_astarcacheupdateintervaltooltip>
 	
 	<spw_nonloopingsoundmuffleupdateinterval>非ループサウンド更新間隔</spw_nonloopingsoundmuffleupdateinterval>
 	<spw_nonloopingsoundmuffleupdateintervaltooltip>非ループサウンドの各障害物更新間の時間。\n\n注意：「非ループサウンドを更新」が有効である必要があります。\n\n注意：この値を増やすとパフォーマンスが向上する可能性があります。</spw_nonloopingsoundmuffleupdateintervaltooltip>

@@ -4,223 +4,252 @@ using Microsoft.Xna.Framework;
 namespace SoundproofWalls
 {
     /// <summary>
-    /// A utility class to find the shortest/lowest-cost paths for sound to travel between hulls in a submarine.
-    /// It uses an A* search algorithm, treating gaps (doors, breaches) as nodes in a dynamic graph.
+    /// A utility class to find the shortest/lowest-cost path for sound to travel between hulls.
+    /// It uses an A* search algorithm and treats gaps as nodes in a dynamic graph.
+    /// Paths are cached and periodically cleared to avoid redundant searches with simultaneous sounds.
     /// </summary>
     public static class SoundPathfinder
     {
-        // --- Configuration ---
-        public static float PenaltyClosedDoor { get; private set; } = 1000;
-        public static float PenaltyWaterSurface { get; private set; } = 2000;
+        public const float PenaltyClosedDoor = 1000f;
+        public const float PenaltyWaterSurface = 2000f;
 
-        /// <summary>
-        /// Represents the result of a pathfinding operation.
-        /// </summary>
+        // Stores only the stable topology of a path (gap sequence, door/water counts).
+        // Note: NotFound results are not cached because they may be caused by a position-specific maxRawDistance limit.
+        private static readonly Dictionary<PathCacheKey, CachedPath> PathCache = new();
+        private static double _lastCacheClearTime;
+
+        public static void InvalidateCache()
+        {
+            PathCache.Clear();
+            _lastCacheClearTime = Timing.TotalTime;
+        }
+
+        private readonly struct PathCacheKey : IEquatable<PathCacheKey>
+        {
+            public readonly Hull SourceHull;
+            public readonly Hull ListenerHull;
+            public readonly Gap IgnoredGap;
+
+            public PathCacheKey(Hull source, Hull listener, Gap ignoredGap)
+            {
+                SourceHull = source;
+                ListenerHull = listener;
+                IgnoredGap = ignoredGap;
+            }
+
+            public bool Equals(PathCacheKey other) =>
+                SourceHull == other.SourceHull &&
+                ListenerHull == other.ListenerHull &&
+                IgnoredGap == other.IgnoredGap;
+
+            public override bool Equals(object obj) => obj is PathCacheKey other && Equals(other);
+
+            public override int GetHashCode() =>
+                HashCode.Combine(SourceHull, ListenerHull, IgnoredGap);
+        }
+
+        private readonly struct CachedPath
+        {
+            public readonly IReadOnlyList<Gap> Gaps;
+            public readonly int ClosedDoorCount;
+            public readonly int WaterCrossings;
+
+            public CachedPath(List<Gap> gaps, int closedDoorCount, int waterCrossings)
+            {
+                Gaps = gaps;
+                ClosedDoorCount = closedDoorCount;
+                WaterCrossings = waterCrossings;
+            }
+        }
+
         public readonly struct PathfindingResult
         {
             public readonly float RawDistance;
             public readonly int ClosedDoorCount;
-            public readonly int WaterSurfaceCrossings;
+            public readonly int WaterCrossings;
             public readonly Vector2 LastIntersectionPos;
 
-            public PathfindingResult(float rawDist, int doors, int waterCrossings, Vector2 lastIntersection)
+            public PathfindingResult(float rawDistance, int closedDoorCount, int waterCrossings, Vector2 lastIntersection)
             {
-                RawDistance = rawDist;
-                ClosedDoorCount = doors;
-                WaterSurfaceCrossings = waterCrossings;
+                RawDistance = rawDistance;
+                ClosedDoorCount = closedDoorCount;
+                WaterCrossings = waterCrossings;
                 LastIntersectionPos = lastIntersection;
             }
 
-            /// <summary>
-            /// Represents a failed pathfinding attempt.
-            /// </summary>
-            public static PathfindingResult NotFound => new PathfindingResult(float.MaxValue, 0, 0, Vector2.Zero);
+            public static readonly PathfindingResult NotFound = new PathfindingResult(float.MaxValue, 0, 0, Vector2.Zero);
         }
 
         /// <summary>
-        /// Finds the top N shortest/lowest-cost sound paths from a source to a listener,
-        /// where each path is defined by a unique final gap it passes through before reaching the listener's hull.
+        /// Finds the shortest/lowest-cost sound path from a source to a listener.
         /// </summary>
-        /// <param name="sourcePos">The local-space position of the sound source.</param>
+        /// <param name="sourcePos">The local position of the sound source.</param>
         /// <param name="sourceHull">The hull containing the sound source.</param>
-        /// <param name="listenerPos">The local-space position of the listener.</param>
+        /// <param name="listenerPos">The local position of the listener.</param>
         /// <param name="listenerHull">The hull containing the listener.</param>
-        /// <param name="submarine">The submarine context for the search.</param>
-        /// <param name="n">The maximum number of unique paths to return.</param>
         /// <param name="maxRawDistance">The maximum geometric distance a path can have. Paths longer than this are pruned.</param>
-        /// <param name="ignoredGap">A specific gap to ignore when calculating penalties (e.g., a vent the listener is using).</param>
-        /// <returns>An ordered list of PathfindingResult, from best to worst. The list is empty if no paths are found.</returns>
-        public static List<PathfindingResult> FindShortestPaths(Vector2 sourcePos, Hull sourceHull, Vector2 listenerPos, Hull listenerHull, Submarine submarine, int n = 1, float maxRawDistance = float.MaxValue, Gap ignoredGap = null)
+        /// <param name="ignoredGap">A specific gap to ignore when calculating penalties (e.g., door sounds on both sides of the door & and self-eavesdropping).</param>
+        /// <returns>A PathfindingResult representing the best path found, or PathfindingResult.NotFound if no valid path exists.</returns>
+        public static PathfindingResult FindShortestPath(Vector2 sourcePos, Hull sourceHull, Vector2 listenerPos, Hull listenerHull, float maxRawDistance = float.MaxValue, Gap ignoredGap = null)
         {
-            var results = new List<PathfindingResult>();
-            if (sourceHull == null || listenerHull == null || submarine == null || n <= 0)
+            if (sourceHull == null || listenerHull == null)
+                return PathfindingResult.NotFound;
+
+            // Clear the cache periodically to reflect changes in gaps opening in walls and water obstructions.
+            if (Timing.TotalTime >= _lastCacheClearTime + ConfigManager.Config.AStarCacheUpdateInterval)
             {
-                return results;
+                InvalidateCache();
             }
 
-            // --- Case 1: Source and Listener are in the same hull ---
-            // The path is a direct line, with no gaps, doors, or water crossings.
+            // Source and Listener are in the same hull.
             if (sourceHull == listenerHull)
             {
                 float directDistance = Vector2.Distance(sourcePos, listenerPos);
-                if (directDistance <= maxRawDistance)
-                {
-                    // NOTE: LastIntersectionPos is sourcePos as no gaps were traversed.
-                    results.Add(new PathfindingResult(directDistance, 0, 0, sourcePos));
-                }
-                return results;
+                return directDistance <= maxRawDistance
+                    ? new PathfindingResult(directDistance, 0, 0, sourcePos)
+                    : PathfindingResult.NotFound;
             }
 
-            // --- Case 2: Pathfinding through gaps is required ---
-
-            // A* Data Structures
-            var predecessors = new Dictionary<Gap, Gap>();
-            var gScore = new Dictionary<Gap, float>(); // Total cost from start to current node
-            var rawGScore = new Dictionary<Gap, float>(); // Geometric distance cost only, for pruning
-            var openSet = new PriorityQueue<Gap, float>();
-
-            // Initialize scores for all gaps in the submarine.
-            // This is more efficient than checking for key existence repeatedly.
-            foreach (var hull in Hull.HullList.Where(h => h.Submarine == submarine))
+            // Check the cache before running the search. On a hit, recalculate the position-dependent
+            // values from the cached topology to reflect current source and listener positions.
+            var cacheKey = new PathCacheKey(sourceHull, listenerHull, ignoredGap);
+            if (PathCache.TryGetValue(cacheKey, out CachedPath cached))
             {
-                if (hull?.ConnectedGaps == null) continue;
-                foreach (var gap in hull.ConnectedGaps)
-                {
-                    if (gap == null) continue;
-                    gScore[gap] = float.MaxValue;
-                    rawGScore[gap] = float.MaxValue;
-                }
+                (float cachedRawDistance, Vector2 cachedIntersectionPos) =
+                    CalculateAccuratePathDetails(sourcePos, listenerPos, cached.Gaps);
+
+                return cachedRawDistance <= maxRawDistance
+                    ? new PathfindingResult(cachedRawDistance, cached.ClosedDoorCount, cached.WaterCrossings, cachedIntersectionPos)
+                    : PathfindingResult.NotFound;
             }
 
-            // Initialize the open set with the gaps connected to the source hull.
+            var openSet = new PriorityQueue<Gap, float>();
+            var closedSet = new HashSet<Gap>();
+            var predecessors = new Dictionary<Gap, Gap>();
+            var gScore = new Dictionary<Gap, float>();    // Total cost from start to current node
+            var rawGScore = new Dictionary<Gap, float>(); // Geometric distance only, for pruning
+
+            // Cache gaps around listener for early termination. Once all are settled, their optimal costs are known.
+            var listenerGaps = new HashSet<Gap>(listenerHull.ConnectedGaps.Where(g => g != null));
+            int listenerGapsSettled = 0;
+
+            // Seed the open set with gaps connected to the source hull.
             foreach (var startGap in sourceHull.ConnectedGaps)
             {
                 if (startGap == null) continue;
 
                 float initialRawDist = Vector2.Distance(sourcePos, startGap.Position);
-
                 if (initialRawDist > maxRawDistance) continue;
 
                 gScore[startGap] = initialRawDist;
                 rawGScore[startGap] = initialRawDist;
-                float fScore = initialRawDist + Heuristic(startGap, listenerPos);
-                openSet.Enqueue(startGap, fScore);
+                openSet.Enqueue(startGap, initialRawDist + Heuristic(startGap, listenerPos));
                 predecessors[startGap] = null;
             }
 
-            // --- A* Main Loop ---
+            // Main loop.
             while (openSet.TryDequeue(out Gap currentGap, out _))
             {
-                // The cost to reach the threshold of the current gap.
-                float costToReachCurrentRaw = rawGScore[currentGap];
+                // Skip stale duplicate entries left in the queue.
+                if (!closedSet.Add(currentGap)) continue;
 
-                // Calculate the penalty for traversing this gap. If impassable, skip.
+                // Early termination. When every listener-hull gap is settled, their costs are optimal.
+                if (listenerGaps.Contains(currentGap) && ++listenerGapsSettled >= listenerGaps.Count)
+                    break;
+
+                float costToReachCurrentRaw = rawGScore[currentGap];
                 float traversalPenalty = (currentGap == ignoredGap) ? 0f : GetGapTraversalPenalty(currentGap);
                 if (traversalPenalty >= float.MaxValue) continue;
 
-                // The total cost after crossing the current gap.
                 float costAfterCrossingCurrent = gScore[currentGap] + traversalPenalty;
 
-                // Explore neighbors: any other gap in a hull adjacent to the current gap.
-                // This correctly models sound traveling *across* a hull.
-                foreach (var adjacentHull in currentGap.linkedTo.OfType<Hull>())
+                // Explore neighbours (any other gap in a hull adjacent to the current gap)
+                foreach (var linked in currentGap.linkedTo)
                 {
-                    if (adjacentHull?.ConnectedGaps == null) continue;
+                    if (linked is not Hull adjacentHull || adjacentHull.ConnectedGaps == null) continue;
 
                     foreach (var neighborGap in adjacentHull.ConnectedGaps)
                     {
                         if (neighborGap == null || neighborGap == currentGap) continue;
 
-                        // TODO: When converting to local positions, this will need updating.
+                        // No point relaxing a node that is already optimally settled.
+                        if (closedSet.Contains(neighborGap)) continue;
+
                         float segmentDistance = Vector2.Distance(currentGap.Position, neighborGap.Position);
                         float tentativeRawGScore = costToReachCurrentRaw + segmentDistance;
 
-                        // Pruning check: if the raw geometric distance is already too high, abandon this path.
+                        // If the raw geometric distance is already too high, abandon this path.
                         if (tentativeRawGScore > maxRawDistance) continue;
 
                         float tentativeGScore = costAfterCrossingCurrent + segmentDistance;
+                        float currentNeighborGScore = gScore.GetValueOrDefault(neighborGap, float.MaxValue);
 
-                        // If we found a better path to the neighbor, record it.
-                        if (gScore.TryGetValue(neighborGap, out float currentNeighborGScore) && tentativeGScore < currentNeighborGScore)
+                        // If a better path to the neighbour is found, save it.
+                        if (tentativeGScore < currentNeighborGScore)
                         {
                             predecessors[neighborGap] = currentGap;
                             gScore[neighborGap] = tentativeGScore;
                             rawGScore[neighborGap] = tentativeRawGScore;
-                            float fScore = tentativeGScore + Heuristic(neighborGap, listenerPos);
-                            openSet.Enqueue(neighborGap, fScore);
+                            openSet.Enqueue(neighborGap, tentativeGScore + Heuristic(neighborGap, listenerPos));
                         }
                     }
                 }
             }
 
-            // --- Reconstruct and Collect Results ---
-            var potentialEndpoints = new List<(Gap gap, float cost)>();
+            // Find the best settled gap in the listener's hull.
+            Gap bestFinalGap = null;
+            float bestTotalCost = float.MaxValue;
             foreach (var finalGap in listenerHull.ConnectedGaps)
             {
-                if (finalGap == null || !gScore.ContainsKey(finalGap) || gScore[finalGap] == float.MaxValue) continue;
+                if (finalGap == null || !gScore.TryGetValue(finalGap, out float pathCost)) continue;
 
-                // The final cost is the path cost to the gap + penalty for crossing it + final leg to listener.
                 float penalty = (finalGap == ignoredGap) ? 0f : GetGapTraversalPenalty(finalGap);
-                float finalLegDist = Vector2.Distance(finalGap.Position, listenerPos);
-                float totalApproxCost = gScore[finalGap] + penalty + finalLegDist;
+                if (penalty >= float.MaxValue) continue;
 
-                potentialEndpoints.Add((finalGap, totalApproxCost));
-            }
-
-            // Sort potential paths by their approximate total cost to process the best ones first.
-            potentialEndpoints.Sort((a, b) => a.cost.CompareTo(b.cost));
-
-            var addedFinalGaps = new HashSet<Gap>();
-            foreach (var (finalGap, _) in potentialEndpoints)
-            {
-                if (results.Count >= n) break;
-
-                // Ensure we only add one result per unique final gap.
-                if (addedFinalGaps.Add(finalGap))
+                float totalCost = pathCost + penalty + Vector2.Distance(finalGap.Position, listenerPos);
+                if (totalCost < bestTotalCost)
                 {
-                    List<Gap> path = ReconstructPath(predecessors, finalGap);
-                    if (path.Count == 0) continue;
-
-                    (float accurateRawDistance, Vector2 lastIntersectionPos) = CalculateAccuratePathDetails(sourcePos, listenerPos, path);
-
-                    // Final check against the raw distance limit with the more accurate calculation.
-                    if (accurateRawDistance > maxRawDistance) continue;
-
-                    int closedDoorCount = 0;
-                    int waterSurfaceCrossings = 0;
-                    var countedDoors = new HashSet<Gap>();
-
-                    foreach (Gap gapInPath in path)
-                    {
-                        if (gapInPath == ignoredGap) continue;
-
-                        if (Util.IsDoorClosed(gapInPath.ConnectedDoor) && countedDoors.Add(gapInPath))
-                        {
-                            closedDoorCount++;
-                        }
-                        if (CheckIfSurfaceCrossing(gapInPath))
-                        {
-                            waterSurfaceCrossings++;
-                        }
-                    }
-
-                    results.Add(new PathfindingResult(accurateRawDistance, closedDoorCount, waterSurfaceCrossings, lastIntersectionPos));
+                    bestTotalCost = totalCost;
+                    bestFinalGap = finalGap;
                 }
             }
 
-            return results;
+            if (bestFinalGap == null) return PathfindingResult.NotFound;
+
+            // Reconstruct path and calculate details
+            List<Gap> path = ReconstructPath(predecessors, bestFinalGap);
+            if (path.Count == 0) return PathfindingResult.NotFound;
+
+            (float accurateRawDistance, Vector2 lastIntersectionPos) = CalculateAccuratePathDetails(sourcePos, listenerPos, path);
+            if (accurateRawDistance > maxRawDistance) return PathfindingResult.NotFound;
+
+            int closedDoorCount = 0;
+            int waterSurfaceCrossings = 0;
+            var countedDoors = new HashSet<Gap>();
+
+            foreach (Gap gapInPath in path)
+            {
+                if (gapInPath == ignoredGap)
+                    continue;
+                if (Util.IsDoorClosed(gapInPath.ConnectedDoor))
+                    closedDoorCount++;
+                if (CheckIfSurfaceCrossing(gapInPath))
+                    waterSurfaceCrossings++;
+            }
+
+            // Cache the stable topology for future calls with the same hull pair and ignoredGap.
+            PathCache[cacheKey] = new CachedPath(path, closedDoorCount, waterSurfaceCrossings);
+
+            return new PathfindingResult(accurateRawDistance, closedDoorCount, waterSurfaceCrossings, lastIntersectionPos);
         }
 
-        /// <summary>
-        /// Calculates the penalty for traversing a gap, considering its state (door, wall) and water interface.
-        /// </summary>
         private static float GetGapTraversalPenalty(Gap gap)
         {
             if (gap == null) return float.MaxValue;
 
             float penalty = 0.0f;
 
-            // 1. Check Door/Wall state
+            // Check door.
             if (gap.ConnectedDoor != null)
             {
                 // Block traversal through water ducts if configured.
@@ -234,13 +263,13 @@ namespace SoundproofWalls
                     penalty += PenaltyClosedDoor;
                 }
             }
-            // This is a structural breach (wall). Check if it's large enough to be considered "open".
+            // Check gap in wall.
             else if (gap.Open < ConfigManager.Config.OpenWallThreshold)
             {
                 return float.MaxValue; // Wall is not open enough to pass sound.
             }
 
-            // 2. Check for crossing an air/water interface
+            // Check for crossing an air/water barrier
             if (CheckIfSurfaceCrossing(gap))
             {
                 penalty += PenaltyWaterSurface;
@@ -249,9 +278,6 @@ namespace SoundproofWalls
             return penalty;
         }
 
-        /// <summary>
-        /// Determines if traversing a gap involves crossing an air/water interface.
-        /// </summary>
         private static bool CheckIfSurfaceCrossing(Gap gap)
         {
             if (gap == null || gap.linkedTo.Count < 2) return false;
@@ -272,27 +298,22 @@ namespace SoundproofWalls
                 bool isSubmergedB = gapY < waterSurfaceYB;
 
                 // If the submerged states are different, a crossing occurs.
-                // An additional check prevents "false" crossings if the gap is just barely touching the surface on one side.
                 if (isSubmergedA != isSubmergedB)
                 {
                     float closenessA = Math.Abs(gapY - waterSurfaceYA);
                     float closenessB = Math.Abs(gapY - waterSurfaceYB);
 
-                    // If one side is very close to the water level, treat it as being on the same side as the other.
+                    // If one side is very close to the water level just treat it as being on the same side
                     if (closenessA < epsilon) isSubmergedA = isSubmergedB;
                     else if (closenessB < epsilon) isSubmergedB = isSubmergedA;
                 }
 
-                // Return true only if the states are different *after* the tolerance adjustment.
                 return isSubmergedA != isSubmergedB;
             }
 
             return false;
         }
 
-        /// <summary>
-        /// Gets the approximate local Y coordinate of the water surface at a given local X coordinate within a hull.
-        /// </summary>
         private static float GetWaterSurfaceY(float x, Hull hull)
         {
             if (hull == null || hull.WaveY == null || hull.WaveY.Length == 0) return float.MinValue;
@@ -303,26 +324,17 @@ namespace SoundproofWalls
             return hull.Surface + hull.WaveY[xIndex];
         }
 
-        /// <summary>
-        /// A* Heuristic: The straight-line distance from the current node to the target.
-        /// This is admissible because it never overestimates the actual cost.
-        /// </summary>
         private static float Heuristic(Gap node, Vector2 targetPos)
         {
             if (node == null) return float.MaxValue;
-            // TODO: When converting to local positions, this will need updating.
             return Vector2.Distance(node.Position, targetPos);
         }
 
-        /// <summary>
-        /// Reconstructs the path of gaps from the start to the end gap using the predecessors map.
-        /// </summary>
         private static List<Gap> ReconstructPath(Dictionary<Gap, Gap> predecessors, Gap endGap)
         {
             var path = new LinkedList<Gap>();
             Gap current = endGap;
-            // Safety break to prevent infinite loops in case of a bug in the predecessor map.
-            int safetyBreak = predecessors.Count + 10;
+            int safetyBreak = predecessors.Count + 10; // Just in case.
             while (current != null && safetyBreak > 0)
             {
                 path.AddFirst(current);
@@ -332,7 +344,7 @@ namespace SoundproofWalls
                 }
                 safetyBreak--;
             }
-            // If safety break was hit, something went wrong; return an empty path.
+            // If safety break was hit, return an empty path.
             return safetyBreak <= 0 ? new List<Gap>() : path.ToList();
         }
 
@@ -340,9 +352,9 @@ namespace SoundproofWalls
         /// Calculates a more accurate total raw distance of a path by finding the intersection point on each gap.
         /// Also returns the position of the final intersection before the listener.
         /// </summary>
-        private static (float totalDistance, Vector2 lastIntersection) CalculateAccuratePathDetails(Vector2 sourcePos, Vector2 listenerPos, List<Gap> path)
+        private static (float totalDistance, Vector2 lastIntersection) CalculateAccuratePathDetails(Vector2 sourcePos, Vector2 listenerPos, IReadOnlyList<Gap> path)
         {
-            if (path == null || path.Count == 0)
+            if (path.Count == 0)
             {
                 return (Vector2.Distance(sourcePos, listenerPos), sourcePos);
             }

@@ -543,6 +543,9 @@
 	<spw_remembermenutabandscroll>Remember Menu Position</spw_remembermenutabandscroll>
 	<spw_remembermenutabandscrolltooltip>Open the menu at the last scroll position and tab visited.\n\nNote: This setting is not synced with other players when using "Sync Settings" (General tab).</spw_remembermenutabandscrolltooltip>
 
+	<spw_autosimultaneousinstances>Auto Simultaneous Instances</spw_autosimultaneousinstances>
+	<spw_autosimultaneousinstancestooltip>Dynamically adjusts how many instances of a sound can be playing at the same time, based on duration. Longer sounds are limited to a smaller number of simultaneous instances. This is an optimization to selectively reduce the sound count without being obvious to the listener.\n\nNote: Enabling this setting may improve performance.\n\nNote: This setting uses "Max Simultaneous Instances" (N) as a cap:\nmax = min(N, N / duration).</spw_autosimultaneousinstancestooltip>
+
 	<spw_maxsourcecount>Max Playing Sounds</spw_maxsourcecount>
 	<spw_maxsourcecounttooltip>How many sounds can be playing at the same time. Higher values prevent sounds from being skipped but may impact performance.</spw_maxsourcecounttooltip>
 	
@@ -552,6 +555,9 @@
 	<spw_categoryintervals>Update Intervals</spw_categoryintervals>
 	<spw_updatenonloopingsounds>Update Non-Looping Sounds</spw_updatenonloopingsounds>
 	<spw_updatenonloopingsoundstooltip>Allow non-looping sounds to be modified while they are playing, giving cut-off potential to sounds that previously couldn't be interrupted.\n\nNote: May slightly impact performance.</spw_updatenonloopingsoundstooltip>
+
+	<spw_astarcacheupdateinterval>A* Cache Update Interval</spw_astarcacheupdateinterval>
+	<spw_astarcacheupdateintervaltooltip>The amount of time between each A* pathfinding algorithm cache reset in Dynamic mode.\n\nWhen a sound finds the optimal path to the listener, the result is stored in a cache, allowing subsequent sounds in that hull to use the same result without recalculating. It's important for this cache to be cleared frequently so that changes in the environment (e.g., holes in walls) are reflected in new paths.\n\nNote: Increasing this value may improve performance.\n\nNote: The cache is cleared every time a door opens or closes, regardless of this interval.</spw_astarcacheupdateintervaltooltip>
 	
 	<spw_nonloopingsoundmuffleupdateinterval>Non-Looping Sound Update Interval</spw_nonloopingsoundmuffleupdateinterval>
 	<spw_nonloopingsoundmuffleupdateintervaltooltip>The amount of time between each obstruction update for non-looping sounds.\n\nNote: Requires "Update Non-Looping Sounds" to be enabled.\n\nNote: Increasing this value may improve performance.</spw_nonloopingsoundmuffleupdateintervaltooltip>

@@ -545,6 +545,9 @@
 	<spw_remembermenutabandscroll>Menüposition merken</spw_remembermenutabandscroll>
 	<spw_remembermenutabandscrolltooltip>Öffnet das Menü an der letzten Scroll-Position und dem zuletzt besuchten Reiter.\n\nHinweis: Diese Einstellung wird nicht mit anderen Spielern synchronisiert, wenn "Einstellungen synchronisieren" (Reiter "Allgemein") verwendet wird.</spw_remembermenutabandscrolltooltip>
 
+	<spw_autosimultaneousinstances>Automatische simultane Instanzen</spw_autosimultaneousinstances>
+	<spw_autosimultaneousinstancestooltip>Passt basierend auf der Dauer dynamisch an, wie viele Instanzen eines Geräuschs gleichzeitig abgespielt werden können. Längere Geräusche sind auf eine geringere Anzahl simultaner Instanzen beschränkt. Dies ist eine Optimierung, um die Anzahl der Geräusche gezielt zu reduzieren, ohne dass es für den Hörer offensichtlich ist.\n\nHinweis: Das Aktivieren dieser Einstellung kann die Leistung verbessern.\n\nHinweis: Diese Einstellung verwendet "Max. simultane Instanzen" (N) als Obergrenze:\nmax = min(N, N / Dauer).</spw_autosimultaneousinstancestooltip>
+
 	<spw_maxsourcecount>Max. abspielende Geräusche</spw_maxsourcecount>
 	<spw_maxsourcecounttooltip>Wie viele Geräusche gleichzeitig abgespielt werden können. Höhere Werte verhindern, dass Geräusche übersprungen werden, können aber die Leistung beeinträchtigen.</spw_maxsourcecounttooltip>
 	
@@ -554,6 +557,9 @@
 	<spw_categoryintervals>Update-Intervalle</spw_categoryintervals>
 	<spw_updatenonloopingsounds>Nicht-loopende Geräusche aktualisieren</spw_updatenonloopingsounds>
 	<spw_updatenonloopingsoundstooltip>Ermöglicht die Änderung von nicht-loopenden Geräuschen während der Wiedergabe, was Geräuschen, die zuvor nicht unterbrochen werden konnten, ein Abbruchpotenzial verleiht.\n\nHinweis: Kann die Leistung geringfügig beeinträchtigen.</spw_updatenonloopingsoundstooltip>
+
+	<spw_astarcacheupdateinterval>Update-Intervall für A*-Cache</spw_astarcacheupdateinterval>
+	<spw_astarcacheupdateintervaltooltip>Die Zeit zwischen jedem Zurücksetzen des Caches für den A*-Pfadfindungsalgorithmus im dynamischen Modus.\n\nWenn ein Geräusch den optimalen Pfad zum Hörer findet, wird das Ergebnis in einem Cache gespeichert, sodass nachfolgende Geräusche in dieser Hülle dasselbe Ergebnis ohne Neuberechnung verwenden können. Es ist wichtig, dass dieser Cache häufig geleert wird, damit sich Änderungen in der Umgebung (z. B. Löcher in Wänden) in neuen Pfaden widerspiegeln.\n\nHinweis: Eine Erhöhung dieses Wertes kann die Leistung verbessern.\n\nHinweis: Der Cache wird unabhängig von diesem Intervall jedes Mal geleert, wenn sich eine Tür öffnet oder schließt.</spw_astarcacheupdateintervaltooltip>
 	
 	<spw_nonloopingsoundmuffleupdateinterval>Update-Intervall für nicht-loopende Geräusche</spw_nonloopingsoundmuffleupdateinterval>
 	<spw_nonloopingsoundmuffleupdateintervaltooltip>Die Zeit zwischen jeder Hindernis-Aktualisierung für nicht-loopende Geräusche.\n\nHinweis: Erfordert, dass "Nicht-loopende Geräusche aktualisieren" aktiviert ist.\n\nHinweis: Eine Erhöhung dieses Wertes kann die Leistung verbessern.</spw_nonloopingsoundmuffleupdateintervaltooltip>

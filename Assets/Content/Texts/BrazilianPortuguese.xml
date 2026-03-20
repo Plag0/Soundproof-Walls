@@ -545,6 +545,9 @@
 	<spw_remembermenutabandscroll>Lembrar Posição do Menu</spw_remembermenutabandscroll>
 	<spw_remembermenutabandscrolltooltip>Abre o menu na última posição de rolagem e aba visitada.\n\nNota: Esta configuração não é sincronizada com outros jogadores ao usar "Sincronizar Configurações" (aba Geral).</spw_remembermenutabandscrolltooltip>
 
+	<spw_autosimultaneousinstances>Instâncias Simultâneas Automáticas</spw_autosimultaneousinstances>
+	<spw_autosimultaneousinstancestooltip>Ajusta dinamicamente quantas instâncias de um som podem ser reproduzidas ao mesmo tempo, com base na duração. Sons mais longos são limitados a um número menor de instâncias simultâneas. Esta é uma otimização para reduzir seletivamente a contagem de sons sem que seja óbvio para o ouvinte.\n\nNota: Ativar esta configuração pode melhorar o desempenho.\n\nNota: Esta configuração usa "Máximo de Instâncias Simultâneas" (N) como um limite:\nmax = min(N, N / duração).</spw_autosimultaneousinstancestooltip>
+
 	<spw_maxsourcecount>Máximo de Sons em Reprodução</spw_maxsourcecount>
 	<spw_maxsourcecounttooltip>Quantos sons podem ser reproduzidos ao mesmo tempo. Valores mais altos evitam que sons sejam pulados, mas podem impactar o desempenho.</spw_maxsourcecounttooltip>
 	
@@ -554,6 +557,9 @@
 	<spw_categoryintervals>Intervalos de Atualização</spw_categoryintervals>
 	<spw_updatenonloopingsounds>Atualizar Sons Não Contínuos</spw_updatenonloopingsounds>
 	<spw_updatenonloopingsoundstooltip>Permite que sons não contínuos sejam modificados enquanto estão tocando, dando potencial de corte a sons que antes não podiam ser interrompidos.\n\nNota: Pode impactar levemente o desempenho.</spw_updatenonloopingsoundstooltip>
+
+	<spw_astarcacheupdateinterval>Intervalo de Atualização de Cache A*</spw_astarcacheupdateinterval>
+	<spw_astarcacheupdateintervaltooltip>A quantidade de tempo entre cada redefinição de cache do algoritmo de pathfinding A* no modo Dinâmico.\n\nQuando um som encontra o caminho ideal até o ouvinte, o resultado é armazenado em um cache, permitindo que sons subsequentes naquele casco usem o mesmo resultado sem precisar recalcular. É importante que este cache seja limpo com frequência para que as mudanças no ambiente (ex: buracos nas paredes) sejam refletidas nos novos caminhos.\n\nNota: Aumentar este valor pode melhorar o desempenho.\n\nNota: O cache é limpo toda vez que uma porta é aberta ou fechada, independentemente deste intervalo.</spw_astarcacheupdateintervaltooltip>
 	
 	<spw_nonloopingsoundmuffleupdateinterval>Intervalo de Atualização de Som Não Contínuo</spw_nonloopingsoundmuffleupdateinterval>
 	<spw_nonloopingsoundmuffleupdateintervaltooltip>A quantidade de tempo entre cada atualização de obstrução para sons não contínuos.\n\nNota: Requer que "Atualizar Sons Não Contínuos" esteja ativado.\n\nNota: Aumentar este valor pode melhorar o desempenho.</spw_nonloopingsoundmuffleupdateintervaltooltip>

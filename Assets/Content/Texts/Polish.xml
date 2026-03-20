@@ -546,6 +546,9 @@
 	<spw_remembermenutabandscroll>Zapamiętaj pozycję w menu</spw_remembermenutabandscroll>
 	<spw_remembermenutabandscrolltooltip>Otwiera menu na ostatniej pozycji przewijania i odwiedzonej zakładce.\n\nUwaga: To ustawienie nie jest synchronizowane z innymi graczami podczas korzystania z "Synchronizuj ustawienia" (zakładka Ogólne).</spw_remembermenutabandscrolltooltip>
 
+	<spw_autosimultaneousinstances>Automatyczne jednoczesne instancje</spw_autosimultaneousinstances>
+	<spw_autosimultaneousinstancestooltip>Dynamicznie dostosowuje, ile instancji danego dźwięku może być odtwarzanych w tym samym czasie, w zależności od jego czasu trwania. Dłuższe dźwięki są ograniczane do mniejszej liczby jednoczesnych instancji. Jest to optymalizacja mająca na celu selektywne zmniejszenie liczby dźwięków w sposób niezauważalny dla słuchacza.\n\nUwaga: Włączenie tego ustawienia może poprawić wydajność.\n\nUwaga: To ustawienie używa "Maks. jednoczesnych instancji" (N) jako górnego limitu:\nmax = min(N, N / czas trwania).</spw_autosimultaneousinstancestooltip>
+
 	<spw_maxsourcecount>Maks. odtwarzanych dźwięków</spw_maxsourcecount>
 	<spw_maxsourcecounttooltip>Ile dźwięków może być odtwarzanych jednocześnie. Wyższe wartości zapobiegają pomijaniu dźwięków, ale mogą wpływać na wydajność.</spw_maxsourcecounttooltip>
 	
@@ -555,6 +558,9 @@
 	<spw_categoryintervals>Interwały aktualizacji</spw_categoryintervals>
 	<spw_updatenonloopingsounds>Aktualizuj dźwięki niezapętlone</spw_updatenonloopingsounds>
 	<spw_updatenonloopingsoundstooltip>Pozwala na modyfikowanie dźwięków niezapętlonych podczas ich odtwarzania, dając możliwość przerwania dźwięków, których wcześniej nie można było przerwać.\n\nUwaga: Może nieznacznie wpływać na wydajność.</spw_updatenonloopingsoundstooltip>
+
+	<spw_astarcacheupdateinterval>Interwał aktualizacji pamięci podręcznej A*</spw_astarcacheupdateinterval>
+	<spw_astarcacheupdateintervaltooltip>Czas między każdym resetem pamięci podręcznej algorytmu wyszukiwania ścieżki A* w trybie dynamicznym.\n\nGdy dźwięk znajdzie optymalną ścieżkę do słuchacza, wynik jest zapisywany w pamięci podręcznej, co pozwala kolejnym dźwiękom w tym kadłubie na użycie tego samego wyniku bez ponownego przeliczania. Ważne jest, aby ta pamięć była często czyszczona, aby zmiany w otoczeniu (np. dziury w ścianach) były odzwierciedlane w nowych ścieżkach.\n\nUwaga: Zwiększenie tej wartości może poprawić wydajność.\n\nUwaga: Pamięć podręczna jest czyszczona za każdym razem, gdy drzwi się otwierają lub zamykają, niezależnie od tego interwału.</spw_astarcacheupdateintervaltooltip>
 	
 	<spw_nonloopingsoundmuffleupdateinterval>Interwał aktualizacji dźwięków niezapętlonych</spw_nonloopingsoundmuffleupdateinterval>
 	<spw_nonloopingsoundmuffleupdateintervaltooltip>Czas między każdą aktualizacją przeszkód dla dźwięków niezapętlonych.\n\nUwaga: Wymaga włączenia "Aktualizuj dźwięki niezapętlone".\n\nUwaga: Zwiększenie tej wartości może poprawić wydajność.</spw_nonloopingsoundmuffleupdateintervaltooltip>

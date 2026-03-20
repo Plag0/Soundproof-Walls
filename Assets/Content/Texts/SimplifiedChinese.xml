@@ -546,6 +546,9 @@
 	<spw_remembermenutabandscroll>记住菜单位置</spw_remembermenutabandscroll>
 	<spw_remembermenutabandscrolltooltip>在上次访问的滚动位置和选项卡处打开菜单。\n\n注意：当使用“同步设置”（通用选项卡）时，此设置不会与其他玩家同步。</spw_remembermenutabandscrolltooltip>
 
+	<spw_autosimultaneousinstances>自动同时实例数</spw_autosimultaneousinstances>
+	<spw_autosimultaneousinstancestooltip>根据持续时间动态调整同一声音可以同时播放的实例数量。较长的声音被限制为较少的同时实例数。这是一项优化功能，可在听者不易察觉的情况下有选择地减少声音数量。\n\n注意：启用此设置可能会提高性能。\n\n注意：此设置使用“最大同时实例数”（N）作为上限：\nmax = min(N, N / duration)。</spw_autosimultaneousinstancestooltip>
+
 	<spw_maxsourcecount>最大播放声音数</spw_maxsourcecount>
 	<spw_maxsourcecounttooltip>可以同时播放的声音数量。值越高，可防止声音被跳过，但可能会影响性能。</spw_maxsourcecounttooltip>
 	
@@ -555,6 +558,9 @@
 	<spw_categoryintervals>更新间隔</spw_categoryintervals>
 	<spw_updatenonloopingsounds>更新非循环声音</spw_updatenonloopingsounds>
 	<spw_updatenonloopingsoundstooltip>允许在播放时修改非循环声音，为以前无法中断的声音提供中断的可能性。\n\n注意：可能会轻微影响性能。</spw_updatenonloopingsoundstooltip>
+
+	<spw_astarcacheupdateinterval>A* 缓存更新间隔</spw_astarcacheupdateinterval>
+	<spw_astarcacheupdateintervaltooltip>动态模式下，每次 A* 寻路算法缓存重置之间的时间量。\n\n当声音找到通往听者的最佳路径时，结果会存储在缓存中，使该船体内的后续声音能够使用相同的结果而无需重新计算。频繁清除此缓存非常重要，这样环境的变化（例如墙上的破洞）才能反映在新的路径中。\n\n注意：增加此值可能会提高性能。\n\n注意：无论此间隔是多少，每次门打开或关闭时都会清除缓存。</spw_astarcacheupdateintervaltooltip>
 	
 	<spw_nonloopingsoundmuffleupdateinterval>非循环声音更新间隔</spw_nonloopingsoundmuffleupdateinterval>
 	<spw_nonloopingsoundmuffleupdateintervaltooltip>非循环声音每次障碍物更新之间的时间量。\n\n注意：需要启用“更新非循环声音”。\n\n注意：增加此值可能会提高性能。</spw_nonloopingsoundmuffleupdateintervaltooltip>

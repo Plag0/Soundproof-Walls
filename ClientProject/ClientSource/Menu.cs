@@ -4186,6 +4186,15 @@ namespace SoundproofWalls
                 currentValue: unsavedConfig.RememberMenuTabAndScroll,
                 setter: v => unsavedConfig.RememberMenuTabAndScroll = v);
 
+            Tickbox(settingsFrame, FormatTextBoxLabel(
+                label: TextManager.Get("spw_autosimultaneousinstances"),
+                localValue: unsavedConfig.AutoSimultaneousInstances,
+                serverValue: ConfigManager.ServerConfig?.AutoSimultaneousInstances ?? default,
+                formatter: BoolFormatter),
+                tooltip: TextManager.Get("spw_autosimultaneousinstancestooltip"),
+                currentValue: unsavedConfig.AutoSimultaneousInstances,
+                setter: v => unsavedConfig.AutoSimultaneousInstances = v);
+
             Spacer(settingsFrame);
 
             Label(settingsFrame, TextManager.Get("spw_maxsourcecount"));
@@ -4230,6 +4239,21 @@ namespace SoundproofWalls
                 setter: v => unsavedConfig.UpdateNonLoopingSounds = v);
 
             Spacer(settingsFrame);
+
+            Label(settingsFrame, TextManager.Get("spw_astarcacheupdateinterval"));
+            Slider(settingsFrame, (0.01f, 1), 0.01f,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.AStarCacheUpdateInterval ?? default,
+                    formatter: SecondsOneTick),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.AStarCacheUpdateInterval,
+                    vanillaValue: null),
+                currentValue: unsavedConfig.AStarCacheUpdateInterval,
+                setter: v => unsavedConfig.AStarCacheUpdateInterval = v,
+                TextManager.Get("spw_astarcacheupdateintervaltooltip")
+            );
 
             Label(settingsFrame, TextManager.Get("spw_nonloopingsoundmuffleupdateinterval"));
             Slider(settingsFrame, (0.01f, 1), 0.01f,

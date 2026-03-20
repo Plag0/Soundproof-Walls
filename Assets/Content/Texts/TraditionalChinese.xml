@@ -545,6 +545,9 @@
 	<spw_remembermenutabandscroll>記住選單位置</spw_remembermenutabandscroll>
 	<spw_remembermenutabandscrolltooltip>在上次訪問的捲動位置和分頁開啟選單。\n\n注意：使用「同步設定」（一般分頁）時，此設定不會與其他玩家同步。</spw_remembermenutabandscrolltooltip>
 
+	<spw_autosimultaneousinstances>自動同時實例數</spw_autosimultaneousinstances>
+	<spw_autosimultaneousinstancestooltip>根據持續時間，動態調整同一音效可以同時播放的實例數量。較長的音效會被限制在較少的同時實例數。這是一項最佳化功能，可在聽者不易察覺的情況下選擇性地減少音效數量。\n\n注意：啟用此設定可能改善效能。\n\n注意：此設定使用「最大同時實例數」（N）作為上限：\nmax = min(N, N / duration)。</spw_autosimultaneousinstancestooltip>
+
 	<spw_maxsourcecount>最大播放音效數</spw_maxsourcecount>
 	<spw_maxsourcecounttooltip>可以同時播放的音效數量。較高的值可防止音效被跳過，但可能影響效能。</spw_maxsourcecounttooltip>
 	
@@ -554,6 +557,9 @@
 	<spw_categoryintervals>更新間隔</spw_categoryintervals>
 	<spw_updatenonloopingsounds>更新非循環音效</spw_updatenonloopingsounds>
 	<spw_updatenonloopingsoundstooltip>允許在非循環音效播放時對其進行修改，為先前無法中斷的音效提供中斷的可能性。\n\n注意：可能輕微影響效能。</spw_updatenonloopingsoundstooltip>
+
+	<spw_astarcacheupdateinterval>A* 快取更新間隔</spw_astarcacheupdateinterval>
+	<spw_astarcacheupdateintervaltooltip>在動態模式中，每次 A* 尋路演算法快取重設之間的時間量。\n\n當聲音找到到達聽者的最佳路徑時，結果會儲存在快取中，讓該船體內後續的聲音可以使用相同的結果而無需重新計算。頻繁清除此快取非常重要，這樣環境的變化（例如牆上的破洞）才能反映在新的路徑中。\n\n注意：增加此值可能改善效能。\n\n注意：無論此間隔為何，每次開關門時都會清除快取。</spw_astarcacheupdateintervaltooltip>
 	
 	<spw_nonloopingsoundmuffleupdateinterval>非循環音效更新間隔</spw_nonloopingsoundmuffleupdateinterval>
 	<spw_nonloopingsoundmuffleupdateintervaltooltip>非循環音效每次阻礙更新之間的時間量。\n\n注意：需要啟用「更新非循環音效」。\n\n注意：增加此值可能改善效能。</spw_nonloopingsoundmuffleupdateintervaltooltip>

@@ -545,6 +545,9 @@
 	<spw_remembermenutabandscroll>Mémoriser la position du menu</spw_remembermenutabandscroll>
 	<spw_remembermenutabandscrolltooltip>Ouvre le menu à la dernière position de défilement et à l'onglet visité.\n\nNote : Ce paramètre n'est pas synchronisé avec les autres joueurs lors de l'utilisation de "Synchroniser les paramètres" (onglet Général).</spw_remembermenutabandscrolltooltip>
 
+	<spw_autosimultaneousinstances>Instances simultanées automatiques</spw_autosimultaneousinstances>
+	<spw_autosimultaneousinstancestooltip>Ajuste dynamiquement le nombre d'instances d'un son pouvant être jouées en même temps, en fonction de sa durée. Les sons plus longs sont limités à un plus petit nombre d'instances simultanées. Il s'agit d'une optimisation pour réduire sélectivement le nombre de sons sans que cela soit perceptible par l'auditeur.\n\nNote : Activer ce paramètre peut améliorer les performances.\n\nNote : Ce paramètre utilise "Instances simultanées max" (N) comme limite :\nmax = min(N, N / durée).</spw_autosimultaneousinstancestooltip>
+
 	<spw_maxsourcecount>Sons max en lecture</spw_maxsourcecount>
 	<spw_maxsourcecounttooltip>Le nombre de sons pouvant être joués en même temps. Des valeurs plus élevées empêchent les sons d'être ignorés mais peuvent impacter les performances.</spw_maxsourcecounttooltip>
 	
@@ -554,6 +557,9 @@
 	<spw_categoryintervals>Intervalles de mise à jour</spw_categoryintervals>
 	<spw_updatenonloopingsounds>Mettre à jour les sons non répétitifs</spw_updatenonloopingsounds>
 	<spw_updatenonloopingsoundstooltip>Permet de modifier les sons non répétitifs pendant leur lecture, offrant un potentiel de coupure à des sons qui ne pouvaient pas être interrompus auparavant.\n\nNote : Peut légèrement impacter les performances.</spw_updatenonloopingsoundstooltip>
+
+	<spw_astarcacheupdateinterval>Intervalle de MàJ du cache A*</spw_astarcacheupdateinterval>
+	<spw_astarcacheupdateintervaltooltip>Le temps entre chaque réinitialisation du cache de l'algorithme de pathfinding A* en mode Dynamique.\n\nLorsqu'un son trouve le chemin optimal jusqu'à l'auditeur, le résultat est stocké dans un cache, permettant aux sons suivants dans cette coque d'utiliser le même résultat sans avoir à le recalculer. Il est important que ce cache soit vidé fréquemment afin que les changements dans l'environnement (ex: brèches dans les murs) soient pris en compte dans les nouveaux chemins.\n\nNote : Augmenter cette valeur peut améliorer les performances.\n\nNote : Le cache est vidé à chaque fois qu'une porte s'ouvre ou se ferme, indépendamment de cet intervalle.</spw_astarcacheupdateintervaltooltip>
 	
 	<spw_nonloopingsoundmuffleupdateinterval>Intervalle de MàJ des sons non répétitifs</spw_nonloopingsoundmuffleupdateinterval>
 	<spw_nonloopingsoundmuffleupdateintervaltooltip>Le temps entre chaque mise à jour d'obstruction pour les sons non répétitifs.\n\nNote : Nécessite que "Mettre à jour les sons non répétitifs" soit activé.\n\nNote : Augmenter cette valeur peut améliorer les performances.</spw_nonloopingsoundmuffleupdateintervaltooltip>

@@ -22,6 +22,9 @@ namespace SoundproofWalls
 
         private static readonly ConditionalWeakTable<VoipSound, VoipSoundFilterData> AllFilterData = new();
         private static readonly object filterDataTableLock = new();
+        
+        private static readonly ConditionalWeakTable<Door, DoorOpenStateHolder> DoorPreviousOpenState = new();
+        private sealed class DoorOpenStateHolder { public float Value; }
 
         // Pointers for convenience.
         public static Config LocalConfig = ConfigManager.LocalConfig;
@@ -277,6 +280,12 @@ namespace SoundproofWalls
             harmony.Patch(
                 typeof(Turret).GetMethod(nameof(Turret.Launch), BindingFlags.Instance | BindingFlags.NonPublic),
                 postfix: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_Turret_Launch))));
+
+            // Door SetState prefix.
+            // Resets the A* cache on state change.
+            harmony.Patch(
+                typeof(Door).GetProperty(nameof(Door.OpenState)).GetSetMethod(nonPublic: true),
+                prefix: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_Door_OpenState))));
 
             // StatusEffect UpdateAllProjSpecific prefix REPLACEMENT.
             // Updates muffle and other attributes of StatusEffect sounds.
@@ -2240,6 +2249,24 @@ namespace SoundproofWalls
             {
                 ProjectileManager.AddProjectile(projectile);
             }
+        }
+
+        public static void SPW_Door_OpenState(Door __instance, float value)
+        {
+            if (!config.Enabled || !config.DynamicFx) { return; }
+
+            var holder = DoorPreviousOpenState.GetOrCreateValue(__instance);
+            float previous = holder.Value;
+            float threshold = ConfigManager.Config.OpenDoorThreshold;
+
+            // Invalidate only when crossing the threshold in either direction.
+            if ((previous < threshold && value >= threshold) ||
+                (previous >= threshold && value < threshold))
+            {
+                SoundPathfinder.InvalidateCache();
+            }
+
+            holder.Value = value;
         }
 
         public static bool SPW_StatusEffect_UpdateAllProjSpecific()
