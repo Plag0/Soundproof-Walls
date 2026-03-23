@@ -88,7 +88,9 @@
 	<spw_dynamicreverbareasizemultiplier>Skala obszaru pogłosu</spw_dynamicreverbareasizemultiplier>
 	<spw_dynamicreverbareasizemultipliertooltip>Skaluje efektywny obszar bieżącego otoczenia wewnętrznego. Większe wartości wydłużają czas zanikania i opóźnienie odbić, sprawiając, że przestrzeń brzmi na większą.</spw_dynamicreverbareasizemultipliertooltip>
 	<spw_dynamicreverbwetroomareasizemultiplier>Skala pogłosu w mokrych pomieszczeniach</spw_dynamicreverbwetroomareasizemultiplier>
-	<spw_dynamicreverbwetroomareasizemultipliertooltip>Mnoży efektywny obszar zbiorników balastowych i śluz powietrznych, gdy słuchacz jest w środku, sprawiając, że te pomieszczenia brzmią na większe i mają więcej pogłosu.</spw_dynamicreverbwetroomareasizemultipliertooltip>
+	<spw_dynamicreverbwetroomareasizemultipliertooltip>Mnoży efektywny obszar zbiorników balastowych i śluz powietrznych, gdy słuchacz znajduje się w ich wnętrzu. Wyższe wartości sprawiają, że te pomieszczenia brzmią na większe i mają silniejszy pogłos.</spw_dynamicreverbwetroomareasizemultipliertooltip>
+	<spw_dynamicreverboutpostareasizemultiplier>Skala pogłosu w placówkach</spw_dynamicreverboutpostareasizemultiplier>
+	<spw_dynamicreverboutpostareasizemultipliertooltip>Mnoży efektywny obszar placówek, gdy słuchacz znajduje się w ich wnętrzu.</spw_dynamicreverboutpostareasizemultipliertooltip>
 	
 	<spw_dynamicreverbairtargetgain>Siła pogłosu wewnątrz</spw_dynamicreverbairtargetgain>
 	<spw_dynamicreverbairtargetgaintooltip>Podstawowe wzmocnienie efektu pogłosu wewnątrz kadłuba.</spw_dynamicreverbairtargetgaintooltip>
@@ -341,6 +343,9 @@
 	<spw_flowsoundvolumetooltip>Głośność płynącej wody spowodowanej przeciekami w okręcie podwodnym.</spw_flowsoundvolumetooltip>
 	<spw_firesoundvolume>Głośność dźwięku ognia</spw_firesoundvolume>
 	<spw_firesoundvolumetooltip>Głośność pożarów.</spw_firesoundvolumetooltip>
+
+	<spw_smoothtools>Poprawka przecinaka plazmowego i spawarki</spw_smoothtools>
+	<spw_smoothtoolstooltip>Naprawia przerywany dźwięk przecinaka plazmowego i spawarki, zamieniając go w jedną płynną pętlę.</spw_smoothtoolstooltip>
 	<spw_vanillaexosuitvolume>Głośność waniliowego egzoszkieletu</spw_vanillaexosuitvolume>
 	<spw_vanillaexosuitvolumetooltip>Głośność waniliowego dźwięku ruchu egzoszkieletu. Niektórzy gracze uważają ten dźwięk za nieprzyjemny.\n\nUwaga: Nie wpływa na dźwięki egzoszkieletów z modów.</spw_vanillaexosuitvolumetooltip>
 	<spw_voicenearmultiplier>Początek zanikania głosu z odległością</spw_voicenearmultiplier>

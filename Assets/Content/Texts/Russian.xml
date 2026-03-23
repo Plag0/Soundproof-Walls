@@ -88,7 +88,9 @@
 	<spw_dynamicreverbareasizemultiplier>Масштаб области реверберации</spw_dynamicreverbareasizemultiplier>
 	<spw_dynamicreverbareasizemultipliertooltip>Масштабирует эффективную площадь текущего внутреннего окружения. Большие значения увеличивают время затухания и задержку отражений, делая пространство звучащим больше.</spw_dynamicreverbareasizemultipliertooltip>
 	<spw_dynamicreverbwetroomareasizemultiplier>Масштаб реверберации влажных помещений</spw_dynamicreverbwetroomareasizemultiplier>
-	<spw_dynamicreverbwetroomareasizemultipliertooltip>Умножает эффективную площадь балластных цистерн и шлюзов, когда слушатель находится внутри них, делая эти помещения звучащими больше и более реверберирующими.</spw_dynamicreverbwetroomareasizemultipliertooltip>
+	<spw_dynamicreverbwetroomareasizemultipliertooltip>Умножает эффективную площадь балластных цистерн и шлюзов, когда слушатель находится внутри них. Более высокие значения заставляют эти помещения звучать просторнее и усиливают реверберацию.</spw_dynamicreverbwetroomareasizemultipliertooltip>
+	<spw_dynamicreverboutpostareasizemultiplier>Масштаб реверберации аванпостов</spw_dynamicreverboutpostareasizemultiplier>
+	<spw_dynamicreverboutpostareasizemultipliertooltip>Умножает эффективную площадь аванпостов, когда слушатель находится внутри них.</spw_dynamicreverboutpostareasizemultipliertooltip>
 	
 	<spw_dynamicreverbairtargetgain>Сила реверберации в помещении</spw_dynamicreverbairtargetgain>
 	<spw_dynamicreverbairtargetgaintooltip>Базовое усиление эффекта реверберации при нахождении внутри корпуса.</spw_dynamicreverbairtargetgaintooltip>
@@ -341,6 +343,9 @@
 	<spw_flowsoundvolumetooltip>Громкость текущей воды, вызванной протечками в подводной лодке.</spw_flowsoundvolumetooltip>
 	<spw_firesoundvolume>Громкость огня</spw_firesoundvolume>
 	<spw_firesoundvolumetooltip>Громкость огня.</spw_firesoundvolumetooltip>
+
+	<spw_smoothtools>Исправление плазменного резака и сварочного аппарата</spw_smoothtools>
+	<spw_smoothtoolstooltip>Исправляет прерывистый звук плазменного резака и сварочного аппарата, превращая его в один плавный цикл.</spw_smoothtoolstooltip>
 	<spw_vanillaexosuitvolume>Громкость ванильного экзокостюма</spw_vanillaexosuitvolume>
 	<spw_vanillaexosuitvolumetooltip>Громкость звука движения ванильного экзокостюма. Некоторые игроки находят этот звук неприятным.\n\nПримечание: Не влияет на звуки экзокостюмов из модов.</spw_vanillaexosuitvolumetooltip>
 	<spw_voicenearmultiplier>Начало затухания голоса</spw_voicenearmultiplier>

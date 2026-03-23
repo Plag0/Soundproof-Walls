@@ -88,8 +88,10 @@
 	<spw_dynamicreverbareasizemultiplier>Yankı Alanı Ölçeği</spw_dynamicreverbareasizemultiplier>
 	<spw_dynamicreverbareasizemultipliertooltip>Mevcut iç mekan ortamının etkili alanını ölçeklendirir. Daha büyük değerler, yansımaların sönümlenme süresini ve gecikmesini artırarak mekanın daha büyük duyulmasını sağlar.</spw_dynamicreverbareasizemultipliertooltip>
 	<spw_dynamicreverbwetroomareasizemultiplier>Islak Oda Yankı Ölçeği</spw_dynamicreverbwetroomareasizemultiplier>
-	<spw_dynamicreverbwetroomareasizemultipliertooltip>Dinleyici içlerindeyken balast tanklarının ve hava kilitlerinin etkili alanını çarparak bu odaların daha büyük ve daha yankılı duyulmasını sağlar.</spw_dynamicreverbwetroomareasizemultipliertooltip>
-	
+	<spw_dynamicreverbwetroomareasizemultipliertooltip>Dinleyici içlerindeyken balast tanklarının ve hava kilitlerinin etkili alanını çarpar. Daha yüksek değerler bu odaların daha büyük ve daha yankılı duyulmasını sağlar.</spw_dynamicreverbwetroomareasizemultipliertooltip>
+	<spw_dynamicreverboutpostareasizemultiplier>Karakol Yankı Ölçeği</spw_dynamicreverboutpostareasizemultiplier>
+	<spw_dynamicreverboutpostareasizemultipliertooltip>Dinleyici içlerindeyken karakolların etkili alanını çarpar.</spw_dynamicreverboutpostareasizemultipliertooltip>
+
 	<spw_dynamicreverbairtargetgain>İç Mekan Yankı Gücü</spw_dynamicreverbairtargetgain>
 	<spw_dynamicreverbairtargetgaintooltip>Bir gövdenin içindeyken yankı efektinin temel kazancı.</spw_dynamicreverbairtargetgaintooltip>
 	<spw_dynamicreverbairduration>İç Mekan Yankı Süresi</spw_dynamicreverbairduration>
@@ -341,6 +343,9 @@
 	<spw_flowsoundvolumetooltip>Denizaltındaki sızıntılardan kaynaklanan akan suyun ses seviyesi.</spw_flowsoundvolumetooltip>
 	<spw_firesoundvolume>Yangın Sesi Seviyesi</spw_firesoundvolume>
 	<spw_firesoundvolumetooltip>Yangınların ses seviyesi.</spw_firesoundvolumetooltip>
+
+	<spw_smoothtools>Plazma Kesici &amp; Kaynak Makinesi Düzeltmesi</spw_smoothtools>
+	<spw_smoothtoolstooltip>Plazma kesici ve kaynak makinesinin kesik kesik gelen sesini tek bir pürüzsüz döngü haline getirerek düzeltir.</spw_smoothtoolstooltip>
 	<spw_vanillaexosuitvolume>Vanilla Dış İskelet Ses Seviyesi</spw_vanillaexosuitvolume>
 	<spw_vanillaexosuitvolumetooltip>Vanilla dış iskelet hareket sesinin ses seviyesi. Bazı oyuncular bu sesi duymaktan hoşlanmaz.\n\nNot: Modlanmış dış iskelet seslerini etkilemez.</spw_vanillaexosuitvolumetooltip>
 	<spw_voicenearmultiplier>Konuşma Mesafesi Azalması Başlangıcı</spw_voicenearmultiplier>

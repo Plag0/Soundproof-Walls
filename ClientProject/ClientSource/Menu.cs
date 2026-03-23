@@ -1536,6 +1536,21 @@ namespace SoundproofWalls
                 TextManager.Get("spw_dynamicreverbwetroomareasizemultipliertooltip")
             );
 
+            Label(settingsFrame, TextManager.Get("spw_dynamicreverboutpostareasizemultiplier"));
+            Slider(settingsFrame, (0, 2), 0.01f,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.DynamicReverbOutpostAreaSizeMultiplier ?? default,
+                    formatter: Percentage),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.DynamicReverbOutpostAreaSizeMultiplier,
+                    vanillaValue: null),
+                currentValue: unsavedConfig.DynamicReverbOutpostAreaSizeMultiplier,
+                setter: v => unsavedConfig.DynamicReverbOutpostAreaSizeMultiplier = v,
+                TextManager.Get("spw_dynamicreverboutpostareasizemultipliertooltip")
+            );
+
             Spacer(settingsFrame);
 
             Label(settingsFrame, TextManager.Get("spw_dynamicreverbairtargetgain"));
@@ -3092,6 +3107,17 @@ namespace SoundproofWalls
             );
 
             SpacerLabel(settingsFrame, TextManager.Get("spw_categoryadvanced"));
+
+            Tickbox(settingsFrame, FormatTextBoxLabel(
+                label: TextManager.Get("spw_smoothtools"),
+                localValue: unsavedConfig.SmoothTools,
+                serverValue: ConfigManager.ServerConfig?.SmoothTools ?? default,
+                formatter: BoolFormatter),
+                tooltip: TextManager.Get("spw_smoothtoolstooltip"),
+                currentValue: unsavedConfig.SmoothTools,
+                setter: v => unsavedConfig.SmoothTools = v);
+
+            Spacer(settingsFrame);
 
             Label(settingsFrame, TextManager.Get("spw_vanillaexosuitvolume"));
             Slider(settingsFrame, (0, 3), 0.01f,

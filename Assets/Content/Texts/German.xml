@@ -88,7 +88,9 @@
 	<spw_dynamicreverbareasizemultiplier>Skalierung der Hallfläche</spw_dynamicreverbareasizemultiplier>
 	<spw_dynamicreverbareasizemultipliertooltip>Skaliert die effektive Fläche der aktuellen Innenumgebung. Größere Werte erhöhen die Abklingzeit und die Verzögerung von Reflexionen, wodurch der Raum größer klingt.</spw_dynamicreverbareasizemultipliertooltip>
 	<spw_dynamicreverbwetroomareasizemultiplier>Hall-Skalierung für Nassräume</spw_dynamicreverbwetroomareasizemultiplier>
-	<spw_dynamicreverbwetroomareasizemultipliertooltip>Multipliziert die effektive Fläche von Ballasttanks und Luftschleusen, wenn sich der Hörer darin befindet, wodurch diese Räume größer und hallender klingen.</spw_dynamicreverbwetroomareasizemultipliertooltip>
+	<spw_dynamicreverbwetroomareasizemultipliertooltip>Multipliziert die effektive Fläche von Ballasttanks und Luftschleusen, wenn sich der Hörer darin befindet. Höhere Werte lassen diese Räume größer und hallender klingen.</spw_dynamicreverbwetroomareasizemultipliertooltip>
+	<spw_dynamicreverboutpostareasizemultiplier>Hall-Skalierung für Außenposten</spw_dynamicreverboutpostareasizemultiplier>
+	<spw_dynamicreverboutpostareasizemultipliertooltip>Multipliziert die effektive Fläche von Außenposten, wenn sich der Hörer darin befindet.</spw_dynamicreverboutpostareasizemultipliertooltip>
 	
 	<spw_dynamicreverbairtargetgain>Hallstärke (Innen)</spw_dynamicreverbairtargetgain>
 	<spw_dynamicreverbairtargetgaintooltip>Die Basisverstärkung des Hall-Effekts innerhalb einer Hülle.</spw_dynamicreverbairtargetgaintooltip>
@@ -341,6 +343,9 @@
 	<spw_flowsoundvolumetooltip>Die Lautstärke von fließendem Wasser, das durch Lecks im U-Boot verursacht wird.</spw_flowsoundvolumetooltip>
 	<spw_firesoundvolume>Lautstärke von Feuergeräuschen</spw_firesoundvolume>
 	<spw_firesoundvolumetooltip>Die Lautstärke von Feuern.</spw_firesoundvolumetooltip>
+
+	<spw_smoothtools>Fix für Plasmaschneider &amp; Schweißgerät</spw_smoothtools>
+	<spw_smoothtoolstooltip>Behebt das abgehackte Audio des Plasmaschneiders und Schweißgeräts, indem es in eine flüssige Schleife umgewandelt wird.</spw_smoothtoolstooltip>
 	<spw_vanillaexosuitvolume>Vanilla-Exosuit-Lautstärke</spw_vanillaexosuitvolume>
 	<spw_vanillaexosuitvolumetooltip>Die Lautstärke des Vanilla-Exosuit-Bewegungsgeräuschs. Einige Spieler empfinden dieses Geräusch als unangenehm.\n\nHinweis: Beeinflusst keine gemoddeten Exosuit-Geräusche.</spw_vanillaexosuitvolumetooltip>
 	<spw_voicenearmultiplier>Start des Distanzabfalls von Stimmen</spw_voicenearmultiplier>

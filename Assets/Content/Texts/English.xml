@@ -88,7 +88,9 @@
 	<spw_dynamicreverbareasizemultiplier>Reverb Area Scale</spw_dynamicreverbareasizemultiplier>
 	<spw_dynamicreverbareasizemultipliertooltip>Scales the effective area of the current indoor environment. Larger values increase decay time and delay of reflections, making the space sound bigger.</spw_dynamicreverbareasizemultipliertooltip>
 	<spw_dynamicreverbwetroomareasizemultiplier>Wet Room Reverb Scale</spw_dynamicreverbwetroomareasizemultiplier>
-	<spw_dynamicreverbwetroomareasizemultipliertooltip>Multiplies the effective area of ballast tanks and airlocks when the listener is inside them, making these rooms sound larger and more reverberant.</spw_dynamicreverbwetroomareasizemultipliertooltip>
+	<spw_dynamicreverbwetroomareasizemultipliertooltip>Multiplies the effective area of ballast tanks and airlocks when the listener is inside them. Higher values make these rooms sound larger and more reverberant.</spw_dynamicreverbwetroomareasizemultipliertooltip>
+	<spw_dynamicreverboutpostareasizemultiplier>Outpost Reverb Scale</spw_dynamicreverboutpostareasizemultiplier>
+	<spw_dynamicreverboutpostareasizemultipliertooltip>Multiplies the effective area of outposts when the listener is inside them.</spw_dynamicreverboutpostareasizemultipliertooltip>
 	
 	<spw_dynamicreverbairtargetgain>Indoor Reverb Strength</spw_dynamicreverbairtargetgain>
 	<spw_dynamicreverbairtargetgaintooltip>The base gain of the reverb effect when inside a hull.</spw_dynamicreverbairtargetgaintooltip>
@@ -341,6 +343,9 @@
 	<spw_flowsoundvolumetooltip>The volume of flowing water caused by leaks in the submarine.</spw_flowsoundvolumetooltip>
 	<spw_firesoundvolume>Fire Sound Volume</spw_firesoundvolume>
 	<spw_firesoundvolumetooltip>The volume of fires.</spw_firesoundvolumetooltip>
+
+	<spw_smoothtools>Plasma Cutter &amp; Welding Tool Fix</spw_smoothtools>
+	<spw_smoothtoolstooltip>Fixes the jittery audio of the plasma cutter and welding tool by making it one smooth loop.</spw_smoothtoolstooltip>
 	<spw_vanillaexosuitvolume>Vanilla Exosuit Volume</spw_vanillaexosuitvolume>
 	<spw_vanillaexosuitvolumetooltip>The volume of the vanilla exosuit movement sound. Some players find this sound unpleasant to hear.\n\nNote: Does not affect modded exosuit sounds.</spw_vanillaexosuitvolumetooltip>
 	<spw_loopingcomponentsoundnearmultiplier>Component Sound Distance Falloff Start</spw_loopingcomponentsoundnearmultiplier>

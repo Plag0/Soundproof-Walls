@@ -262,9 +262,17 @@ namespace SoundproofWalls
         {
             get 
             {
+                float x = 0;
+                float y = 0;
+
                 uint sourceId = Channel.Sound.Owner.GetSourceFromIndex(Channel.Sound.SourcePoolIndex, Channel.ALSourceIndex);
+                if (sourceId <= 0)
+                {
+                    return new Vector2(x, y);
+                }
+
                 Al.GetError();
-                Al.GetSource3f(sourceId, Al.Velocity, out float x, out float y, out float _);
+                Al.GetSource3f(sourceId, Al.Velocity, out x, out y, out float _);
                 int alError;
                 if ((alError = Al.GetError()) != Al.NoError) DebugConsole.NewMessage($"[SoundproofWalls] Failed to get velocity for source ID: {sourceId}, {Al.GetErrorString(alError)}");
                 return new Vector2(x, y); 
@@ -274,7 +282,13 @@ namespace SoundproofWalls
                 try
                 {
                     if (Channel.mutex != null) { Monitor.Enter(Channel.mutex); }
+
                     uint sourceId = Channel.Sound.Owner.GetSourceFromIndex(Channel.Sound.SourcePoolIndex, Channel.ALSourceIndex);
+                    if (sourceId <= 0)
+                    { 
+                        return; 
+                    } 
+
                     Al.GetError();
                     Al.Source3f(sourceId, Al.Velocity, value.X, value.Y, 0);
                     int alError;
@@ -426,11 +440,12 @@ namespace SoundproofWalls
             }
 
             Character? speakerCharacter = null;
+            bool speakerIsAlive = false;
             Limb? speakerMouth = null;
             if (AudioIsVoice)
             {
                 speakerCharacter = SpeakingClient?.Character;
-                bool speakerIsAlive = speakerCharacter != null && !speakerCharacter.IsDead && !speakerCharacter.Removed;
+                speakerIsAlive = speakerCharacter != null && !speakerCharacter.IsDead && !speakerCharacter.Removed && speakerCharacter.Enabled;
                 if (speakerIsAlive) { speakerMouth = Util.GetCharacterHead(speakerCharacter); }
 
                 if (AudioIsRadioVoice) { skipReverb = !config.VoiceRadioReverb; }
@@ -442,9 +457,9 @@ namespace SoundproofWalls
 
             // Don't update position for non looping sounds because they shouldn't be moving.
             // Note: all looping sounds are considered non-looping for their first update if their ChannelInfo instance was created early enough, e.g, from the SoundChannel ctor. That's why I have the default comparison.
-            if (Channel.Looping || LocalPos == default || speakerCharacter != null)
+            if (Channel.Looping || LocalPos == default || speakerIsAlive)
             {
-                bool isHearingLocalVoiceFromTarget = speakerCharacter != null && config.FocusTargetAudio && config.HearLocalVoiceOnFocusedTarget && MessageType != ChatMessageType.Radio && !Listener.IsCharacter && !Listener.IsSpectating;
+                bool isHearingLocalVoiceFromTarget = speakerIsAlive && config.FocusTargetAudio && config.HearLocalVoiceOnFocusedTarget && MessageType != ChatMessageType.Radio && !Listener.IsCharacter && !Listener.IsSpectating;
                 if (isHearingLocalVoiceFromTarget)
                 {
                     WorldPos = Util.GetTargetOffsetVoicePosition(speakerCharacter);

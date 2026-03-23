@@ -72,6 +72,7 @@ namespace SoundproofWalls
         public int DynamicReverbMaxArea { get; set; } = 1_700_000; // Caps the connected area. This limits the scaling of indoor reverb - but for outdoor reverb, it represents the point at which the predefined maximum effect is active. Not included in the menu because it's confusing.
         public float DynamicReverbAreaSizeMultiplier { get; set; } = 1.0f;
         public float DynamicReverbWetRoomAreaSizeMultiplier { get; set; } = 1.5f;
+        public float DynamicReverbOutpostAreaSizeMultiplier { get; set; } = 0.25f;
         public float DynamicReverbAirTargetGain { get; set; } = 0.30f;
         public float DynamicReverbAirDurationMultiplier { get; set; } = 1.0f;
         public float DynamicReverbAirGainHf { get; set; } = 0.3f;
@@ -192,6 +193,7 @@ namespace SoundproofWalls
         public float FireSoundVolumeMultiplier { get; set; } = 1.1f;
 
         // Advanced
+        public bool SmoothTools { get; set; } = true; // Stops the welding tool and plasma cutter sounds from spamming like in vanilla.
         public float VanillaExosuitVolumeMultiplier { get; set; } = 0.0f; // Needs a unique setting instead of being added to CustomSounds because the audio file is shared. Doesn't apply to modded exosuit audio.
         public float LoopingComponentSoundNearMultiplier { get; set; } = 0.0f; // near = far * thisMult  |  "near" is the max range before volume falloff starts.
         public float MinDistanceFalloffVolumeMultiplier { get; set; } = 0.0f; // The minimum gain a sound being attenuated by approx dist can reach.

@@ -88,7 +88,9 @@
 	<spw_dynamicreverbareasizemultiplier>잔향 공간 스케일</spw_dynamicreverbareasizemultiplier>
 	<spw_dynamicreverbareasizemultipliertooltip>현재 실내 환경의 유효 면적을 조절합니다. 값이 클수록 감쇠 시간과 반사 지연이 증가하여 공간이 더 크게 들립니다.</spw_dynamicreverbareasizemultipliertooltip>
 	<spw_dynamicreverbwetroomareasizemultiplier>침수실 잔향 스케일</spw_dynamicreverbwetroomareasizemultiplier>
-	<spw_dynamicreverbwetroomareasizemultipliertooltip>청자가 밸러스트 탱크나 에어락 안에 있을 때 해당 공간의 유효 면적을 곱하여, 이 방들이 더 크고 울림이 강하게 들리도록 합니다.</spw_dynamicreverbwetroomareasizemultipliertooltip>
+	<spw_dynamicreverbwetroomareasizemultipliertooltip>청자가 밸러스트 탱크나 에어락 안에 있을 때 해당 공간의 유효 면적을 곱합니다. 값이 높을수록 이 방들이 더 크고 울림이 강하게 들립니다.</spw_dynamicreverbwetroomareasizemultipliertooltip>
+	<spw_dynamicreverboutpostareasizemultiplier>전초기지 잔향 스케일</spw_dynamicreverboutpostareasizemultiplier>
+	<spw_dynamicreverboutpostareasizemultipliertooltip>청자가 전초기지 안에 있을 때 해당 전초기지의 유효 면적을 곱합니다.</spw_dynamicreverboutpostareasizemultipliertooltip>
 	
 	<spw_dynamicreverbairtargetgain>실내 잔향 강도</spw_dynamicreverbairtargetgain>
 	<spw_dynamicreverbairtargetgaintooltip>선체 내부에 있을 때 잔향 효과의 기본 증폭 값입니다.</spw_dynamicreverbairtargetgaintooltip>
@@ -341,6 +343,9 @@
 	<spw_flowsoundvolumetooltip>잠수함의 누수로 인한 물 흐름 소리의 볼륨입니다.</spw_flowsoundvolumetooltip>
 	<spw_firesoundvolume>화재 소리 볼륨</spw_firesoundvolume>
 	<spw_firesoundvolumetooltip>화재 소리의 볼륨입니다.</spw_firesoundvolumetooltip>
+
+	<spw_smoothtools>플라즈마 절단기 &amp; 용접기 수정</spw_smoothtools>
+	<spw_smoothtoolstooltip>플라즈마 절단기와 용접기의 끊기는 오디오를 하나의 부드러운 루프로 만들어 수정합니다.</spw_smoothtoolstooltip>
 	<spw_vanillaexosuitvolume>바닐라 외골격 슈트 볼륨</spw_vanillaexosuitvolume>
 	<spw_vanillaexosuitvolumetooltip>바닐라 외골격 슈트 움직임 소리의 볼륨입니다. 일부 플레이어는 이 소리를 불쾌하게 느낍니다.\n\n참고: 모드로 추가된 외골격 슈트 소리에는 영향을 주지 않습니다.</spw_vanillaexosuitvolumetooltip>
 	<spw_voicenearmultiplier>음성 거리 감쇠 시작</spw_voicenearmultiplier>

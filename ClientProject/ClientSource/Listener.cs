@@ -323,7 +323,7 @@ namespace SoundproofWalls
                 float insideMult = 1.35f; // Compensate for some missed area.
                 area *= inside ? (100 * 100) * insideMult : 100; // Convert to cm
 
-                float wetRoomMult = FocusedHull != null && FocusedHull.IsWetRoom ? ConfigManager.Config.DynamicReverbWetRoomAreaSizeMultiplier : 1;
+                float wetRoomMult = FocusedHull?.IsWetRoom == true ? ConfigManager.Config.DynamicReverbWetRoomAreaSizeMultiplier : 1;
                 area *= wetRoomMult;
             }
             else
@@ -342,6 +342,12 @@ namespace SoundproofWalls
                     float wetRoomMult = hull.IsWetRoom && FocusedHull == hull ? ConfigManager.Config.DynamicReverbWetRoomAreaSizeMultiplier : 1;
                     area += roomArea * wetRoomMult;
                 }
+            }
+
+            // Outpost multiplier.
+            if (FocusedHull?.Submarine.Info.IsOutpost == true)
+            {
+                area *= ConfigManager.Config.DynamicReverbOutpostAreaSizeMultiplier;
             }
 
             return Math.Min(area, ConfigManager.Config.DynamicReverbMaxArea);

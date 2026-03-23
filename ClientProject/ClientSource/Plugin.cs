@@ -208,6 +208,12 @@ namespace SoundproofWalls
                 typeof(ItemComponent).GetMethod(nameof(ItemComponent.PlaySound), BindingFlags.NonPublic | BindingFlags.Instance, new Type[] { typeof(ItemSound), typeof(Vector2) }),
                 new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_ItemComponent_PlaySound), BindingFlags.Static | BindingFlags.Public, new Type[] { typeof(ItemComponent), typeof(ItemSound), typeof(Vector2) })));
 
+            // ItemComponent_StopSounds prefix.
+            // Stops the welding tool and plasma cutter from sounding "jittery".
+            harmony.Patch(
+                typeof(ItemComponent).GetMethod(nameof(ItemComponent.StopSounds)),
+                prefix: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_ItemComponent_StopSounds))));
+
             // SoundPlayer_UpdateMusic prefix REPLACEMENT.
             // Ducks music when sidechaining and removes white noise tracks.
             harmony.Patch(
@@ -876,29 +882,32 @@ namespace SoundproofWalls
 
         public static bool SPW_Client_UpdateVoipSound(Client __instance)
         {
+            if (__instance == null) return false;
+
             Client instance = __instance;
-            if (instance.VoipSound == null || !instance.VoipSound.IsPlaying)
+            var voipSound = instance.VoipSound;
+            if (voipSound == null || !voipSound.IsPlaying)
             {
                 instance.radioNoiseChannel?.Dispose();
                 instance.radioNoiseChannel = null;
-                if (instance.VoipSound != null)
+                if (voipSound != null)
                 {
                     DebugConsole.Log("Destroying voipsound");
-                    instance.VoipSound.Dispose();
+                    voipSound.Dispose();
                 }
                 instance.VoipSound = null;
                 return false;
             }
 
-            float rangeFar = instance.VoipSound.Far;
-            float rangeNear = instance.VoipSound.Near;
+            float rangeFar = voipSound.Far;
+            float rangeNear = voipSound.Near;
 
             float noiseGain = 0.0f;
             Vector3? position = null;
-            if (instance.character != null && !instance.character.IsDead)
+            if (instance.character != null && !instance.character.IsDead && !instance.character.Removed && instance.character.Enabled)
             {
                 Vector2 voicePosition;
-                bool isHearingLocalVoiceFromTarget = config.FocusTargetAudio && config.HearLocalVoiceOnFocusedTarget && !instance.VoipSound.UsingRadio && !Listener.IsCharacter && Character.Controlled != null;
+                bool isHearingLocalVoiceFromTarget = config.FocusTargetAudio && config.HearLocalVoiceOnFocusedTarget && !voipSound.UsingRadio && !Listener.IsCharacter && Character.Controlled != null;
                 if (isHearingLocalVoiceFromTarget)
                 {
                     voicePosition = Util.GetTargetOffsetVoicePosition(instance.character);
@@ -908,24 +917,29 @@ namespace SoundproofWalls
                     voicePosition = Util.GetCharacterHead(instance.character).WorldPosition;
                 }
 
-                if (GameSettings.CurrentConfig.Audio.UseDirectionalVoiceChat && (!instance.VoipSound.UsingRadio || config.DirectionalRadio))
+                if (GameSettings.CurrentConfig.Audio.UseDirectionalVoiceChat && (!voipSound.UsingRadio || config.DirectionalRadio))
                 {
                     position = new Vector3(voicePosition, 0.0f);
                 }
 
                 if (instance.RadioNoise > 0.0f)
                 {
-                    noiseGain = instance.RadioNoise * instance.VoipSound.soundChannel?.Gain ?? 1;
+                    noiseGain = instance.RadioNoise * (voipSound.soundChannel?.Gain ?? 1);
                     // Moved the following vanilla line "gain *= 1.0f - instance.RadioNoise;" to ChannelInfo UpdateGain
                 }
             }
-            instance.VoipSound.SetPosition(position);
+            voipSound.SetPosition(position);
             //instance.VoipSound.Gain = gain;
             if (noiseGain > 0.0f)
             {
                 if (instance.radioNoiseChannel == null || !instance.radioNoiseChannel.IsPlaying)
                 {
                     instance.radioNoiseChannel = SoundPlayer.PlaySound("radiostatic");
+
+                    if (instance.radioNoiseChannel == null)
+                    {
+                        return false;
+                    }
                     instance.radioNoiseChannel.Category = SoundManager.SoundCategoryVoip;
                     instance.radioNoiseChannel.Looping = true;
                 }
@@ -1113,7 +1127,7 @@ namespace SoundproofWalls
                 }
 
                 uint alSource = __instance.Sound.Owner.GetSourceFromIndex(__instance.Sound.SourcePoolIndex, __instance.ALSourceIndex);
-
+                
                 // Zombie check
                 if (alSource == 0 || !Al.IsSource(alSource))
                 {
@@ -1179,6 +1193,26 @@ namespace SoundproofWalls
             return;
         }
 
+        public static bool SPW_ItemComponent_StopSounds(ItemComponent __instance)
+        {
+            if (!config.Enabled || !config.SmoothTools)
+            {
+                return true;
+            }
+
+            var itemComp = __instance;
+            if ((itemComp.loopingSoundChannel?.debugName.ToLower().Contains("plasmacutterloop") ?? false) ||
+                (itemComp.loopingSoundChannel?.debugName.ToLower().Contains("weldingloop") ?? false))
+            {
+                if (itemComp.isActive)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         public static bool SPW_ItemComponent_PlaySound(ItemComponent __instance, ItemSound itemSound, Vector2 position)
         {
             if (!config.Enabled) { return true; }
@@ -1236,10 +1270,11 @@ namespace SoundproofWalls
                         __instance.loopingSoundChannel.Looping = true;
                         __instance.loopingSoundChannel.Near = range * config.LoopingComponentSoundNearMultiplier;
                         __instance.loopingSoundChannel.Far = range;
-                    }
-                    if (__instance.loopingSound.RoundSound.Stream)
-                    {
-                        __instance.loopingSoundChannel.StreamSeekPos = __instance.loopingSound.RoundSound.LastStreamSeekPos;
+
+                        if (__instance.loopingSound.RoundSound.Stream)
+                        {
+                            __instance.loopingSoundChannel.StreamSeekPos = __instance.loopingSound.RoundSound.LastStreamSeekPos;
+                        }
                     }
                 }
             }
@@ -1930,6 +1965,10 @@ namespace SoundproofWalls
             if (instance.ALSourceIndex >= 0)
             {
                 uint sourceId = sound.Owner.GetSourceFromIndex(instance.Sound.SourcePoolIndex, instance.ALSourceIndex);
+                if (sourceId <= 0)
+                {
+                    return false;
+                }
                 int alError = Al.GetError();
 
                 if (!instance.IsStream)

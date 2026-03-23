@@ -88,7 +88,9 @@
 	<spw_dynamicreverbareasizemultiplier>Échelle de la zone de réverbération</spw_dynamicreverbareasizemultiplier>
 	<spw_dynamicreverbareasizemultipliertooltip>Met à l'échelle la zone effective de l'environnement intérieur actuel. Des valeurs plus élevées augmentent le temps de déclin et le délai des réflexions, faisant paraître l'espace plus grand.</spw_dynamicreverbareasizemultipliertooltip>
 	<spw_dynamicreverbwetroomareasizemultiplier>Échelle de réverb. des salles humides</spw_dynamicreverbwetroomareasizemultiplier>
-	<spw_dynamicreverbwetroomareasizemultipliertooltip>Multiplie la zone effective des ballasts et des sas lorsque l'auditeur est à l'intérieur, rendant ces pièces plus grandes et plus réverbérantes.</spw_dynamicreverbwetroomareasizemultipliertooltip>
+	<spw_dynamicreverbwetroomareasizemultipliertooltip>Multiplie la zone effective des ballasts et des sas lorsque l'auditeur est à l'intérieur. Des valeurs plus élevées font paraître ces pièces plus grandes et plus réverbérantes.</spw_dynamicreverbwetroomareasizemultipliertooltip>
+	<spw_dynamicreverboutpostareasizemultiplier>Échelle de réverbération des avant-postes</spw_dynamicreverboutpostareasizemultiplier>
+	<spw_dynamicreverboutpostareasizemultipliertooltip>Multiplie la zone effective des avant-postes lorsque l'auditeur est à l'intérieur.</spw_dynamicreverboutpostareasizemultipliertooltip>
 	
 	<spw_dynamicreverbairtargetgain>Force de la réverb. intérieure</spw_dynamicreverbairtargetgain>
 	<spw_dynamicreverbairtargetgaintooltip>Le gain de base de l'effet de réverbération à l'intérieur d'une coque.</spw_dynamicreverbairtargetgaintooltip>
@@ -341,6 +343,9 @@
 	<spw_flowsoundvolumetooltip>Le volume de l'eau qui coule causé par les fuites dans le sous-marin.</spw_flowsoundvolumetooltip>
 	<spw_firesoundvolume>Volume des sons de feu</spw_firesoundvolume>
 	<spw_firesoundvolumetooltip>Le volume des feux.</spw_firesoundvolumetooltip>
+
+	<spw_smoothtools>Correctif du découpeur plasma &amp; du chalumeau</spw_smoothtools>
+	<spw_smoothtoolstooltip>Corrige le son saccadé du découpeur plasma et du chalumeau en le transformant en une boucle fluide.</spw_smoothtoolstooltip>
 	<spw_vanillaexosuitvolume>Volume de l'exosquelette vanilla</spw_vanillaexosuitvolume>
 	<spw_vanillaexosuitvolumetooltip>Le volume du son de mouvement de l'exosquelette vanilla. Certains joueurs trouvent ce son désagréable à entendre.\n\nNote : N'affecte pas les sons d'exosquelettes moddés.</spw_vanillaexosuitvolumetooltip>
 	<spw_voicenearmultiplier>Début de l'atténuation de la voix</spw_voicenearmultiplier>

@@ -88,7 +88,9 @@
 	<spw_dynamicreverbareasizemultiplier>殘響區域規模</spw_dynamicreverbareasizemultiplier>
 	<spw_dynamicreverbareasizemultipliertooltip>調整目前室內環境的有效面積。較大的值會增加衰減時間和反射延遲，使空間聽起來更大。</spw_dynamicreverbareasizemultipliertooltip>
 	<spw_dynamicreverbwetroomareasizemultiplier>潮濕房間殘響規模</spw_dynamicreverbwetroomareasizemultiplier>
-	<spw_dynamicreverbwetroomareasizemultipliertooltip>當聽者位於壓載艙和氣閘艙內時，乘以其有效面積，使這些房間聽起來更大、殘響更強。</spw_dynamicreverbwetroomareasizemultipliertooltip>
+	<spw_dynamicreverbwetroomareasizemultipliertooltip>當聽者位於壓載艙和氣閘艙內時，乘以其有效面積。較高的值會使這些房間聽起來更大、殘響更強。</spw_dynamicreverbwetroomareasizemultipliertooltip>
+	<spw_dynamicreverboutpostareasizemultiplier>前哨站殘響規模</spw_dynamicreverboutpostareasizemultiplier>
+	<spw_dynamicreverboutpostareasizemultipliertooltip>當聽者位於前哨站內時，乘以其有效面積。</spw_dynamicreverboutpostareasizemultipliertooltip>
 	
 	<spw_dynamicreverbairtargetgain>室內殘響強度</spw_dynamicreverbairtargetgain>
 	<spw_dynamicreverbairtargetgaintooltip>在船體內時殘響效果的基礎增益。</spw_dynamicreverbairtargetgaintooltip>
@@ -341,6 +343,9 @@
 	<spw_flowsoundvolumetooltip>潛艇洩漏造成的水流聲音量。</spw_flowsoundvolumetooltip>
 	<spw_firesoundvolume>火焰聲音量</spw_firesoundvolume>
 	<spw_firesoundvolumetooltip>火焰的音量。</spw_firesoundvolumetooltip>
+
+	<spw_smoothtools>電漿切割機與焊接工具修復</spw_smoothtools>
+	<spw_smoothtoolstooltip>將電漿切割機與焊接工具斷斷續續的音效，修正為一個平滑的循環音效。</spw_smoothtoolstooltip>
 	<spw_vanillaexosuitvolume>原版外骨骼裝甲音量</spw_vanillaexosuitvolume>
 	<spw_vanillaexosuitvolumetooltip>原版外骨骼裝甲移動聲的音量。有些玩家覺得這個聲音很刺耳。\n\n注意：不影響模組修改的外骨骼裝甲聲音。</spw_vanillaexosuitvolumetooltip>
 	<spw_voicenearmultiplier>語音距離衰減起始點</spw_voicenearmultiplier>

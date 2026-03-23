@@ -88,7 +88,9 @@
 	<spw_dynamicreverbareasizemultiplier>リバーブエリアスケール</spw_dynamicreverbareasizemultiplier>
 	<spw_dynamicreverbareasizemultipliertooltip>現在の屋内環境の有効面積をスケーリングします。値を大きくすると、減衰時間と反射の遅延が増加し、空間がより大きく聞こえるようになります。</spw_dynamicreverbareasizemultipliertooltip>
 	<spw_dynamicreverbwetroomareasizemultiplier>ウェットルームリバーブスケール</spw_dynamicreverbwetroomareasizemultiplier>
-	<spw_dynamicreverbwetroomareasizemultipliertooltip>リスナーがバラストタンクやエアロック内にいる場合、それらの有効面積を乗算し、これらの部屋をより大きく、より反響するように聞こえさせます。</spw_dynamicreverbwetroomareasizemultipliertooltip>
+	<spw_dynamicreverbwetroomareasizemultipliertooltip>リスナーがバラストタンクやエアロック内にいる場合、それらの有効面積を乗算します。値を大きくすると、これらの部屋がより大きく、より反響するように聞こえるようになります。</spw_dynamicreverbwetroomareasizemultipliertooltip>
+	<spw_dynamicreverboutpostareasizemultiplier>前哨基地リバーブスケール</spw_dynamicreverboutpostareasizemultiplier>
+	<spw_dynamicreverboutpostareasizemultipliertooltip>リスナーが前哨基地内にいる場合、その有効面積を乗算します。</spw_dynamicreverboutpostareasizemultipliertooltip>
 	
 	<spw_dynamicreverbairtargetgain>屋内リバーブ強度</spw_dynamicreverbairtargetgain>
 	<spw_dynamicreverbairtargetgaintooltip>船殻内にいるときのリバーブ効果の基本ゲイン。</spw_dynamicreverbairtargetgaintooltip>
@@ -341,6 +343,9 @@
 	<spw_flowsoundvolumetooltip>潜水艦の漏水によって引き起こされる流水の音量。</spw_flowsoundvolumetooltip>
 	<spw_firesoundvolume>火災音の音量</spw_firesoundvolume>
 	<spw_firesoundvolumetooltip>火災の音量。</spw_firesoundvolumetooltip>
+
+	<spw_smoothtools>プラズマカッター &amp; 溶接ツールの修正</spw_smoothtools>
+	<spw_smoothtoolstooltip>プラズマカッターと溶接ツールの途切れるような音声を、1つの滑らかなループにすることで修正します。</spw_smoothtoolstooltip>
 	<spw_vanillaexosuitvolume>バニラエクソスーツの音量</spw_vanillaexosuitvolume>
 	<spw_vanillaexosuitvolumetooltip>バニラのエクソスーツの移動音の音量。一部のプレイヤーはこの音を不快に感じることがあります。\n\n注意：Modで追加されたエクソスーツの音には影響しません。</spw_vanillaexosuitvolumetooltip>
 	<spw_voicenearmultiplier>ボイスの距離減衰開始</spw_voicenearmultiplier>

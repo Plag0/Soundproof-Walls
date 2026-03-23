@@ -88,7 +88,9 @@
 	<spw_dynamicreverbareasizemultiplier>混响区域缩放</spw_dynamicreverbareasizemultiplier>
 	<spw_dynamicreverbareasizemultipliertooltip>缩放当前室内环境的有效面积。值越大，衰减时间和反射延迟越长，使空间听起来更大。</spw_dynamicreverbareasizemultipliertooltip>
 	<spw_dynamicreverbwetroomareasizemultiplier>潮湿房间混响缩放</spw_dynamicreverbwetroomareasizemultiplier>
-	<spw_dynamicreverbwetroomareasizemultipliertooltip>当听者在压载舱和气闸室内时，乘以这些房间的有效面积，使这些房间听起来更大，混响更强。</spw_dynamicreverbwetroomareasizemultipliertooltip>
+	<spw_dynamicreverbwetroomareasizemultipliertooltip>当听者在压载舱和气闸室内时，乘以这些房间的有效面积。值越高，这些房间听起来就越大、混响越强。</spw_dynamicreverbwetroomareasizemultipliertooltip>
+	<spw_dynamicreverboutpostareasizemultiplier>前哨站混响缩放</spw_dynamicreverboutpostareasizemultiplier>
+	<spw_dynamicreverboutpostareasizemultipliertooltip>当听者在前哨站内部时，乘以其有效面积。</spw_dynamicreverboutpostareasizemultipliertooltip>
 	
 	<spw_dynamicreverbairtargetgain>室内混响强度</spw_dynamicreverbairtargetgain>
 	<spw_dynamicreverbairtargetgaintooltip>在船体内部时混响效果的基础增益。</spw_dynamicreverbairtargetgaintooltip>
@@ -341,6 +343,9 @@
 	<spw_flowsoundvolumetooltip>潜艇泄漏引起的流水声的音量。</spw_flowsoundvolumetooltip>
 	<spw_firesoundvolume>火焰声音音量</spw_firesoundvolume>
 	<spw_firesoundvolumetooltip>火焰的音量。</spw_firesoundvolumetooltip>
+
+	<spw_smoothtools>等离子切割机与焊接工具修复</spw_smoothtools>
+	<spw_smoothtoolstooltip>通过将其转换为平滑的循环，修复等离子切割机和焊接工具断断续续的音频问题。</spw_smoothtoolstooltip>
 	<spw_vanillaexosuitvolume>原版外骨骼音量</spw_vanillaexosuitvolume>
 	<spw_vanillaexosuitvolumetooltip>原版外骨骼移动声音的音量。一些玩家觉得这个声音听起来不舒服。\n\n注意：不影响 Mod 制作的外骨骼声音。</spw_vanillaexosuitvolumetooltip>
 	<spw_voicenearmultiplier>语音距离衰减起始点</spw_voicenearmultiplier>

@@ -88,7 +88,9 @@
 	<spw_dynamicreverbareasizemultiplier>Escala de Área de Reverberación</spw_dynamicreverbareasizemultiplier>
 	<spw_dynamicreverbareasizemultipliertooltip>Escala el área efectiva del entorno interior actual. Valores más grandes aumentan el tiempo de decaimiento y el retardo de las reflexiones, haciendo que el espacio suene más grande.</spw_dynamicreverbareasizemultipliertooltip>
 	<spw_dynamicreverbwetroomareasizemultiplier>Escala de Reverberación en Salas Húmedas</spw_dynamicreverbwetroomareasizemultiplier>
-	<spw_dynamicreverbwetroomareasizemultipliertooltip>Multiplica el área efectiva de los tanques de lastre y las esclusas de aire cuando el oyente está dentro, haciendo que estas salas suenen más grandes y con más reverberación.</spw_dynamicreverbwetroomareasizemultipliertooltip>
+	<spw_dynamicreverbwetroomareasizemultipliertooltip>Multiplica el área efectiva de los tanques de lastre y las esclusas de aire cuando el oyente está dentro. Valores más altos hacen que estas salas suenen más grandes y con más reverberación.</spw_dynamicreverbwetroomareasizemultipliertooltip>
+	<spw_dynamicreverboutpostareasizemultiplier>Escala de Reverberación en Puestos Avanzados</spw_dynamicreverboutpostareasizemultiplier>
+	<spw_dynamicreverboutpostareasizemultipliertooltip>Multiplica el área efectiva de los puestos avanzados cuando el oyente está dentro.</spw_dynamicreverboutpostareasizemultipliertooltip>
 	
 	<spw_dynamicreverbairtargetgain>Intensidad de Reverberación Interior</spw_dynamicreverbairtargetgain>
 	<spw_dynamicreverbairtargetgaintooltip>La ganancia base del efecto de reverberación dentro de un casco.</spw_dynamicreverbairtargetgaintooltip>
@@ -341,6 +343,9 @@
 	<spw_flowsoundvolumetooltip>El volumen del agua fluyendo causada por fugas en el submarino.</spw_flowsoundvolumetooltip>
 	<spw_firesoundvolume>Volumen de Sonido de Fuego</spw_firesoundvolume>
 	<spw_firesoundvolumetooltip>El volumen de los incendios.</spw_firesoundvolumetooltip>
+
+	<spw_smoothtools>Mejora de Cortador de Plasma y Soldador</spw_smoothtools>
+	<spw_smoothtoolstooltip>Corrige el audio entrecortado del cortador de plasma y de la herramienta de soldadura convirtiéndolo en un único bucle fluido.</spw_smoothtoolstooltip>
 	<spw_vanillaexosuitvolume>Volumen de Exotraje Vanilla</spw_vanillaexosuitvolume>
 	<spw_vanillaexosuitvolumetooltip>El volumen del sonido de movimiento del exotraje vanilla. Algunos jugadores encuentran este sonido desagradable.\n\nNota: No afecta a los sonidos de exotrajes de mods.</spw_vanillaexosuitvolumetooltip>
 	<spw_voicenearmultiplier>Inicio de Atenuación de Voz por Distancia</spw_voicenearmultiplier>
