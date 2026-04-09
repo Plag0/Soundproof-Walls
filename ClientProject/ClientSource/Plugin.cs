@@ -2,11 +2,14 @@
 using Barotrauma.Extensions;
 using Barotrauma.Items.Components;
 using Barotrauma.Lights;
+using Barotrauma.LuaCs;
 using Barotrauma.Networking;
 using Barotrauma.Sounds;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoMod.RuntimeDetour;
+using MoonSharp.Interpreter;
 using OpenAL;
 using System.Data;
 using System.Reflection;
@@ -93,44 +96,44 @@ namespace SoundproofWalls
             Instance = this;
 
             // Compatibility with Lua mods that mess with with Sound objects.
-            LuaUserData.RegisterType(typeof(ExtendedOggSound).FullName);
-            LuaUserData.RegisterType(typeof(ExtendedSoundBuffers).FullName);
-            LuaUserData.RegisterType(typeof(ReducedOggSound).FullName);
-            LuaUserData.RegisterType(typeof(ReducedSoundBuffers).FullName);
+            UserData.RegisterType(typeof(ExtendedOggSound));
+            UserData.RegisterType(typeof(ExtendedSoundBuffers));
+            UserData.RegisterType(typeof(ReducedOggSound));
+            UserData.RegisterType(typeof(ReducedSoundBuffers));
 
-            GameMain.LuaCs.Hook.Add("think", "spw_clientupdate", (object[] args) =>
+            LuaCsSetup.Instance.Hook.Add("think", "spw_clientupdate", (object[] args) =>
             {
                 SPW_Update();
                 return null;
             });
 
-            GameMain.LuaCs.Game.AddCommand("spw", TextManager.Get("spw_openmenuhelp").Value, args =>
+            LuaCsSetup.Instance.Game.AddCommand("spw", TextManager.Get("spw_openmenuhelp").Value, args =>
             {
                 Menu.ForceOpenMenu();
             });
 
-            GameMain.LuaCs.Game.AddCommand("spw_welcome", TextManager.Get("spw_openpopuphelp").Value, args =>
+            LuaCsSetup.Instance.Game.AddCommand("spw_welcome", TextManager.Get("spw_openpopuphelp").Value, args =>
             {
                 Menu.ShowWelcomePopup();
             });
 
-            GameMain.LuaCs.Game.AddCommand("spw_stats", TextManager.Get("spw_openpopuphelp").Value, args =>
+            LuaCsSetup.Instance.Game.AddCommand("spw_stats", TextManager.Get("spw_openpopuphelp").Value, args =>
             {
                 ModStateManager.SaveState(ModStateManager.State);
                 ModStateManager.PrintStats();
             });
 
-            GameMain.LuaCs.Game.AddCommand("spw_help", TextManager.Get("spw_guidehelp").Value, args =>
+            LuaCsSetup.Instance.Game.AddCommand("spw_help", TextManager.Get("spw_guidehelp").Value, args =>
             {
                 ToolBox.OpenFileWithShell("https://steamcommunity.com/workshop/filedetails/discussion/3153737715/4204742223861734474");
             });
 
-            GameMain.LuaCs.Game.AddCommand("spw_report", TextManager.Get("spw_reporthelp").Value, args =>
+            LuaCsSetup.Instance.Game.AddCommand("spw_report", TextManager.Get("spw_reporthelp").Value, args =>
             {
                 ToolBox.OpenFileWithShell("https://steamcommunity.com/workshop/filedetails/discussion/3153737715/4204742223861924530");
             });
 
-            GameMain.LuaCs.Game.AddCommand("spw_workshop", TextManager.Get("spw_openworkshophelp").Value, args =>
+            LuaCsSetup.Instance.Game.AddCommand("spw_workshop", TextManager.Get("spw_openworkshophelp").Value, args =>
             {
                 ToolBox.OpenFileWithShell("https://steamcommunity.com/sharedfiles/filedetails/?id=3153737715");
             });
@@ -388,13 +391,13 @@ namespace SoundproofWalls
                 new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_ShouldMuffleSound))));
 
             // Server requests client to send their config.
-            GameMain.LuaCs.Networking.Receive(CLIENT_SEND_CONFIG, (object[] args) =>
+            LuaCsSetup.Instance.Networking.Receive(CLIENT_SEND_CONFIG, (object[] args) =>
             {
                 ConfigManager.UploadClientConfigToServer();
             });
 
             // Clients receiving the server config.
-            GameMain.LuaCs.Networking.Receive(CLIENT_RECEIVE_CONFIG, (object[] args) =>
+            LuaCsSetup.Instance.Networking.Receive(CLIENT_RECEIVE_CONFIG, (object[] args) =>
             {
                 // Unpack message.
                 IReadMessage msg = (IReadMessage)args[0];

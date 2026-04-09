@@ -82,9 +82,9 @@ namespace SoundproofWalls
             if (GameMain.IsMultiplayer && ServerConfig == null && Timing.TotalTime > lastRequestTime + 10)
             {
                 lastRequestTime = (float)Timing.TotalTime;
-                IWriteMessage message = GameMain.LuaCs.Networking.Start(Plugin.SERVER_SEND_CONFIG);
+                IWriteMessage message = LuaCsSetup.Instance.Networking.Start(Plugin.SERVER_SEND_CONFIG);
                 message.WriteByte(GameMain.Client.SessionId);
-                GameMain.LuaCs.Networking.Send(message);
+                LuaCsSetup.Instance.Networking.Send(message);
             }
         }
 
@@ -150,9 +150,9 @@ namespace SoundproofWalls
             if (client != null && (client.IsOwner || client.HasPermission(ClientPermissions.Ban)))
             {
                 string data = DataAppender.AppendData(LocalConfig.SyncSettings ? JsonSerializer.Serialize(LocalConfig) : Plugin.DISABLED_CONFIG_VALUE, manualUpdate, client.SessionId);
-                IWriteMessage message = GameMain.LuaCs.Networking.Start(Plugin.SERVER_RECEIVE_CONFIG);
+                IWriteMessage message = LuaCsSetup.Instance.Networking.Start(Plugin.SERVER_RECEIVE_CONFIG);
                 message.WriteString(data);
-                GameMain.LuaCs.Networking.Send(message);
+                LuaCsSetup.Instance.Networking.Send(message);
             }
         }
 

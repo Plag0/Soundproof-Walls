@@ -1,5 +1,6 @@
 ﻿using Barotrauma;
 using Barotrauma.Items.Components;
+using Barotrauma.LuaCs;
 using Barotrauma.Networking;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
@@ -16,7 +17,7 @@ namespace SoundproofWalls
 
         public void InitServer()
         {
-            GameMain.LuaCs.Networking.Receive(SERVER_RECEIVE_CONFIG, (object[] args) =>
+            LuaCsSetup.Instance.Networking.Receive(SERVER_RECEIVE_CONFIG, (object[] args) =>
             {
                 // Unpack message.
                 IReadMessage msg = (IReadMessage)args[0];
@@ -47,23 +48,23 @@ namespace SoundproofWalls
                 LastConfigString = configString;
 
                 // Send config to all clients.
-                IWriteMessage response = GameMain.LuaCs.Networking.Start(CLIENT_RECEIVE_CONFIG);
+                IWriteMessage response = LuaCsSetup.Instance.Networking.Start(CLIENT_RECEIVE_CONFIG);
                 response.WriteString(newConfigData);
-                GameMain.LuaCs.Networking.Send(response);
+                LuaCsSetup.Instance.Networking.Send(response);
 
                 if (isFirstConfig && ReceivedConfig)
                 {
-                    string updaterName = Client.ClientList.FirstOrDefault(client => client.SessionId == configSenderId)?.Name ?? "unknown";
+                    string updaterName = ModUtils.Client.ClientList.FirstOrDefault(client => client.SessionId == configSenderId)?.Name ?? "unknown";
                     LuaCsLogger.Log($"[Soundproof Walls][Server] Sync server started with config from \"{updaterName}\"", Color.LimeGreen);
                 }
             });
 
             // Clients can request the latest version of the config from the server.
-            GameMain.LuaCs.Networking.Receive(SERVER_SEND_CONFIG, (object[] args) =>
+            LuaCsSetup.Instance.Networking.Receive(SERVER_SEND_CONFIG, (object[] args) =>
             {
                 IReadMessage msg = (IReadMessage)args[0];
                 byte requesterId = msg.ReadByte();
-                Client? requesterClient = Client.ClientList.FirstOrDefault(client => client.SessionId == requesterId);
+                Client? requesterClient = ModUtils.Client.ClientList.FirstOrDefault(client => client.SessionId == requesterId);
 
                 if (requesterClient == null) { return; }
 
@@ -77,23 +78,23 @@ namespace SoundproofWalls
                 string newConfigData = DataAppender.AppendData(LastConfigString, false, LastConfigSenderID);
 
                 // Send new config to requesting client.
-                IWriteMessage response = GameMain.LuaCs.Networking.Start(CLIENT_RECEIVE_CONFIG);
+                IWriteMessage response = LuaCsSetup.Instance.Networking.Start(CLIENT_RECEIVE_CONFIG);
                 response.WriteString(newConfigData);
-                GameMain.LuaCs.Networking.Send(response, requesterClient.Connection);
+                LuaCsSetup.Instance.Networking.Send(response, requesterClient.Connection);
             });
 
             // Requests the host, or first admin to connect, for their config until it is recieved.
-            GameMain.LuaCs.Hook.Add("think", "spw_serverupdate", (object[] args) =>
+            LuaCsSetup.Instance.Hook.Add("think", "spw_serverupdate", (object[] args) =>
             {
                 if (!ReceivedConfig && Timing.TotalTime > LastConfigRequestTime + 10)
                 {
                     LastConfigRequestTime = (float)Timing.TotalTime;
-                    foreach (Client client in Client.ClientList)
+                    foreach (Client client in ModUtils.Client.ClientList)
                     {
                         if (client.Connection == GameMain.Server.OwnerConnection || client.HasPermission(ClientPermissions.Ban))
                         {
-                            IWriteMessage message = GameMain.LuaCs.Networking.Start(CLIENT_SEND_CONFIG);
-                            GameMain.LuaCs.Networking.Send(message, client.Connection);
+                            IWriteMessage message = LuaCsSetup.Instance.Networking.Start(CLIENT_SEND_CONFIG);
+                            LuaCsSetup.Instance.Networking.Send(message, client.Connection);
                             //LuaCsLogger.Log("Server: requesting config...");
                             break;
                         }

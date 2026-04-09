@@ -71,7 +71,7 @@ namespace SoundproofWalls
         {
             LuaCsLogger.Log("[SoundproofWalls] Reloading sound buffers for non-streamed audio...");
 
-            MoonSharp.Interpreter.DynValue Resound = GameMain.LuaCs.Lua.Globals.Get("Resound");
+            MoonSharp.Interpreter.DynValue? Resound = LuaCsSetup.Instance.LuaScriptManagementService.InternalScript?.Globals.Get("Resound");
             Util.StopResound(Resound);
 
             // Stop all channels to prevent them from using buffers while we swap them.

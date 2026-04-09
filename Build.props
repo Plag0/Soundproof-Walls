@@ -5,4 +5,10 @@
         <ModDeployDir>C:\Program Files (x86)\Steam\steamapps\common\Barotrauma\LocalMods\Soundproof Walls 2.0\</ModDeployDir>
         <AssemblyName>SoundproofWalls</AssemblyName>
     </PropertyGroup>
+	
+	<ItemGroup>
+		<PackageReference Include="LightInject" Version="6.6.4" />
+		<PackageReference Include="OneOf" Version="3.0.271" />
+		<PackageReference Include="FluentResults" Version="3.16.0" />
+	</ItemGroup>
 </Project>

@@ -1,4 +1,5 @@
 ﻿using Barotrauma;
+using Barotrauma.LuaCs;
 using HarmonyLib;
 using System.Runtime.CompilerServices;
 

@@ -383,28 +383,30 @@ namespace SoundproofWalls
         }
 
         // Compatibility with ReSound.
-        public static void StopResound(MoonSharp.Interpreter.DynValue Resound)
+        public static void StopResound(MoonSharp.Interpreter.DynValue? Resound)
         {
+            if (Resound == null) return;
             if (Resound.Type == MoonSharp.Interpreter.DataType.Table)
             {
                 MoonSharp.Interpreter.Table resoundTable = Resound.Table;
                 MoonSharp.Interpreter.DynValue stopFunction = resoundTable.Get("StopMod");
                 if (stopFunction.Type == MoonSharp.Interpreter.DataType.Function)
                 {
-                    GameMain.LuaCs.Lua.Call(stopFunction);
+                    LuaCsSetup.Instance.CallLuaFunction(stopFunction);
                 }
             }
         }
 
-        public static void StartResound(MoonSharp.Interpreter.DynValue Resound)
+        public static void StartResound(MoonSharp.Interpreter.DynValue? Resound)
         {
+            if (Resound == null) return;
             if (Resound.Type == MoonSharp.Interpreter.DataType.Table)
             {
                 MoonSharp.Interpreter.Table resoundTable = Resound.Table;
                 MoonSharp.Interpreter.DynValue startFunction = resoundTable.Get("StartMod");
                 if (startFunction.Type == MoonSharp.Interpreter.DataType.Function)
                 {
-                    GameMain.LuaCs.Lua.Call(startFunction);
+                    LuaCsSetup.Instance.CallLuaFunction(startFunction);
                 }
             }
         }
