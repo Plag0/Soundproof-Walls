@@ -612,7 +612,7 @@
 	<spw_categoryrules>サウンドルール</spw_categoryrules>
 	
 	<spw_customsounds>カスタムサウンド</spw_customsounds>
-	<spw_customsoundstooltip>特定のサウンドにカスタム値と効果を適用します。\n\n「キーワード」：ターゲットサウンドのファイル名の一部。大文字と小文字を区別しません。\n\n「ゲイン乗数」：音量乗数。他の音量乗数と加算で累積します。\n\n「範囲乗数」：範囲乗数。他の範囲乗数と乗算で累積します。\n\n「サイドチェイン乗数」：このサウンドが再生されるときに他のサウンドが減少する音量。\n\n「サイドチェインリリース」：音量減少が続く時間。\n\n「ディストーション」：このサウンドのディストーション効果を切り替えます。ダイナミックモードのみ。\n\n「ピッチ乗数」：ピッチ乗数。サウンドの長さを伸縮させることで機能します。範囲は0.25～4.0。\n\n「マッフル影響度」：マッフル効果の有効性。値が低いほど影響が少なくなります。\n\n「キーワード除外」：提供されたキーワードを含むが除外すべきサウンド。大文字と小文字を区別しません。</spw_customsoundstooltip>
+	<spw_customsoundstooltip>特定のサウンドにカスタム値と効果を適用します。\n\n「Keyword」：ターゲットサウンドのファイル名の一部。大文字と小文字を区別しません。\n\n「GainMult」：音量乗数。他の音量乗数と乗算で累積します。\n\n「RangeMult」：範囲乗数。他の範囲乗数と乗算で累積します。\n\n「SidechainMult」：このサウンドが再生されるときに他のサウンドが減少する音量。\n\n「SidechainRelease」：音量減少が続く時間。\n\n「Distortion」：このサウンドのディストーション効果を切り替えます。ダイナミックモードのみ。\n\n「PitchMult」：ピッチ乗数。サウンドの長さを伸縮させることで機能します。範囲は0.25～4.0。\n\n「MuffleInfluence」：マッフル効果の有効性。値が低いほど影響が少なくなります。\n\n「KeywordExclusions」：提供されたキーワードを含むが除外すべきサウンド。大文字と小文字を区別しません。</spw_customsoundstooltip>
 	<spw_moddedcustomsoundstooltip>[modname]からのカスタムサウンド値。標準の「カスタムサウンド」リストよりも優先されます。\n\nこのリストは他のプレイヤーと同期されず、変更は現在のセッションを超えて持続しません。\n\nSoundproof Wallsはこのリストの内容について責任を負いません。</spw_moddedcustomsoundstooltip>
 	
 	<spw_ignoredsounds>無視するサウンド</spw_ignoredsounds>

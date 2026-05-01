@@ -1,7 +1,4 @@
-﻿using Barotrauma;
-using Microsoft.Xna.Framework;
-
-namespace SoundproofWalls
+﻿namespace SoundproofWalls
 {
     /// <summary>
     /// A utility class to find the shortest/lowest-cost path for sound to travel between hulls.

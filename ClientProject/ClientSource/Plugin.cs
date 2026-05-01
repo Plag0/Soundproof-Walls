@@ -1,20 +1,12 @@
-﻿using Barotrauma;
-using Barotrauma.Extensions;
-using Barotrauma.Items.Components;
+﻿using Barotrauma.Items.Components;
 using Barotrauma.Lights;
-using Barotrauma.LuaCs;
 using Barotrauma.Networking;
 using Barotrauma.Sounds;
 using HarmonyLib;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoMod.RuntimeDetour;
 using MoonSharp.Interpreter;
 using OpenAL;
 using System.Data;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
 using System.Text.Json;
 
 namespace SoundproofWalls
@@ -301,6 +293,12 @@ namespace SoundproofWalls
             harmony.Patch(
                 typeof(StatusEffect).GetMethod(nameof(StatusEffect.UpdateAllProjSpecific), BindingFlags.Static | BindingFlags.NonPublic),
                 new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_StatusEffect_UpdateAllProjSpecific))));
+
+            // StatusEffect PlaySound postfix.
+            // Small patch to reposition diving suit loops from the center of the suit to the head.
+            harmony.Patch(
+                typeof(StatusEffect).GetMethod(nameof(StatusEffect.PlaySound), BindingFlags.Instance | BindingFlags.NonPublic),
+                postfix: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_StatusEffect_PlaySound))));
 
             // VoipClient Read prefix REPLACEMENT.
             // Manages the range, muffle flagging, and spectating changes for voice chat. Maintainability note: has VERY high contrast with vanilla implementation.
@@ -2333,12 +2331,44 @@ namespace SoundproofWalls
                     // Changes
                     SoundChannel channel = statusEffect.soundChannel;
                     ChannelInfoManager.EnsureUpdateChannelInfo(channel, statusEffect: statusEffect, dontMuffle: statusEffect.ignoreMuffling);
-                    statusEffect.soundChannel.Position = new Vector3(statusEffect.soundEmitter.WorldPosition, 0.0f);
+                    
+                    var item = statusEffect.soundEmitter as Item;
+                    Vector3? worldPos = new Vector3(statusEffect.soundEmitter.WorldPosition, 0.0f);
+                    if (item != null && item.Equipper != null && item.HasTag("deepdiving"))
+                    {
+                        if (item.Equipper == Character.Controlled && LightManager.ViewTarget as Character == Character.Controlled)
+                        {
+                            worldPos = null;
+                        }
+                        else
+                        {
+                            worldPos = new Vector3(Util.GetCharacterHead(item.Equipper).WorldPosition, 0.0f);
+                        }
+                    }
+
+                    statusEffect.soundChannel.Position = worldPos;
                 }
             }
             ActiveLoopingSounds.RemoveWhere(s => s.soundChannel == null);
 
             return false;
+        }
+
+        public static void SPW_StatusEffect_PlaySound(StatusEffect __instance)
+        {
+            var item = __instance.soundEmitter as Item;
+            var soundChannel = __instance.soundChannel;
+            if (item != null && soundChannel != null && item.Equipper != null && item.HasTag("deepdiving"))
+            {
+                if (item.Equipper == Character.Controlled && LightManager.ViewTarget as Character == Character.Controlled)
+                {
+                    soundChannel.Position = null;
+                }
+                else
+                {
+                    soundChannel.Position = new Vector3(Util.GetCharacterHead(item.Equipper).WorldPosition, 0.0f);
+                }
+            }
         }
 
         public static void SPW_UpdateTransform(Camera __instance)

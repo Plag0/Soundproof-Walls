@@ -1,8 +1,5 @@
-﻿using Barotrauma;
-using Barotrauma.Sounds;
-using Microsoft.Xna.Framework;
+﻿using Barotrauma.Sounds;
 using OpenAL;
-using System.Collections.Concurrent;
 
 namespace SoundproofWalls
 {

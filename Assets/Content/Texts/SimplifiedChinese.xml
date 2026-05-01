@@ -613,7 +613,7 @@
 	<spw_categoryrules>声音规则</spw_categoryrules>
 	
 	<spw_customsounds>自定义声音</spw_customsounds>
-	<spw_customsoundstooltip>对特定声音应用自定义值和效果。\n\n“关键字”：目标声音文件名的一部分。不区分大小写。\n\n“增益倍率”：音量乘数。与其他音量乘数以加法叠加。\n\n“范围倍率”：范围乘数。与其他范围乘数以乘法叠加。\n\n“侧链倍率”：当此声音播放时，其他声音被降低的音量。\n\n“侧链释放”：音量降低的持续时间。\n\n“失真”：切换此声音的失真效果。仅限动态模式。\n\n“音高倍率”：音高乘数。通过拉伸声音的长度工作。范围在 0.25-4.0 之间。\n\n“闷音影响”：闷音效果的有效性。值越低，受影响越小。\n\n“关键字排除”：包含所提供关键字但应被排除的声音。不区分大小写。</spw_customsoundstooltip>
+	<spw_customsoundstooltip>对特定声音应用自定义值和效果。\n\n“Keyword”：目标声音文件名的一部分。不区分大小写。\n\n“GainMult”：音量乘数。与其他音量乘数以乘法叠加。\n\n“RangeMult”：范围乘数。与其他范围乘数以乘法叠加。\n\n“SidechainMult”：当此声音播放时，其他声音被降低的音量。\n\n“SidechainRelease”：音量降低的持续时间。\n\n“Distortion”：切换此声音的失真效果。仅限动态模式。\n\n“PitchMult”：音高乘数。通过拉伸声音的长度工作。范围在 0.25-4.0 之间。\n\n“MuffleInfluence”：闷音效果的有效性。值越低，受影响越小。\n\n“KeywordExclusions”：包含所提供关键字但应被排除的声音。不区分大小写。</spw_customsoundstooltip>
 	<spw_moddedcustomsoundstooltip>来自 [modname] 的自定义声音值。优先于标准的“自定义声音”列表。\n\n此列表不与其他玩家同步，任何更改都不会在当前会话之外保留。\n\nSoundproof Walls 对此列表的内容不负责任。</spw_moddedcustomsoundstooltip>
 	
 	<spw_ignoredsounds>忽略的声音</spw_ignoredsounds>

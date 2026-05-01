@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ModConfig>
+    <Assembly File="%ModDir%/bin/Client/Linux/SoundproofWalls.dll" Target="Client" Platform="Linux"/>
+    <Assembly File="%ModDir%/bin/Client/OSX/SoundproofWalls.dll" Target="Client" Platform="OSX"/>
+    <Assembly File="%ModDir%/bin/Client/Windows/SoundproofWalls.dll" Target="Client" Platform="Windows"/>
+    <Assembly File="%ModDir%/bin/Server/Linux/SoundproofWalls.dll" Target="Server" Platform="Linux"/>
+    <Assembly File="%ModDir%/bin/Server/OSX/SoundproofWalls.dll" Target="Server" Platform="OSX"/>
+    <Assembly File="%ModDir%/bin/Server/Windows/SoundproofWalls.dll" Target="Server" Platform="Windows"/>
+</ModConfig>

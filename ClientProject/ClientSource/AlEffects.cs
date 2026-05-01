@@ -1,5 +1,4 @@
-﻿using Barotrauma;
-using OpenAL;
+﻿using OpenAL;
 using System.Runtime.InteropServices;
 
 namespace SoundproofWalls

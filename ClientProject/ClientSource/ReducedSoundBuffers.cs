@@ -1,6 +1,4 @@
-﻿using Barotrauma;
-using Barotrauma.Extensions;
-using Barotrauma.Sounds;
+﻿using Barotrauma.Sounds;
 using OpenAL;
 
 namespace SoundproofWalls

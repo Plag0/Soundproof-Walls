@@ -1,5 +1,4 @@
-﻿using Barotrauma;
-using Barotrauma.Sounds;
+﻿using Barotrauma.Sounds;
 using NVorbis;
 using OpenAL;
 

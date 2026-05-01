@@ -1,11 +1,4 @@
-﻿using Barotrauma;
-using Barotrauma.LuaCs;
-using HarmonyLib;
-using System.Runtime.CompilerServices;
-
-[assembly: IgnoresAccessChecksTo("Barotrauma")]
-[assembly: IgnoresAccessChecksTo("DedicatedServer")]
-[assembly: IgnoresAccessChecksTo("BarotraumaCore")]
+﻿using HarmonyLib;
 
 namespace SoundproofWalls
 {
@@ -13,7 +6,7 @@ namespace SoundproofWalls
     {
         readonly Harmony harmony = new Harmony("plag.barotrauma.soundproofwalls");
 
-        public System.Reflection.MethodInfo? PatchToKeep;
+        public MethodInfo? PatchToKeep;
 
         // Net message names.
         public const string SERVER_RECEIVE_CONFIG = "spw_netmessage_server_receiveconfig";
@@ -67,7 +60,7 @@ namespace SoundproofWalls
 
         public void PreInitPatching()
         {
-            // TODO when this works, load extended/reduced sounds early.
+
         }
 
         public void Dispose()

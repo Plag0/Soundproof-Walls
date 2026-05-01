@@ -1,8 +1,5 @@
-﻿#nullable enable
-using Barotrauma;
-using Barotrauma.Networking;
+﻿using Barotrauma.Networking;
 using Barotrauma.Sounds;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System.Globalization;
 using System.Text.Json;

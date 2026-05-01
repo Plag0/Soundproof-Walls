@@ -1,7 +1,5 @@
-﻿using Barotrauma;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using System.Text.Json;
-using Microsoft.Xna.Framework;
 using Barotrauma.Networking;
 
 namespace SoundproofWalls

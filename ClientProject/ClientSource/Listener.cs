@@ -1,7 +1,5 @@
 ﻿using Barotrauma.Items.Components;
 using Barotrauma.Lights;
-using Barotrauma;
-using Microsoft.Xna.Framework;
 using FarseerPhysics;
 using Microsoft.Xna.Framework.Graphics;
 using OpenAL;

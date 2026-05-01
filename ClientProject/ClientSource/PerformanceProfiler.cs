@@ -1,13 +1,9 @@
 ﻿
+using Microsoft.Xna.Framework.Graphics;
+using System.Diagnostics;
+
 namespace SoundproofWalls
 {
-    using Barotrauma;
-    using Microsoft.Xna.Framework.Graphics;
-    using Microsoft.Xna.Framework;
-    using System;
-    using System.Diagnostics;
-    using System.Linq;
-
     public static class ProfileEvents
     {
         public const string ListenerUpdate = "Listener";

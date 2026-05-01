@@ -1,6 +1,4 @@
-﻿using Barotrauma;
-using Barotrauma.Sounds;
-using Microsoft.Xna.Framework;
+﻿using Barotrauma.Sounds;
 
 namespace SoundproofWalls
 {

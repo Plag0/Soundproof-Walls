@@ -612,7 +612,7 @@
 	<spw_categoryrules>사운드 규칙</spw_categoryrules>
 	
 	<spw_customsounds>사용자 지정 사운드</spw_customsounds>
-	<spw_customsoundstooltip>특정 사운드에 사용자 지정 값과 효과를 적용합니다.\n\n"Keyword": 대상 사운드 파일 이름의 일부. 대소문자를 구분하지 않습니다.\n\n"GainMult": 볼륨 배율. 다른 볼륨 배율과 합연산으로 중첩됩니다.\n\n"RangeMult": 범위 배율. 다른 범위 배율과 곱연산으로 중첩됩니다.\n\n"SidechainMult": 이 사운드가 재생될 때 다른 사운드의 볼륨이 감소하는 정도입니다.\n\n"SidechainRelease": 볼륨 감소가 지속되는 시간입니다.\n\n"Distortion": 이 사운드의 왜곡 효과를 켜고 끕니다. 동적 모드 전용입니다.\n\n"PitchMult": 피치 배율. 사운드의 길이를 늘려 작동합니다. 0.25-4.0 범위입니다.\n\n"MuffleInfluence": 약화 효과의 효율성. 값이 낮을수록 영향을 덜 받습니다.\n\n"KeywordExclusions": 제공된 키워드를 포함하지만 제외해야 하는 사운드. 대소문자를 구분하지 않습니다.</spw_customsoundstooltip>
+	<spw_customsoundstooltip>특정 사운드에 사용자 지정 값과 효과를 적용합니다.\n\n"Keyword": 대상 사운드 파일 이름의 일부. 대소문자를 구분하지 않습니다.\n\n"GainMult": 볼륨 배율. 다른 볼륨 배율과 곱연산으로 중첩됩니다.\n\n"RangeMult": 범위 배율. 다른 범위 배율과 곱연산으로 중첩됩니다.\n\n"SidechainMult": 이 사운드가 재생될 때 다른 사운드의 볼륨이 감소하는 정도입니다.\n\n"SidechainRelease": 볼륨 감소가 지속되는 시간입니다.\n\n"Distortion": 이 사운드의 왜곡 효과를 켜고 끕니다. 동적 모드 전용입니다.\n\n"PitchMult": 피치 배율. 사운드의 길이를 늘려 작동합니다. 0.25-4.0 범위입니다.\n\n"MuffleInfluence": 약화 효과의 효율성. 값이 낮을수록 영향을 덜 받습니다.\n\n"KeywordExclusions": 제공된 키워드를 포함하지만 제외해야 하는 사운드. 대소문자를 구분하지 않습니다.</spw_customsoundstooltip>
 	<spw_moddedcustomsoundstooltip>[modname]의 사용자 지정 사운드 값입니다. 표준 "사용자 지정 사운드" 목록보다 우선 적용됩니다.\n\n이 목록은 다른 플레이어와 동기화되지 않으며, 변경 사항은 현재 세션에서만 유지됩니다.\n\nSoundproof Walls는 이 목록의 내용에 대해 책임지지 않습니다.</spw_moddedcustomsoundstooltip>
 	
 	<spw_ignoredsounds>무시되는 사운드</spw_ignoredsounds>

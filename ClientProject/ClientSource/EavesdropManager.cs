@@ -1,8 +1,5 @@
-﻿using Barotrauma;
-using Barotrauma.Extensions;
-using Barotrauma.Sounds;
+﻿using Barotrauma.Sounds;
 using FarseerPhysics;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace SoundproofWalls

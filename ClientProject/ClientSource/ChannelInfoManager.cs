@@ -1,9 +1,7 @@
-﻿using Barotrauma;
-using Barotrauma.Items.Components;
+﻿using Barotrauma.Items.Components;
 using Barotrauma.Networking;
 using Barotrauma.Sounds;
 using OpenAL;
-using System.Collections.Concurrent;
 
 namespace SoundproofWalls
 {

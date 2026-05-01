@@ -612,7 +612,7 @@
 	<spw_categoryrules>聲音規則</spw_categoryrules>
 	
 	<spw_customsounds>自訂音效</spw_customsounds>
-	<spw_customsoundstooltip>對特定音效應用自訂數值和效果。\n\n「關鍵字」(Keyword)：目標音效檔案名稱的一部分。不分大小寫。\n\n「增益乘數」(GainMult)：音量乘數。與其他音量乘數以加法疊加。\n\n「範圍乘數」(RangeMult)：範圍乘數。與其他範圍乘數以乘法疊加。\n\n「側鏈乘數」(SidechainMult)：當此音效播放時，其他音效被降低的音量。\n\n「側鏈釋放」(SidechainRelease)：音量降低效果的持續時間。\n\n「失真」(Distortion)：切換此音效的失真效果。僅限動態模式。\n\n「音高乘數」(PitchMult)：音高乘數。透過拉伸音效長度來作用。範圍介於 0.25-4.0 之間。\n\n「消音影響」(MuffleInfluence)：消音效果的有效性。較低的值表示受影響較小。\n\n「關鍵字排除」(KeywordExclusions)：包含所提供關鍵字但應被排除的音效。不分大小寫。</spw_customsoundstooltip>
+	<spw_customsoundstooltip>對特定音效應用自訂數值和效果。\n\n「關鍵字」(Keyword)：目標音效檔案名稱的一部分。不分大小寫。\n\n「增益乘數」(GainMult)：音量乘數。與其他音量乘數以乘法疊加。\n\n「範圍乘數」(RangeMult)：範圍乘數。與其他範圍乘數以乘法疊加。\n\n「側鏈乘數」(SidechainMult)：當此音效播放時，其他音效被降低的音量。\n\n「側鏈釋放」(SidechainRelease)：音量降低效果的持續時間。\n\n「失真」(Distortion)：切換此音效的失真效果。僅限動態模式。\n\n「音高乘數」(PitchMult)：音高乘數。透過拉伸音效長度來作用。範圍介於 0.25-4.0 之間。\n\n「消音影響」(MuffleInfluence)：消音效果的有效性。較低的值表示受影響較小。\n\n「關鍵字排除」(KeywordExclusions)：包含所提供關鍵字但應被排除的音效。不分大小寫。</spw_customsoundstooltip>
 	<spw_moddedcustomsoundstooltip>來自 [modname] 的自訂音效數值。優先於標準的「自訂音效」列表。\n\n此列表不會與其他玩家同步，任何變更將不會在當前遊戲結束後保留。\n\nSoundproof Walls 不對此列表的內容負責。</spw_moddedcustomsoundstooltip>
 	
 	<spw_ignoredsounds>忽略音效</spw_ignoredsounds>

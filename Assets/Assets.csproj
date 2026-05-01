@@ -4,26 +4,20 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<RootNamespace>SoundproofWalls</RootNamespace>
-		<AssemblyName>SoundproofWalls</AssemblyName>
+		<RootNamespace>ModAssets</RootNamespace>
+		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
 
-	<ItemGroup>
-		<Content Include="Content\**\*.*" />
-	</ItemGroup>
-
-
-	<Import Project="../Build.props" />
+	<Import Project="../Build.props"/>
 
 	<Target Name="CopyFiles" AfterTargets="Build">
 		<ItemGroup>
+			<Content Include="$(ProjectDir)Content\**\*.*" />
 			<FileList Include="$(ProjectDir)filelist.xml" />
-			<RunConfig Include="$(ProjectDir)RunConfig.xml" />
 		</ItemGroup>
-
-		<Copy SourceFiles="@(FileList)" DestinationFiles="$(ModDeployDir)filelist.xml" SkipUnchangedFiles="true" />
-		<Copy SourceFiles="@(RunConfig)" DestinationFiles="$(ModDeployDir)CSharp\RunConfig.xml" SkipUnchangedFiles="true" />
 		<Copy SourceFiles="@(Content)" DestinationFolder="$(ModDeployDir)Content\%(RecursiveDir)" SkipUnchangedFiles="true" />
+		<Copy SourceFiles="@(FileList)" DestinationFiles="$(ModDeployDir)filelist.xml" SkipUnchangedFiles="true" />
 	</Target>
+
 
 </Project>

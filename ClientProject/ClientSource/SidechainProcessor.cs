@@ -1,7 +1,4 @@
-﻿using Barotrauma;
-using System;
-
-namespace SoundproofWalls
+﻿namespace SoundproofWalls
 {
     public class SidechainProcessor
     {

@@ -62,7 +62,8 @@ You can safely ignore any build warnings. If there are any errors, refer to the 
 
 1. Subscribe to [Lua For Barotrauma](https://steamcommunity.com/sharedfiles/filedetails/?id=2559634234) and follow the instructions in the description to install client-side Lua.
 
-2. Launch Barotrauma. If client-side Lua has been installed correctly, you will see an "Open LuaCs Settings" button in the top left corner of the main menu. Click this button and tick "Enable Csharp Scripting".
+
+1. 2. Launch Barotrauma. If client-side Lua has been installed correctly, you will see red text saying "LuaCsForBarotrauma active" in the top left of your menu screen.
 
 3. Navigate to your mods list and enable Soundproof Walls. If there are two copies of the mod, choose the one with the grey pencil icon.
 

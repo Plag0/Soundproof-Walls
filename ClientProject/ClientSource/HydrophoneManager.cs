@@ -1,8 +1,6 @@
-﻿using Barotrauma;
-using Barotrauma.Items.Components;
+﻿using Barotrauma.Items.Components;
 using Barotrauma.Lights;
 using Barotrauma.Sounds;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OpenAL;
 using System.Data;
@@ -310,7 +308,7 @@ namespace SoundproofWalls
             for (int i = 0; i < Character.CharacterList.Count; i++)
             {
                 Character character = Character.CharacterList[i];
-                if (character == null || !character.InWater || character.isDead)
+                if (character == null || !character.InWater || character.isDead || character.Removed || !character.Enabled)
                 {
                     continue;
                 }
@@ -440,8 +438,8 @@ namespace SoundproofWalls
         private static void UpdateActiveSector(HydrophoneSector sector)
         {
             // Position.
-            var xPositions = sector.CharactersInSector.Select(c => c.WorldPosition.X).ToList();
-            var yPositions = sector.CharactersInSector.Select(c => c.WorldPosition.Y).ToList();
+            var xPositions = sector.CharactersInSector.Where(c => c != null && !c.Removed).Select(c => c.WorldPosition.X).ToList();
+            var yPositions = sector.CharactersInSector.Where(c => c != null && !c.Removed).Select(c => c.WorldPosition.Y).ToList();
             Vector2 medianPosition = new Vector2(Util.GetMedian(xPositions), Util.GetMedian(yPositions));
 
             // Gain. Base range + hydrophone range.

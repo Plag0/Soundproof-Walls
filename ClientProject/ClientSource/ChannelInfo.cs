@@ -1,10 +1,8 @@
-﻿using Barotrauma;
-using Barotrauma.Items.Components;
+﻿using Barotrauma.Items.Components;
 using Barotrauma.Lights;
 using Barotrauma.Networking;
 using Barotrauma.Sounds;
 using FarseerPhysics.Dynamics;
-using Microsoft.Xna.Framework;
 using Mono.Cecil;
 using OpenAL;
 
@@ -499,9 +497,8 @@ namespace SoundproofWalls
             {
                 Channel.Position = new Vector3(Util.WorldizePosition(LocalPos, ChannelHull?.Submarine), 0);
                 WorldPos = Util.GetSoundChannelWorldPos(Channel);
-
             }
-
+            
             Vector2 sourceVelocity = Vector2.Zero;
             if (config.DopplerEffect && config.PitchEnabled)
             {
@@ -1032,8 +1029,6 @@ namespace SoundproofWalls
             }
             Math.Clamp(currentGain, 0, 1);
 
-            mult += SoundInfo.GainMult - 1;
-
             if (AudioIsRadioVoice)
             {
                 // Radio can only be muffled when the sender is drowning.
@@ -1072,11 +1067,11 @@ namespace SoundproofWalls
                 else if (Hydrophoned) { mult += config.HydrophoneVolumeMultiplier - 1; mult *= HydrophoneManager.HydrophoneEfficiency; }
             }
 
-            // Clamp after stacking bonuses.
-            mult = Math.Clamp(mult, 0, 1);
+            mult = Math.Clamp(mult, 0, 1); // Normalize after additive stacking
+            mult *= SoundInfo.GainMult;    // Apply custom gainMult
+            mult = Math.Clamp(mult, 0, 1); // And clamp back to normal range.
 
-            // Note that the following multipliers may also apply to radio channels.
-
+            // Note that all following multipliers can be applied to radio channels.
 
             // ----- Eavesdropping ------
 

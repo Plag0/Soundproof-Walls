@@ -1,8 +1,5 @@
-﻿using Barotrauma;
-using Barotrauma.Items.Components;
+﻿using Barotrauma.Items.Components;
 using Barotrauma.Sounds;
-using Microsoft.Xna.Framework;
-using System.Collections.Concurrent;
 
 namespace SoundproofWalls
 {

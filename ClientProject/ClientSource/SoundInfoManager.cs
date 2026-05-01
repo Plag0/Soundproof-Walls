@@ -1,6 +1,4 @@
-﻿using Barotrauma;
-using Barotrauma.Sounds;
-using System.Collections.Concurrent;
+﻿using Barotrauma.Sounds;
 using System.Text.Json;
 
 namespace SoundproofWalls
