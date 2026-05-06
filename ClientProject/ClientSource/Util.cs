@@ -231,12 +231,18 @@ namespace SoundproofWalls
 
         public static bool IsDoorClosed(Door door)
         {
-            if (door != null && !door.IsBroken && !door.IsFullyOpen && door.Item.Condition > 0) 
+            if (door != null)
             {
-                if (!ConfigManager.Config.TraverseWaterDucts && door.Item.HasTag("ductblock")) { return true; }
+                if (!ConfigManager.Config.TraverseWaterDucts && door.Item.HasTag("ductblock"))
+                {
+                    return true;
+                }
 
-                bool isClosingOrClosed = (door.PredictedState.HasValue) ? !door.PredictedState.Value : door.IsClosed;
-                return isClosingOrClosed && door.OpenState < ConfigManager.Config.OpenDoorThreshold;
+                else if (!door.IsBroken && !door.IsFullyOpen && door.Item.Condition > 0)
+                {
+                    bool isClosingOrClosed = (door.PredictedState.HasValue) ? !door.PredictedState.Value : door.IsClosed;
+                    return isClosingOrClosed && door.OpenState < ConfigManager.Config.OpenDoorThreshold;
+                }
             }
             return false;
         }

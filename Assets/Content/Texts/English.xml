@@ -165,8 +165,19 @@
 	<spw_talkingragdollstooltip>Hear non-stunned players speak when they're ragdolled.</spw_talkingragdollstooltip>
 	<spw_directionalradio>Directional Radio</spw_directionalradio>
 	<spw_directionalradiotooltip>If enabled, radio proximity chat is panned in the direction of the speaker. This is the default behaviour in vanilla.</spw_directionalradiotooltip>
+	<spw_transmitlocalonradio>Speak Locally On Radio</spw_transmitlocalonradio>
+	<spw_transmitlocalonradiotooltip>Players using the radio will also speak in local proximity chat.</spw_transmitlocalonradiotooltip>
 	<spw_hearlocalvoiceonfocusedtarget>Hear Voices On Turrets</spw_hearlocalvoiceonfocusedtarget>
 	<spw_hearlocalvoiceonfocusedtargettooltip>Hear local proximity chat around your character while listening from the perspective of the current camera target.\n\nNote: Requires "Focus Target Audio" (General tab) to be enabled.</spw_hearlocalvoiceonfocusedtargettooltip>
+	
+	<spw_hearselflocal>Hear Self Local</spw_hearselflocal>
+	<spw_hearselflocaltooltip>Hear your own local proximity chat, including all the effects applied to it.\n\nNote: This setting is not synced with other players when using "Sync Settings" (General tab).</spw_hearselflocaltooltip>
+	<spw_hearselfradio>Hear Self Radio</spw_hearselfradio>
+	<spw_hearselfradiotooltip>Hear your own radio proximity chat, including all the effects applied to it.\n\nNote: This setting is not synced with other players when using "Sync Settings" (General tab).</spw_hearselfradiotooltip>
+	<spw_hearselfreverbonly>Hear Self Reverb Only</spw_hearselfreverbonly>
+	<spw_hearselfreverbonlytooltip>Hear only the reverb applied to your voice, without the dry channel.\n\nNote: This setting is not synced with other players when using "Sync Settings" (General tab).\n\nNote: Requires "Hear Self Local" (Voice tab) and Dynamic mode's reverb effect to be enabled.</spw_hearselfreverbonlytooltip>
+	<spw_hearselftransmitlocalonradio>Hear Self Speak Locally On Radio</spw_hearselftransmitlocalonradio>
+	<spw_hearselftransmitlocalonradiotooltip>When you use the radio, you will hear yourself speaking in local proximity chat.\n\nNote: This setting is not synced with other players when using "Sync Settings" (General tab).\n\nNote: Requires "Speak Locally On Radio" and "Hear Self Local" (Voice tab) to be enabled.</spw_hearselftransmitlocalonradiotooltip>
 	
 	<spw_voicerange>Local Range</spw_voicerange>
 	<spw_voicerangetooltip>The range of local proximity chat.</spw_voicerangetooltip>

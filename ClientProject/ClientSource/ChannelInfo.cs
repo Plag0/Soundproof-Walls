@@ -691,7 +691,7 @@ namespace SoundproofWalls
             // Early return for spectators.
             if (Listener.IsSpectating)
             {
-                if (inWater && !SoundInfo.IgnoreSurface)
+                if (inWater && !SoundInfo.IgnoreSurface && !AudioIsVoice) // Don't muffle player voices in the water for spectators.
                 {
                     AddObstruction(Obstruction.WaterSurface, "Air-water barrier");
                 }
@@ -1037,6 +1037,14 @@ namespace SoundproofWalls
                 {
                     mult *= 1.0f - SpeakingClient.RadioNoise;
                 }
+
+                // Exclusively for "HearSelfTransmitLocalOnRadio" + "HearSelfLocal" config combo.
+                // This is only necessary for radio because for this combo we must allow self radio packets to be sent
+                // so they can be duped and played locally, after which we don't need the radio packets anymore so we mute them.
+                if (SpeakingClient?.SessionId == GameMain.Client.SessionId && !ConfigManager.LocalConfig.HearSelfRadio)
+                {
+                    mult = 0;
+                }
             }
             else if (AudioIsLocalVoice)
             {
@@ -1122,8 +1130,8 @@ namespace SoundproofWalls
             bool useWaterFalloff = Channel.Position.HasValue && soundOutside && Listener.CurrentHull == null && config.DynamicFx && Plugin.EffectsManager != null && config.DynamicReverbEnabled && !AudioIsRadioVoice;
             if (useApproxFalloff) // Custom distance attenuation when inside structures.
             {
-                rolloffFactor = 0; // Disable OpenAL distance attenuation.
-                rolloffFactorModified = true;
+                    rolloffFactor = 0; // Disable OpenAL distance attenuation.
+                    rolloffFactorModified = true;
 
                 bool shouldUseEuclideanDistance = Distance >= Channel.Far;
                 DistanceModel newModel = shouldUseEuclideanDistance ? DistanceModel.Euclidean : DistanceModel.Approximate;
@@ -1192,11 +1200,7 @@ namespace SoundproofWalls
             // ----- Final Target Gain ------
 
             float targetGain = currentGain * mult;
-
-            if (SoundInfo.IsTurretMovementSound || SoundInfo.IsChargeSound)
-            {
-                targetGain = Math.Clamp(targetGain, 0, 1);
-            }
+            targetGain = Math.Clamp(targetGain, 0, 1);
 
             // Only transition audio levels if there's no active sidechaining, the sound is consistently updated, and this isn't its first update.
             float transitionFactor = config.GainTransitionFactor;

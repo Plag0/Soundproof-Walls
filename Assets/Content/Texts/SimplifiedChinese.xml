@@ -165,9 +165,20 @@
 	<spw_talkingragdollstooltip>当非昏迷玩家处于布娃娃状态时，可以听到他们说话。</spw_talkingragdollstooltip>
 	<spw_directionalradio>定向无线电</spw_directionalradio>
 	<spw_directionalradiotooltip>如果启用，无线电近距离聊天会根据说话者的方向进行声像平移。这是原版游戏中的默认行为。</spw_directionalradiotooltip>
+	<spw_transmitlocalonradio>无线电时在本地说话</spw_transmitlocalonradio>
+	<spw_transmitlocalonradiotooltip>使用无线电的玩家也会在本地近距离聊天中说话。</spw_transmitlocalonradiotooltip>
 	<spw_hearlocalvoiceonfocusedtarget>在炮塔上听到语音</spw_hearlocalvoiceonfocusedtarget>
 	<spw_hearlocalvoiceonfocusedtargettooltip>从当前摄像机目标的视角收听时，可以听到您角色周围的本地近距离聊天。\n\n注意：需要启用“聚焦目标音频”（通用选项卡）。</spw_hearlocalvoiceonfocusedtargettooltip>
-	
+
+	<spw_hearselflocal>听到自己的本地语音</spw_hearselflocal>
+	<spw_hearselflocaltooltip>听到您自己的本地近距离聊天，包括应用于其上的所有效果。\n\n注意：当使用“同步设置”（通用选项卡）时，此设置不会与其他玩家同步。</spw_hearselflocaltooltip>
+	<spw_hearselfradio>听到自己的无线电语音</spw_hearselfradio>
+	<spw_hearselfradiotooltip>听到您自己的无线电近距离聊天，包括应用于其上的所有效果。\n\n注意：当使用“同步设置”（通用选项卡）时，此设置不会与其他玩家同步。</spw_hearselfradiotooltip>
+	<spw_hearselfreverbonly>仅听到自己的混响</spw_hearselfreverbonly>
+	<spw_hearselfreverbonlytooltip>仅听到您语音的湿声混响信号，不含干声声道。\n\n注意：当使用“同步设置”（通用选项卡）时，此设置不会与其他玩家同步。\n\n注意：需要启用“听到自己的本地语音”（语音选项卡）以及动态模式的混响效果。</spw_hearselfreverbonlytooltip>
+	<spw_hearselftransmitlocalonradio>无线电时听到自己在本地说话</spw_hearselftransmitlocalonradio>
+	<spw_hearselftransmitlocalonradiotooltip>当您使用无线电时，您会听到自己在本地近距离聊天中说话。\n\n注意：当使用“同步设置”（通用选项卡）时，此设置不会与其他玩家同步。\n\n注意：需要启用“无线电时在本地说话”和“听到自己的本地语音”（语音选项卡）。</spw_hearselftransmitlocalonradiotooltip>
+
 	<spw_voicerange>本地范围</spw_voicerange>
 	<spw_voicerangetooltip>本地近距离聊天的范围。</spw_voicerangetooltip>
 	<spw_radiorange>无线电范围</spw_radiorange>

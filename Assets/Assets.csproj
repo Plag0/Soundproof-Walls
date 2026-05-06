@@ -6,6 +6,8 @@
 		<Nullable>enable</Nullable>
 		<RootNamespace>ModAssets</RootNamespace>
 		<LangVersion>latest</LangVersion>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
 	</PropertyGroup>
 
 	<Import Project="../Build.props"/>

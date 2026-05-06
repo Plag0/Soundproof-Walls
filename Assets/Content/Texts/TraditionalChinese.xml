@@ -165,9 +165,20 @@
 	<spw_talkingragdollstooltip>當玩家處於布娃娃狀態但未被擊暈時，可以聽到他們說話。</spw_talkingragdollstooltip>
 	<spw_directionalradio>定向無線電</spw_directionalradio>
 	<spw_directionalradiotooltip>若啟用，無線電近距離聊天的音訊會根據說話者的方向進行聲道平移。這是原版遊戲的預設行為。</spw_directionalradiotooltip>
+	<spw_transmitlocalonradio>使用無線電時發出本地語音</spw_transmitlocalonradio>
+	<spw_transmitlocalonradiotooltip>使用無線電的玩家也會在本地近距離聊天中說話。</spw_transmitlocalonradiotooltip>
 	<spw_hearlocalvoiceonfocusedtarget>在砲塔上聽到語音</spw_hearlocalvoiceonfocusedtarget>
 	<spw_hearlocalvoiceonfocusedtargettooltip>從目前攝影機目標的視角聆聽時，可以聽到您角色周圍的本地近距離聊天。\n\n注意：需要啟用「聚焦目標音訊」（一般分頁）。</spw_hearlocalvoiceonfocusedtargettooltip>
-	
+
+	<spw_hearselflocal>聽到自身本地語音</spw_hearselflocal>
+	<spw_hearselflocaltooltip>聽到您自己的本地近距離聊天，包含所有套用於其上的效果。\n\n注意：使用「同步設定」（一般分頁）時，此設定不會與其他玩家同步。</spw_hearselflocaltooltip>
+	<spw_hearselfradio>聽到自身無線電</spw_hearselfradio>
+	<spw_hearselfradiotooltip>聽到您自己的無線電近距離聊天，包含所有套用於其上的效果。\n\n注意：使用「同步設定」（一般分頁）時，此設定不會與其他玩家同步。</spw_hearselfradiotooltip>
+	<spw_hearselfreverbonly>僅聽到自身殘響</spw_hearselfreverbonly>
+	<spw_hearselfreverbonlytooltip>僅聽到您語音的濕殘響訊號，不包含乾聲聲道。\n\n注意：使用「同步設定」（一般分頁）時，此設定不會與其他玩家同步。\n\n注意：需要啟用「聽到自身本地語音」（語音分頁）以及動態模式的殘響效果。</spw_hearselfreverbonlytooltip>
+	<spw_hearselftransmitlocalonradio>聽到自身使用無線電時的本地語音</spw_hearselftransmitlocalonradio>
+	<spw_hearselftransmitlocalonradiotooltip>當您使用無線電時，您將會聽到自己在本地近距離聊天中的語音。\n\n注意：使用「同步設定」（一般分頁）時，此設定不會與其他玩家同步。\n\n注意：需要啟用「使用無線電時發出本地語音」與「聽到自身本地語音」（語音分頁）。</spw_hearselftransmitlocalonradiotooltip>
+
 	<spw_voicerange>本地範圍</spw_voicerange>
 	<spw_voicerangetooltip>本地近距離聊天的範圍。</spw_voicerangetooltip>
 	<spw_radiorange>無線電範圍</spw_radiorange>

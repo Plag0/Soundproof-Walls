@@ -165,8 +165,19 @@
 	<spw_talkingragdollstooltip>Entendez les joueurs non étourdis parler lorsqu'ils sont en état de ragdoll.</spw_talkingragdollstooltip>
 	<spw_directionalradio>Radio directionnelle</spw_directionalradio>
 	<spw_directionalradiotooltip>Si activé, le chat de proximité radio est panoramisé dans la direction de l'interlocuteur. C'est le comportement par défaut dans le jeu vanilla.</spw_directionalradiotooltip>
+	<spw_transmitlocalonradio>Parler localement à la radio</spw_transmitlocalonradio>
+	<spw_transmitlocalonradiotooltip>Les joueurs utilisant la radio parleront également dans le chat de proximité local.</spw_transmitlocalonradiotooltip>
 	<spw_hearlocalvoiceonfocusedtarget>Entendre les voix sur les tourelles</spw_hearlocalvoiceonfocusedtarget>
 	<spw_hearlocalvoiceonfocusedtargettooltip>Entendez le chat de proximité local autour de votre personnage tout en écoutant depuis la perspective de la cible actuelle de la caméra.\n\nNote : Nécessite que "Focaliser l'audio sur la cible" (onglet Général) soit activé.</spw_hearlocalvoiceonfocusedtargettooltip>
+
+	<spw_hearselflocal>S'entendre en local</spw_hearselflocal>
+	<spw_hearselflocaltooltip>Entendez votre propre chat de proximité local, y compris tous les effets qui y sont appliqués.\n\nNote : Ce paramètre n'est pas synchronisé avec les autres joueurs lors de l'utilisation de "Synchroniser les paramètres" (onglet Général).</spw_hearselflocaltooltip>
+	<spw_hearselfradio>S'entendre à la radio</spw_hearselfradio>
+	<spw_hearselfradiotooltip>Entendez votre propre chat de proximité radio, y compris tous les effets qui y sont appliqués.\n\nNote : Ce paramètre n'est pas synchronisé avec les autres joueurs lors de l'utilisation de "Synchroniser les paramètres" (onglet Général).</spw_hearselfradiotooltip>
+	<spw_hearselfreverbonly>S'entendre avec réverbération uniquement</spw_hearselfreverbonly>
+	<spw_hearselfreverbonlytooltip>Entendez uniquement le signal de réverbération (wet) de votre voix, sans le canal direct (dry).\n\nNote : Ce paramètre n'est pas synchronisé avec les autres joueurs lors de l'utilisation de "Synchroniser les paramètres" (onglet Général).\n\nNote : Nécessite que "S'entendre en local" (onglet Voix) et l'effet de réverbération du mode Dynamique soient activés.</spw_hearselfreverbonlytooltip>
+	<spw_hearselftransmitlocalonradio>S'entendre parler localement à la radio</spw_hearselftransmitlocalonradio>
+	<spw_hearselftransmitlocalonradiotooltip>Lorsque vous utilisez la radio, vous vous entendrez parler dans le chat de proximité local.\n\nNote : Ce paramètre n'est pas synchronisé avec les autres joueurs lors de l'utilisation de "Synchroniser les paramètres" (onglet Général).\n\nNote : Nécessite que "Parler localement à la radio" et "S'entendre en local" (onglet Voix) soient activés.</spw_hearselftransmitlocalonradiotooltip>
 	
 	<spw_voicerange>Portée locale</spw_voicerange>
 	<spw_voicerangetooltip>La portée du chat de proximité local.</spw_voicerangetooltip>

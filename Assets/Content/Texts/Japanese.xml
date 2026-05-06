@@ -165,9 +165,20 @@
 	<spw_talkingragdollstooltip>気絶していないプレイヤーがラグドール状態のときに話す声が聞こえるようになります。</spw_talkingragdollstooltip>
 	<spw_directionalradio>指向性無線</spw_directionalradio>
 	<spw_directionalradiotooltip>有効にすると、無線近接チャットは話者の方向にパンされます。これはバニラのデフォルトの動作です。</spw_directionalradiotooltip>
+	<spw_transmitlocalonradio>無線使用時にローカルで話す</spw_transmitlocalonradio>
+	<spw_transmitlocalonradiotooltip>無線を使用しているプレイヤーは、ローカル近接チャットでも話すようになります。</spw_transmitlocalonradiotooltip>
 	<spw_hearlocalvoiceonfocusedtarget>タレットで音声を聞く</spw_hearlocalvoiceonfocusedtarget>
 	<spw_hearlocalvoiceonfocusedtargettooltip>現在のカメラターゲットの視点から聞いている間、自分のキャラクターの周りのローカル近接チャットを聞きます。\n\n注意：「ターゲットの音声を注視」（全般タブ）が有効である必要があります。</spw_hearlocalvoiceonfocusedtargettooltip>
-	
+
+	<spw_hearselflocal>自分のローカル音声を聞く</spw_hearselflocal>
+	<spw_hearselflocaltooltip>適用されたすべてのエフェクトを含め、自分自身のローカル近接チャットの音声を聞きます。\n\n注意：この設定は、「設定を同期」（全般タブ）を使用しても他のプレイヤーと同期されません。</spw_hearselflocaltooltip>
+	<spw_hearselfradio>自分の無線音声を聞く</spw_hearselfradio>
+	<spw_hearselfradiotooltip>適用されたすべてのエフェクトを含め、自分自身の無線近接チャットの音声を聞きます。\n\n注意：この設定は、「設定を同期」（全般タブ）を使用しても他のプレイヤーと同期されません。</spw_hearselfradiotooltip>
+	<spw_hearselfreverbonly>自分のリバーブのみ聞く</spw_hearselfreverbonly>
+	<spw_hearselfreverbonlytooltip>ドライチャンネルを介さず、自分自身の声のウェットなリバーブ信号のみを聞きます。\n\n注意：この設定は、「設定を同期」（全般タブ）を使用しても他のプレイヤーと同期されません。\n\n注意：「自分のローカル音声を聞く」（ボイスタブ）およびダイナミックモードのリバーブ効果が有効である必要があります。</spw_hearselfreverbonlytooltip>
+	<spw_hearselftransmitlocalonradio>無線使用時に自分のローカル音声を聞く</spw_hearselftransmitlocalonradio>
+	<spw_hearselftransmitlocalonradiotooltip>無線を使用する際、自分がローカル近接チャットで話している声も聞こえるようになります。\n\n注意：この設定は、「設定を同期」（全般タブ）を使用しても他のプレイヤーと同期されません。\n\n注意：「無線使用時にローカルで話す」および「自分のローカル音声を聞く」（ボイスタブ）が有効である必要があります。</spw_hearselftransmitlocalonradiotooltip>
+
 	<spw_voicerange>ローカル範囲</spw_voicerange>
 	<spw_voicerangetooltip>ローカル近接チャットの範囲。</spw_voicerangetooltip>
 	<spw_radiorange>無線範囲</spw_radiorange>

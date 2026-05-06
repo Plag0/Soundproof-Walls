@@ -720,14 +720,16 @@ namespace SoundproofWalls
                 return;
             }
 
-            UpdateSourceFilter(sourceId, filterId, gainHf, gainLf, channelInfo);
-            RouteSourceToEffectSlot(REVERB_SEND, sourceId, DetermineReverbEffectSlot(channelInfo), filterId);
-            RouteSourceToEffectSlot(DISTORTION_SEND, sourceId, DetermineDistortionEffectSlot(channelInfo), filterId);
+            bool wetOnly = ConfigManager.LocalConfig.HearSelfReverbOnly && channelInfo.AudioIsLocalVoice && channelInfo.SpeakingClient?.SessionId == GameMain.Client.SessionId;
+
+            UpdateSourceFilter(sourceId, filterId, gainHf, gainLf, channelInfo, wetOnly);
+            RouteSourceToEffectSlot(REVERB_SEND, sourceId, DetermineReverbEffectSlot(channelInfo), filterId, wetOnly);
+            RouteSourceToEffectSlot(DISTORTION_SEND, sourceId, DetermineDistortionEffectSlot(channelInfo), filterId, wetOnly);
 
             PerformanceProfiler.Instance.StopTimingEvent();
         }
 
-        private void UpdateSourceFilter(uint sourceId, uint filterId, float gainHf, float gainLf, ChannelInfo channelInfo)
+        private void UpdateSourceFilter(uint sourceId, uint filterId, float gainHf, float gainLf, ChannelInfo channelInfo, bool wetOnly = false)
         {
             int alError;
             Al.GetError();
@@ -743,6 +745,12 @@ namespace SoundproofWalls
                 gainHf = ConfigManager.Config.HydrophoneBandpassFilterHfGain;
                 gainLf = ConfigManager.Config.HydrophoneBandpassFilterLfGain;
 
+                if (wetOnly) // Muted. This filter is not routed to the effect slot like normal.
+                {
+                    gainHf = 0;
+                    gainLf = 0;
+                }
+
                 AlEffects.Filterf(filterId, AlEffects.AL_BANDPASS_GAINHF, gainHf);
                 if (HandleSourceError(Al.GetError(), sourceId, "setting bandpass gain HF")) { return; }
 
@@ -751,8 +759,12 @@ namespace SoundproofWalls
             }
             else
             {
-                // Don't muffle voip sounds with OpenAL.
-                if (channelInfo.AudioIsVoice) 
+                if (wetOnly) // Muted. This filter is not routed to the effect slot like normal.
+                {
+                    gainHf = 0;
+                    gainLf = 0;
+                }
+                else if (channelInfo.AudioIsVoice) // Don't muffle voip sounds with OpenAL.
                 {
                     gainHf = 1;
                     gainLf = 1;
@@ -828,7 +840,7 @@ namespace SoundproofWalls
             return INVALID_ID;
         }
 
-        private void RouteSourceToEffectSlot(uint send, uint sourceId, uint targetSlot, uint filterId)
+        private void RouteSourceToEffectSlot(uint send, uint sourceId, uint targetSlot, uint filterId, bool wetOnly = false)
         {
             if (!IsInitialized || send > AlEffects.MaxAuxiliarySends) return;
 
@@ -841,6 +853,9 @@ namespace SoundproofWalls
             if (HandleSourceError(Al.GetError(), sourceId, "setting aux send gain auto")) { return; }
             
             if (sourceHasReverb) { _reverbRoutedSources.TryAdd(sourceId, true); }
+
+            // Don't send the filter to the effect if we're using the filter to mute the dry channel.
+            filterId = wetOnly ? AlEffects.AL_FILTER_NULL : filterId;
 
             // Send source to the specified effect slot via the specified send.
             Al.Source3i(sourceId, AlEffects.AL_AUXILIARY_SEND_FILTER, (int)targetSlot, (int)send, (int)filterId);

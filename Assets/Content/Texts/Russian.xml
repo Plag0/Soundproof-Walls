@@ -165,8 +165,19 @@
 	<spw_talkingragdollstooltip>Слышать неоглушённых игроков, когда они находятся в состоянии рэгдолла.</spw_talkingragdollstooltip>
 	<spw_directionalradio>Направленная рация</spw_directionalradio>
 	<spw_directionalradiotooltip>Если включено, звук голосового чата по рации панорамируется в направлении говорящего. Это стандартное поведение в ванильной игре.</spw_directionalradiotooltip>
+	<spw_transmitlocalonradio>Говорить локально при использовании рации</spw_transmitlocalonradio>
+	<spw_transmitlocalonradiotooltip>Игроки, использующие рацию, также будут говорить в локальный голосовой чат.</spw_transmitlocalonradiotooltip>
 	<spw_hearlocalvoiceonfocusedtarget>Слышать голоса на турелях</spw_hearlocalvoiceonfocusedtarget>
 	<spw_hearlocalvoiceonfocusedtargettooltip>Слышать локальный голосовой чат вокруг вашего персонажа, слушая с точки зрения текущей цели камеры.\n\nПримечание: Требует включения "Фокусировка на цели" (вкладка "Общие").</spw_hearlocalvoiceonfocusedtargettooltip>
+
+	<spw_hearselflocal>Слышать себя (локально)</spw_hearselflocal>
+	<spw_hearselflocaltooltip>Слышать свой собственный локальный голосовой чат, включая все применённые к нему эффекты.\n\nПримечание: Эта настройка не синхронизируется с другими игроками при использовании "Синхронизировать настройки" (вкладка "Общие").</spw_hearselflocaltooltip>
+	<spw_hearselfradio>Слышать себя (рация)</spw_hearselfradio>
+	<spw_hearselfradiotooltip>Слышать свой собственный голосовой чат по рации, включая все применённые к нему эффекты.\n\nПримечание: Эта настройка не синхронизируется с другими игроками при использовании "Синхронизировать настройки" (вкладка "Общие").</spw_hearselfradiotooltip>
+	<spw_hearselfreverbonly>Слышать только свою реверберацию</spw_hearselfreverbonly>
+	<spw_hearselfreverbonlytooltip>Слышать только обработанный сигнал реверберации вашего голоса без чистого сигнала.\n\nПримечание: Эта настройка не синхронизируется с другими игроками при использовании "Синхронизировать настройки" (вкладка "Общие").\n\nПримечание: Требует включения "Слышать себя (локально)" (вкладка "Голос") и эффекта реверберации в динамическом режиме.</spw_hearselfreverbonlytooltip>
+	<spw_hearselftransmitlocalonradio>Слышать себя локально при использовании рации</spw_hearselftransmitlocalonradio>
+	<spw_hearselftransmitlocalonradiotooltip>Когда вы используете рацию, вы будете слышать себя в локальном голосовом чате.\n\nПримечание: Эта настройка не синхронизируется с другими игроками при использовании "Синхронизировать настройки" (вкладка "Общие").\n\nПримечание: Требует включения "Говорить локально при использовании рации" и "Слышать себя (локально)" (вкладка "Голос").</spw_hearselftransmitlocalonradiotooltip>
 	
 	<spw_voicerange>Дальность локального чата</spw_voicerange>
 	<spw_voicerangetooltip>Дальность локального голосового чата.</spw_voicerangetooltip>

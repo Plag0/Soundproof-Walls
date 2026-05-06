@@ -165,9 +165,20 @@
 	<spw_talkingragdollstooltip>Słysz nieogłuszonych graczy, gdy są w stanie ragdoll.</spw_talkingragdollstooltip>
 	<spw_directionalradio>Radio kierunkowe</spw_directionalradio>
 	<spw_directionalradiotooltip>Jeśli włączone, radiowy czat zbliżeniowy jest panoramowany w kierunku mówiącego. Jest to domyślne zachowanie w wersji waniliowej.</spw_directionalradiotooltip>
+	<spw_transmitlocalonradio>Mów lokalnie przez radio</spw_transmitlocalonradio>
+	<spw_transmitlocalonradiotooltip>Gracze używający radia będą również mówić na lokalnym czacie zbliżeniowym.</spw_transmitlocalonradiotooltip>
 	<spw_hearlocalvoiceonfocusedtarget>Słysz głosy na wieżyczkach</spw_hearlocalvoiceonfocusedtarget>
 	<spw_hearlocalvoiceonfocusedtargettooltip>Słysz lokalny czat zbliżeniowy wokół swojej postaci podczas słuchania z perspektywy bieżącego celu kamery.\n\nUwaga: Wymaga włączenia "Dźwięk z perspektywy celu" (zakładka Ogólne).</spw_hearlocalvoiceonfocusedtargettooltip>
-	
+
+	<spw_hearselflocal>Słysz siebie lokalnie</spw_hearselflocal>
+	<spw_hearselflocaltooltip>Słysz swój własny lokalny czat zbliżeniowy, włączając w to wszystkie zastosowane do niego efekty.\n\nUwaga: To ustawienie nie jest synchronizowane z innymi graczami podczas korzystania z "Synchronizuj ustawienia" (zakładka Ogólne).</spw_hearselflocaltooltip>
+	<spw_hearselfradio>Słysz siebie przez radio</spw_hearselfradio>
+	<spw_hearselfradiotooltip>Słysz swój własny radiowy czat zbliżeniowy, włączając w to wszystkie zastosowane do niego efekty.\n\nUwaga: To ustawienie nie jest synchronizowane z innymi graczami podczas korzystania z "Synchronizuj ustawienia" (zakładka Ogólne).</spw_hearselfradiotooltip>
+	<spw_hearselfreverbonly>Słysz tylko swój pogłos</spw_hearselfreverbonly>
+	<spw_hearselfreverbonlytooltip>Słysz tylko sam sygnał pogłosu (wet) swojego głosu, bez czystego dźwięku (dry).\n\nUwaga: To ustawienie nie jest synchronizowane z innymi graczami podczas korzystania z "Synchronizuj ustawienia" (zakładka Ogólne).\n\nUwaga: Wymaga włączenia opcji "Słysz siebie lokalnie" (zakładka Głos) oraz efektu pogłosu w trybie dynamicznym.</spw_hearselfreverbonlytooltip>
+	<spw_hearselftransmitlocalonradio>Słysz siebie lokalnie podczas używania radia</spw_hearselftransmitlocalonradio>
+	<spw_hearselftransmitlocalonradiotooltip>Gdy używasz radia, będziesz słyszeć siebie mówiącego na lokalnym czacie zbliżeniowym.\n\nUwaga: To ustawienie nie jest synchronizowane z innymi graczami podczas korzystania z "Synchronizuj ustawienia" (zakładka Ogólne).\n\nUwaga: Wymaga włączenia opcji "Mów lokalnie przez radio" i "Słysz siebie lokalnie" (zakładka Głos).</spw_hearselftransmitlocalonradiotooltip>
+
 	<spw_voicerange>Zasięg lokalny</spw_voicerange>
 	<spw_voicerangetooltip>Zasięg lokalnego czatu głosowego.</spw_voicerangetooltip>
 	<spw_radiorange>Zasięg radia</spw_radiorange>

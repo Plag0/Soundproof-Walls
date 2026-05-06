@@ -165,9 +165,20 @@
 	<spw_talkingragdollstooltip>Höre nicht betäubte Spieler sprechen, wenn sie im Ragdoll-Zustand sind.</spw_talkingragdollstooltip>
 	<spw_directionalradio>Gerichteter Funk</spw_directionalradio>
 	<spw_directionalradiotooltip>Wenn aktiviert, wird der Funk-Näherungs-Chat in die Richtung des Sprechers geschwenkt. Dies ist das Standardverhalten in Vanilla.</spw_directionalradiotooltip>
+	<spw_transmitlocalonradio>Lokal über Funk sprechen</spw_transmitlocalonradio>
+	<spw_transmitlocalonradiotooltip>Spieler, die das Funkgerät benutzen, sprechen auch im lokalen Näherungs-Chat.</spw_transmitlocalonradiotooltip>
 	<spw_hearlocalvoiceonfocusedtarget>Stimmen an Geschütztürmen hören</spw_hearlocalvoiceonfocusedtarget>
 	<spw_hearlocalvoiceonfocusedtargettooltip>Höre den lokalen Näherungs-Chat um deinen Charakter herum, während du aus der Perspektive des aktuellen Kameraziels hörst.\n\nHinweis: Erfordert, dass "Audio auf Ziel fokussieren" (Reiter "Allgemein") aktiviert ist.</spw_hearlocalvoiceonfocusedtargettooltip>
-	
+
+	<spw_hearselflocal>Sich selbst lokal hören</spw_hearselflocal>
+	<spw_hearselflocaltooltip>Höre deinen eigenen lokalen Näherungs-Chat, einschließlich aller darauf angewendeten Effekte.\n\nHinweis: Diese Einstellung wird nicht mit anderen Spielern synchronisiert, wenn "Einstellungen synchronisieren" (Reiter "Allgemein") verwendet wird.</spw_hearselflocaltooltip>
+	<spw_hearselfradio>Sich selbst über Funk hören</spw_hearselfradio>
+	<spw_hearselfradiotooltip>Höre deinen eigenen Funk-Näherungs-Chat, einschließlich aller darauf angewendeten Effekte.\n\nHinweis: Diese Einstellung wird nicht mit anderen Spielern synchronisiert, wenn "Einstellungen synchronisieren" (Reiter "Allgemein") verwendet wird.</spw_hearselfradiotooltip>
+	<spw_hearselfreverbonly>Nur eigenen Hall hören</spw_hearselfreverbonly>
+	<spw_hearselfreverbonlytooltip>Höre nur das Wet-Hall-Signal deiner Stimme ohne den Dry-Kanal.\n\nHinweis: Diese Einstellung wird nicht mit anderen Spielern synchronisiert, wenn "Einstellungen synchronisieren" (Reiter "Allgemein") verwendet wird.\n\nHinweis: Erfordert, dass "Sich selbst lokal hören" (Reiter "Stimme") und der Hall-Effekt des dynamischen Modus aktiviert sind.</spw_hearselfreverbonlytooltip>
+	<spw_hearselftransmitlocalonradio>Sich selbst lokal über Funk sprechen hören</spw_hearselftransmitlocalonradio>
+	<spw_hearselftransmitlocalonradiotooltip>Wenn du das Funkgerät benutzt, hörst du dich selbst im lokalen Näherungs-Chat sprechen.\n\nHinweis: Diese Einstellung wird nicht mit anderen Spielern synchronisiert, wenn "Einstellungen synchronisieren" (Reiter "Allgemein") verwendet wird.\n\nHinweis: Erfordert, dass "Lokal über Funk sprechen" und "Sich selbst lokal hören" (Reiter "Stimme") aktiviert sind.</spw_hearselftransmitlocalonradiotooltip>
+
 	<spw_voicerange>Lokale Reichweite</spw_voicerange>
 	<spw_voicerangetooltip>Die Reichweite des lokalen Näherungs-Chats.</spw_voicerangetooltip>
 	<spw_radiorange>Funkreichweite</spw_radiorange>

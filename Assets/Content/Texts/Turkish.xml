@@ -165,9 +165,20 @@
 	<spw_talkingragdollstooltip>Sersemlememiş oyuncular ragdoll durumundayken konuştuklarında duyun.</spw_talkingragdollstooltip>
 	<spw_directionalradio>Yönlü Telsiz</spw_directionalradio>
 	<spw_directionalradiotooltip>Etkinleştirilirse, telsiz yakınlık sohbeti konuşmacının yönüne doğru kaydırılır. Bu, vanilla'daki varsayılan davranıştır.</spw_directionalradiotooltip>
+	<spw_transmitlocalonradio>Telsizde Yerel Olarak Konuş</spw_transmitlocalonradio>
+	<spw_transmitlocalonradiotooltip>Telsizi kullanan oyuncular aynı zamanda yerel yakınlık sohbetinde de konuşacaktır.</spw_transmitlocalonradiotooltip>
 	<spw_hearlocalvoiceonfocusedtarget>Taretlerdeki Sesleri Duy</spw_hearlocalvoiceonfocusedtarget>
 	<spw_hearlocalvoiceonfocusedtargettooltip>Mevcut kamera hedefinin perspektifinden dinlerken karakterinizin etrafındaki yerel yakınlık sohbetini duyun.\n\nNot: "Hedef Sese Odaklan" (Genel sekmesi) seçeneğinin etkin olmasını gerektirir.</spw_hearlocalvoiceonfocusedtargettooltip>
-	
+
+	<spw_hearselflocal>Kendi Yerel Sesini Duy</spw_hearselflocal>
+	<spw_hearselflocaltooltip>Kendi yerel yakınlık sohbetinizi, ona uygulanan tüm efektler dahil olmak üzere duyun.\n\nNot: Bu ayar, "Ayarları Senkronize Et" (Genel sekmesi) kullanılırken diğer oyuncularla senkronize edilmez.</spw_hearselflocaltooltip>
+	<spw_hearselfradio>Kendi Telsiz Sesini Duy</spw_hearselfradio>
+	<spw_hearselfradiotooltip>Kendi telsiz yakınlık sohbetinizi, ona uygulanan tüm efektler dahil olmak üzere duyun.\n\nNot: Bu ayar, "Ayarları Senkronize Et" (Genel sekmesi) kullanılırken diğer oyuncularla senkronize edilmez.</spw_hearselfradiotooltip>
+	<spw_hearselfreverbonly>Sadece Kendi Yankını Duy</spw_hearselfreverbonly>
+	<spw_hearselfreverbonlytooltip>Kuru kanal olmadan sesinizin yalnızca ıslak (wet) yankı sinyalini duyun.\n\nNot: Bu ayar, "Ayarları Senkronize Et" (Genel sekmesi) kullanılırken diğer oyuncularla senkronize edilmez.\n\nNot: "Kendi Yerel Sesini Duy" (Ses sekmesi) ve Dinamik modun yankı efektinin etkin olmasını gerektirir.</spw_hearselfreverbonlytooltip>
+	<spw_hearselftransmitlocalonradio>Telsizde Yerel Olarak Konuştuğunu Duy</spw_hearselftransmitlocalonradio>
+	<spw_hearselftransmitlocalonradiotooltip>Telsizi kullandığınızda, kendinizi yerel yakınlık sohbetinde konuşurken duyacaksınız.\n\nNot: Bu ayar, "Ayarları Senkronize Et" (Genel sekmesi) kullanılırken diğer oyuncularla senkronize edilmez.\n\nNot: "Telsizde Yerel Olarak Konuş" ve "Kendi Yerel Sesini Duy" (Ses sekmesi) ayarlarının etkin olmasını gerektirir.</spw_hearselftransmitlocalonradiotooltip>
+
 	<spw_voicerange>Yerel Menzil</spw_voicerange>
 	<spw_voicerangetooltip>Yerel yakınlık sohbetinin menzili.</spw_voicerangetooltip>
 	<spw_radiorange>Telsiz Menzili</spw_radiorange>

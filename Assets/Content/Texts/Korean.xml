@@ -165,9 +165,20 @@
 	<spw_talkingragdollstooltip>기절하지 않은 플레이어가 래그돌 상태일 때 말하는 것을 듣습니다.</spw_talkingragdollstooltip>
 	<spw_directionalradio>방향성 무전기</spw_directionalradio>
 	<spw_directionalradiotooltip>활성화하면, 무전 채팅이 화자의 방향으로 패닝됩니다. 이것은 바닐라의 기본 동작입니다.</spw_directionalradiotooltip>
+	<spw_transmitlocalonradio>무전 시 근거리로 말하기</spw_transmitlocalonradio>
+	<spw_transmitlocalonradiotooltip>무전기를 사용하는 플레이어의 음성이 근거리 채팅으로도 들리게 됩니다.</spw_transmitlocalonradiotooltip>
 	<spw_hearlocalvoiceonfocusedtarget>포탑에서 음성 듣기</spw_hearlocalvoiceonfocusedtarget>
 	<spw_hearlocalvoiceonfocusedtargettooltip>현재 카메라 대상의 시점에서 들으면서 캐릭터 주변의 근거리 채팅을 듣습니다.\n\n참고: '일반' 탭의 "대상 오디오 집중"이 활성화되어 있어야 합니다.</spw_hearlocalvoiceonfocusedtargettooltip>
-	
+
+	<spw_hearselflocal>자신의 근거리 음성 듣기</spw_hearselflocal>
+	<spw_hearselflocaltooltip>적용된 모든 효과를 포함하여 자신의 근거리 채팅을 듣습니다.\n\n참고: 이 설정은 "설정 동기화"('일반' 탭) 사용 시 다른 플레이어와 동기화되지 않습니다.</spw_hearselflocaltooltip>
+	<spw_hearselfradio>자신의 무전 음성 듣기</spw_hearselfradio>
+	<spw_hearselfradiotooltip>적용된 모든 효과를 포함하여 자신의 무전 채팅을 듣습니다.\n\n참고: 이 설정은 "설정 동기화"('일반' 탭) 사용 시 다른 플레이어와 동기화되지 않습니다.</spw_hearselfradiotooltip>
+	<spw_hearselfreverbonly>자신의 음성 잔향만 듣기</spw_hearselfreverbonly>
+	<spw_hearselfreverbonlytooltip>드라이 채널 없이 음성의 웻 잔향 신호만 듣습니다.\n\n참고: 이 설정은 "설정 동기화"('일반' 탭) 사용 시 다른 플레이어와 동기화되지 않습니다.\n\n참고: "자신의 근거리 음성 듣기"('음성' 탭)와 동적 모드의 잔향 효과가 활성화되어 있어야 합니다.</spw_hearselfreverbonlytooltip>
+	<spw_hearselftransmitlocalonradio>무전 시 자신의 근거리 음성 듣기</spw_hearselftransmitlocalonradio>
+	<spw_hearselftransmitlocalonradiotooltip>무전기를 사용할 때 근거리 채팅으로 말하는 자신의 목소리를 듣습니다.\n\n참고: 이 설정은 "설정 동기화"('일반' 탭) 사용 시 다른 플레이어와 동기화되지 않습니다.\n\n참고: "무전 시 근거리로 말하기" 및 "자신의 근거리 음성 듣기"('음성' 탭)가 활성화되어 있어야 합니다.</spw_hearselftransmitlocalonradiotooltip>
+
 	<spw_voicerange>근거리 범위</spw_voicerange>
 	<spw_voicerangetooltip>근거리 채팅의 범위입니다.</spw_voicerangetooltip>
 	<spw_radiorange>무전기 범위</spw_radiorange>

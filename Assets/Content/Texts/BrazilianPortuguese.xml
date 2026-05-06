@@ -165,8 +165,19 @@
 	<spw_talkingragdollstooltip>Ouve jogadores não atordoados falarem quando estão em modo ragdoll.</spw_talkingragdollstooltip>
 	<spw_directionalradio>Rádio Direcional</spw_directionalradio>
 	<spw_directionalradiotooltip>Se ativado, o chat de proximidade por rádio é panoramizado na direção do locutor. Este é o comportamento padrão no vanilla.</spw_directionalradiotooltip>
+	<spw_transmitlocalonradio>Falar Localmente no Rádio</spw_transmitlocalonradio>
+	<spw_transmitlocalonradiotooltip>Jogadores usando o rádio também falarão no chat de proximidade local.</spw_transmitlocalonradiotooltip>
 	<spw_hearlocalvoiceonfocusedtarget>Ouvir Vozes nas Torretas</spw_hearlocalvoiceonfocusedtarget>
 	<spw_hearlocalvoiceonfocusedtargettooltip>Ouve o chat de proximidade local ao redor do seu personagem enquanto escuta da perspectiva do alvo atual da câmera.\n\nNota: Requer que "Focar Áudio do Alvo" (aba Geral) esteja ativado.</spw_hearlocalvoiceonfocusedtargettooltip>
+
+	<spw_hearselflocal>Ouvir Própria Voz Local</spw_hearselflocal>
+	<spw_hearselflocaltooltip>Ouve o seu próprio chat de proximidade local, incluindo todos os efeitos aplicados a ele.\n\nNota: Esta configuração não é sincronizada com outros jogadores ao usar "Sincronizar Configurações" (aba Geral).</spw_hearselflocaltooltip>
+	<spw_hearselfradio>Ouvir Própria Voz no Rádio</spw_hearselfradio>
+	<spw_hearselfradiotooltip>Ouve o seu próprio chat de proximidade por rádio, incluindo todos os efeitos aplicados a ele.\n\nNota: Esta configuração não é sincronizada com outros jogadores ao usar "Sincronizar Configurações" (aba Geral).</spw_hearselfradiotooltip>
+	<spw_hearselfreverbonly>Ouvir Apenas a Própria Reverberação</spw_hearselfreverbonly>
+	<spw_hearselfreverbonlytooltip>Ouve apenas o sinal processado (wet) da reverberação da sua voz, sem o canal original (dry).\n\nNota: Esta configuração não é sincronizada com outros jogadores ao usar "Sincronizar Configurações" (aba Geral).\n\nNota: Requer que "Ouvir Própria Voz Local" (aba Voz) e o efeito de reverberação do modo Dinâmico estejam ativados.</spw_hearselfreverbonlytooltip>
+	<spw_hearselftransmitlocalonradio>Ouvir a Si Mesmo Falar Localmente no Rádio</spw_hearselftransmitlocalonradio>
+	<spw_hearselftransmitlocalonradiotooltip>Quando você usar o rádio, você ouvirá a si mesmo falando no chat de proximidade local.\n\nNota: Esta configuração não é sincronizada com outros jogadores ao usar "Sincronizar Configurações" (aba Geral).\n\nNota: Requer que "Falar Localmente no Rádio" e "Ouvir Própria Voz Local" (aba Voz) estejam ativados.</spw_hearselftransmitlocalonradiotooltip>
 	
 	<spw_voicerange>Alcance Local</spw_voicerange>
 	<spw_voicerangetooltip>O alcance do chat de proximidade local.</spw_voicerangetooltip>

@@ -80,7 +80,7 @@ namespace SoundproofWalls
         public float DynamicReverbWaterDurationMultiplier { get; set; } = 1.0f;
         public float DynamicReverbWaterGainHf { get; set; } = 0.04f;
         public float DyanmicReverbAirAmplitudeThreshold { get; set; } = 0.0f; // Zero to avoid audio pops
-        public float DyanmicReverbWaterAmplitudeThreshold { get; set; } = 0.75f; // The necessary amplitude * gain needed for a non "loud" source to have reverb applied in water.
+        public float DyanmicReverbWaterAmplitudeThreshold { get; set; } = 0.82f; // The necessary amplitude * gain needed for a non "loud" source to have reverb applied in water.
         public bool LoudSoundDistortionAirEnabled { get; set; } = true;
         public float LoudSoundDistortionAirMaxMuffleThreshold { get; set; } = 0.5f;
         public float LoudSoundDistortionAirTargetGain { get; set; } = 0.22f;
@@ -111,7 +111,13 @@ namespace SoundproofWalls
             // General
         public bool TalkingRagdolls { get; set; } = true;
         public bool DirectionalRadio { get; set; } = false;
+        public bool TransmitLocalOnRadio { get; set; } = true;
         public bool HearLocalVoiceOnFocusedTarget { get; set; } = true;
+        public bool HearSelfLocal { get; set; } = false;
+        public bool HearSelfRadio { get; set; } = false;
+        public bool HearSelfReverbOnly { get; set; } = false;
+        public bool HearSelfTransmitLocalOnRadio { get; set; } = false;
+
         public float VoiceNearMultiplier { get; set; } = 0.2f;
         public int VoiceHeavyLowpassFrequency { get; set; } = 150;
         public int VoiceMediumLowpassFrequency { get; set; } = 600;
@@ -120,7 +126,7 @@ namespace SoundproofWalls
         public bool VoiceLocalReverb { get; set; } = true;
         public bool VoiceRadioReverb { get; set; } = false;
         public bool DrowningRadioDistortion { get; set; } = true;
-        public int VoiceMinLowpassFrequency { get; set; } = 90;
+        public int VoiceMinLowpassFrequency { get; set; } = 75;
         public bool ScreamMode { get; set; } = false;
         public int ScreamModeMaxRange { get; set; } = 1450; // cm
         public int ScreamModeMinRange { get; set; } = 500; // cm
@@ -480,13 +486,13 @@ namespace SoundproofWalls
             muffleInfluence: 0.85f,
             exclusions: ["railgunstart", "railgunloop", "railgunstop"]),
         new CustomSound("railgun", // For the turret movement sound (uses the same name as the railgun weapon).
-            gainMultiplier: 1,
-            rangeMultiplier: 1,
+            gainMultiplier: 0.9f,
+            rangeMultiplier: 0.85f,
             sidechainMultiplier: 0,
             release: 0,
             distortion: false,
             pitchMultiplier: 1.0f,
-            muffleInfluence: 1.2f),
+            muffleInfluence: 1.3f),
         new CustomSound("lasergunshot",
             gainMultiplier: 2.8f,
             rangeMultiplier: 1.3f,

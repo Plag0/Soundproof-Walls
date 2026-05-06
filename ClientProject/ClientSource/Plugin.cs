@@ -17,13 +17,15 @@ namespace SoundproofWalls
 
         private static readonly ConditionalWeakTable<VoipSound, VoipSoundFilterData> AllFilterData = new();
         private static readonly object filterDataTableLock = new();
-        
+
+        public static Dictionary<Client, VoipSound> SecondaryVoipSounds = new Dictionary<Client, VoipSound>();
+
         private static readonly ConditionalWeakTable<Door, DoorOpenStateHolder> DoorPreviousOpenState = new();
         private sealed class DoorOpenStateHolder { public float Value; }
 
         // Pointers for convenience.
-        public static Config LocalConfig = ConfigManager.LocalConfig;
-        public static Config? ServerConfig = ConfigManager.ServerConfig;
+        public static Config LocalConfig => ConfigManager.LocalConfig;
+        public static Config? ServerConfig => ConfigManager.ServerConfig;
         public static Config config => ConfigManager.Config;
 
         public static SidechainProcessor Sidechain = new SidechainProcessor();
@@ -252,6 +254,35 @@ namespace SoundproofWalls
                 typeof(SoundChannel).GetMethod(nameof(SoundChannel.FadeOutAndDispose)),
                 new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_SoundChannel_FadeOutAndDispose))));
 
+            // Client InitProjSpecific postfix.
+            // Registers a VoipQueue for the local player so they can hear themselves.
+            harmony.Patch(
+                original: typeof(Client).GetMethod(nameof(Client.InitProjSpecific), BindingFlags.Instance | BindingFlags.NonPublic),
+                postfix: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_Client_InitProjSpecific_Postfix)))
+            );
+
+            // Client DisposeProjSpecific postfix.
+            // Diposes secondary VoipSounds when a client disconnects.
+            harmony.Patch(
+                original: typeof(Client).GetMethod(nameof(Client.DisposeProjSpecific), BindingFlags.Instance | BindingFlags.NonPublic),
+                postfix: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_Client_DisposeProjSpecific_Postfix)))
+            );
+
+            // ClientPeer Send prefix.
+            // Patch all locations of ClientPeer.Send overrides (base is abstract)
+            foreach (string typeName in new string[] { "Barotrauma.Networking.LidgrenClientPeer", "Barotrauma.Networking.P2PClientPeer", "Barotrauma.Networking.P2POwnerPeer" })
+            {
+                Type? implementationType = typeof(ClientPeer).Assembly.GetType(typeName);
+                if (implementationType != null)
+                {
+                    MethodInfo sendMethod = AccessTools.Method(implementationType, nameof(ClientPeer.Send), new Type[] { typeof(IWriteMessage), typeof(DeliveryMethod), typeof(bool) });
+                    if (sendMethod != null)
+                    {
+                        harmony.Patch(original: sendMethod, prefix: new HarmonyMethod(typeof(Plugin).GetMethod(nameof(SPW_ClientPeer_Send_Prefix))));
+                    }
+                }
+            }
+
             // VoipSound ApplyFilters prefix REPLACEMENT.
             // Assigns muffle filters and processes gain & pitch for voice.
             harmony.Patch(
@@ -428,6 +459,18 @@ namespace SoundproofWalls
             EavesdropManager.Setup();
             BubbleManager.Setup();
             ProjectileManager.Setup();
+
+            // Create a VoipQueue for the local client so they can hear themselves if they have the HearSelfLocal option enabled.
+            if (GameMain.Client != null)
+            {
+                Client localClient = GameMain.Client.ConnectedClients.Find(c => c.SessionId == GameMain.Client.SessionId);
+
+                if (localClient != null && localClient.VoipQueue == null)
+                {
+                    localClient.VoipQueue = new VoipQueue(localClient.SessionId, canSend: false, canReceive: true);
+                    GameMain.Client.VoipClient?.RegisterQueue(localClient.VoipQueue);
+                }
+            }
 
             // Ensure all sounds have been loaded with the correct muffle buffer.
             if (config.Enabled)
@@ -834,41 +877,43 @@ namespace SoundproofWalls
                     // Noise starts increasing exponentially after near range.
                     client.RadioNoise = MathF.Pow(MathUtils.InverseLerp(config.VoiceNearMultiplier, 1.0f, distanceFactor), 2);
                 }
+
+                // Create a duplicate version of the VoipSound for transmitting local proximity chat while on the radio.
+                if (config.TransmitLocalOnRadio && ((client.SessionId != GameMain.Client.SessionId || (LocalConfig.HearSelfLocal && LocalConfig.HearSelfTransmitLocalOnRadio))))
+                {
+                    if (!SecondaryVoipSounds.TryGetValue(client, out VoipSound? secSound) || secSound?.soundChannel == null)
+                    {
+                        secSound = new VoipSound(client, GameMain.SoundManager, client.VoipQueue);
+                        SecondaryVoipSounds[client] = secSound;
+                    }
+
+                    secSound.UsingRadio = false;
+                    secSound.UseRadioFilter = false;
+
+                    (float secTargetNear, float secTargetFar) = CalculateLocalRange(secSound);
+                    secSound.SetRange(secTargetNear, secTargetFar);
+
+                    ChannelInfo? secInfo = ChannelInfoManager.EnsureUpdateVoiceInfo(secSound.soundChannel, client, ChatMessageType.Default, client.Character.CurrentHull);
+                    secSound.UseMuffleFilter = secInfo.Muffled;
+                    UpdateFilterData(secSound, secInfo);
+                }
             }
             else
             {
-                client.VoipSound.UsingRadio = false;
-
-                float rangeMult = config.VoiceLocalRangeMultiplier;
-                if (clientHead.Hull == null && Listener.FocusedHull == null) { rangeMult *= config.OutdoorSoundRangeMultiplier; }
-
-                float hydrophoneAddedRange = Listener.IsUsingHydrophones ? config.HydrophoneSoundRange : 0;
-                targetFar = (ChatMessage.SpeakRangeVOIP + hydrophoneAddedRange) * impedimentMult * rangeMult;
-                targetNear = targetFar * config.VoiceNearMultiplier;
-
-                if (config.ScreamMode)
+                // Dispose extra channel when they switch back to local chat.
+                if (SecondaryVoipSounds.TryGetValue(client, out VoipSound secSound))
                 {
-                    float maxRange = config.ScreamModeMaxRange * rangeMult;
-                    targetFar = maxRange * client.VoipSound.CurrentAmplitude;
-                    targetFar = Math.Max(targetFar, config.ScreamModeMinRange);
-                    if (targetFar > ChannelInfoManager.ScreamModeTrailingRangeFar)
-                    {
-                        ChannelInfoManager.ScreamModeTrailingRangeFar = targetFar;
-                    }
-
-                    targetFar = (ChannelInfoManager.ScreamModeTrailingRangeFar + hydrophoneAddedRange) * impedimentMult;
-                    targetNear = ChannelInfoManager.ScreamModeTrailingRangeFar * config.VoiceNearMultiplier;
+                    secSound.Dispose();
+                    SecondaryVoipSounds.Remove(client);
                 }
 
+                client.VoipSound.UsingRadio = false;
+                (targetNear, targetFar) = CalculateLocalRange(client.VoipSound);
                 client.VoipSound.SetRange(targetNear, targetFar);
             }
 
             // Update channelInfo.
-            ChannelInfo? info = ChannelInfoManager.EnsureUpdateVoiceInfo(
-                channel: client.VoipSound.soundChannel, 
-                speakingClient: client, 
-                messageType: messageType, 
-                soundHull: client.Character.CurrentHull);
+            ChannelInfo? info = ChannelInfoManager.EnsureUpdateVoiceInfo(client.VoipSound.soundChannel, client, messageType, client.Character.CurrentHull);
 
             client.VoipSound.UseMuffleFilter = info.Muffled && (!client.VoipSound.UseRadioFilter || BubbleManager.IsClientDrowning(client));
             UpdateFilterData(client.VoipSound, info);
@@ -879,6 +924,81 @@ namespace SoundproofWalls
             client.Character.ShowTextlessSpeechBubble(1.25f, ChatMessage.MessageColor[(int)messageType]);
 
             return false;
+
+            // Local helper method.
+            (float near, float far) CalculateLocalRange(VoipSound sound)
+            {
+                float rangeMult = config.VoiceLocalRangeMultiplier;
+                if (clientHead.Hull == null && Listener.FocusedHull == null) { rangeMult *= config.OutdoorSoundRangeMultiplier; }
+
+                float hydrophoneAddedRange = Listener.IsUsingHydrophones ? config.HydrophoneSoundRange : 0;
+                float far = (ChatMessage.SpeakRangeVOIP + hydrophoneAddedRange) * impedimentMult * rangeMult;
+                float near = far * config.VoiceNearMultiplier;
+
+                if (config.ScreamMode)
+                {
+                    float maxRange = config.ScreamModeMaxRange * rangeMult;
+                    far = maxRange * sound.CurrentAmplitude;
+                    far = Math.Max(far, config.ScreamModeMinRange);
+                    if (far > ChannelInfoManager.ScreamModeTrailingRangeFar)
+                    {
+                        ChannelInfoManager.ScreamModeTrailingRangeFar = far;
+                    }
+
+                    far = (ChannelInfoManager.ScreamModeTrailingRangeFar + hydrophoneAddedRange) * impedimentMult;
+                    near = ChannelInfoManager.ScreamModeTrailingRangeFar * config.VoiceNearMultiplier;
+                }
+
+                return (near, far);
+            }
+        }
+
+        public static void SPW_Client_InitProjSpecific_Postfix(Client __instance)
+        {
+            // If this is the local client, give them a VoipQueue so they can hear themselves
+            if (GameMain.Client != null && __instance.SessionId == GameMain.Client.SessionId)
+            {
+                __instance.VoipQueue = new VoipQueue(__instance.SessionId, canSend: false, canReceive: true);
+                GameMain.Client.VoipClient?.RegisterQueue(__instance.VoipQueue);
+            }
+        }
+
+        public static void SPW_ClientPeer_Send_Prefix(IWriteMessage msg, DeliveryMethod deliveryMethod, bool compressPastThreshold)
+        {
+            if (msg is WriteOnlyMessage writeMsg && writeMsg.LengthBits >= 8)
+            {
+                if (writeMsg.Buffer[0] == (byte)ClientPacketHeader.VOICE)
+                {
+                    if (VoipCapture.Instance == null) return;
+
+                    bool isRadio = !VoipCapture.Instance.ForceLocal &&
+                                   GameMain.Client?.Character != null &&
+                                   ChatMessage.CanUseRadio(GameMain.Client.Character, out _);
+
+                    if (LocalConfig.HearSelfTransmitLocalOnRadio)
+                    {
+                        if (!isRadio && !LocalConfig.HearSelfLocal) return;
+                        if (isRadio && !LocalConfig.HearSelfRadio && !LocalConfig.HearSelfLocal) return;
+                    }
+                    else
+                    {
+                        if (!isRadio && !LocalConfig.HearSelfLocal) return;
+                        if (isRadio && !LocalConfig.HearSelfRadio) return;
+                    }
+
+                    // Make a fake message that looks like what the Server would send.
+                    IWriteMessage spoofMsg = new WriteOnlyMessage();
+                    spoofMsg.WriteByte(VoipCapture.Instance.QueueID);
+                    spoofMsg.WriteRangedSingle(0.0f, 0.0f, 1.0f, 8); // distanceFactor = 0
+
+                    // Serialize
+                    VoipCapture.Instance.Write(spoofMsg);
+                    IReadMessage readMsg = new ReadWriteMessage(spoofMsg.Buffer, 0, spoofMsg.LengthBits, false);
+
+                    // Feed the fake packet into local receiver.
+                    GameMain.Client?.VoipClient?.Read(readMsg);
+                }
+            }
         }
 
         public static bool SPW_Client_UpdateVoipSound(Client __instance)
@@ -897,18 +1017,26 @@ namespace SoundproofWalls
                     voipSound.Dispose();
                 }
                 instance.VoipSound = null;
+
+                if (SecondaryVoipSounds.TryGetValue(instance, out VoipSound? soundToClean))
+                {
+                    soundToClean?.Dispose();
+                    SecondaryVoipSounds.Remove(instance);
+                }
+
                 return false;
             }
 
-            float rangeFar = voipSound.Far;
-            float rangeNear = voipSound.Near;
-
-            float noiseGain = 0.0f;
-            Vector3? position = null;
-            if (instance.character != null && !instance.character.IsDead && !instance.character.Removed && instance.character.Enabled)
+            Vector3? CalculatePosition(VoipSound sound)
             {
+                if (instance.character == null || instance.character.IsDead || instance.character.Removed || !instance.character.Enabled)
+                {
+                    return null;
+                }
+
                 Vector2 voicePosition;
-                bool isHearingLocalVoiceFromTarget = config.FocusTargetAudio && config.HearLocalVoiceOnFocusedTarget && !voipSound.UsingRadio && !Listener.IsCharacter && Character.Controlled != null;
+                bool isHearingLocalVoiceFromTarget = config.FocusTargetAudio && config.HearLocalVoiceOnFocusedTarget && !sound.UsingRadio && !Listener.IsCharacter && Character.Controlled != null;
+
                 if (isHearingLocalVoiceFromTarget)
                 {
                     voicePosition = Util.GetTargetOffsetVoicePosition(instance.character);
@@ -918,19 +1046,40 @@ namespace SoundproofWalls
                     voicePosition = Util.GetCharacterHead(instance.character).WorldPosition;
                 }
 
-                if (GameSettings.CurrentConfig.Audio.UseDirectionalVoiceChat && (!voipSound.UsingRadio || config.DirectionalRadio))
+                if (GameSettings.CurrentConfig.Audio.UseDirectionalVoiceChat && (!sound.UsingRadio || config.DirectionalRadio))
                 {
-                    position = new Vector3(voicePosition, 0.0f);
+                    return new Vector3(voicePosition, 0.0f);
                 }
 
+                return null;
+            }
+
+            Vector3? primaryPos = CalculatePosition(voipSound);
+            voipSound.SetPosition(primaryPos);
+
+            // Update secondary voiceSound position.
+            if (SecondaryVoipSounds.TryGetValue(instance, out VoipSound secSound))
+            {
+                if (secSound == null || !secSound.IsPlaying)
+                {
+                    secSound?.Dispose();
+                    SecondaryVoipSounds.Remove(instance);
+                }
+                else
+                {
+                    Vector3? secPos = CalculatePosition(secSound);
+                    secSound.SetPosition(secPos);
+                }
+            }
+
+            float noiseGain = 0.0f;
+            if (instance.character != null && !instance.character.IsDead && !instance.character.Removed && instance.character.Enabled)
+            {
                 if (instance.RadioNoise > 0.0f)
                 {
                     noiseGain = instance.RadioNoise * (voipSound.soundChannel?.Gain ?? 1);
-                    // Moved the following vanilla line "gain *= 1.0f - instance.RadioNoise;" to ChannelInfo UpdateGain
                 }
             }
-            voipSound.SetPosition(position);
-            //instance.VoipSound.Gain = gain;
             if (noiseGain > 0.0f)
             {
                 if (instance.radioNoiseChannel == null || !instance.radioNoiseChannel.IsPlaying)
@@ -944,9 +1093,9 @@ namespace SoundproofWalls
                     instance.radioNoiseChannel.Category = SoundManager.SoundCategoryVoip;
                     instance.radioNoiseChannel.Looping = true;
                 }
-                instance.radioNoiseChannel.Near = rangeNear;
-                instance.radioNoiseChannel.Far = rangeFar;
-                instance.radioNoiseChannel.Position = position;
+                instance.radioNoiseChannel.Near = voipSound.Near;
+                instance.radioNoiseChannel.Far = voipSound.Far;
+                instance.radioNoiseChannel.Position = primaryPos;
                 instance.radioNoiseChannel.Gain = noiseGain;
             }
             else if (instance.radioNoiseChannel != null)
@@ -962,6 +1111,15 @@ namespace SoundproofWalls
             lock (filterDataTableLock)
             {
                 AllFilterData.Add(__instance, new VoipSoundFilterData());
+            }
+        }
+
+        public static void SPW_Client_DisposeProjSpecific_Postfix(Client __instance)
+        {
+            if (SecondaryVoipSounds.TryGetValue(__instance, out VoipSound? secSound))
+            {
+                secSound?.Dispose();
+                SecondaryVoipSounds.Remove(__instance);
             }
         }
 

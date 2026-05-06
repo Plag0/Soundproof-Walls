@@ -2041,6 +2041,15 @@ namespace SoundproofWalls
                 setter: v => unsavedConfig.DirectionalRadio = v);
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
+                label: TextManager.Get("spw_transmitlocalonradio"),
+                localValue: unsavedConfig.TransmitLocalOnRadio,
+                serverValue: ConfigManager.ServerConfig?.TransmitLocalOnRadio ?? default,
+                formatter: BoolFormatter),
+                tooltip: TextManager.Get("spw_transmitlocalonradiotooltip"),
+                currentValue: unsavedConfig.TransmitLocalOnRadio,
+                setter: v => unsavedConfig.TransmitLocalOnRadio = v);
+
+            Tickbox(settingsFrame, FormatTextBoxLabel(
                 label: TextManager.Get("spw_hearlocalvoiceonfocusedtarget"),
                 localValue: unsavedConfig.HearLocalVoiceOnFocusedTarget,
                 serverValue: ConfigManager.ServerConfig?.HearLocalVoiceOnFocusedTarget ?? default,
@@ -2048,6 +2057,42 @@ namespace SoundproofWalls
                 tooltip: TextManager.Get("spw_hearlocalvoiceonfocusedtargettooltip"),
                 currentValue: unsavedConfig.HearLocalVoiceOnFocusedTarget,
                 setter: v => unsavedConfig.HearLocalVoiceOnFocusedTarget = v);
+
+            Tickbox(settingsFrame, FormatTextBoxLabel(
+                label: TextManager.Get("spw_hearselflocal"),
+                localValue: unsavedConfig.HearSelfLocal,
+                serverValue: ConfigManager.ServerConfig?.HearSelfLocal ?? default,
+                formatter: BoolFormatter),
+                tooltip: TextManager.Get("spw_hearselflocaltooltip"),
+                currentValue: unsavedConfig.HearSelfLocal,
+                setter: v => unsavedConfig.HearSelfLocal = v);
+
+            Tickbox(settingsFrame, FormatTextBoxLabel(
+                label: TextManager.Get("spw_hearselfradio"),
+                localValue: unsavedConfig.HearSelfRadio,
+                serverValue: ConfigManager.ServerConfig?.HearSelfRadio ?? default,
+                formatter: BoolFormatter),
+                tooltip: TextManager.Get("spw_hearselfradiotooltip"),
+                currentValue: unsavedConfig.HearSelfRadio,
+                setter: v => unsavedConfig.HearSelfRadio = v);
+
+            Tickbox(settingsFrame, FormatTextBoxLabel(
+                label: TextManager.Get("spw_hearselfreverbonly"),
+                localValue: unsavedConfig.HearSelfReverbOnly,
+                serverValue: ConfigManager.ServerConfig?.HearSelfReverbOnly ?? default,
+                formatter: BoolFormatter),
+                tooltip: TextManager.Get("spw_hearselfreverbonlytooltip"),
+                currentValue: unsavedConfig.HearSelfReverbOnly,
+                setter: v => unsavedConfig.HearSelfReverbOnly = v);
+
+            Tickbox(settingsFrame, FormatTextBoxLabel(
+                label: TextManager.Get("spw_hearselftransmitlocalonradio"),
+                localValue: unsavedConfig.HearSelfTransmitLocalOnRadio,
+                serverValue: ConfigManager.ServerConfig?.HearSelfTransmitLocalOnRadio ?? default,
+                formatter: BoolFormatter),
+                tooltip: TextManager.Get("spw_hearselftransmitlocalonradiotooltip"),
+                currentValue: unsavedConfig.HearSelfTransmitLocalOnRadio,
+                setter: v => unsavedConfig.HearSelfTransmitLocalOnRadio = v);
 
             Spacer(settingsFrame);
 
