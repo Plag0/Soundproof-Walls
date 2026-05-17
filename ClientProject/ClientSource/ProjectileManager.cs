@@ -136,14 +136,8 @@ namespace SoundproofWalls
 
         public static void AddProjectile(Item projectile)
         {
-            if (_projectileChannels.TryGetValue(projectile, out var _))
+            if (projectile?.body?.Mass == null || _projectileChannels.TryGetValue(projectile, out var _))
             {
-                return;
-            }
-
-            if (projectile?.body?.Mass == null)
-            {
-                LuaCsLogger.LogError($"[SoundproofWalls] Invalid projectile!");
                 return;
             }
 

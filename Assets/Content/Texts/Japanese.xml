@@ -691,7 +691,7 @@
 	<!-- 2.0 Popup message -->
 	<spw_popupheader>Soundproof Walls 2.0へようこそ</spw_popupheader>
 	<spw_popupheadersubtext>Soundproof Walls 2.0は、オリジナルのModを完全に書き直し、拡張したバージョンであり、Barotraumaのオーディオシステムを完全に刷新するものです。</spw_popupheadersubtext>
-
+	<spw_guidelink>Soundproof Wallsは初めてですか？ここをクリックして設定ガイドをお読みください（推奨）！</spw_guidelink>
 	<spw_popupbodyheader>主な変更点</spw_popupbodyheader>
 	
 	<spw_popupbodysubheading1>• 環境シミュレーションによるリバーブ</spw_popupbodysubheading1>

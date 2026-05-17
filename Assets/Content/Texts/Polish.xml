@@ -692,7 +692,7 @@
 	<!-- 2.0 Popup message -->
 	<spw_popupheader>Witaj w Soundproof Walls 2.0</spw_popupheader>
 	<spw_popupheadersubtext>Soundproof Walls 2.0 to całkowicie przepisana i rozszerzona wersja oryginalnego moda, stanowiąca kompletną przebudowę systemu audio w Barotraumie.</spw_popupheadersubtext>
-
+	<spw_guidelink>Nowy w Soundproof Walls? Kliknij tutaj, aby przeczytać Przewodnik konfiguracji (zalecane)!</spw_guidelink>
 	<spw_popupbodyheader>Główne zmiany</spw_popupbodyheader>
 	
 	<spw_popupbodysubheading1>• Pogłos symulowany środowiskowo</spw_popupbodysubheading1>

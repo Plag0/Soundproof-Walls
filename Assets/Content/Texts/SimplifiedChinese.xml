@@ -692,7 +692,7 @@
 	<!-- 2.0 Popup message -->
 	<spw_popupheader>欢迎来到 Soundproof Walls 2.0</spw_popupheader>
 	<spw_popupheadersubtext>Soundproof Walls 2.0 是原版 Mod 的完全重写和扩展版本，是对《潜渊症》音频系统的全面革新。</spw_popupheadersubtext>
-
+	<spw_guidelink>刚接触 Soundproof Walls？点击此处阅读配置指南（推荐）！</spw_guidelink>
 	<spw_popupbodyheader>主要变化</spw_popupbodyheader>
 	
 	<spw_popupbodysubheading1>• 环境模拟混响</spw_popupbodysubheading1>

@@ -1,4 +1,4 @@
-Soundproof Walls is a mod for Barotrauma that overhauls the vanilla sound system to include more advanced audio features like reverb, distortion, sidechaining, occlusion, dynamic lowpassing, and more. It fixes many vanilla isssues, adds two new sound-based mechanics (eavesdropping and hydrophone monitoring), and comes with 230+ unique configuation options in a custom in-game menu.
+Soundproof Walls is a mod for Barotrauma that overhauls the vanilla sound system to include more advanced audio features like reverb, distortion, sidechaining, occlusion, dynamic lowpassing, the doppler effect, and more. It fixes many vanilla isssues, adds two new sound-based mechanics (eavesdropping and hydrophone monitoring), and comes with 240+ unique configuation options in a custom in-game menu.
 
 Soundproof Walls uses the OpenAL Soft audio engine packaged with the game and takes advantage of the previously unused Effects Extension to integrate reverb, distortion, and dynamic lowpassing. The vanilla DFS algorithm for sound paths and muffling has been swapped out with an A* implementation for better quality paths that count obstructions for additive muffling. Occlusion is done with simple LOS ray casting using the game's existing Farseer Physics Engine methods. Sidechaining is event-driven and triggered by sounds referenced in the "Custom Sounds" list in the Advanced menu tab, and other effects like the radio filters and Static mode's reverb filter were built with reference to common implementations (e.g., Schroeder-style reverb, hard clipping distortion, etc).
 
@@ -62,8 +62,7 @@ You can safely ignore any build warnings. If there are any errors, refer to the 
 
 1. Subscribe to [Lua For Barotrauma](https://steamcommunity.com/sharedfiles/filedetails/?id=2559634234) and follow the instructions in the description to install client-side Lua.
 
-
-1. 2. Launch Barotrauma. If client-side Lua has been installed correctly, you will see red text saying "LuaCsForBarotrauma active" in the top left of your menu screen.
+2. Launch Barotrauma. If client-side Lua has been installed correctly, you will see red text saying "LuaCsForBarotrauma active" in the top left of your menu screen.
 
 3. Navigate to your mods list and enable Soundproof Walls. If there are two copies of the mod, choose the one with the grey pencil icon.
 

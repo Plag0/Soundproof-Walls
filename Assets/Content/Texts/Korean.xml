@@ -691,7 +691,7 @@
 	<!-- 2.0 Popup message -->
 	<spw_popupheader>Soundproof Walls 2.0에 오신 것을 환영합니다</spw_popupheader>
 	<spw_popupheadersubtext>Soundproof Walls 2.0은 기존 모드를 완전히 재작성하고 확장한 버전으로, 바닐라트라우마의 오디오 시스템을 전면 개편합니다.</spw_popupheadersubtext>
-
+	<spw_guidelink>Soundproof Walls가 처음이신가요? 여기를 클릭하여 설정 가이드를 읽어보세요 (권장)!</spw_guidelink>
 	<spw_popupbodyheader>주요 변경 사항</spw_popupbodyheader>
 	
 	<spw_popupbodysubheading1>• 환경 시뮬레이션 잔향</spw_popupbodysubheading1>

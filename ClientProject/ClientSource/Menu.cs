@@ -104,6 +104,8 @@ namespace SoundproofWalls
             };
             new GUITextBlock(new RectTransform(new Vector2(1.0f, 0.0f), headerSection.RectTransform), TextManager.Get("spw_popupheader"), textAlignment: Alignment.Center, font: GUIStyle.LargeFont, textColor: PopupSecondaryColor);
             new GUITextBlock(new RectTransform(new Vector2(1.0f, 0.0f), headerSection.RectTransform), TextManager.Get("spw_popupheadersubtext"), textAlignment: Alignment.Center, font: GUIStyle.Font, wrap: true, textColor: PopupAccentColor);
+            CreatePopupLink(headerSection, TextManager.Get("spw_guidelink"), "https://steamcommunity.com/workshop/filedetails/discussion/3153737715/4204742223861734474/");
+
 
             // 2. Body Section
             var bodyList = new GUIListBox(new RectTransform(new Vector2(1.0f, 0.70f), mainLayout.RectTransform), style: "InnerFrame")
@@ -2057,6 +2059,8 @@ namespace SoundproofWalls
                 tooltip: TextManager.Get("spw_hearlocalvoiceonfocusedtargettooltip"),
                 currentValue: unsavedConfig.HearLocalVoiceOnFocusedTarget,
                 setter: v => unsavedConfig.HearLocalVoiceOnFocusedTarget = v);
+
+            Spacer(settingsFrame);
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
                 label: TextManager.Get("spw_hearselflocal"),
