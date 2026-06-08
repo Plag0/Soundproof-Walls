@@ -439,12 +439,12 @@ namespace SoundproofWalls
 
             Character? speakerCharacter = null;
             bool speakerIsAlive = false;
-            Limb? speakerMouth = null;
+            Limb? speakerHead = null;
             if (AudioIsVoice)
             {
                 speakerCharacter = SpeakingClient?.Character;
                 speakerIsAlive = speakerCharacter != null && !speakerCharacter.IsDead && !speakerCharacter.Removed && speakerCharacter.Enabled;
-                if (speakerIsAlive) { speakerMouth = Util.GetCharacterHead(speakerCharacter); }
+                if (speakerIsAlive) { speakerHead = Util.GetCharacterHead(speakerCharacter); }
 
                 if (AudioIsRadioVoice) { skipReverb = !config.VoiceRadioReverb; }
                 else if (AudioIsLocalVoice) { skipReverb = !config.VoiceLocalReverb; }
@@ -457,7 +457,9 @@ namespace SoundproofWalls
             // Note: all looping sounds are considered non-looping for their first update if their ChannelInfo instance was created early enough, e.g, from the SoundChannel ctor. That's why I have the default comparison.
             if (Channel.Looping || LocalPos == default || speakerIsAlive)
             {
-                bool isHearingLocalVoiceFromTarget = speakerIsAlive && config.FocusTargetAudio && config.HearLocalVoiceOnFocusedTarget && MessageType != ChatMessageType.Radio && !Listener.IsCharacter && !Listener.IsSpectating;
+                bool isHearingLocalVoiceFromTarget = speakerHead != null && config.FocusTargetAudio && config.HearLocalVoiceOnFocusedTarget && MessageType != ChatMessageType.Radio &&
+                    Listener.CharacterConnectedHulls.Contains(speakerHead.Hull) && !Listener.IsCharacter && !Listener.IsSpectating;
+                
                 if (isHearingLocalVoiceFromTarget)
                 {
                     WorldPos = Util.GetTargetOffsetVoicePosition(speakerCharacter);
@@ -466,7 +468,7 @@ namespace SoundproofWalls
                 }
                 else
                 {
-                    WorldPos = speakerMouth?.WorldPosition ?? Util.GetSoundChannelWorldPos(Channel);
+                    WorldPos = speakerHead?.WorldPosition ?? Util.GetSoundChannelWorldPos(Channel);
                     ChannelHull = ChannelHull ?? Hull.FindHull(WorldPos, speakerCharacter?.CurrentHull ?? Listener.CurrentHull);
                 }
                 
@@ -500,7 +502,7 @@ namespace SoundproofWalls
             }
             
             Vector2 sourceVelocity = Vector2.Zero;
-            if (config.DopplerEffect && config.PitchEnabled)
+            if (config.DopplerEffect && config.PitchEnabled && !AudioIsAmbience)
             {
                 _velocityEnabled = true;
                 if (isLooseSound && ChannelHull != null)
@@ -792,7 +794,7 @@ namespace SoundproofWalls
 
             Hull? soundHull = ChannelHull;
             Hull? listenerHull = Listener.FocusedHull;
-            HashSet<Hull> listenerConnectedHulls = Listener.ConnectedHulls;
+            HashSet<Hull> listenerConnectedHulls = Listener.FocusConnectedHulls;
 
             noPath = !SoundInfo.IgnoreBarriers && listenerHull != soundHull && (listenerHull == null || soundHull == null || !listenerConnectedHulls.Contains(soundHull!));
 
@@ -938,7 +940,7 @@ namespace SoundproofWalls
         {
             Hull? soundHull = ChannelHull;
             Hull? listenerHull = Listener.FocusedHull;
-            HashSet<Hull> listenerConnectedHulls = Listener.ConnectedHulls;
+            HashSet<Hull> listenerConnectedHulls = Listener.FocusConnectedHulls;
 
             // Exception for door opening/closing sounds - must check hulls while ignorning the doorway gap.
             if (AudioIsFromDoor)
@@ -977,7 +979,7 @@ namespace SoundproofWalls
             {
                 if (SoundInfo.PropagateWalls)
                 {
-                    foreach (Hull hull in Listener.ConnectedHulls)
+                    foreach (Hull hull in Listener.FocusConnectedHulls)
                     {
                         if (SoundPropagatesToHull(hull, WorldPos))
                         {
@@ -1306,7 +1308,7 @@ namespace SoundproofWalls
                 else if (ShortName.Contains("firemedium.ogg")) { fireThreshold = SoundPlayer.FireSoundMediumLimit; }
 
                 bool pathToFire = false;
-                foreach (Hull hull in Listener.ConnectedHulls)
+                foreach (Hull hull in Listener.FocusConnectedHulls)
                 {
                     foreach (FireSource fs in hull.FireSources)
                     {
@@ -1330,7 +1332,7 @@ namespace SoundproofWalls
                 else if (ShortName.Contains("flowmedium.ogg")) { hullsWithFlow = Listener.HullsWithMediumFlow; }
 
                 bool pathToLeaks = false;
-                foreach (Hull hull in Listener.ConnectedHulls)
+                foreach (Hull hull in Listener.FocusConnectedHulls)
                 {
                     if (hullsWithFlow.Contains(hull))
                     {

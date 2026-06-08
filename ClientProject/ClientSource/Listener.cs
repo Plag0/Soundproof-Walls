@@ -23,7 +23,8 @@ namespace SoundproofWalls
         public static Hull? CurrentHull;
         public static Hull? FocusedHull;
         public static Hull? EavesdroppedHull;
-        public static HashSet<Hull> ConnectedHulls = new HashSet<Hull>();
+        public static HashSet<Hull> FocusConnectedHulls = new HashSet<Hull>();
+        public static HashSet<Hull> CharacterConnectedHulls = new HashSet<Hull>(); // Empty if not being used. For checking player voices have path to listener character when using HearLocalVoiceOnFocusedTarget.
         public static Vector2 WorldPos;
         public static Vector2 LocalPos;
         public static Vector2 SimPos;
@@ -140,18 +141,31 @@ namespace SoundproofWalls
             EavesdroppedHull = GetListenerEavesdroppedHull();
             CurrentHull = GetListenerHull();
             FocusedHull = IsEavesdropping ? EavesdroppedHull : CurrentHull;
-            ConnectedHulls = GetConnectedHulls(FocusedHull, includingThis: true, respectClosedGaps: true);
-
-            IsCharacter = !ConfigManager.Config.FocusTargetAudio || LightManager.ViewTarget as Character == Character.Controlled;
-            IsSubmerged = IsCharacter ? Character.Controlled?.AnimController?.HeadInWater == true : LightManager.ViewTarget != null && Util.SoundInWater(LightManager.ViewTarget.Position, CurrentHull);
-            IsUsingHydrophones = HydrophoneManager.HydrophoneEfficiency > 0.01f && Character.Controlled?.SelectedItem?.GetComponent<Sonar>() is Sonar sonar && HydrophoneManager.HydrophoneSwitches.ContainsKey(sonar) && HydrophoneManager.HydrophoneSwitches[sonar].State;
-            IsWearingDivingSuit = Character.Controlled?.LowPassMultiplier < 0.5f;
+            FocusConnectedHulls = GetConnectedHulls(FocusedHull, includingThis: true, respectClosedGaps: true);
+            
+            IsCharacter = !ConfigManager.Config.FocusTargetAudio || LightManager.ViewTarget as Character == character;
+            IsSubmerged = IsCharacter ? character?.AnimController?.HeadInWater == true : LightManager.ViewTarget != null && Util.SoundInWater(LightManager.ViewTarget.Position, CurrentHull);
+            IsUsingHydrophones = HydrophoneManager.HydrophoneEfficiency > 0.01f && character?.SelectedItem?.GetComponent<Sonar>() is Sonar sonar && HydrophoneManager.HydrophoneSwitches.ContainsKey(sonar) && HydrophoneManager.HydrophoneSwitches[sonar].State;
+            IsWearingDivingSuit = character?.LowPassMultiplier < 0.5f;
             IsWearingExoSuit = IsCharacterWearingExoSuit(character!);
 
             Limb head = Util.GetCharacterHead(character!);
             LocalPos = IsCharacter ? head.Position : LightManager.ViewTarget?.Position ?? Vector2.Zero;
             WorldPos = IsCharacter ? head.WorldPosition : LightManager.ViewTarget?.WorldPosition ?? new Vector2(GameMain.SoundManager.ListenerPosition.X, GameMain.SoundManager.ListenerPosition.Y);
             SimPos = Util.LocalizePosition(WorldPos, CurrentHull?.Submarine) / 100;
+
+            Hull characterHull = Util.GetCharacterHead(character).Hull;
+            if (ConfigManager.Config.FocusTargetAudio && 
+                ConfigManager.Config.HearLocalVoiceOnFocusedTarget && 
+                FocusedHull != characterHull)
+            {
+                // Only collect these hulls if we need them for verifying if the listener's character has a path to a speaking character when HearLocalVoiceOnFocusedTarget is enabled.
+                CharacterConnectedHulls = GetConnectedHulls(characterHull, includingThis: true, respectClosedGaps: true);
+            }
+            else
+            {
+                CharacterConnectedHulls.Clear();
+            }
 
             // Area
             _connectedReverbArea = GetListenerConnectedReverbArea();
@@ -327,7 +341,7 @@ namespace SoundproofWalls
             else
             {
                 _rayHitBuffer = null;
-                foreach (Hull hull in ConnectedHulls)
+                foreach (Hull hull in FocusConnectedHulls)
                 {
                     float roomArea = hull.RectHeight * hull.RectWidth;
                     if (ConfigManager.Config.DynamicReverbWaterSubtractsArea)

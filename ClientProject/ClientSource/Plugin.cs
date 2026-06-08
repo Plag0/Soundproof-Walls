@@ -1035,7 +1035,9 @@ namespace SoundproofWalls
                 }
 
                 Vector2 voicePosition;
-                bool isHearingLocalVoiceFromTarget = config.FocusTargetAudio && config.HearLocalVoiceOnFocusedTarget && !sound.UsingRadio && !Listener.IsCharacter && Character.Controlled != null;
+                Limb speakerHead = Util.GetCharacterHead(instance.character);
+                bool isHearingLocalVoiceFromTarget = config.FocusTargetAudio && config.HearLocalVoiceOnFocusedTarget && !sound.UsingRadio && 
+                    Listener.CharacterConnectedHulls.Contains(speakerHead.Hull) && !Listener.IsCharacter && Character.Controlled != null;
 
                 if (isHearingLocalVoiceFromTarget)
                 {
@@ -1043,7 +1045,7 @@ namespace SoundproofWalls
                 }
                 else
                 {
-                    voicePosition = Util.GetCharacterHead(instance.character).WorldPosition;
+                    voicePosition = speakerHead.WorldPosition;
                 }
 
                 if (GameSettings.CurrentConfig.Audio.UseDirectionalVoiceChat && (!sound.UsingRadio || config.DirectionalRadio))
