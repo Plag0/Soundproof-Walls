@@ -182,6 +182,7 @@ namespace SoundproofWalls
         // Volume
         public bool SidechainingEnabled { get; set; } = true;
         public bool SidechainMusic { get; set; } = true;
+        public bool SidechainLocal { get; set; } = true;
         public bool SidechainRadio { get; set; } = true;
         public float SidechainIntensityMaster { get; set; } = 1f;
         public float SidechainReleaseMaster { get; set; } = 0;
@@ -267,7 +268,10 @@ namespace SoundproofWalls
         };
 
         // Ambience
+        public bool WindSounds { get; set; } = true;
+        public bool ProjectileSounds { get; set; } = false;
         public bool DisableWhiteNoise { get; set; } = true;
+        public float WindSoundsVolumeMuliplier { get; set; } = 0.9f;
 
         // Pertains to specific channels in all environments.
         public float WaterAmbienceInVolumeMultiplier { get; set; } = 1.0f; 
@@ -298,7 +302,6 @@ namespace SoundproofWalls
         public float UnmuffledVoicePitchMultiplier { get; set; } = 1f;
 
         // Advanced settings
-        public bool ProjectileSounds { get; set; } = false;
         public bool ShowPerformance { get; set; } = false;
         public bool ShowPlayingSounds { get; set; } = false; // See all playing sounds and their filenames.
         public bool ShowChannelInfo { get; set; } = false; // See what is obstructing all audio with console output.
@@ -765,6 +768,7 @@ namespace SoundproofWalls
             "items/button",
             "items/door",
             "sounds/spw_", // Don't allow pitching of SPW sounds to take place outside their managing classes.
+            "poweron",
             "divingsuitloop",
             "divingsuitoxygenleakloop",
             "railgunloop",
@@ -814,6 +818,10 @@ namespace SoundproofWalls
             "divingsuitloop", // Remove this line for some cool new ambience sounds :)
             "divingsuitoxygenleakloop",
             "scooterloop",
+        };
+
+        public HashSet<string> SidechainIgnoredSounds { get; set; } = new HashSet<string>
+        {
         };
 
         public HashSet<string> ContainerIgnoredSounds { get; set; } = new HashSet<string>

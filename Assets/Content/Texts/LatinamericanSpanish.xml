@@ -325,6 +325,11 @@
 	<spw_sidechainmusic>Sidechain para Música</spw_sidechainmusic>
 	<spw_sidechainmusictooltip>Atenúa el volumen de las pistas de música cuando se reproduce un sonido fuerte.</spw_sidechainmusictooltip>
 
+	<spw_sidechainlocal>Sidechain Local</spw_sidechainlocal>
+	<spw_sidechainlocaltooltip>Atenúa el volumen del chat de proximidad local cuando se reproduce un sonido fuerte.</spw_sidechainlocaltooltip>
+	<spw_sidechainradio>Sidechain en Radio</spw_sidechainradio>
+	<spw_sidechainradiotooltip>Atenúa el volumen del chat de proximidad por radio cuando se reproduce un sonido fuerte.</spw_sidechainradiotooltip>
+
 	<spw_sidechainintensitymaster>Intensidad de Sidechain Maestra</spw_sidechainintensitymaster>
 	<spw_sidechainintensitymastertooltip>Multiplicador global aplicado a todos los multiplicadores de sidechain en la lista "Sonidos Personalizados" (pestaña Avanzado).</spw_sidechainintensitymastertooltip>
 	<spw_sidechainreleasemaster>Liberación de Sidechain Maestra</spw_sidechainreleasemaster>
@@ -475,19 +480,29 @@
 	<spw_hydrophonevisualignoredsoundstooltip>Los sonidos en esta lista nunca se muestran en la interfaz del sónar al usar los hidrófonos.</spw_hydrophonevisualignoredsoundstooltip>
 	
 	<!-- Ambience -->
-	<spw_ambiencetab>Ambiente</spw_ambiencetab>
+	<spw_ambiencetab>Paisaje Sonoro</spw_ambiencetab>
+
+	<spw_categorysoundeffects>Efectos de Sonido</spw_categorysoundeffects>
+	
+	<spw_windsounds>Sonidos de Viento</spw_windsounds>
+	<spw_windsoundstooltip>Reproduce el sonido del aire corriendo al caer o moverse rápido. La intensidad del sonido aumenta con la velocidad y la duración.</spw_windsoundstooltip>
+	<spw_windsoundsgain>Volumen de Sonidos de Viento</spw_windsoundsgain>
+	<spw_windsoundsgaintooltip>El volumen del sonido del aire corriendo que se reproduce al caer o moverse rápido.</spw_windsoundsgaintooltip>
+	<spw_projectilesounds>Sonidos de Proyectiles</spw_projectilesounds>
+	<spw_projectilesoundstooltip>Añade sonidos únicos a los proyectiles disparados desde las torretas.\n\nNota: Este ajuste es experimental y se usó principalmente para probar la opción "Efecto Doppler" (pestaña Tono).</spw_projectilesoundstooltip>
+	
 	<spw_disablewhitenoise>Desactivar Ruido Blanco</spw_disablewhitenoise>
 	<spw_disablewhitenoisetooltip>Silencia los bucles de ruido de bioma del juego vanilla.</spw_disablewhitenoisetooltip>
 
-	<spw_categorytrack>Específico de Pista</spw_categorytrack>
+	<spw_categorytrack>Ambiente Acuático (Específico de Pista)</spw_categorytrack>
 	<spw_waterambienceinvolume>Volumen de Agua Interior</spw_waterambienceinvolume>
-	<spw_waterambienceinvolumetooltip>El volumen de la pista de ambiente acuático que se reproduce en el interior.\n\nNota: Esta pista continúa reproduciéndose a un volumen más bajo sobre la pista exterior.</spw_waterambienceinvolumetooltip>
+	<spw_waterambienceinvolumetooltip>El volumen de la pista de ambiente acuático que se reproduce en el interior.\n\nNota: No confundir con el volumen del sonido de "flujo" proveniente de las fugas (pestaña Volumen).\n\nNota: Esta pista continúa reproduciéndose a un volumen más bajo sobre la pista exterior.</spw_waterambienceinvolumetooltip>
 	<spw_waterambienceoutvolume>Volumen de Agua Exterior</spw_waterambienceoutvolume>
 	<spw_waterambienceoutvolumetooltip>El volumen de la pista de ambiente acuático que se reproduce en el exterior.</spw_waterambienceoutvolumetooltip>
 	<spw_waterambiencemovingvolume>Volumen de Agua en Movimiento</spw_waterambiencemovingvolume>
 	<spw_waterambiencemovingvolumetooltip>El volumen de la pista de ambiente acuático que se reproduce cuando el submarino o el jugador se mueven a través del agua.</spw_waterambiencemovingvolumetooltip>
 
-	<spw_categoryenvironment>Específico de Entorno</spw_categoryenvironment>
+	<spw_categoryenvironment>Ambiente Acuático (Específico de Entorno)</spw_categoryenvironment>
 	<spw_unsubmergedsuitwaterambiencevolume>Volumen de Agua sin Sumergir (Traje)</spw_unsubmergedsuitwaterambiencevolume>
 	<spw_unsubmergedsuitwaterambiencevolumetooltip>El volumen de las pistas de ambiente acuático cuando el oyente no está sumergido y lleva un traje de buceo.</spw_unsubmergedsuitwaterambiencevolumetooltip>
 	<spw_unsubmergednosuitwaterambiencevolume>Volumen de Agua sin Sumergir (Sin Traje)</spw_unsubmergednosuitwaterambiencevolume>
@@ -539,9 +554,6 @@
 
 	<!-- Advanced -->
 	<spw_advancedtab>Avanzado</spw_advancedtab>
-
-	<spw_projectilesounds>Sonidos de Proyectiles</spw_projectilesounds>
-	<spw_projectilesoundstooltip>Añade sonidos únicos a los proyectiles disparados desde las torretas.\n\nNota: Este ajuste es experimental y se usó principalmente para probar la opción "Efecto Doppler" (pestaña Tono).</spw_projectilesoundstooltip>
 
 	<spw_debugperformance>Mostrar Rendimiento</spw_debugperformance>
 	<spw_debugperformancetooltip>Muestra información detallada del rendimiento de Soundproof Walls.\n\nNota: Este ajuste no se sincroniza con otros jugadores al usar "Sincronizar Ajustes" (pestaña General).</spw_debugperformancetooltip>
@@ -658,6 +670,9 @@
 	
 	<spw_lowpassignoredsounds>Sonidos que Ignoran el Paso Bajo</spw_lowpassignoredsounds>
 	<spw_lowpassignoredsoundstooltip>Los sonidos en esta lista nunca recibirán efectos de amortiguación.</spw_lowpassignoredsoundstooltip>
+
+	<spw_sidechainignoredsounds>Sonidos Ignorados por Sidechain</spw_sidechainignoredsounds>
+	<spw_sidechainignoredsoundstooltip>Los sonidos en esta lista nunca tendrán su volumen atenuado por sonidos fuertes.</spw_sidechainignoredsoundstooltip>
 	
 	<spw_containerignoredsounds>Sonidos que Ignoran Contenedores</spw_containerignoredsounds>
 	<spw_containerignoredsoundstooltip>Los sonidos en esta lista atraviesan sin obstrucciones cualquier contenedor en el que estén almacenados.</spw_containerignoredsoundstooltip>

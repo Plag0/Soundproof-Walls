@@ -52,6 +52,7 @@ namespace SoundproofWalls
                     !oldConfig.ReverbForcedSounds.SetEquals(newConfig.ReverbForcedSounds) ||
                     !oldConfig.WaterReverbIgnoredSounds.SetEquals(newConfig.WaterReverbIgnoredSounds) ||
                     !oldConfig.AirReverbIgnoredSounds.SetEquals(newConfig.AirReverbIgnoredSounds) ||
+                    !oldConfig.SidechainIgnoredSounds.SetEquals(newConfig.SidechainIgnoredSounds) ||
                     !oldConfig.ContainerIgnoredSounds.SetEquals(newConfig.ContainerIgnoredSounds) ||
                     !oldConfig.HydrophoneMuffleIgnoredSounds.SetEquals(newConfig.HydrophoneMuffleIgnoredSounds) ||
                     !oldConfig.HydrophoneVisualIgnoredSounds.SetEquals(newConfig.HydrophoneVisualIgnoredSounds) ||

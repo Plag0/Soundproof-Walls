@@ -17,6 +17,7 @@ namespace SoundproofWalls
         public const string EffectsManagerUpdate = "DynamicEffectsManager";
         public const string RadioFilterUpdate = "RadioEffects";
         public const string ProjectileUpdate = "Projectile";
+        public const string WindUpdate = "Wind";
     }
 
     /// <summary>

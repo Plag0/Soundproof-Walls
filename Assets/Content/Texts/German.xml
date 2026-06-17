@@ -325,6 +325,11 @@
 	<spw_sidechainmusic>Musik-Sidechaining</spw_sidechainmusic>
 	<spw_sidechainmusictooltip>Reduziert die Lautstärke von Musiktiteln, wenn ein lautes Geräusch abgespielt wird.</spw_sidechainmusictooltip>
 
+	<spw_sidechainlocal>Lokales Sidechaining</spw_sidechainlocal>
+	<spw_sidechainlocaltooltip>Reduziert die Lautstärke des lokalen Näherungs-Chats, wenn ein lautes Geräusch abgespielt wird.</spw_sidechainlocaltooltip>
+	<spw_sidechainradio>Funk-Sidechaining</spw_sidechainradio>
+	<spw_sidechainradiotooltip>Reduziert die Lautstärke des Funk-Näherungs-Chats, wenn ein lautes Geräusch abgespielt wird.</spw_sidechainradiotooltip>
+
 	<spw_sidechainintensitymaster>Master-Sidechain-Intensität</spw_sidechainintensitymaster>
 	<spw_sidechainintensitymastertooltip>Globaler Multiplikator, der auf alle Sidechain-Multiplikatoren in der Liste "Benutzerdefinierte Geräusche" (Reiter "Erweitert") angewendet wird.</spw_sidechainintensitymastertooltip>
 	<spw_sidechainreleasemaster>Master-Sidechain-Release</spw_sidechainreleasemaster>
@@ -475,19 +480,29 @@
 	<spw_hydrophonevisualignoredsoundstooltip>Geräusche in dieser Liste werden bei Verwendung der Hydrophone niemals auf der Sonar-Benutzeroberfläche angezeigt.</spw_hydrophonevisualignoredsoundstooltip>
 	
 	<!-- Ambience -->
-	<spw_ambiencetab>Umgebung</spw_ambiencetab>
+	<spw_ambiencetab>Geräuschkulisse</spw_ambiencetab>
+
+	<spw_categorysoundeffects>Soundeffekte</spw_categorysoundeffects>
+	
+	<spw_windsounds>Windgeräusche</spw_windsounds>
+	<spw_windsoundstooltip>Spielt das Geräusch von rauschender Luft ab, wenn man fällt oder sich schnell bewegt. Die Geräuschintensität nimmt mit Geschwindigkeit und Dauer zu.</spw_windsoundstooltip>
+	<spw_windsoundsgain>Lautstärke der Windgeräusche</spw_windsoundsgain>
+	<spw_windsoundsgaintooltip>Die Lautstärke des Rauschens der Luft, das beim Fallen oder bei schnellen Bewegungen abgespielt wird.</spw_windsoundsgaintooltip>
+	<spw_projectilesounds>Projektilgeräusche</spw_projectilesounds>
+	<spw_projectilesoundstooltip>Fügt Projektilen, die von Geschütztürmen abgefeuert werden, einzigartige Geräusche hinzu.\n\nHinweis: Diese Einstellung ist experimentell und wurde hauptsächlich zum Testen der Option "Doppler-Effekt" (Reiter "Tonhöhe") verwendet.</spw_projectilesoundstooltip>
+	
 	<spw_disablewhitenoise>Weißes Rauschen deaktivieren</spw_disablewhitenoise>
 	<spw_disablewhitenoisetooltip>Stummschaltet die Biom-Geräuschschleifen aus dem Vanilla-Spiel.</spw_disablewhitenoisetooltip>
 
-	<spw_categorytrack>Spurspezifisch</spw_categorytrack>
+	<spw_categorytrack>Wasserumgebung (Spurspezifisch)</spw_categorytrack>
 	<spw_waterambienceinvolume>Wasserlautstärke (Innen)</spw_waterambienceinvolume>
-	<spw_waterambienceinvolumetooltip>Die Lautstärke der Wasser-Umgebungsspur, die im Inneren abgespielt wird.\n\nHinweis: Diese Spur wird weiterhin mit geringerer Lautstärke über der Außenspur abgespielt.</spw_waterambienceinvolumetooltip>
+	<spw_waterambienceinvolumetooltip>Die Lautstärke der Wasser-Umgebungsspur, die im Inneren abgespielt wird.\n\nHinweis: Nicht zu verwechseln mit der Lautstärke von "Flussgeräuschen" aus Lecks (Reiter "Lautstärke").\n\nHinweis: Diese Spur wird weiterhin mit geringerer Lautstärke über der Außenspur abgespielt.</spw_waterambienceinvolumetooltip>
 	<spw_waterambienceoutvolume>Wasserlautstärke (Außen)</spw_waterambienceoutvolume>
 	<spw_waterambienceoutvolumetooltip>Die Lautstärke der Wasser-Umgebungsspur, die im Freien abgespielt wird.</spw_waterambienceoutvolumetooltip>
 	<spw_waterambiencemovingvolume>Wasserlautstärke (Bewegung)</spw_waterambiencemovingvolume>
 	<spw_waterambiencemovingvolumetooltip>Die Lautstärke der Wasser-Umgebungsspur, die abgespielt wird, wenn sich das U-Boot oder der Spieler durch Wasser bewegt.</spw_waterambiencemovingvolumetooltip>
 
-	<spw_categoryenvironment>Umgebungsspezifisch</spw_categoryenvironment>
+	<spw_categoryenvironment>Wasserumgebung (Umgebungsspezifisch)</spw_categoryenvironment>
 	<spw_unsubmergedsuitwaterambiencevolume>Wasserlautstärke (nicht unter Wasser, mit Anzug)</spw_unsubmergedsuitwaterambiencevolume>
 	<spw_unsubmergedsuitwaterambiencevolumetooltip>Die Lautstärke der Wasser-Umgebungsspuren, wenn der Hörer nicht unter Wasser ist und einen Taucheranzug trägt.</spw_unsubmergedsuitwaterambiencevolumetooltip>
 	<spw_unsubmergednosuitwaterambiencevolume>Wasserlautstärke (nicht unter Wasser, ohne Anzug)</spw_unsubmergednosuitwaterambiencevolume>
@@ -539,9 +554,6 @@
 
 	<!-- Advanced -->
 	<spw_advancedtab>Erweitert</spw_advancedtab>
-
-	<spw_projectilesounds>Projektilgeräusche</spw_projectilesounds>
-	<spw_projectilesoundstooltip>Fügt Projektilen, die von Geschütztürmen abgefeuert werden, einzigartige Geräusche hinzu.\n\nHinweis: Diese Einstellung ist experimentell und wurde hauptsächlich zum Testen der Option "Doppler-Effekt" (Reiter "Tonhöhe") verwendet.</spw_projectilesoundstooltip>
 
 	<spw_debugperformance>Leistung anzeigen</spw_debugperformance>
 	<spw_debugperformancetooltip>Zeigt detaillierte Leistungsinformationen für Soundproof Walls an.\n\nHinweis: Diese Einstellung wird nicht mit anderen Spielern synchronisiert, wenn "Einstellungen synchronisieren" (Reiter "Allgemein") verwendet wird.</spw_debugperformancetooltip>
@@ -658,6 +670,9 @@
 	
 	<spw_lowpassignoredsounds>Ignorierte Geräusche (Tiefpass)</spw_lowpassignoredsounds>
 	<spw_lowpassignoredsoundstooltip>Geräusche in dieser Liste erhalten niemals Dämpfungseffekte.</spw_lowpassignoredsoundstooltip>
+
+	<spw_sidechainignoredsounds>Ignorierte Geräusche (Sidechain)</spw_sidechainignoredsounds>
+	<spw_sidechainignoredsoundstooltip>Die Lautstärke von Geräuschen in dieser Liste wird niemals durch laute Geräusche reduziert.</spw_sidechainignoredsoundstooltip>
 	
 	<spw_containerignoredsounds>Ignorierte Geräusche (Behälter)</spw_containerignoredsounds>
 	<spw_containerignoredsoundstooltip>Geräusche in dieser Liste durchdringen alle Behälter, in denen sie gelagert sind, ungehindert.</spw_containerignoredsoundstooltip>

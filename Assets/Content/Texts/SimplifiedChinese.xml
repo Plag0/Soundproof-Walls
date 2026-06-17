@@ -325,6 +325,11 @@
 	<spw_sidechainmusic>侧链音乐</spw_sidechainmusic>
 	<spw_sidechainmusictooltip>当有响亮声音播放时，降低音乐曲目的音量。</spw_sidechainmusictooltip>
 
+	<spw_sidechainlocal>侧链本地</spw_sidechainlocal>
+	<spw_sidechainlocaltooltip>当有响亮声音播放时，降低本地近距离聊天的音量。</spw_sidechainlocaltooltip>
+	<spw_sidechainradio>侧链无线电</spw_sidechainradio>
+	<spw_sidechainradiotooltip>当有响亮声音播放时，降低无线电近距离聊天的音量。</spw_sidechainradiotooltip>
+
 	<spw_sidechainintensitymaster>侧链强度总览</spw_sidechainintensitymaster>
 	<spw_sidechainintensitymastertooltip>应用于“自定义声音”列表（高级选项卡）中所有侧链乘数的全局乘数。</spw_sidechainintensitymastertooltip>
 	<spw_sidechainreleasemaster>侧链释放总览</spw_sidechainreleasemaster>
@@ -475,19 +480,29 @@
 	<spw_hydrophonevisualignoredsoundstooltip>使用水听器时，此列表中的声音永远不会显示在声呐用户界面上。</spw_hydrophonevisualignoredsoundstooltip>
 	
 	<!-- Ambience -->
-	<spw_ambiencetab>环境音</spw_ambiencetab>
+	<spw_ambiencetab>声景</spw_ambiencetab>
+
+	<spw_categorysoundeffects>音效</spw_categorysoundeffects>
+	
+	<spw_windsounds>风声</spw_windsounds>
+	<spw_windsoundstooltip>在坠落或快速移动时播放气流呼啸声。声音强度随速度和持续时间增加。</spw_windsoundstooltip>
+	<spw_windsoundsgain>风声音量</spw_windsoundsgain>
+	<spw_windsoundsgaintooltip>在坠落或快速移动时播放的气流呼啸声的音量。</spw_windsoundsgaintooltip>
+	<spw_projectilesounds>抛射物声音</spw_projectilesounds>
+	<spw_projectilesoundstooltip>为从炮塔发射的抛射物添加独特的声音。\n\n注意：此设置为实验性功能，主要用于测试“多普勒效应”选项（音高选项卡）。</spw_projectilesoundstooltip>
+	
 	<spw_disablewhitenoise>禁用白噪音</spw_disablewhitenoise>
 	<spw_disablewhitenoisetooltip>静音原版游戏中的生物群系噪音循环。</spw_disablewhitenoisetooltip>
 
-	<spw_categorytrack>特定音轨</spw_categorytrack>
+	<spw_categorytrack>水环境音（特定音轨）</spw_categorytrack>
 	<spw_waterambienceinvolume>室内水环境音量</spw_waterambienceinvolume>
-	<spw_waterambienceinvolumetooltip>在室内播放的水环境音轨的音量。\n\n注意：此音轨会在室外音轨之上以较低音量继续播放。</spw_waterambienceinvolumetooltip>
+	<spw_waterambienceinvolumetooltip>在室内播放的水环境音轨的音量。\n\n注意：不要与泄漏产生的“水流声音音量”（音量选项卡）混淆。\n\n注意：此音轨会在室外音轨之上以较低音量继续播放。</spw_waterambienceinvolumetooltip>
 	<spw_waterambienceoutvolume>室外水环境音量</spw_waterambienceoutvolume>
 	<spw_waterambienceoutvolumetooltip>在室外播放的水环境音轨的音量。</spw_waterambienceoutvolumetooltip>
 	<spw_waterambiencemovingvolume>移动水环境音量</spw_waterambiencemovingvolume>
 	<spw_waterambiencemovingvolumetooltip>当潜艇或玩家在水中移动时播放的水环境音轨的音量。</spw_waterambiencemovingvolumetooltip>
 
-	<spw_categoryenvironment>特定环境</spw_categoryenvironment>
+	<spw_categoryenvironment>水环境音（特定环境）</spw_categoryenvironment>
 	<spw_unsubmergedsuitwaterambiencevolume>非水下水环境音量（穿戴潜水服）</spw_unsubmergedsuitwaterambiencevolume>
 	<spw_unsubmergedsuitwaterambiencevolumetooltip>当听者未在水下且穿着潜水服时，水环境音轨的音量。</spw_unsubmergedsuitwaterambiencevolumetooltip>
 	<spw_unsubmergednosuitwaterambiencevolume>非水下水环境音量（未穿戴潜水服）</spw_unsubmergednosuitwaterambiencevolume>
@@ -539,9 +554,6 @@
 
 	<!-- Advanced -->
 	<spw_advancedtab>高级</spw_advancedtab>
-
-	<spw_projectilesounds>抛射物声音</spw_projectilesounds>
-	<spw_projectilesoundstooltip>为从炮塔发射的抛射物添加独特的声音。\n\n注意：此设置为实验性功能，主要用于测试“多普勒效应”选项（音高选项卡）。</spw_projectilesoundstooltip>
 
 	<spw_debugperformance>显示性能</spw_debugperformance>
 	<spw_debugperformancetooltip>显示 Soundproof Walls 的详细性能信息。\n\n注意：当使用“同步设置”（通用选项卡）时，此设置不会与其他玩家同步。</spw_debugperformancetooltip>
@@ -659,6 +671,9 @@
 	
 	<spw_lowpassignoredsounds>低通忽略的声音</spw_lowpassignoredsounds>
 	<spw_lowpassignoredsoundstooltip>此列表中的声音永远不会受到闷音效果。</spw_lowpassignoredsoundstooltip>
+
+	<spw_sidechainignoredsounds>侧链忽略的声音</spw_sidechainignoredsounds>
+	<spw_sidechainignoredsoundstooltip>此列表中的声音永远不会因响亮的声音而降低音量。</spw_sidechainignoredsoundstooltip>
 	
 	<spw_containerignoredsounds>容器忽略的声音</spw_containerignoredsounds>
 	<spw_containerignoredsoundstooltip>此列表中的声音无阻碍地穿过它们所在的任何容器。</spw_containerignoredsoundstooltip>

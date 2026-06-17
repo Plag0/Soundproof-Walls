@@ -325,6 +325,11 @@
 	<spw_sidechainmusic>音楽をサイドチェイン</spw_sidechainmusic>
 	<spw_sidechainmusictooltip>大きな音が再生されるときに、音楽トラックの音量を下げます。</spw_sidechainmusictooltip>
 
+	<spw_sidechainlocal>ローカルをサイドチェイン</spw_sidechainlocal>
+	<spw_sidechainlocaltooltip>大きな音が再生されるときに、ローカル近接チャットの音量を下げます。</spw_sidechainlocaltooltip>
+	<spw_sidechainradio>無線をサイドチェイン</spw_sidechainradio>
+	<spw_sidechainradiotooltip>大きな音が再生されるときに、無線近接チャットの音量を下げます。</spw_sidechainradiotooltip>
+
 	<spw_sidechainintensitymaster>サイドチェイン強度マスター</spw_sidechainintensitymaster>
 	<spw_sidechainintensitymastertooltip>「カスタムサウンド」リスト（詳細設定タブ）のすべてのサイドチェイン乗数に適用されるグローバル乗数。</spw_sidechainintensitymastertooltip>
 	<spw_sidechainreleasemaster>サイドチェインリリースマスター</spw_sidechainreleasemaster>
@@ -475,19 +480,30 @@
 	<spw_hydrophonevisualignoredsoundstooltip>このリストのサウンドは、ハイドロフォン使用時にソナーUIに決して表示されません。</spw_hydrophonevisualignoredsoundstooltip>
 	
 	<!-- Ambience -->
-	<spw_ambiencetab>環境音</spw_ambiencetab>
+	<spw_ambiencetab>サウンドスケープ</spw_ambiencetab>
+
+	<spw_categorysoundeffects>効果音</spw_categorysoundeffects>
+	
+	<spw_windsounds>風切り音</spw_windsounds>
+	<spw_windsoundstooltip>落下時や高速移動時に、空気を切る音を再生します。音の強さは速度と持続時間に応じて増加します。</spw_windsoundstooltip>
+	<spw_windsoundsgain>風切り音の音量</spw_windsoundsgain>
+	<spw_windsoundsgaintooltip>落下時や高速移動時に再生される空気を切る音の音量。</spw_windsoundsgaintooltip>
+	<spw_projectilesounds>発射体のサウンド</spw_projectilesounds>
+	<spw_projectilesoundstooltip>タレットから発射される発射体に独自のサウンドを追加します。\n\n注意：この設定は実験的なものであり、主に「ドップラー効果」オプション（ピッチタブ）をテストするために使用されました。</spw_projectilesoundstooltip>
+
+
 	<spw_disablewhitenoise>ホワイトノイズを無効化</spw_disablewhitenoise>
 	<spw_disablewhitenoisetooltip>バニラゲームのバイオームノイズループをミュートします。</spw_disablewhitenoisetooltip>
 
-	<spw_categorytrack>トラック固有</spw_categorytrack>
+	<spw_categorytrack>水環境音（トラック固有）</spw_categorytrack>
 	<spw_waterambienceinvolume>船内水環境音量</spw_waterambienceinvolume>
-	<spw_waterambienceinvolumetooltip>船内で再生される水環境音トラックの音量。\n\n注意：このトラックは船外トラックの上に低い音量で再生され続けます。</spw_waterambienceinvolumetooltip>
+	<spw_waterambienceinvolumetooltip>船内で再生される水環境音トラックの音量。\n\n注意：漏水による「水流音」の音量（音量タブ）と混同しないでください。\n\n注意：このトラックは船外トラックの上に低い音量で再生され続けます。</spw_waterambienceinvolumetooltip>
 	<spw_waterambienceoutvolume>船外水環境音量</spw_waterambienceoutvolume>
 	<spw_waterambienceoutvolumetooltip>船外で再生される水環境音トラックの音量。</spw_waterambienceoutvolumetooltip>
 	<spw_waterambiencemovingvolume>移動中水環境音量</spw_waterambiencemovingvolume>
 	<spw_waterambiencemovingvolumetooltip>潜水艦またはプレイヤーが水中を移動しているときに再生される水環境音トラックの音量。</spw_waterambiencemovingvolumetooltip>
 
-	<spw_categoryenvironment>環境固有</spw_categoryenvironment>
+	<spw_categoryenvironment>水環境音（環境固有）</spw_categoryenvironment>
 	<spw_unsubmergedsuitwaterambiencevolume>非潜水時水環境音量（スーツ）</spw_unsubmergedsuitwaterambiencevolume>
 	<spw_unsubmergedsuitwaterambiencevolumetooltip>リスナーが潜水しておらず、潜水服を着用しているときの水環境音トラックの音量。</spw_unsubmergedsuitwaterambiencevolumetooltip>
 	<spw_unsubmergednosuitwaterambiencevolume>非潜水時水環境音量（スーツなし）</spw_unsubmergednosuitwaterambiencevolume>
@@ -539,9 +555,6 @@
 
 	<!-- Advanced -->
 	<spw_advancedtab>詳細設定</spw_advancedtab>
-
-	<spw_projectilesounds>発射体のサウンド</spw_projectilesounds>
-	<spw_projectilesoundstooltip>タレットから発射される発射体に独自のサウンドを追加します。\n\n注意：この設定は実験的なものであり、主に「ドップラー効果」オプション（ピッチタブ）をテストするために使用されました。</spw_projectilesoundstooltip>
 
 	<spw_debugperformance>パフォーマンスを表示</spw_debugperformance>
 	<spw_debugperformancetooltip>Soundproof Wallsの詳細なパフォーマンス情報を表示します。\n\n注意：この設定は、「設定を同期」（全般タブ）を使用しても他のプレイヤーと同期されません。</spw_debugperformancetooltip>
@@ -658,6 +671,9 @@
 	
 	<spw_lowpassignoredsounds>ローパスを無視するサウンド</spw_lowpassignoredsounds>
 	<spw_lowpassignoredsoundstooltip>このリストのサウンドはマッフル効果を一切受けません。</spw_lowpassignoredsoundstooltip>
+
+	<spw_sidechainignoredsounds>サイドチェイン無視サウンド</spw_sidechainignoredsounds>
+	<spw_sidechainignoredsoundstooltip>このリストのサウンドは、大きな音によって音量が下げられることは決してありません。</spw_sidechainignoredsoundstooltip>
 	
 	<spw_containerignoredsounds>コンテナを無視するサウンド</spw_containerignoredsounds>
 	<spw_containerignoredsoundstooltip>このリストのサウンドは、格納されているコンテナを妨げられずに通過します。</spw_containerignoredsoundstooltip>

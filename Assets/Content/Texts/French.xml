@@ -325,6 +325,11 @@
 	<spw_sidechainmusic>Sidechain sur la musique</spw_sidechainmusic>
 	<spw_sidechainmusictooltip>Réduit le volume des pistes musicales lorsqu'un son fort est joué.</spw_sidechainmusictooltip>
 
+	<spw_sidechainlocal>Sidechain local</spw_sidechainlocal>
+	<spw_sidechainlocaltooltip>Réduit le volume du chat de proximité local lorsqu'un son fort est joué.</spw_sidechainlocaltooltip>
+	<spw_sidechainradio>Sidechain radio</spw_sidechainradio>
+	<spw_sidechainradiotooltip>Réduit le volume du chat de proximité radio lorsqu'un son fort est joué.</spw_sidechainradiotooltip>
+
 	<spw_sidechainintensitymaster>Intensité principale du sidechain</spw_sidechainintensitymaster>
 	<spw_sidechainintensitymastertooltip>Multiplicateur global appliqué à tous les multiplicateurs de sidechain dans la liste "Sons personnalisés" (onglet Avancé).</spw_sidechainintensitymastertooltip>
 	<spw_sidechainreleasemaster>Relâchement principal du sidechain</spw_sidechainreleasemaster>
@@ -475,19 +480,29 @@
 	<spw_hydrophonevisualignoredsoundstooltip>Les sons de cette liste ne sont jamais affichés sur l'interface du sonar lors de l'utilisation des hydrophones.</spw_hydrophonevisualignoredsoundstooltip>
 	
 	<!-- Ambience -->
-	<spw_ambiencetab>Ambiance</spw_ambiencetab>
+	<spw_ambiencetab>Paysage sonore</spw_ambiencetab>
+
+	<spw_categorysoundeffects>Effets sonores</spw_categorysoundeffects>
+	
+	<spw_windsounds>Sons du vent</spw_windsounds>
+	<spw_windsoundstooltip>Joue le son de l'air qui s'engouffre lorsque vous tombez ou vous déplacez rapidement. L'intensité du son augmente avec la vitesse et la durée.</spw_windsoundstooltip>
+	<spw_windsoundsgain>Volume des sons du vent</spw_windsoundsgain>
+	<spw_windsoundsgaintooltip>Le volume du son de l'air qui s'engouffre qui est joué lors d'une chute ou d'un déplacement rapide.</spw_windsoundsgaintooltip>
+	<spw_projectilesounds>Sons des projectiles</spw_projectilesounds>
+	<spw_projectilesoundstooltip>Ajoute des sons uniques aux projectiles tirés depuis les tourelles.\n\nNote : Ce paramètre est expérimental et a été principalement utilisé pour tester l'option "Effet Doppler" (onglet Tonalité).</spw_projectilesoundstooltip>
+	
 	<spw_disablewhitenoise>Désactiver le bruit blanc</spw_disablewhitenoise>
 	<spw_disablewhitenoisetooltip>Coupe les boucles de bruit de biome du jeu vanilla.</spw_disablewhitenoisetooltip>
 
-	<spw_categorytrack>Spécifique à la piste</spw_categorytrack>
+	<spw_categorytrack>Ambiance aquatique (Spécifique à la piste)</spw_categorytrack>
 	<spw_waterambienceinvolume>Volume de l'eau (intérieur)</spw_waterambienceinvolume>
-	<spw_waterambienceinvolumetooltip>Le volume de la piste d'ambiance aquatique qui joue à l'intérieur.\n\nNote : Cette piste continue de jouer à un volume plus faible par-dessus la piste extérieure.</spw_waterambienceinvolumetooltip>
+	<spw_waterambienceinvolumetooltip>Le volume de la piste d'ambiance aquatique qui joue à l'intérieur.\n\nNote : À ne pas confondre avec le volume des sons de "flux" causés par les fuites (onglet Volume).\n\nNote : Cette piste continue de jouer à un volume plus faible par-dessus la piste extérieure.</spw_waterambienceinvolumetooltip>
 	<spw_waterambienceoutvolume>Volume de l'eau (extérieur)</spw_waterambienceoutvolume>
 	<spw_waterambienceoutvolumetooltip>Le volume de la piste d'ambiance aquatique qui joue à l'extérieur.</spw_waterambienceoutvolumetooltip>
 	<spw_waterambiencemovingvolume>Volume de l'eau (mouvement)</spw_waterambiencemovingvolume>
 	<spw_waterambiencemovingvolumetooltip>Le volume de la piste d'ambiance aquatique qui joue lorsque le sous-marin ou le joueur se déplace dans l'eau.</spw_waterambiencemovingvolumetooltip>
 
-	<spw_categoryenvironment>Spécifique à l'environnement</spw_categoryenvironment>
+	<spw_categoryenvironment>Ambiance aquatique (Spécifique à l'environnement)</spw_categoryenvironment>
 	<spw_unsubmergedsuitwaterambiencevolume>Volume de l'eau hors de l'eau (scaphandre)</spw_unsubmergedsuitwaterambiencevolume>
 	<spw_unsubmergedsuitwaterambiencevolumetooltip>Le volume des pistes d'ambiance aquatique lorsque l'auditeur n'est pas immergé et porte un scaphandre.</spw_unsubmergedsuitwaterambiencevolumetooltip>
 	<spw_unsubmergednosuitwaterambiencevolume>Volume de l'eau hors de l'eau (sans scaphandre)</spw_unsubmergednosuitwaterambiencevolume>
@@ -539,9 +554,6 @@
 
 	<!-- Advanced -->
 	<spw_advancedtab>Avancé</spw_advancedtab>
-
-	<spw_projectilesounds>Sons des projectiles</spw_projectilesounds>
-	<spw_projectilesoundstooltip>Ajoute des sons uniques aux projectiles tirés depuis les tourelles.\n\nNote : Ce paramètre est expérimental et a été principalement utilisé pour tester l'option "Effet Doppler" (onglet Tonalité).</spw_projectilesoundstooltip>
 
 	<spw_debugperformance>Afficher les performances</spw_debugperformance>
 	<spw_debugperformancetooltip>Affiche des informations de performance détaillées pour Soundproof Walls.\n\nNote : Ce paramètre n'est pas synchronisé avec les autres joueurs lors de l'utilisation de "Synchroniser les paramètres" (onglet Général).</spw_debugperformancetooltip>
@@ -658,6 +670,9 @@
 	
 	<spw_lowpassignoredsounds>Sons ignorant le passe-bas</spw_lowpassignoredsounds>
 	<spw_lowpassignoredsoundstooltip>Les sons de cette liste ne recevront jamais d'effets d'assourdissement.</spw_lowpassignoredsoundstooltip>
+
+	<spw_sidechainignoredsounds>Sons ignorés par le sidechain</spw_sidechainignoredsounds>
+	<spw_sidechainignoredsoundstooltip>Le volume des sons de cette liste ne sera jamais réduit par des sons forts.</spw_sidechainignoredsoundstooltip>
 	
 	<spw_containerignoredsounds>Sons ignorant les conteneurs</spw_containerignoredsounds>
 	<spw_containerignoredsoundstooltip>Les sons de cette liste passent à travers tous les conteneurs dans lesquels ils sont stockés sans obstruction.</spw_containerignoredsoundstooltip>

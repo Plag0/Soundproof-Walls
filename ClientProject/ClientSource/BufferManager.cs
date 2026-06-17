@@ -9,6 +9,12 @@ namespace SoundproofWalls
         public static ReloadRequest? ActiveReloadRequest = null;
         public static bool ReadyToReload = false;
 
+        private static double reloadStartTime;
+        private static double reloadTimeout = 10;
+
+        private static GUIButton backgroundHolder = new GUIButton(new RectTransform((0.35f, 0.35f), GUI.Canvas, Anchor.Center), style: null);
+        private static GUIFrame background = new GUIFrame(new RectTransform(GUI.Canvas.RelativeSize, backgroundHolder.RectTransform, Anchor.Center), style: "CommandBackground");
+
         public struct ReloadRequest
         {
             public bool Starting;
@@ -30,6 +36,18 @@ namespace SoundproofWalls
         {
             if (!ActiveReloadRequest.HasValue) { return; }
 
+            // Attempt to fix the reloading visuals becoming stuck on the screen during gameplay for Linux players.
+            if (!ReadyToReload) { reloadStartTime = Timing.TotalTime; }
+            if (Timing.TotalTime - reloadStartTime > reloadTimeout)
+            {
+                LuaCsLogger.LogError($"[SoundproofWalls] Warning: timed out loading buffers after {reloadTimeout}s. " +
+                    $"If you experience issues, try running \"cl_reloadlua\" in the console to attempt loading the buffers again. " +
+                    $"Please report this behavior.");
+                ActiveReloadRequest = null;
+                ReadyToReload = false;
+                return;
+            }
+
             LocalizedString modName = TextManager.GetWithVariable("spw_modname", "[version]", ModState.Version);
             Vector2 modNameSize = GUIStyle.LargeFont.MeasureString(modName);
             Vector2 modNamePos = new Vector2(GameMain.GraphicsWidth / 2 - modNameSize.X / 2, GameMain.GraphicsHeight / 2 - modNameSize.Y / 2);
@@ -40,9 +58,7 @@ namespace SoundproofWalls
             Vector2 loadingTextSize = GUIStyle.SmallFont.MeasureString(loadingText);
             Vector2 loadingTextPos = new Vector2(modNamePos.X, GameMain.GraphicsHeight / 2 - loadingTextSize.Y / 2 + linePadding);
 
-            GUIButton backgroundHolder = new GUIButton(new RectTransform((0.35f, 0.35f), GUI.Canvas, Anchor.Center), style: null);
             backgroundHolder.RectTransform.RelativeOffset = (-0.008f, 0);
-            GUIFrame background = new GUIFrame(new RectTransform(GUI.Canvas.RelativeSize, backgroundHolder.RectTransform, Anchor.Center), style: "CommandBackground");
 
             EavesdropManager.Vignette.Draw(spriteBatch);
             background.Draw(spriteBatch);
@@ -69,8 +85,9 @@ namespace SoundproofWalls
         {
             LuaCsLogger.Log("[SoundproofWalls] Reloading sound buffers for non-streamed audio...");
 
-            MoonSharp.Interpreter.DynValue? Resound = LuaCsSetup.Instance.LuaScriptManagementService.InternalScript?.Globals.Get("Resound");
-            Util.StopResound(Resound);
+            // Removed until Resound is released. One day?
+            //MoonSharp.Interpreter.DynValue? Resound = LuaCsSetup.Instance.LuaScriptManagementService.InternalScript?.Globals.Get("Resound");
+            //Util.StopResound(Resound);
 
             // Stop all channels to prevent them from using buffers while we swap them.
             Util.StopPlayingChannels();
@@ -93,7 +110,7 @@ namespace SoundproofWalls
                 oldSound.Dispose();
             }
 
-            Util.StartResound(Resound);
+            //Util.StartResound(Resound);
 
             LuaCsLogger.Log("[SoundproofWalls] Finished reloading sound buffers.");
         }

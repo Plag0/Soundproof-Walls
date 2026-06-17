@@ -1117,7 +1117,8 @@ namespace SoundproofWalls
             }
             else if (!IsLoud) { sidechainMult *= 1 - Plugin.Sidechain.SidechainMultiplier; }
 
-            if (!AudioIsRadioVoice || config.SidechainRadio) { mult *= sidechainMult; }
+            bool skipSidechain = SoundInfo.IgnoreSidechain || !config.SidechainRadio && AudioIsRadioVoice || !config.SidechainLocal && AudioIsLocalVoice;
+            if (!skipSidechain) { mult *= sidechainMult; }
 
 
             // ----- Distance Falloff ------

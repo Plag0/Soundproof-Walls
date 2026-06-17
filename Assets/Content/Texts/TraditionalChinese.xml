@@ -325,6 +325,11 @@
 	<spw_sidechainmusic>側鏈壓縮音樂</spw_sidechainmusic>
 	<spw_sidechainmusictooltip>當有大聲響播放時，降低音樂曲目的音量。</spw_sidechainmusictooltip>
 
+	<spw_sidechainlocal>側鏈壓縮本地語音</spw_sidechainlocal>
+	<spw_sidechainlocaltooltip>當有大聲響播放時，降低本地近距離聊天的音量。</spw_sidechainlocaltooltip>
+	<spw_sidechainradio>側鏈壓縮無線電</spw_sidechainradio>
+	<spw_sidechainradiotooltip>當有大聲響播放時，降低無線電近距離聊天的音量。</spw_sidechainradiotooltip>
+
 	<spw_sidechainintensitymaster>側鏈壓縮強度主控</spw_sidechainintensitymaster>
 	<spw_sidechainintensitymastertooltip>應用於「進階」分頁「自訂音效」列表中所有側鏈乘數的全域乘數。</spw_sidechainintensitymastertooltip>
 	<spw_sidechainreleasemaster>側鏈壓縮釋放主控</spw_sidechainreleasemaster>
@@ -475,19 +480,29 @@
 	<spw_hydrophonevisualignoredsoundstooltip>此列表中的聲音在使用水下麥克風時永遠不會顯示在聲納使用者介面上。</spw_hydrophonevisualignoredsoundstooltip>
 	
 	<!-- Ambience -->
-	<spw_ambiencetab>環境音</spw_ambiencetab>
+	<spw_ambiencetab>聲景</spw_ambiencetab>
+
+	<spw_categorysoundeffects>音效</spw_categorysoundeffects>
+	
+	<spw_windsounds>風聲</spw_windsounds>
+	<spw_windsoundstooltip>在墜落或快速移動時播放氣流呼嘯的聲音。聲音強度會隨著速度和持續時間增加。</spw_windsoundstooltip>
+	<spw_windsoundsgain>風聲音量</spw_windsoundsgain>
+	<spw_windsoundsgaintooltip>墜落或快速移動時播放的氣流呼嘯聲的音量。</spw_windsoundsgaintooltip>
+	<spw_projectilesounds>砲彈音效</spw_projectilesounds>
+	<spw_projectilesoundstooltip>為砲塔發射的砲彈添加獨特的聲音。\n\n注意：此設定為實驗性功能，主要用於測試「都卜勒效應」選項（音高分頁）。</spw_projectilesoundstooltip>
+	
 	<spw_disablewhitenoise>停用白噪音</spw_disablewhitenoise>
 	<spw_disablewhitenoisetooltip>靜音原版遊戲中的生態環境噪音循環。</spw_disablewhitenoisetooltip>
 
-	<spw_categorytrack>特定音軌</spw_categorytrack>
+	<spw_categorytrack>水環境音（特定音軌）</spw_categorytrack>
 	<spw_waterambienceinvolume>室內水聲音量</spw_waterambienceinvolume>
-	<spw_waterambienceinvolumetooltip>在室內播放的水環境音軌音量。\n\n注意：此音軌會繼續在室外音軌之上以較低音量播放。</spw_waterambienceinvolumetooltip>
+	<spw_waterambienceinvolumetooltip>在室內播放的水環境音軌音量。\n\n注意：請勿與漏水產生的「水流」聲音量（音量分頁）混淆。\n\n注意：此音軌會繼續在室外音軌之上以較低音量播放。</spw_waterambienceinvolumetooltip>
 	<spw_waterambienceoutvolume>室外水聲音量</spw_waterambienceoutvolume>
 	<spw_waterambienceoutvolumetooltip>在室外播放的水環境音軌音量。</spw_waterambienceoutvolumetooltip>
 	<spw_waterambiencemovingvolume>移動水聲音量</spw_waterambiencemovingvolume>
 	<spw_waterambiencemovingvolumetooltip>當潛艇或玩家在水中移動時播放的水環境音軌音量。</spw_waterambiencemovingvolumetooltip>
 
-	<spw_categoryenvironment>特定環境</spw_categoryenvironment>
+	<spw_categoryenvironment>水環境音（特定環境）</spw_categoryenvironment>
 	<spw_unsubmergedsuitwaterambiencevolume>非水下水聲音量（穿潛水衣）</spw_unsubmergedsuitwaterambiencevolume>
 	<spw_unsubmergedsuitwaterambiencevolumetooltip>當聽者未在水下且穿著潛水衣時，水環境音軌的音量。</spw_unsubmergedsuitwaterambiencevolumetooltip>
 	<spw_unsubmergednosuitwaterambiencevolume>非水下水聲音量（未穿潛水衣）</spw_unsubmergednosuitwaterambiencevolume>
@@ -539,9 +554,6 @@
 
 	<!-- Advanced -->
 	<spw_advancedtab>進階</spw_advancedtab>
-
-	<spw_projectilesounds>砲彈音效</spw_projectilesounds>
-	<spw_projectilesoundstooltip>為砲塔發射的砲彈添加獨特的聲音。\n\n注意：此設定為實驗性功能，主要用於測試「都卜勒效應」選項（音高分頁）。</spw_projectilesoundstooltip>
 
 	<spw_debugperformance>顯示效能</spw_debugperformance>
 	<spw_debugperformancetooltip>顯示 Soundproof Walls 的詳細效能資訊。\n\n注意：使用「同步設定」（一般分頁）時，此設定不會與其他玩家同步。</spw_debugperformancetooltip>
@@ -658,6 +670,9 @@
 	
 	<spw_lowpassignoredsounds>低通忽略音效</spw_lowpassignoredsounds>
 	<spw_lowpassignoredsoundstooltip>此列表中的聲音永遠不會受到消音效果。</spw_lowpassignoredsoundstooltip>
+
+	<spw_sidechainignoredsounds>側鏈壓縮忽略音效</spw_sidechainignoredsounds>
+	<spw_sidechainignoredsoundstooltip>此列表中的聲音音量永遠不會被大聲響降低。</spw_sidechainignoredsoundstooltip>
 	
 	<spw_containerignoredsounds>容器忽略音效</spw_containerignoredsounds>
 	<spw_containerignoredsoundstooltip>此列表中的聲音會無阻礙地穿過它們所在的任何容器。</spw_containerignoredsoundstooltip>

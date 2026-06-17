@@ -325,6 +325,11 @@
 	<spw_sidechainmusic>Müziği Yan Zincirle</spw_sidechainmusic>
 	<spw_sidechainmusictooltip>Yüksek bir ses çaldığında müzik parçalarının ses seviyesini kısın.</spw_sidechainmusictooltip>
 
+	<spw_sidechainlocal>Yerel Yan Zincirleme</spw_sidechainlocal>
+	<spw_sidechainlocaltooltip>Yüksek bir ses çaldığında yerel yakınlık sohbetinin ses seviyesini kısın.</spw_sidechainlocaltooltip>
+	<spw_sidechainradio>Telsiz Yan Zincirleme</spw_sidechainradio>
+	<spw_sidechainradiotooltip>Yüksek bir ses çaldığında telsiz yakınlık sohbetinin ses seviyesini kısın.</spw_sidechainradiotooltip>
+
 	<spw_sidechainintensitymaster>Ana Yan Zincirleme Yoğunluğu</spw_sidechainintensitymaster>
 	<spw_sidechainintensitymastertooltip>"Özel Sesler" listesindeki (Gelişmiş sekmesi) tüm yan zincirleme çarpanlarına uygulanan genel çarpan.</spw_sidechainintensitymastertooltip>
 	<spw_sidechainreleasemaster>Ana Yan Zincirleme Bırakma</spw_sidechainreleasemaster>
@@ -475,19 +480,29 @@
 	<spw_hydrophonevisualignoredsoundstooltip>Bu listedeki sesler, hidrofonları kullanırken sonar arayüzünde asla görüntülenmez.</spw_hydrophonevisualignoredsoundstooltip>
 	
 	<!-- Ambience -->
-	<spw_ambiencetab>Ambiyans</spw_ambiencetab>
+	<spw_ambiencetab>Ses Ortamı</spw_ambiencetab>
+
+	<spw_categorysoundeffects>Ses Efektleri</spw_categorysoundeffects>
+	
+	<spw_windsounds>Rüzgar Sesleri</spw_windsounds>
+	<spw_windsoundstooltip>Düşerken veya hızlı hareket ederken hızla akan havanın sesini çalın. Ses yoğunluğu hız ve süreyle birlikte artar.</spw_windsoundstooltip>
+	<spw_windsoundsgain>Rüzgar Sesleri Seviyesi</spw_windsoundsgain>
+	<spw_windsoundsgaintooltip>Düşerken veya hızlı hareket ederken çalan hızla akan hava sesinin ses seviyesi.</spw_windsoundsgaintooltip>
+	<spw_projectilesounds>Mermi Sesleri</spw_projectilesounds>
+	<spw_projectilesoundstooltip>Taretlerden ateşlenen mermilere benzersiz sesler ekler.\n\nNot: Bu ayar deneyseldir ve öncelikle "Doppler Efekti" seçeneğini (Perde sekmesi) test etmek için kullanılmıştır.</spw_projectilesoundstooltip>
+	
 	<spw_disablewhitenoise>Beyaz Gürültüyü Devre Dışı Bırak</spw_disablewhitenoise>
 	<spw_disablewhitenoisetooltip>Vanilla oyunundaki biyom gürültü döngülerini sessize alın.</spw_disablewhitenoisetooltip>
 
-	<spw_categorytrack>Parçaya Özel</spw_categorytrack>
+	<spw_categorytrack>Su Ambiyansı (Parçaya Özel)</spw_categorytrack>
 	<spw_waterambienceinvolume>İçeride Su Ses Seviyesi</spw_waterambienceinvolume>
-	<spw_waterambienceinvolumetooltip>İçeride çalan su ambiyans parçasının ses seviyesi.\n\nNot: Bu parça, dışarıdaki parçanın üzerinde daha düşük bir ses seviyesinde çalmaya devam eder.</spw_waterambienceinvolumetooltip>
+	<spw_waterambienceinvolumetooltip>İçeride çalan su ambiyans parçasının ses seviyesi.\n\nNot: Sızıntılardan kaynaklanan "akış" (flow) sesi seviyesiyle (Ses Seviyesi sekmesi) karıştırılmamalıdır.\n\nNot: Bu parça, dışarıdaki parçanın üzerinde daha düşük bir ses seviyesinde çalmaya devam eder.</spw_waterambienceinvolumetooltip>
 	<spw_waterambienceoutvolume>Dışarıda Su Ses Seviyesi</spw_waterambienceoutvolume>
 	<spw_waterambienceoutvolumetooltip>Dışarıda çalan su ambiyans parçasının ses seviyesi.</spw_waterambienceoutvolumetooltip>
 	<spw_waterambiencemovingvolume>Hareketli Su Ses Seviyesi</spw_waterambiencemovingvolume>
 	<spw_waterambiencemovingvolumetooltip>Denizaltı veya oyuncu suda hareket ederken çalan su ambiyans parçasının ses seviyesi.</spw_waterambiencemovingvolumetooltip>
 
-	<spw_categoryenvironment>Ortama Özel</spw_categoryenvironment>
+	<spw_categoryenvironment>Su Ambiyansı (Ortama Özel)</spw_categoryenvironment>
 	<spw_unsubmergedsuitwaterambiencevolume>Su Yüzeyinde Su Ses Seviyesi (Kıyafetli)</spw_unsubmergedsuitwaterambiencevolume>
 	<spw_unsubmergedsuitwaterambiencevolumetooltip>Dinleyici su yüzeyindeyken ve dalgıç kıyafeti giyerken su ambiyans parçalarının ses seviyesi.</spw_unsubmergedsuitwaterambiencevolumetooltip>
 	<spw_unsubmergednosuitwaterambiencevolume>Su Yüzeyinde Su Ses Seviyesi (Kıyafetsiz)</spw_unsubmergednosuitwaterambiencevolume>
@@ -539,9 +554,6 @@
 
 	<!-- Advanced -->
 	<spw_advancedtab>Gelişmiş</spw_advancedtab>
-
-	<spw_projectilesounds>Mermi Sesleri</spw_projectilesounds>
-	<spw_projectilesoundstooltip>Taretlerden ateşlenen mermilere benzersiz sesler ekler.\n\nNot: Bu ayar deneyseldir ve öncelikle "Doppler Efekti" seçeneğini (Perde sekmesi) test etmek için kullanılmıştır.</spw_projectilesoundstooltip>
 
 	<spw_debugperformance>Performansı Göster</spw_debugperformance>
 	<spw_debugperformancetooltip>Soundproof Walls için ayrıntılı performans bilgilerini görüntüleyin.\n\nNot: Bu ayar, "Ayarları Senkronize Et" (Genel sekmesi) kullanılırken diğer oyuncularla senkronize edilmez.</spw_debugperformancetooltip>
@@ -658,6 +670,9 @@
 	
 	<spw_lowpassignoredsounds>Alçak Geçirende Yok Sayılan Sesler</spw_lowpassignoredsounds>
 	<spw_lowpassignoredsoundstooltip>Bu listedeki sesler asla boğuklaştırma efektleri almaz.</spw_lowpassignoredsoundstooltip>
+
+	<spw_sidechainignoredsounds>Yan Zincirlemede Yok Sayılan Sesler</spw_sidechainignoredsounds>
+	<spw_sidechainignoredsoundstooltip>Bu listedeki seslerin ses seviyesi yüksek sesler tarafından hiçbir zaman kısılmaz.</spw_sidechainignoredsoundstooltip>
 	
 	<spw_containerignoredsounds>Konteynerde Yok Sayılan Sesler</spw_containerignoredsounds>
 	<spw_containerignoredsoundstooltip>Bu listedeki sesler, içinde depolandıkları herhangi bir konteynerden engelsiz geçer.</spw_containerignoredsoundstooltip>

@@ -325,6 +325,11 @@
 	<spw_sidechainmusic>Sidechain Music</spw_sidechainmusic>
 	<spw_sidechainmusictooltip>Duck the volume of music tracks when a loud sound plays.</spw_sidechainmusictooltip>
 
+	<spw_sidechainlocal>Sidechain Local Voice</spw_sidechainlocal>
+	<spw_sidechainlocaltooltip>Duck the volume of local proximity chat when a loud sound plays.</spw_sidechainlocaltooltip>
+	<spw_sidechainradio>Sidechain Radio Voice</spw_sidechainradio>
+	<spw_sidechainradiotooltip>Duck the volume of radio proximity chat when a loud sound plays.</spw_sidechainradiotooltip>
+
 	<spw_sidechainintensitymaster>Sidechain Intensity Master</spw_sidechainintensitymaster>
 	<spw_sidechainintensitymastertooltip>Global multiplier applied to all sidechain multipliers in the "Custom Sounds" list (Advanced tab).</spw_sidechainintensitymastertooltip>
 	<spw_sidechainreleasemaster>Sidechain Release Master</spw_sidechainreleasemaster>
@@ -475,19 +480,29 @@
 	<spw_hydrophonevisualignoredsoundstooltip>Sounds in this list are never displayed on the sonar UI when using the hydrophones.</spw_hydrophonevisualignoredsoundstooltip>
 	
 	<!-- Ambience -->
-	<spw_ambiencetab>Ambience</spw_ambiencetab>
+	<spw_ambiencetab>Soundscape</spw_ambiencetab>
+
+	<spw_categorysoundeffects>Sound Effects</spw_categorysoundeffects>
+	
+	<spw_windsounds>Wind Sounds</spw_windsounds>
+	<spw_windsoundstooltip>Play the sound of rushing air when falling or moving fast. Sound intensity increases with speed and duration.</spw_windsoundstooltip>
+	<spw_windsoundsgain>Wind Sounds Volume</spw_windsoundsgain>
+	<spw_windsoundsgaintooltip>The volume of the rushing air sound that plays when falling or moving fast.</spw_windsoundsgaintooltip>
+	<spw_projectilesounds>Projectile Sounds</spw_projectilesounds>
+	<spw_projectilesoundstooltip>Adds unique sounds to projectiles fired from turrets.\n\nNote: This setting is experimental and was primarily used to test the "Doppler Effect" option (Pitch tab).</spw_projectilesoundstooltip>
+	
 	<spw_disablewhitenoise>Disable White Noise</spw_disablewhitenoise>
 	<spw_disablewhitenoisetooltip>Mute the biome noise loops from the vanilla game.</spw_disablewhitenoisetooltip>
 
-	<spw_categorytrack>Track-Specific</spw_categorytrack>
+	<spw_categorytrack>Water Ambience (Track-Specific)</spw_categorytrack>
 	<spw_waterambienceinvolume>Inside Water Volume</spw_waterambienceinvolume>
-	<spw_waterambienceinvolumetooltip>The volume of the water ambience track that plays inside.\n\nNote: This track continues to play at a lower volume on top of the outside track.</spw_waterambienceinvolumetooltip>
+	<spw_waterambienceinvolumetooltip>The volume of the water ambience track that plays inside.\n\nNote: Not to be confused with "flow" sound volume from leaks (Volume tab).\n\nNote: This track continues to play at a lower volume on top of the outside track.</spw_waterambienceinvolumetooltip>
 	<spw_waterambienceoutvolume>Outside Water Volume</spw_waterambienceoutvolume>
 	<spw_waterambienceoutvolumetooltip>The volume of the water ambience track that plays outside.</spw_waterambienceoutvolumetooltip>
 	<spw_waterambiencemovingvolume>Moving Water Volume</spw_waterambiencemovingvolume>
 	<spw_waterambiencemovingvolumetooltip>The volume of the water ambience track that plays when the submarine or player is moving through water.</spw_waterambiencemovingvolumetooltip>
 
-	<spw_categoryenvironment>Environment-Specific</spw_categoryenvironment>
+	<spw_categoryenvironment>Water Ambience (Environment-Specific)</spw_categoryenvironment>
 	<spw_unsubmergedsuitwaterambiencevolume>Unsubmerged Water Volume (Suit)</spw_unsubmergedsuitwaterambiencevolume>
 	<spw_unsubmergedsuitwaterambiencevolumetooltip>The volume of water ambience tracks when the listener is unsubmerged and wearing a diving suit.</spw_unsubmergedsuitwaterambiencevolumetooltip>
 	<spw_unsubmergednosuitwaterambiencevolume>Unsubmerged Water Volume (No Suit)</spw_unsubmergednosuitwaterambiencevolume>
@@ -537,9 +552,6 @@
 
 	<!-- Advanced -->
 	<spw_advancedtab>Advanced</spw_advancedtab>
-
-	<spw_projectilesounds>Projectile Sounds</spw_projectilesounds>
-	<spw_projectilesoundstooltip>Adds unique sounds to projectiles fired from turrets.\n\nNote: This setting is experimental and was primarily used to test the "Doppler Effect" option (Pitch tab).</spw_projectilesoundstooltip>
 
 	<spw_debugperformance>Show Performance</spw_debugperformance>
 	<spw_debugperformancetooltip>Display detailed performance information for Soundproof Walls.\n\nNote: This setting is not synced with other players when using "Sync Settings" (General tab).</spw_debugperformancetooltip>
@@ -656,6 +668,9 @@
 	
 	<spw_lowpassignoredsounds>Lowpass Ignored Sounds</spw_lowpassignoredsounds>
 	<spw_lowpassignoredsoundstooltip>Sounds in this list will never receive muffle effects.</spw_lowpassignoredsoundstooltip>
+
+	<spw_sidechainignoredsounds>Sidechain Ignored Sounds</spw_sidechainignoredsounds>
+	<spw_sidechainignoredsoundstooltip>Sounds in this list will never have their volume ducked by loud sounds.</spw_sidechainignoredsoundstooltip>
 	
 	<spw_containerignoredsounds>Container Ignored Sounds</spw_containerignoredsounds>
 	<spw_containerignoredsoundstooltip>Sounds in this list pass through any containers that they're stored in unobstructed.</spw_containerignoredsoundstooltip>

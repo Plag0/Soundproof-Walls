@@ -325,6 +325,11 @@
 	<spw_sidechainmusic>음악 사이드체인</spw_sidechainmusic>
 	<spw_sidechainmusictooltip>큰 소리가 재생될 때 음악 트랙의 볼륨을 줄입니다.</spw_sidechainmusictooltip>
 
+	<spw_sidechainlocal>근거리 사이드체인</spw_sidechainlocal>
+	<spw_sidechainlocaltooltip>큰 소리가 재생될 때 근거리 채팅의 볼륨을 줄입니다.</spw_sidechainlocaltooltip>
+	<spw_sidechainradio>무전기 사이드체인</spw_sidechainradio>
+	<spw_sidechainradiotooltip>큰 소리가 재생될 때 무전 채팅의 볼륨을 줄입니다.</spw_sidechainradiotooltip>
+
 	<spw_sidechainintensitymaster>사이드체인 강도 마스터</spw_sidechainintensitymaster>
 	<spw_sidechainintensitymastertooltip>'고급' 탭의 "사용자 지정 사운드" 목록에 있는 모든 사이드체인 배율에 적용되는 전역 배율입니다.</spw_sidechainintensitymastertooltip>
 	<spw_sidechainreleasemaster>사이드체인 해제 마스터</spw_sidechainreleasemaster>
@@ -475,19 +480,30 @@
 	<spw_hydrophonevisualignoredsoundstooltip>이 목록의 소리는 수중 청음기 사용 시 소나 UI에 절대 표시되지 않습니다.</spw_hydrophonevisualignoredsoundstooltip>
 	
 	<!-- Ambience -->
-	<spw_ambiencetab>주변 소리</spw_ambiencetab>
+	<spw_ambiencetab>사운드스케이프</spw_ambiencetab>
+
+	<spw_categorysoundeffects>효과음</spw_categorysoundeffects>
+	
+	<spw_windsounds>바람 소리</spw_windsounds>
+	<spw_windsoundstooltip>빠르게 떨어지거나 이동할 때 공기를 가르는 소리를 재생합니다. 소리의 강도는 속도와 지속 시간에 비례하여 증가합니다.</spw_windsoundstooltip>
+	<spw_windsoundsgain>바람 소리 볼륨</spw_windsoundsgain>
+	<spw_windsoundsgaintooltip>빠르게 떨어지거나 이동할 때 재생되는 공기를 가르는 소리의 볼륨입니다.</spw_windsoundsgaintooltip>
+	<spw_projectilesounds>발사체 사운드</spw_projectilesounds>
+	<spw_projectilesoundstooltip>포탑에서 발사되는 발사체에 고유한 소리를 추가합니다.\n\n참고: 이 설정은 실험적 기능이며, 주로 "도플러 효과" 옵션('피치' 탭)을 테스트하기 위해 사용되었습니다.</spw_projectilesoundstooltip>
+
+
 	<spw_disablewhitenoise>백색 소음 비활성화</spw_disablewhitenoise>
 	<spw_disablewhitenoisetooltip>바닐라 게임의 생물 군계 소음 루프를 음소거합니다.</spw_disablewhitenoisetooltip>
 
-	<spw_categorytrack>트랙별</spw_categorytrack>
+	<spw_categorytrack>물소리 (트랙별)</spw_categorytrack>
 	<spw_waterambienceinvolume>실내 물소리 볼륨</spw_waterambienceinvolume>
-	<spw_waterambienceinvolumetooltip>실내에서 재생되는 물 주변 소리 트랙의 볼륨입니다.\n\n참고: 이 트랙은 실외 트랙 위에서 더 낮은 볼륨으로 계속 재생됩니다.</spw_waterambienceinvolumetooltip>
+	<spw_waterambienceinvolumetooltip>실내에서 재생되는 물 주변 소리 트랙의 볼륨입니다.\n\n참고: 누수로 인한 "물 흐름" 소리 볼륨('볼륨' 탭)과 혼동하지 마세요.\n\n참고: 이 트랙은 실외 트랙 위에서 더 낮은 볼륨으로 계속 재생됩니다.</spw_waterambienceinvolumetooltip>
 	<spw_waterambienceoutvolume>실외 물소리 볼륨</spw_waterambienceoutvolume>
 	<spw_waterambienceoutvolumetooltip>실외에서 재생되는 물 주변 소리 트랙의 볼륨입니다.</spw_waterambienceoutvolumetooltip>
 	<spw_waterambiencemovingvolume>움직이는 물소리 볼륨</spw_waterambiencemovingvolume>
 	<spw_waterambiencemovingvolumetooltip>잠수함이나 플레이어가 물속을 움직일 때 재생되는 물 주변 소리 트랙의 볼륨입니다.</spw_waterambiencemovingvolumetooltip>
 
-	<spw_categoryenvironment>환경별</spw_categoryenvironment>
+	<spw_categoryenvironment>물소리 (환경별)</spw_categoryenvironment>
 	<spw_unsubmergedsuitwaterambiencevolume>비잠수 시 물소리 볼륨 (슈트)</spw_unsubmergedsuitwaterambiencevolume>
 	<spw_unsubmergedsuitwaterambiencevolumetooltip>청자가 잠수하지 않고 잠수복을 착용했을 때 물 주변 소리 트랙의 볼륨입니다.</spw_unsubmergedsuitwaterambiencevolumetooltip>
 	<spw_unsubmergednosuitwaterambiencevolume>비잠수 시 물소리 볼륨 (슈트 없음)</spw_unsubmergednosuitwaterambiencevolume>
@@ -539,10 +555,7 @@
 
 	<!-- Advanced -->
 	<spw_advancedtab>고급</spw_advancedtab>
-
-	<spw_projectilesounds>발사체 사운드</spw_projectilesounds>
-	<spw_projectilesoundstooltip>포탑에서 발사되는 발사체에 고유한 소리를 추가합니다.\n\n참고: 이 설정은 실험적 기능이며, 주로 "도플러 효과" 옵션('피치' 탭)을 테스트하기 위해 사용되었습니다.</spw_projectilesoundstooltip>
-
+	
 	<spw_debugperformance>성능 표시</spw_debugperformance>
 	<spw_debugperformancetooltip>Soundproof Walls의 상세 성능 정보를 표시합니다.\n\n참고: 이 설정은 "설정 동기화"('일반' 탭) 사용 시 다른 플레이어와 동기화되지 않습니다.</spw_debugperformancetooltip>
 
@@ -658,6 +671,9 @@
 	
 	<spw_lowpassignoredsounds>저역 통과 무시 사운드</spw_lowpassignoredsounds>
 	<spw_lowpassignoredsoundstooltip>이 목록의 소리는 절대 약화 효과를 받지 않습니다.</spw_lowpassignoredsoundstooltip>
+
+	<spw_sidechainignoredsounds>사이드체인 무시 사운드</spw_sidechainignoredsounds>
+	<spw_sidechainignoredsoundstooltip>이 목록의 소리는 큰 소리에 의해 볼륨이 절대 줄어들지 않습니다.</spw_sidechainignoredsoundstooltip>
 	
 	<spw_containerignoredsounds>컨테이너 무시 사운드</spw_containerignoredsounds>
 	<spw_containerignoredsoundstooltip>이 목록의 소리는 보관된 모든 컨테이너를 방해 없이 통과합니다.</spw_containerignoredsoundstooltip>

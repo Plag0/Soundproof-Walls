@@ -325,6 +325,11 @@
 	<spw_sidechainmusic>Сайдчейн для музыки</spw_sidechainmusic>
 	<spw_sidechainmusictooltip>Приглушает громкость музыкальных треков, когда играет громкий звук.</spw_sidechainmusictooltip>
 
+	<spw_sidechainlocal>Сайдчейн локального чата</spw_sidechainlocal>
+	<spw_sidechainlocaltooltip>Приглушает громкость локального голосового чата, когда играет громкий звук.</spw_sidechainlocaltooltip>
+	<spw_sidechainradio>Сайдчейн рации</spw_sidechainradio>
+	<spw_sidechainradiotooltip>Приглушает громкость голосового чата по рации, когда играет громкий звук.</spw_sidechainradiotooltip>
+
 	<spw_sidechainintensitymaster>Общая интенсивность сайдчейна</spw_sidechainintensitymaster>
 	<spw_sidechainintensitymastertooltip>Глобальный множитель, применяемый ко всем множителям сайдчейна в списке "Пользовательские звуки" (вкладка "Дополнительно").</spw_sidechainintensitymastertooltip>
 	<spw_sidechainreleasemaster>Общее затухание сайдчейна</spw_sidechainreleasemaster>
@@ -475,19 +480,29 @@
 	<spw_hydrophonevisualignoredsoundstooltip>Звуки в этом списке никогда не отображаются на интерфейсе сонара при использовании гидрофонов.</spw_hydrophonevisualignoredsoundstooltip>
 	
 	<!-- Ambience -->
-	<spw_ambiencetab>Окружение</spw_ambiencetab>
+	<spw_ambiencetab>Звуковой фон</spw_ambiencetab>
+
+	<spw_categorysoundeffects>Звуковые эффекты</spw_categorysoundeffects>
+	
+	<spw_windsounds>Звуки ветра</spw_windsounds>
+	<spw_windsoundstooltip>Воспроизводит звук встречного потока воздуха при падении или быстром движении. Интенсивность звука увеличивается в зависимости от скорости и продолжительности.</spw_windsoundstooltip>
+	<spw_windsoundsgain>Громкость звуков ветра</spw_windsoundsgain>
+	<spw_windsoundsgaintooltip>Громкость звука встречного потока воздуха, который играет при падении или быстром движении.</spw_windsoundsgaintooltip>
+	<spw_projectilesounds>Звуки снарядов</spw_projectilesounds>
+	<spw_projectilesoundstooltip>Добавляет уникальные звуки снарядам, выпущенным из турелей.\n\nПримечание: Эта настройка является экспериментальной и в первую очередь использовалась для тестирования опции "Эффект Доплера" (вкладка "Тон").</spw_projectilesoundstooltip>
+	
 	<spw_disablewhitenoise>Отключить белый шум</spw_disablewhitenoise>
 	<spw_disablewhitenoisetooltip>Отключает зацикленные шумы биомов из ванильной игры.</spw_disablewhitenoisetooltip>
 
-	<spw_categorytrack>Для конкретных треков</spw_categorytrack>
+	<spw_categorytrack>Окружение воды (для конкретных треков)</spw_categorytrack>
 	<spw_waterambienceinvolume>Громкость воды внутри</spw_waterambienceinvolume>
-	<spw_waterambienceinvolumetooltip>Громкость трека окружения воды, который играет внутри.\n\nПримечание: Этот трек продолжает играть с меньшей громкостью поверх трека снаружи.</spw_waterambienceinvolumetooltip>
+	<spw_waterambienceinvolumetooltip>Громкость трека окружения воды, который играет внутри.\n\nПримечание: Не путать с громкостью потоков воды из пробоин (вкладка "Громкость").\n\nПримечание: Этот трек продолжает играть с меньшей громкостью поверх трека снаружи.</spw_waterambienceinvolumetooltip>
 	<spw_waterambienceoutvolume>Громкость воды снаружи</spw_waterambienceoutvolume>
 	<spw_waterambienceoutvolumetooltip>Громкость трека окружения воды, который играет снаружи.</spw_waterambienceoutvolumetooltip>
 	<spw_waterambiencemovingvolume>Громкость движущейся воды</spw_waterambiencemovingvolume>
 	<spw_waterambiencemovingvolumetooltip>Громкость трека окружения воды, который играет, когда подводная лодка или игрок движется сквозь воду.</spw_waterambiencemovingvolumetooltip>
 
-	<spw_categoryenvironment>Для конкретного окружения</spw_categoryenvironment>
+	<spw_categoryenvironment>Окружение воды (для конкретного окружения)</spw_categoryenvironment>
 	<spw_unsubmergedsuitwaterambiencevolume>Громкость воды без погружения (в скафандре)</spw_unsubmergedsuitwaterambiencevolume>
 	<spw_unsubmergedsuitwaterambiencevolumetooltip>Громкость треков окружения воды, когда слушатель не погружён и носит скафандр.</spw_unsubmergedsuitwaterambiencevolumetooltip>
 	<spw_unsubmergednosuitwaterambiencevolume>Громкость воды без погружения (без скафандра)</spw_unsubmergednosuitwaterambiencevolume>
@@ -539,9 +554,6 @@
 
 	<!-- Advanced -->
 	<spw_advancedtab>Дополнительно</spw_advancedtab>
-
-	<spw_projectilesounds>Звуки снарядов</spw_projectilesounds>
-	<spw_projectilesoundstooltip>Добавляет уникальные звуки снарядам, выпущенным из турелей.\n\nПримечание: Эта настройка является экспериментальной и в первую очередь использовалась для тестирования опции "Эффект Доплера" (вкладка "Тон").</spw_projectilesoundstooltip>
 
 	<spw_debugperformance>Показывать производительность</spw_debugperformance>
 	<spw_debugperformancetooltip>Отображает подробную информацию о производительности Soundproof Walls.\n\nПримечание: Эта настройка не синхронизируется с другими игроками при использовании "Синхронизировать настройки" (вкладка "Общие").</spw_debugperformancetooltip>
@@ -658,6 +670,9 @@
 	
 	<spw_lowpassignoredsounds>Игнорируемые НЧ-фильтром звуки</spw_lowpassignoredsounds>
 	<spw_lowpassignoredsoundstooltip>Звуки в этом списке никогда не будут получать эффекты заглушения.</spw_lowpassignoredsoundstooltip>
+
+	<spw_sidechainignoredsounds>Игнорируемые сайдчейном звуки</spw_sidechainignoredsounds>
+	<spw_sidechainignoredsoundstooltip>Громкость звуков в этом списке никогда не будет приглушаться громкими звуками.</spw_sidechainignoredsoundstooltip>
 	
 	<spw_containerignoredsounds>Игнорируемые контейнерами звуки</spw_containerignoredsounds>
 	<spw_containerignoredsoundstooltip>Звуки в этом списке проходят через любые контейнеры, в которых они хранятся, без препятствий.</spw_containerignoredsoundstooltip>

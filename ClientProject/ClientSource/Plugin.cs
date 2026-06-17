@@ -59,6 +59,8 @@ namespace SoundproofWalls
             HeavyProjectileCavitation,
             MediumProjectileCavitation,
             LightProjectileCavitation,
+
+            Wind,
         }
         public static string ModPath = Util.GetModDirectory();
         public static readonly Dictionary<SoundPath, string> CustomSoundPaths = new Dictionary<SoundPath, string>
@@ -83,6 +85,8 @@ namespace SoundproofWalls
             { SoundPath.HeavyProjectileCavitation, Path.Combine(ModPath, "Content/Sounds/SPW_HeavyProjectileCavitation.ogg") },
             { SoundPath.MediumProjectileCavitation, Path.Combine(ModPath, "Content/Sounds/SPW_MediumProjectileCavitation.ogg") },
             { SoundPath.LightProjectileCavitation, Path.Combine(ModPath, "Content/Sounds/SPW_LightProjectileCavitation.ogg") },
+
+            { SoundPath.Wind, Path.Combine(ModPath, "Content/Sounds/SPW_Wind.ogg") },
         };
 
         public void InitClient()
@@ -459,6 +463,7 @@ namespace SoundproofWalls
             EavesdropManager.Setup();
             BubbleManager.Setup();
             ProjectileManager.Setup();
+            WindManager.Setup();
 
             // Create a VoipQueue for the local client so they can hear themselves if they have the HearSelfLocal option enabled.
             if (GameMain.Client != null)
@@ -551,6 +556,7 @@ namespace SoundproofWalls
             EavesdropManager.Dispose();
             BubbleManager.Dispose();
             ProjectileManager.Dispose();
+            WindManager.Dispose();
 
             DisposeDynamicFx();
 
@@ -608,6 +614,7 @@ namespace SoundproofWalls
                 EavesdropManager.Update();
                 BubbleManager.Update();
                 ProjectileManager.Update();
+                WindManager.Update();
                 ChannelInfoManager.Update();
                 Sidechain.Update();
                 EffectsManager?.Update();
@@ -788,6 +795,7 @@ namespace SoundproofWalls
             VoipClient instance = __instance;
             byte queueId = msg.ReadByte();
             float distanceFactor = msg.ReadRangedSingle(0.0f, 1.0f, 8);
+            bool isRadio = msg.ReadBoolean();
             VoipQueue queue = instance.queues.Find(q => q.QueueID == queueId);
 
             if (queue == null)
@@ -801,9 +809,7 @@ namespace SoundproofWalls
             Client client = instance.gameClient.ConnectedClients.Find(c => c.VoipQueue == queue);
             bool clientAlive = client.Character != null && !client.Character.IsDead && !client.Character.Removed;
             bool clientCantSpeak = client.Muted || client.MutedLocally || (clientAlive && client.Character.SpeechImpediment >= 100.0f);
-
-            bool discard = client.Muted || client.MutedLocally || clientCantSpeak;
-            if (!queue.Read(msg, discardData: discard))
+            if (!queue.Read(msg, discardData: clientCantSpeak))
             {
                 return false;
             }
@@ -854,7 +860,7 @@ namespace SoundproofWalls
 
             // ------ The speaker is alive from this point, meaning client.Character is not null ------
 
-            ChatMessageType messageType = Util.GetMessageType(client, out WifiComponent? senderRadio);
+            var messageType = isRadio ? ChatMessageType.Radio : ChatMessageType.Default;
 
             // Get the target range the voice should transmit.
             Limb clientHead = Util.GetCharacterHead(client.Character);
@@ -865,10 +871,16 @@ namespace SoundproofWalls
             // Update radio flag, set range, and update raido noise.
             float targetFar;
             float targetNear;
-            if (messageType == ChatMessageType.Radio && senderRadio != null)
+            if (messageType == ChatMessageType.Radio)
             {
+                // Comment from vanilla: https://github.com/FakeFishGames/Barotrauma/blame/06616535f433be006487a108016d9fbf45d5e05c/Barotrauma/BarotraumaClient/ClientSource/Networking/Voip/VoipClient.cs#L129-L130
+                //"If the client cannot establish a radio, use a headsets default range as a fallback to calculate the radio noise.
+                //This cannot happen in an un-modded setting as CanUseRadio is part of the server side check for isRadio to be true."
+                ChatMessage.CanUseRadio(client.Character, out var senderRadio);
+                float senderRadioRange = (senderRadio == null) ? 35000.0f : senderRadio.Range;
+
                 client.VoipSound.UsingRadio = true;
-                targetFar = senderRadio.Range * impedimentMult * config.VoiceRadioRangeMultiplier;
+                targetFar = senderRadioRange * impedimentMult * config.VoiceRadioRangeMultiplier;
                 targetNear = targetFar * config.VoiceNearMultiplier;
                 client.VoipSound.SetRange(targetNear, targetFar);
                 distanceFactor = Vector2.Distance(clientHead.WorldPosition, Character.Controlled?.WorldPosition ?? Listener.WorldPos) / targetFar;
@@ -990,6 +1002,7 @@ namespace SoundproofWalls
                     IWriteMessage spoofMsg = new WriteOnlyMessage();
                     spoofMsg.WriteByte(VoipCapture.Instance.QueueID);
                     spoofMsg.WriteRangedSingle(0.0f, 0.0f, 1.0f, 8); // distanceFactor = 0
+                    spoofMsg.WriteBoolean(isRadio);
 
                     // Serialize
                     VoipCapture.Instance.Write(spoofMsg);

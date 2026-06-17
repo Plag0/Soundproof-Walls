@@ -2932,6 +2932,24 @@ namespace SoundproofWalls
                 currentValue: unsavedConfig.SidechainMusic,
                 setter: v => unsavedConfig.SidechainMusic = v);
 
+            Tickbox(settingsFrame, FormatTextBoxLabel(
+                label: TextManager.Get("spw_sidechainlocal"),
+                localValue: unsavedConfig.SidechainLocal,
+                serverValue: ConfigManager.ServerConfig?.SidechainLocal ?? default,
+                formatter: BoolFormatter),
+                tooltip: TextManager.Get("spw_sidechainlocaltooltip"),
+                currentValue: unsavedConfig.SidechainLocal,
+                setter: v => unsavedConfig.SidechainLocal = v);
+
+            Tickbox(settingsFrame, FormatTextBoxLabel(
+                label: TextManager.Get("spw_sidechainradio"),
+                localValue: unsavedConfig.SidechainRadio,
+                serverValue: ConfigManager.ServerConfig?.SidechainRadio ?? default,
+                formatter: BoolFormatter),
+                tooltip: TextManager.Get("spw_sidechainradiotooltip"),
+                currentValue: unsavedConfig.SidechainRadio,
+                setter: v => unsavedConfig.SidechainRadio = v);
+
             Spacer(settingsFrame);
 
             Label(settingsFrame, TextManager.Get("spw_sidechainintensitymaster"));
@@ -3850,6 +3868,26 @@ namespace SoundproofWalls
             var content = GetTabContentFrame(Tab.Ambience);
             GUIFrame settingsFrame = NewListContent(content);
 
+            SpacerLabel(settingsFrame, TextManager.Get("spw_categorysoundeffects"));
+
+            Tickbox(settingsFrame, FormatTextBoxLabel(
+                label: TextManager.Get("spw_windsounds"),
+                localValue: unsavedConfig.ProjectileSounds,
+                serverValue: ConfigManager.ServerConfig?.WindSounds ?? default,
+                formatter: BoolFormatter),
+                tooltip: TextManager.Get("spw_windsoundstooltip"),
+                currentValue: unsavedConfig.WindSounds,
+                setter: v => unsavedConfig.WindSounds = v);
+
+            Tickbox(settingsFrame, FormatTextBoxLabel(
+                label: TextManager.Get("spw_projectilesounds"),
+                localValue: unsavedConfig.ProjectileSounds,
+                serverValue: ConfigManager.ServerConfig?.ProjectileSounds ?? default,
+                formatter: BoolFormatter),
+                tooltip: TextManager.Get("spw_projectilesoundstooltip"),
+                currentValue: unsavedConfig.ProjectileSounds,
+                setter: v => unsavedConfig.ProjectileSounds = v);
+
             Tickbox(settingsFrame, FormatTextBoxLabel(
                 label: TextManager.Get("spw_disablewhitenoise"),
                 localValue: unsavedConfig.DisableWhiteNoise, 
@@ -3858,6 +3896,23 @@ namespace SoundproofWalls
                 tooltip: TextManager.Get("spw_disablewhitenoisetooltip"),
                 currentValue: unsavedConfig.DisableWhiteNoise,
                 setter: v => unsavedConfig.DisableWhiteNoise = v);
+
+            Spacer(settingsFrame);
+
+            Label(settingsFrame, TextManager.Get("spw_windsoundsgain"));
+            Slider(settingsFrame, (0, 1), 0.01f,
+                labelFunc: localSliderValue =>
+                FormatSettingText(localSliderValue,
+                    serverValue: ConfigManager.ServerConfig?.WindSoundsVolumeMuliplier ?? default,
+                    formatter: Percentage),
+                colorFunc: (localSliderValue, componentStyle) =>
+                GetSettingColor(localSliderValue, componentStyle,
+                    defaultValue: Menu.defaultConfig.WindSoundsVolumeMuliplier,
+                    vanillaValue: 1.0f),
+                currentValue: unsavedConfig.WindSoundsVolumeMuliplier,
+                setter: v => unsavedConfig.WindSoundsVolumeMuliplier = v,
+                TextManager.Get("spw_windsoundsgaintooltip")
+            );
 
             SpacerLabel(settingsFrame, TextManager.Get("spw_categorytrack"));
 
@@ -4194,15 +4249,6 @@ namespace SoundproofWalls
             var content = GetTabContentFrame(Tab.Advanced);
             GUIListBox settingsList = NewList(content);
             GUIFrame settingsFrame = settingsList.Content;
-
-            Tickbox(settingsFrame, FormatTextBoxLabel(
-                label: TextManager.Get("spw_projectilesounds"),
-                localValue: unsavedConfig.ProjectileSounds,
-                serverValue: ConfigManager.ServerConfig?.ProjectileSounds ?? default,
-                formatter: BoolFormatter),
-                tooltip: TextManager.Get("spw_projectilesoundstooltip"),
-                currentValue: unsavedConfig.ProjectileSounds,
-                setter: v => unsavedConfig.ProjectileSounds = v);
 
             Tickbox(settingsFrame, FormatTextBoxLabel(
                 label: TextManager.Get("spw_debugperformance"),
@@ -4744,6 +4790,17 @@ namespace SoundproofWalls
                 tooltip: TextManager.Get("spw_lowpassignoredsoundstooltip"),
                 getter: config => config.LowpassIgnoredSounds,
                 setter: newSet => unsavedConfig.LowpassIgnoredSounds = newSet,
+                itemFormatter: s => s
+            );
+
+            Spacer(settingsFrame);
+
+            CreateJsonTextBox(
+                parentListBox: settingsList,
+                labelText: TextManager.Get("spw_sidechainignoredsounds"),
+                tooltip: TextManager.Get("spw_sidechainignoredsoundstooltip"),
+                getter: config => config.SidechainIgnoredSounds,
+                setter: newSet => unsavedConfig.SidechainIgnoredSounds = newSet,
                 itemFormatter: s => s
             );
 

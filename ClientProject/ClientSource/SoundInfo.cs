@@ -25,6 +25,7 @@ namespace SoundproofWalls
         public bool IgnoreAirReverb = false;
         public bool IgnoreWaterReverb = false;
         public bool ForceReverb = false;
+        public bool IgnoreSidechain = false;
         public bool IgnoreContainer = false;
         public bool IgnoreAll = false;
         public bool PropagateWalls = false;
@@ -78,6 +79,7 @@ namespace SoundproofWalls
                 IgnoreBarriers = IgnoreLowpass || Util.StringHasKeyword(filename, config.BarrierIgnoredSounds);
                 IgnoreSurface = IgnoreLowpass || !config.MuffleWaterSurface || Util.StringHasKeyword(filename, config.SurfaceIgnoredSounds);
                 IgnoreSubmersion = IgnoreLowpass || Util.StringHasKeyword(filename, config.SubmersionIgnoredSounds, exclude: "Barotrauma/Content/Characters/Human/");
+                IgnoreSidechain = Util.StringHasKeyword(filename, config.SidechainIgnoredSounds);
                 IgnoreContainer = IgnoreLowpass || Util.StringHasKeyword(filename, config.ContainerIgnoredSounds);
                 PropagateWalls = !IgnoreAll && !IgnoreLowpass && Util.StringHasKeyword(filename, config.PropagatingSounds);
                 IgnoreHydrophoneMuffle = Util.StringHasKeyword(filename, config.HydrophoneMuffleIgnoredSounds);

@@ -1,10 +1,7 @@
-﻿using Barotrauma;
-using Barotrauma.Items.Components;
-using Barotrauma.LuaCs;
+﻿using Barotrauma.Items.Components;
+using Barotrauma.LuaCs.Events;
 using Barotrauma.Networking;
 using HarmonyLib;
-using Microsoft.Xna.Framework;
-using System.Reflection;
 
 namespace SoundproofWalls
 {
@@ -117,32 +114,30 @@ namespace SoundproofWalls
 
         // Allows the sending of distance voices to clients so they can be picked up with hydrophones.
         // TODO This could be exploited using client-side cheats. But the only benefit of this cheat would be hearing people that are far away and idk why anyone would want that.
-        public static bool SPW_VoipServer_CanReceive(Client sender, Client recipient, out float distanceFactor, ref bool __result)
+        public static bool SPW_VoipServer_CanReceive(Client sender, Client recipient, out float distanceFactor, out bool isRadio, ref bool __result)
         {
-            if (Screen.Selected != GameMain.GameScreen)
-            {
-                distanceFactor = 0.0f;
-                __result = true;
-                return false;
-            }
-
+            
             distanceFactor = 0.0f;
+            isRadio = false;
 
-            //no-one can hear muted players
-            if (sender.Muted) { __result = false; return false; }
+            // Positioned before the mute block to mirror the source code.
+            if (Screen.Selected != GameMain.GameScreen)
+            { __result = true; return false; }
+
+            // No one can hear muted players.
+            if (sender.Muted)
+            { __result = false; return false; }
 
             bool recipientSpectating = recipient.Character == null || recipient.Character.IsDead;
             bool senderSpectating = sender.Character == null || sender.Character.IsDead;
 
             //non-spectators cannot hear spectators, and spectators can always hear spectators
             if (senderSpectating)
-            {
-                __result = recipientSpectating;
-                return false;
-            }
+            { __result = recipientSpectating; return false; }
 
             //sender can't speak
-            if (sender.Character != null && sender.Character.SpeechImpediment >= 100.0f) { __result = false; return false; }
+            if (sender.Character != null && sender.Character.SpeechImpediment >= 100.0f)
+            { __result = false; return false; }
 
             //check if the message can be sent via radio
             WifiComponent recipientRadio = null;
@@ -150,27 +145,45 @@ namespace SoundproofWalls
                 ChatMessage.CanUseRadio(sender.Character, out WifiComponent senderRadio) &&
                 (recipientSpectating || ChatMessage.CanUseRadio(recipient.Character, out recipientRadio)))
             {
+
+                bool? canUse = null;
+                LuaCsSetup.Instance.EventService.PublishEvent<IEventCanUseVoiceRadio>(x => canUse = x.OnCanUseVoiceRadio(sender, recipient) ?? canUse);
+
+                if (canUse != null)
+                { __result = canUse.Value; return false; }
+
                 if (recipientSpectating)
                 {
-                    if (recipient.SpectatePos == null) { return true; }
+                    isRadio = true;
+
+                    if (recipient.SpectatePos == null)
+                    { __result = true;  return false; }
+
                     distanceFactor = MathHelper.Clamp(Vector2.Distance(sender.Character.WorldPosition, recipient.SpectatePos.Value) / senderRadio.Range, 0.0f, 1.0f);
-                    __result = distanceFactor < 1.0f;
-                    return false;
+                    __result = distanceFactor < 1.0f; return false;
                 }
                 else if (recipientRadio != null && recipientRadio.CanReceive(senderRadio))
                 {
+                    isRadio = true;
+
                     distanceFactor = MathHelper.Clamp(Vector2.Distance(sender.Character.WorldPosition, recipient.Character.WorldPosition) / senderRadio.Range, 0.0f, 1.0f);
-                    __result = true;
-                    return false;
+                    __result = true; return false;
                 }
             }
 
+            float range = 1.0f;
+            LuaCsSetup.Instance.EventService.PublishEvent<IEventChangeLocalVoiceRange>(x => range = x.OnChangeLocalVoiceRange(sender, recipient) ?? range);
+
+            // Add an arbitrary 200m range boost on clients receiving voice packets.
+            // This is a cheap fix to hear distant players through the hydrophones by processing it client-side.
             float maxHydrophoneRange = 20000;
             float maxAudibleVoiceRange = ChatMessage.SpeakRangeVOIP + maxHydrophoneRange;
 
             if (recipientSpectating)
             {
-                if (recipient.SpectatePos == null) { return true; }
+                if (recipient.SpectatePos == null)
+                { __result = true; return false; }
+
                 distanceFactor = MathHelper.Clamp(Vector2.Distance(sender.Character.WorldPosition, recipient.SpectatePos.Value) / maxAudibleVoiceRange, 0.0f, 1.0f);
                 __result = distanceFactor < 1.0f;
             }
@@ -179,7 +192,7 @@ namespace SoundproofWalls
                 //otherwise do a distance check
                 float garbleAmount = ChatMessage.GetGarbleAmount(recipient.Character, sender.Character, maxAudibleVoiceRange, obstructionMultiplier: 0);
                 distanceFactor = garbleAmount;
-                __result = garbleAmount < 1.0f;
+                __result = distanceFactor < 1.0f;
             }
             return false;
         }
